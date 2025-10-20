@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/_app'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppHomeRouteImport } from './routes/_app/home'
 import { Route as AppAdminRouteImport } from './routes/_app/admin'
 import { Route as AppQuizIndexRouteImport } from './routes/_app/quiz/index'
@@ -23,6 +24,11 @@ const LoginRoute = LoginRouteImport.update({
 } as any)
 const AppRoute = AppRouteImport.update({
   id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppHomeRoute = AppHomeRouteImport.update({
@@ -47,6 +53,7 @@ const AppQuizThemeTsxIndexRoute = AppQuizThemeTsxIndexRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/admin': typeof AppAdminRoute
   '/home': typeof AppHomeRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByFullPath {
   '/quiz/$theme/tsx': typeof AppQuizThemeTsxIndexRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/admin': typeof AppAdminRoute
   '/home': typeof AppHomeRoute
@@ -62,6 +70,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/_app/admin': typeof AppAdminRoute
@@ -71,11 +80,12 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/login' | '/admin' | '/home' | '/quiz' | '/quiz/$theme/tsx'
+  fullPaths: '/' | '/login' | '/admin' | '/home' | '/quiz' | '/quiz/$theme/tsx'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/admin' | '/home' | '/quiz' | '/quiz/$theme/tsx'
+  to: '/' | '/login' | '/admin' | '/home' | '/quiz' | '/quiz/$theme/tsx'
   id:
     | '__root__'
+    | '/'
     | '/_app'
     | '/login'
     | '/_app/admin'
@@ -85,6 +95,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
 }
@@ -103,6 +114,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/home': {
@@ -153,6 +171,7 @@ const AppRouteChildren: AppRouteChildren = {
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
 }
