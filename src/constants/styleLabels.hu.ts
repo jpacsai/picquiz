@@ -1,4 +1,4 @@
-export const styleLabelsHu = {
+export const styleLabelsHu: Readonly<Record<string, string>> = {
   prehistoric: 'Őskori',
   ancient_egyptian: 'Ókori egyiptomi',
   ancient_greek_classical: 'Ókori görög (klasszikus)',

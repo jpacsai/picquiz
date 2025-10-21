@@ -1,11 +1,11 @@
-import { Box } from "@mui/material";
+import { Box } from '@mui/material';
 
 /* type QuizConfigProps = {
 
 } */
 
 const QuizConfig = () => {
-  return <Box>QuizConfig</Box>
-}
+  return <Box>QuizConfig</Box>;
+};
 
 export default QuizConfig;

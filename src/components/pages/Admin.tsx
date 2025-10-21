@@ -1,11 +1,11 @@
-import { Box } from "@mui/material";
+import { Box } from '@mui/material';
 
 /* type AdminProps = {
 
 } */
 
 const Admin = () => {
-  return <Box>Admin</Box>
-}
+  return <Box>Admin</Box>;
+};
 
 export default Admin;

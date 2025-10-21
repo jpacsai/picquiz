@@ -1,4 +1,4 @@
-export const movementLabelsHu = {
+export const movementLabelsHu: Readonly<Record<string, string>> = {
   nazarene_movement: 'Nazarénus mozgalom',
   hudson_river_school: 'Hudson River School',
   luminism_usa: 'Luminizmus (USA)',

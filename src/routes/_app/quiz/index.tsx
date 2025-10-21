@@ -1,11 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router'
-import QuizThemeSelector from '../../../components/pages/Quiz/QuizThemeSelector'
+import { createFileRoute } from '@tanstack/react-router';
 
 const RouteComponent = () => {
-  return <QuizThemeSelector />
-}
+  return <div>quiz</div>;
+};
 
 export const Route = createFileRoute('/_app/quiz/')({
   component: RouteComponent,
-})
-
+});
