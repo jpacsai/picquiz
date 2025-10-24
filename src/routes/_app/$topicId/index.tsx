@@ -1,14 +1,14 @@
-import { createFileRoute, useLoaderData } from '@tanstack/react-router'
+import { createFileRoute, useLoaderData } from '@tanstack/react-router';
 import { topicsOptions } from '../../../queries/topics';
 import Quiz from '../../../components/pages/Quiz/Quiz';
 
-const path = '/_app/$topicId/'
+const path = '/_app/$topicId/';
 
 const RouteComponent = () => {
   const { topic } = useLoaderData({ from: path });
 
-  return <Quiz topic={topic} />
-}
+  return <Quiz topic={topic} />;
+};
 
 export const Route = createFileRoute(path)({
   loader: async ({ context, params }) => {
@@ -18,6 +18,4 @@ export const Route = createFileRoute(path)({
     return { topic };
   },
   component: RouteComponent,
-})
-
-
+});

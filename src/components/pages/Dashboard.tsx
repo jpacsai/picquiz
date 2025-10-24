@@ -22,7 +22,10 @@ const Dashboard = ({ topics }: DashboardProps) => {
                 underline="none"
                 preload="intent"
                 sx={{
-                  px: 1, py: 0.5, borderRadius: 1, color: 'text.primary',
+                  px: 1,
+                  py: 0.5,
+                  borderRadius: 1,
+                  color: 'text.primary',
                   '&[data-status="active"]': {
                     fontWeight: 700,
                     bgcolor: 'action.selected',
