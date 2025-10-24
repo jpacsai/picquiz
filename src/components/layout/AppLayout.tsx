@@ -1,52 +1,43 @@
-import { AppBar, Box, Toolbar } from '@mui/material';
+import { AppBar, Box, Toolbar, Typography } from '@mui/material';
 import { Outlet } from '@tanstack/react-router';
-import { RouterLink } from '../ui/RouterLink';
+import { NavLink } from '../ui/NavLink';
+import { blue } from '@mui/material/colors';
+import usePageMeta from '../../utils/usePageMeta';
 
 const AppLayout = () => {
+  const title = usePageMeta();
+
   return (
     <Box sx={{ width: '100%' }}>
       <AppBar position="static">
-        <Toolbar>
-          <RouterLink
-            to="/home"
-            activeOptions={{ exact: true }}
-            underline="none"
-            preload="intent"
+        <Toolbar disableGutters>
+          <Box
+            maxWidth="xl"
             sx={{
-              px: 1,
-              py: 0.5,
-              borderRadius: 1,
-              color: 'text.primary',
-              '&[data-status="active"]': {
-                fontWeight: 700,
-                bgcolor: 'action.selected',
-              },
+              padding: '20px',
+              display: 'flex',
+              margin: 'auto',
+              width: '100%',
+              alignItems: 'center',
             }}
           >
-            Home
-          </RouterLink>
+            <NavLink to="/home" activeOptions={{ exact: true }} underline="none" preload="intent">
+              <Typography variant="h2" sx={{ color: blue.A700, marginRight: '60px' }}>
+                QuizPic
+              </Typography>
+            </NavLink>
 
-          <RouterLink
-            to="/quiz"
-            activeOptions={{ exact: true }}
-            underline="none"
-            preload="intent"
-            sx={{
-              px: 1,
-              py: 0.5,
-              borderRadius: 1,
-              color: 'text.primary',
-              '&[data-status="active"]': {
-                fontWeight: 700,
-                bgcolor: 'action.selected',
-              },
-            }}
-          >
-            Quiz
-          </RouterLink>
+            <NavLink to="/admin" activeOptions={{ exact: true }} underline="none" preload="intent">
+              Admin
+            </NavLink>
+          </Box>
         </Toolbar>
       </AppBar>
-      <Outlet />
+
+      <Box maxWidth="xl" sx={{ padding: '20px', display: 'flex', margin: 'auto', flexDirection: "column" }}>
+        {title && <Typography variant='h1' sx={{ marginBottom: "20px" }}>{title}</Typography>}
+        <Outlet />
+      </Box>
     </Box>
   );
 };
