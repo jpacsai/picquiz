@@ -8,7 +8,6 @@ type DashboardProps = {
 };
 
 const Dashboard = ({ topics }: DashboardProps) => {
-  console.log('topics', topics);
   return (
     <Box>
       {topics.map((topic) => {
