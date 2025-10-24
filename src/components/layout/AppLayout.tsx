@@ -5,7 +5,7 @@ import { blue } from '@mui/material/colors';
 import usePageMeta from '../../utils/usePageMeta';
 
 const AppLayout = () => {
-  const title = usePageMeta();
+  const { title, subTitle } = usePageMeta();
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -34,8 +34,16 @@ const AppLayout = () => {
         </Toolbar>
       </AppBar>
 
-      <Box maxWidth="xl" sx={{ padding: '20px', display: 'flex', margin: 'auto', flexDirection: "column" }}>
-        {title && <Typography variant='h1' sx={{ marginBottom: "20px" }}>{title}</Typography>}
+      <Box
+        maxWidth="xl"
+        sx={{ padding: '20px', display: 'flex', margin: 'auto', flexDirection: 'column' }}
+      >
+        {(title || subTitle) && (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
+            {title && <Typography variant="h1">{title}</Typography>}
+            {subTitle && <Typography variant="h3">{subTitle}</Typography>}
+          </Box>
+        )}
         <Outlet />
       </Box>
     </Box>
