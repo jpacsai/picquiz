@@ -1,11 +1,20 @@
-import { Box } from '@mui/material';
+import { Box, Card } from '@mui/material';
+import type { Topic } from '../../types/topics';
 
-/* type AdminProps = {
+type AdminProps = {
+  topics: Topic[];
+};
 
-} */
-
-const Admin = () => {
-  return <Box>Admin</Box>;
+const Admin = ({ topics }: AdminProps) => {
+  return (
+    <Box>
+      <Box>
+        {topics.map((topic, index) => (
+          <Card key={index}>{topic.label}</Card>
+        ))}
+      </Box>
+    </Box>
+  );
 };
 
 export default Admin;
