@@ -1,5 +1,6 @@
 import { Box, Card } from '@mui/material';
 import type { Topic } from '../../types/topics';
+import { NavLink } from '../ui/NavLink';
 
 type AdminProps = {
   topics: Topic[];
@@ -7,12 +8,12 @@ type AdminProps = {
 
 const Admin = ({ topics }: AdminProps) => {
   return (
-    <Box>
-      <Box>
-        {topics.map((topic, index) => (
+    <Box sx={{ display: "grid", gap: "20px" }}>
+      {topics.map((topic, index) => (
+        <NavLink to={`/admin/${topic.id}`}>
           <Card key={index}>{topic.label}</Card>
-        ))}
-      </Box>
+        </NavLink>
+      ))}
     </Box>
   );
 };

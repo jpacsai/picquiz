@@ -13,9 +13,10 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppHomeRouteImport } from './routes/_app/home'
-import { Route as AppAdminRouteImport } from './routes/_app/admin'
 import { Route as AppQuizIndexRouteImport } from './routes/_app/quiz/index'
+import { Route as AppAdminIndexRouteImport } from './routes/_app/admin/index'
 import { Route as AppTopicIdIndexRouteImport } from './routes/_app/$topicId/index'
+import { Route as AppAdminTopicIdRouteImport } from './routes/_app/admin/$topicId'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -36,14 +37,14 @@ const AppHomeRoute = AppHomeRouteImport.update({
   path: '/home',
   getParentRoute: () => AppRoute,
 } as any)
-const AppAdminRoute = AppAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppQuizIndexRoute = AppQuizIndexRouteImport.update({
   id: '/quiz/',
   path: '/quiz/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminIndexRoute = AppAdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
   getParentRoute: () => AppRoute,
 } as any)
 const AppTopicIdIndexRoute = AppTopicIdIndexRouteImport.update({
@@ -51,21 +52,28 @@ const AppTopicIdIndexRoute = AppTopicIdIndexRouteImport.update({
   path: '/$topicId/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminTopicIdRoute = AppAdminTopicIdRouteImport.update({
+  id: '/admin/$topicId',
+  path: '/admin/$topicId',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/admin': typeof AppAdminRoute
   '/home': typeof AppHomeRoute
+  '/admin/$topicId': typeof AppAdminTopicIdRoute
   '/$topicId': typeof AppTopicIdIndexRoute
+  '/admin': typeof AppAdminIndexRoute
   '/quiz': typeof AppQuizIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/admin': typeof AppAdminRoute
   '/home': typeof AppHomeRoute
+  '/admin/$topicId': typeof AppAdminTopicIdRoute
   '/$topicId': typeof AppTopicIdIndexRoute
+  '/admin': typeof AppAdminIndexRoute
   '/quiz': typeof AppQuizIndexRoute
 }
 export interface FileRoutesById {
@@ -73,24 +81,40 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
-  '/_app/admin': typeof AppAdminRoute
   '/_app/home': typeof AppHomeRoute
+  '/_app/admin/$topicId': typeof AppAdminTopicIdRoute
   '/_app/$topicId/': typeof AppTopicIdIndexRoute
+  '/_app/admin/': typeof AppAdminIndexRoute
   '/_app/quiz/': typeof AppQuizIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/admin' | '/home' | '/$topicId' | '/quiz'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/home'
+    | '/admin/$topicId'
+    | '/$topicId'
+    | '/admin'
+    | '/quiz'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/admin' | '/home' | '/$topicId' | '/quiz'
+  to:
+    | '/'
+    | '/login'
+    | '/home'
+    | '/admin/$topicId'
+    | '/$topicId'
+    | '/admin'
+    | '/quiz'
   id:
     | '__root__'
     | '/'
     | '/_app'
     | '/login'
-    | '/_app/admin'
     | '/_app/home'
+    | '/_app/admin/$topicId'
     | '/_app/$topicId/'
+    | '/_app/admin/'
     | '/_app/quiz/'
   fileRoutesById: FileRoutesById
 }
@@ -130,18 +154,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppHomeRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/admin': {
-      id: '/_app/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AppAdminRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/quiz/': {
       id: '/_app/quiz/'
       path: '/quiz'
       fullPath: '/quiz'
       preLoaderRoute: typeof AppQuizIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/admin/': {
+      id: '/_app/admin/'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AppAdminIndexRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/$topicId/': {
@@ -151,20 +175,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTopicIdIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/admin/$topicId': {
+      id: '/_app/admin/$topicId'
+      path: '/admin/$topicId'
+      fullPath: '/admin/$topicId'
+      preLoaderRoute: typeof AppAdminTopicIdRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
-  AppAdminRoute: typeof AppAdminRoute
   AppHomeRoute: typeof AppHomeRoute
+  AppAdminTopicIdRoute: typeof AppAdminTopicIdRoute
   AppTopicIdIndexRoute: typeof AppTopicIdIndexRoute
+  AppAdminIndexRoute: typeof AppAdminIndexRoute
   AppQuizIndexRoute: typeof AppQuizIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppAdminRoute: AppAdminRoute,
   AppHomeRoute: AppHomeRoute,
+  AppAdminTopicIdRoute: AppAdminTopicIdRoute,
   AppTopicIdIndexRoute: AppTopicIdIndexRoute,
+  AppAdminIndexRoute: AppAdminIndexRoute,
   AppQuizIndexRoute: AppQuizIndexRoute,
 }
 

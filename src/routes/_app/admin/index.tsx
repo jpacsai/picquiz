@@ -1,8 +1,8 @@
-import { createFileRoute, useLoaderData } from '@tanstack/react-router';
-import Admin from '../../components/pages/Admin';
-import { topicsOptions } from '../../queries/topics';
+import { createFileRoute, useLoaderData } from '@tanstack/react-router'
+import Admin from '../../../components/pages/Admin';
+import { topicsOptions } from '../../../queries/topics';
 
-const path = '/_app/admin';
+const path = '/_app/admin/'
 
 const RouteComponent = () => {
   const { topics } = useLoaderData({ from: path });
