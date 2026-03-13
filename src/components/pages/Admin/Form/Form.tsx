@@ -17,6 +17,7 @@ const Fields = ({ fields }: FieldsProps) => {
     switch (field.type) {
       case 'string':
       case 'number':
+      case 'select':
         return (
           <form.Field
             key={key}
@@ -30,11 +31,12 @@ const Fields = ({ fields }: FieldsProps) => {
 
               return (
                 <FormInput
-                  type={type}
+                  type={type === 'number' ? 'number' : undefined}
                   name={key}
                   label={label}
                   required={required}
                   disabled={readonly}
+                  options={field.type === 'select' ? field.options : undefined}
                   value={fieldApi.state.value}
                   onBlur={fieldApi.handleBlur}
                   onChange={(event) => {

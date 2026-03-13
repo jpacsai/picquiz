@@ -27,7 +27,7 @@ export type FormValues = Record<string, string | number>;
 
 export const getDefaultValues = (fields: TopicField[]): FormValues => {
   const initValFields = fields.reduce((acc, field) => {
-    const val = { [field.key]: field.type === 'string' ? '' : 0 };
+    const val = { [field.key]: field.type === 'number' ? 0 : '' };
     return { ...acc, ...val };
   }, {} as FormValues);
   return initValFields;
@@ -65,7 +65,7 @@ export const getDerivationIndex = (fields: TopicField[]) =>
 
 export const getFieldValidator = (field: TopicField) => {
   const schema =
-    field.type === 'string'
+    field.type === 'string' || field.type === 'select'
       ? field.required
         ? yup.string().required('Required')
         : yup.string().notRequired()

@@ -3,15 +3,25 @@ export type TopicFieldFn = {
   name: string;
 };
 
-export type TopicField = {
+type BaseTopicField = {
   key: string;
   label: string;
-  type: 'string' | 'number';
   required?: boolean;
   readonly?: boolean;
-  options?: string[];
   fn?: TopicFieldFn;
 };
+
+export type TopicField =
+  | (BaseTopicField & {
+      type: 'string';
+    })
+  | (BaseTopicField & {
+      type: 'number';
+    })
+  | (BaseTopicField & {
+      type: 'select';
+      options: string[];
+    });
 
 export type Topic = {
   id: string;

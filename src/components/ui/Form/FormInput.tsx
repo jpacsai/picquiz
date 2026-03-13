@@ -1,4 +1,4 @@
-import { InputLabel, TextField } from '@mui/material';
+import { InputLabel, MenuItem, TextField } from '@mui/material';
 import { useId, type ReactNode } from 'react';
 
 type FormInputProps = Omit<
@@ -6,6 +6,7 @@ type FormInputProps = Omit<
   'error'
 > & {
   errorMessage?: ReactNode;
+  options?: string[];
 };
 
 const FormInput = ({
@@ -15,10 +16,12 @@ const FormInput = ({
   required,
   errorMessage,
   helperText,
+  options,
   ...props
 }: FormInputProps) => {
   const generatedId = useId();
   const finalId = id ?? `input-${generatedId}`;
+  const isSelect = Boolean(options?.length);
 
   return (
     <>
@@ -29,8 +32,15 @@ const FormInput = ({
         helperText={errorMessage ?? helperText}
         placeholder={placeholder}
         required={required}
+        select={isSelect}
         {...props}
-      />
+      >
+        {options?.map((option) => (
+          <MenuItem key={option} value={option}>
+            {option}
+          </MenuItem>
+        ))}
+      </TextField>
     </>
   );
 };
