@@ -7,8 +7,7 @@ const path = '/_app/admin/$topicId';
 const RouteComponent = () => {
   const { topic } = useLoaderData({ from: path });
 
-  console.log('topic', topic);
-  return <AdminTopic />;
+  return <AdminTopic topic={topic} />;
 };
 
 export const Route = createFileRoute('/_app/admin/$topicId')({

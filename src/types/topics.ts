@@ -1,10 +1,16 @@
-export type Field = {
+export type TopicFieldFn = {
+  source: string;
+  name: string;
+};
+
+export type TopicField = {
   key: string;
   label: string;
-  type: string;
-  reqired?: boolean;
+  type: 'string' | 'number';
+  required?: boolean;
   readonly?: boolean;
   options?: string[];
+  fn?: TopicFieldFn;
 };
 
 export type Topic = {
@@ -12,5 +18,5 @@ export type Topic = {
   label: string;
   slug: string;
   storage_prefix: string;
-  fields: Field[];
+  fields: TopicField[];
 };
