@@ -18,14 +18,14 @@ type ImageUploadDialogProps = {
     mobile: string;
   };
   onClose: () => void;
-  onUpload: (file: File) => Promise<void>;
+  onSelect: (file: File) => void;
   open: boolean;
 };
 
 const ImageUploadDialog = ({
   generatedFileNames,
   onClose,
-  onUpload,
+  onSelect,
   open,
 }: ImageUploadDialogProps) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -61,6 +61,17 @@ const ImageUploadDialog = ({
     }
 
     onClose();
+  };
+
+  const handleUseImage = () => {
+    if (!selectedFile) {
+      setStatus('error');
+      return;
+    }
+
+    onSelect(selectedFile);
+    setStatus('success');
+    handleClose();
   };
 
   return (
@@ -130,32 +141,16 @@ const ImageUploadDialog = ({
             }
           >
             {status === 'idle' && 'Válassz egy képet a folytatáshoz.'}
-            {status === 'ready' && 'A kép készen áll a feltöltésre.'}
-            {status === 'success' && 'A kép feltöltése sikeres volt.'}
-            {status === 'error' && 'A kép feltöltése nem sikerült.'}
+            {status === 'ready' && 'A kép készen áll a formhoz adásra.'}
+            {status === 'success' && 'A kép bekerült a form ideiglenes állapotába.'}
+            {status === 'error' && 'A kép kiválasztása nem sikerült.'}
           </Alert>
         </Stack>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Bezárás</Button>
-        <Button
-          variant="contained"
-          disabled={!selectedFile}
-          onClick={async () => {
-            if (!selectedFile) {
-              setStatus('error');
-              return;
-            }
-
-            try {
-              await onUpload(selectedFile);
-              setStatus('success');
-            } catch {
-              setStatus('error');
-            }
-          }}
-        >
-          Feltöltés
+        <Button variant="contained" disabled={!selectedFile} onClick={handleUseImage}>
+          Kép használata
         </Button>
       </DialogActions>
     </Dialog>

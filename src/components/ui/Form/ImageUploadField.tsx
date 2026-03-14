@@ -2,26 +2,18 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { useState } from 'react';
 
-import { getResponsiveImageFileNames, uploadResponsiveTopicImages } from '../../../data/storage';
-import { generateResponsiveImageVariants } from '../../../lib/image';
+import { getResponsiveImageFileNames } from '../../../data/storage';
 import type { TopicField } from '../../../types/topics';
 import ImageUploadDialog from '../../pages/Admin/Form/ImageUploadDialog';
 
 type ImageUploadFieldProps = {
   artistName: string;
   field: Extract<TopicField, { type: 'imageUpload' }>;
-  onUploaded: (urls: { desktop: string; mobile: string }) => void;
-  storagePrefix: string;
+  onSelectImage: (file: File) => void;
   title: string;
 };
 
-const ImageUploadField = ({
-  artistName,
-  field,
-  onUploaded,
-  storagePrefix,
-  title,
-}: ImageUploadFieldProps) => {
+const ImageUploadField = ({ artistName, field, onSelectImage, title }: ImageUploadFieldProps) => {
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const isReadyForUpload = artistName.trim().length > 0 && title.trim().length > 0;
   const generatedFileNames = getResponsiveImageFileNames({
@@ -65,20 +57,8 @@ const ImageUploadField = ({
         open={isImageDialogOpen}
         onClose={() => setIsImageDialogOpen(false)}
         generatedFileNames={generatedFileNames}
-        onUpload={async (file) => {
-          const { desktop, mobile } = await generateResponsiveImageVariants(file);
-          const uploadedImages = await uploadResponsiveTopicImages({
-            artistName,
-            title,
-            storagePrefix,
-            desktopBlob: desktop.blob,
-            mobileBlob: mobile.blob,
-          });
-
-          onUploaded({
-            desktop: uploadedImages.desktop.url,
-            mobile: uploadedImages.mobile.url,
-          });
+        onSelect={(file) => {
+          onSelectImage(file);
         }}
       />
     </>

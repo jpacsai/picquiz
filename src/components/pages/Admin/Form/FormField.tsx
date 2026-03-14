@@ -26,7 +26,10 @@ type FormFieldProps = {
     }>;
     setFieldValue: (field: string, value: string | number) => void;
   };
-  storagePrefix: string;
+  onSelectPendingImage: (selection: {
+    field: Extract<TopicField, { type: 'imageUpload' }>;
+    file: File;
+  }) => void;
 };
 
 const renderPendingDerivedField = (key: string) => (
@@ -40,7 +43,7 @@ const renderPendingDerivedField = (key: string) => (
   />
 );
 
-const FormField = ({ derivationIndex, field, form, storagePrefix }: FormFieldProps) => {
+const FormField = ({ derivationIndex, field, form, onSelectPendingImage }: FormFieldProps) => {
   const { key, type, readonly, required, label, fn, hideInEdit } = field;
 
   if (hideInEdit) return null;
@@ -142,10 +145,8 @@ const FormField = ({ derivationIndex, field, form, storagePrefix }: FormFieldPro
                 field={field}
                 artistName={typeof artistValue === 'string' ? artistValue : ''}
                 title={typeof titleValue === 'string' ? titleValue : ''}
-                storagePrefix={storagePrefix}
-                onUploaded={(urls) => {
-                  form.setFieldValue(field.targetFields.desktop, urls.desktop);
-                  form.setFieldValue(field.targetFields.mobile, urls.mobile);
+                onSelectImage={(file) => {
+                  onSelectPendingImage({ field, file });
                 }}
               />
             );
