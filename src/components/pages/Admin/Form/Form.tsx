@@ -2,147 +2,17 @@ import { Box, Button } from '@mui/material';
 import { useForm } from '@tanstack/react-form';
 
 import type { TopicField } from '../../../../types/topics';
-import FormInput from '../../../ui/Form/FormInput';
-import ImageUploadField from '../../../ui/Form/ImageUploadField';
-import FormSelect from '../../../ui/Form/FormSelect';
-import { getDefaultValues, getDerivationIndex, getDerivedValue, getFieldValidator } from './utils';
+import FormField from './FormField';
+import { getDefaultValues, getDerivationIndex } from './utils';
 
-type FieldsProps = {
+type FormProps = {
   fields: TopicField[];
   storagePrefix: string;
 };
 
-const Fields = ({ fields, storagePrefix }: FieldsProps) => {
+const Form = ({ fields, storagePrefix }: FormProps) => {
   const defaultValues = getDefaultValues(fields);
   const derivationIndex = getDerivationIndex(fields);
-
-  const renderPendingDerivedField = (key: string) => (
-    <Box
-      key={key}
-      aria-hidden
-      sx={{
-        minHeight: 80,
-        width: '100%',
-      }}
-    />
-  );
-
-  const renderField = (field: TopicField) => {
-    const { key, type, readonly, required, label, fn, hideInEdit } = field;
-
-    if (hideInEdit) return;
-
-    switch (type) {
-      case 'string':
-      case 'number':
-        return (
-          <form.Field key={key} name={key} validators={{ onChange: getFieldValidator(field) }}>
-            {(fieldApi) => {
-              const errorMessage = fieldApi.state.meta.isTouched
-                ? fieldApi.state.meta.errors[0]
-                : undefined;
-
-              const isPendingDerivedField = Boolean(fn) && fieldApi.state.value === '';
-
-              if (isPendingDerivedField) {
-                return renderPendingDerivedField(key);
-              }
-
-              return (
-                <FormInput
-                  type={type === 'number' ? 'number' : undefined}
-                  name={key}
-                  label={label}
-                  required={required}
-                  disabled={readonly}
-                  value={fieldApi.state.value}
-                  onBlur={fieldApi.handleBlur}
-                  onChange={(event) => {
-                    const rawValue = event.target.value;
-                    const nextValue =
-                      type === 'number' ? (rawValue === '' ? '' : Number(rawValue)) : rawValue;
-
-                    fieldApi.handleChange(nextValue);
-
-                    const derivedField = derivationIndex[key];
-                    const derivedValue = getDerivedValue(derivedField, nextValue);
-
-                    if (derivedField?.fn?.target && derivedValue !== undefined) {
-                      form.setFieldValue(derivedField.fn.target, derivedValue);
-                    }
-                  }}
-                  errorMessage={typeof errorMessage === 'string' ? errorMessage : undefined}
-                  sx={{ width: '100%', height: '75px' }}
-                />
-              );
-            }}
-          </form.Field>
-        );
-      case 'select':
-        return (
-          <form.Field key={key} name={key} validators={{ onChange: getFieldValidator(field) }}>
-            {(fieldApi) => {
-              const errorMessage = fieldApi.state.meta.isTouched
-                ? fieldApi.state.meta.errors[0]
-                : undefined;
-
-              const isPendingDerivedField = Boolean(field.fn) && fieldApi.state.value === '';
-
-              if (isPendingDerivedField) {
-                return renderPendingDerivedField(key);
-              }
-
-              return (
-                <FormSelect
-                  options={field.options}
-                  value={typeof fieldApi.state.value === 'string' ? fieldApi.state.value : ''}
-                  onChange={(nextValue) => {
-                    fieldApi.handleChange(nextValue);
-
-                    const derivedField = derivationIndex[key];
-                    const derivedValue = getDerivedValue(derivedField, nextValue);
-
-                    if (derivedField?.fn?.target && derivedValue !== undefined) {
-                      form.setFieldValue(derivedField.fn.target, derivedValue);
-                    }
-                  }}
-                  onBlur={fieldApi.handleBlur}
-                  disabled={readonly}
-                  name={key}
-                  label={label}
-                  required={required}
-                  errorMessage={typeof errorMessage === 'string' ? errorMessage : undefined}
-                />
-              );
-            }}
-          </form.Field>
-        );
-      case 'imageUpload':
-        return (
-          <form.Subscribe key={key} selector={(state) => state.values}>
-            {(values) => {
-              const artistValue = values[field.fileNameFields.artist];
-              const titleValue = values[field.fileNameFields.title];
-
-              return (
-                <ImageUploadField
-                  field={field}
-                  artistName={typeof artistValue === 'string' ? artistValue : ''}
-                  title={typeof titleValue === 'string' ? titleValue : ''}
-                  storagePrefix={storagePrefix}
-                  onUploaded={(urls) => {
-                    form.setFieldValue(field.targetFields.desktop, urls.desktop);
-                    form.setFieldValue(field.targetFields.mobile, urls.mobile);
-                  }}
-                />
-              );
-            }}
-          </form.Subscribe>
-        );
-      default:
-        return <Box key={key}>{label}</Box>;
-    }
-  };
 
   const form = useForm({
     defaultValues,
@@ -168,7 +38,15 @@ const Fields = ({ fields, storagePrefix }: FieldsProps) => {
           marginBottom: '30px',
         }}
       >
-        {fields.map((field) => renderField(field))}
+        {fields.map((field) => (
+          <FormField
+            key={field.key}
+            field={field}
+            form={form}
+            storagePrefix={storagePrefix}
+            derivationIndex={derivationIndex}
+          />
+        ))}
       </Box>
 
       <Button type="submit" variant="contained">
@@ -178,4 +56,4 @@ const Fields = ({ fields, storagePrefix }: FieldsProps) => {
   );
 };
 
-export default Fields;
+export default Form;

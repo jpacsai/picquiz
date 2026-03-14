@@ -10,7 +10,7 @@ type FormDeriveFieldIndex = Omit<TopicField, 'fn'> & {
   };
 };
 
-type FormDeriveField = Omit<TopicField, 'fn'> & {
+export type FormDeriveField = Omit<TopicField, 'fn'> & {
   fn?: {
     target: string;
     name: string;

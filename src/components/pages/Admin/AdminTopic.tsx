@@ -1,14 +1,14 @@
 import { Box } from '@mui/material';
 
 import type { Topic } from '../../../types/topics';
-import Fields from './Form/Form';
+import Form from './Form/Form';
 
 type AdminTopicProps = { topic: Topic };
 
 const AdminTopic = ({ topic }: AdminTopicProps) => {
   return (
     <Box>
-      <Fields fields={topic.fields} storagePrefix={topic.storage_prefix} />
+      <Form fields={topic.fields} storagePrefix={topic.storage_prefix} />
     </Box>
   );
 };
