@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   Dialog,
   DialogActions,
@@ -19,6 +20,7 @@ const ImageUploadDialog = ({ onClose, open }: ImageUploadDialogProps) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedFileName, setSelectedFileName] = useState<string>('');
   const [previewUrl, setPreviewUrl] = useState<string>('');
+  const [status, setStatus] = useState<'idle' | 'ready' | 'success' | 'error'>('idle');
 
   useEffect(() => {
     return () => {
@@ -39,6 +41,7 @@ const ImageUploadDialog = ({ onClose, open }: ImageUploadDialogProps) => {
     }
 
     setSelectedFileName('');
+    setStatus('idle');
 
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -80,6 +83,7 @@ const ImageUploadDialog = ({ onClose, open }: ImageUploadDialogProps) => {
 
               setSelectedFileName(file?.name ?? '');
               setPreviewUrl(file ? URL.createObjectURL(file) : '');
+              setStatus(file ? 'ready' : 'idle');
             }}
           />
 
@@ -95,10 +99,36 @@ const ImageUploadDialog = ({ onClose, open }: ImageUploadDialogProps) => {
           {previewUrl ? (
             <ImagePreviewSection fileName={selectedFileName} previewUrl={previewUrl} />
           ) : null}
+
+          <Alert
+            severity={
+              status === 'success'
+                ? 'success'
+                : status === 'error'
+                  ? 'error'
+                  : status === 'ready'
+                    ? 'info'
+                    : 'warning'
+            }
+          >
+            {status === 'idle' && 'Válassz egy képet a folytatáshoz.'}
+            {status === 'ready' && 'A kép készen áll a feltöltésre.'}
+            {status === 'success' && 'A kép feltöltése sikeres volt.'}
+            {status === 'error' && 'A kép feltöltése nem sikerült.'}
+          </Alert>
         </Stack>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Bezárás</Button>
+        <Button
+          variant="contained"
+          disabled={!previewUrl}
+          onClick={() => {
+            setStatus('success');
+          }}
+        >
+          Feltöltés
+        </Button>
       </DialogActions>
     </Dialog>
   );
