@@ -13,7 +13,7 @@ import ImagePreviewSection from './ImagePreviewSection';
 
 type ImageUploadDialogProps = {
   onClose: () => void;
-  onUpload: (file: File) => void;
+  onUpload: (file: File) => Promise<void>;
   open: boolean;
 };
 
@@ -127,14 +127,18 @@ const ImageUploadDialog = ({ onClose, onUpload, open }: ImageUploadDialogProps) 
         <Button
           variant="contained"
           disabled={!selectedFile}
-          onClick={() => {
+          onClick={async () => {
             if (!selectedFile) {
               setStatus('error');
               return;
             }
 
-            onUpload(selectedFile);
-            setStatus('success');
+            try {
+              await onUpload(selectedFile);
+              setStatus('success');
+            } catch {
+              setStatus('error');
+            }
           }}
         >
           Feltöltés

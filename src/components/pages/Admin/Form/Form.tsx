@@ -2,6 +2,7 @@ import type { TopicField } from '../../../../types/topics';
 import { useForm } from '@tanstack/react-form';
 import { Box, Button } from '@mui/material';
 import { useState } from 'react';
+import { generateResponsiveImageVariants } from '../../../../lib/image';
 import FormInput from '../../../ui/Form/FormInput';
 import ImageUploadDialog from './ImageUploadDialog';
 import FormSelect from '../../../ui/Form/FormSelect';
@@ -169,8 +170,20 @@ const Fields = ({ fields }: FieldsProps) => {
       <ImageUploadDialog
         open={isImageDialogOpen}
         onClose={() => setIsImageDialogOpen(false)}
-        onUpload={(file) => {
+        onUpload={async (file) => {
+          const { desktop, mobile } = await generateResponsiveImageVariants(file);
+
           console.log('selected image file', file);
+          console.log('desktop variant', {
+            width: desktop.width,
+            height: desktop.height,
+            size: desktop.blob.size,
+          });
+          console.log('mobile variant', {
+            width: mobile.width,
+            height: mobile.height,
+            size: mobile.blob.size,
+          });
         }}
       />
     </form>
