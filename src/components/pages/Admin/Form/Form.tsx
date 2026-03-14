@@ -1,13 +1,10 @@
 import { Box, Button } from '@mui/material';
 import { useForm } from '@tanstack/react-form';
-import { useState } from 'react';
 
-import { getResponsiveImageFileNames, uploadResponsiveTopicImages } from '../../../../data/storage';
-import { generateResponsiveImageVariants } from '../../../../lib/image';
 import type { TopicField } from '../../../../types/topics';
 import FormInput from '../../../ui/Form/FormInput';
+import ImageUploadField from '../../../ui/Form/ImageUploadField';
 import FormSelect from '../../../ui/Form/FormSelect';
-import ImageUploadDialog from './ImageUploadDialog';
 import { getDefaultValues, getDerivationIndex, getDerivedValue, getFieldValidator } from './utils';
 
 type FieldsProps = {
@@ -16,11 +13,8 @@ type FieldsProps = {
 };
 
 const Fields = ({ fields, storagePrefix }: FieldsProps) => {
-  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
-
   const defaultValues = getDefaultValues(fields);
   const derivationIndex = getDerivationIndex(fields);
-  const imageUploadField = fields.find((field) => field.type === 'imageUpload');
 
   const renderPendingDerivedField = (key: string) => (
     <Box
@@ -129,41 +123,18 @@ const Fields = ({ fields, storagePrefix }: FieldsProps) => {
             {(values) => {
               const artistValue = values[field.fileNameFields.artist];
               const titleValue = values[field.fileNameFields.title];
-              const isReadyForUpload =
-                typeof artistValue === 'string' &&
-                artistValue.trim().length > 0 &&
-                typeof titleValue === 'string' &&
-                titleValue.trim().length > 0;
 
               return (
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    gap: 1,
-                    marginTop: '22px',
+                <ImageUploadField
+                  field={field}
+                  artistName={typeof artistValue === 'string' ? artistValue : ''}
+                  title={typeof titleValue === 'string' ? titleValue : ''}
+                  storagePrefix={storagePrefix}
+                  onUploaded={(urls) => {
+                    form.setFieldValue(field.targetFields.desktop, urls.desktop);
+                    form.setFieldValue(field.targetFields.mobile, urls.mobile);
                   }}
-                >
-                  <Button
-                    variant="contained"
-                    disabled={!isReadyForUpload}
-                    onClick={() => setIsImageDialogOpen(true)}
-                  >
-                    {label}
-                  </Button>
-                  {!isReadyForUpload && field.buttonLabel ? (
-                    <Box
-                      component="span"
-                      sx={{
-                        color: 'text.secondary',
-                        fontSize: 12,
-                      }}
-                    >
-                      {field.buttonLabel}
-                    </Box>
-                  ) : null}
-                </Box>
+                />
               );
             }}
           </form.Subscribe>
@@ -203,46 +174,6 @@ const Fields = ({ fields, storagePrefix }: FieldsProps) => {
       <Button type="submit" variant="contained">
         Submit
       </Button>
-
-      {imageUploadField ? (
-        <form.Subscribe selector={(state) => state.values}>
-          {(values) => {
-            const artistValue = values[imageUploadField.fileNameFields.artist];
-            const titleValue = values[imageUploadField.fileNameFields.title];
-            const generatedFileNames = getResponsiveImageFileNames({
-              artistName: typeof artistValue === 'string' ? artistValue : '',
-              title: typeof titleValue === 'string' ? titleValue : '',
-            });
-
-            return (
-              <ImageUploadDialog
-                open={isImageDialogOpen}
-                onClose={() => setIsImageDialogOpen(false)}
-                generatedFileNames={generatedFileNames}
-                onUpload={async (file) => {
-                  const { desktop, mobile } = await generateResponsiveImageVariants(file);
-                  const uploadedImages = await uploadResponsiveTopicImages({
-                    artistName: typeof artistValue === 'string' ? artistValue : '',
-                    title: typeof titleValue === 'string' ? titleValue : '',
-                    storagePrefix,
-                    desktopBlob: desktop.blob,
-                    mobileBlob: mobile.blob,
-                  });
-
-                  form.setFieldValue(
-                    imageUploadField.targetFields.desktop,
-                    uploadedImages.desktop.url,
-                  );
-                  form.setFieldValue(
-                    imageUploadField.targetFields.mobile,
-                    uploadedImages.mobile.url,
-                  );
-                }}
-              />
-            );
-          }}
-        </form.Subscribe>
-      ) : null}
     </form>
   );
 };
