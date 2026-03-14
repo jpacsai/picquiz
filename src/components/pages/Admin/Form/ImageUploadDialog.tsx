@@ -12,12 +12,21 @@ import { useEffect, useRef, useState } from 'react';
 import ImagePreviewSection from './ImagePreviewSection';
 
 type ImageUploadDialogProps = {
+  generatedFileNames: {
+    desktop: string;
+    mobile: string;
+  };
   onClose: () => void;
   onUpload: (file: File) => Promise<void>;
   open: boolean;
 };
 
-const ImageUploadDialog = ({ onClose, onUpload, open }: ImageUploadDialogProps) => {
+const ImageUploadDialog = ({
+  generatedFileNames,
+  onClose,
+  onUpload,
+  open,
+}: ImageUploadDialogProps) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedFileName, setSelectedFileName] = useState<string>('');
@@ -101,7 +110,11 @@ const ImageUploadDialog = ({ onClose, onUpload, open }: ImageUploadDialogProps) 
           </Stack>
 
           {previewUrl ? (
-            <ImagePreviewSection fileName={selectedFileName} previewUrl={previewUrl} />
+            <ImagePreviewSection
+              fileName={selectedFileName}
+              generatedFileNames={generatedFileNames}
+              previewUrl={previewUrl}
+            />
           ) : null}
 
           <Alert

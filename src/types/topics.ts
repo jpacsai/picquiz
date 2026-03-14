@@ -33,6 +33,8 @@ export type TopicField =
         desktop: string;
         mobile: string;
       };
+      label: string;
+      buttonLabel?: string;
     });
 
 export type Topic = {

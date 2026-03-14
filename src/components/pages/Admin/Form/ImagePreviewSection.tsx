@@ -2,6 +2,10 @@ import { Box, Divider, Stack, Typography } from '@mui/material';
 
 type ImagePreviewSectionProps = {
   fileName: string;
+  generatedFileNames: {
+    desktop: string;
+    mobile: string;
+  };
   previewUrl: string;
 };
 
@@ -20,7 +24,11 @@ const previewVariants = [
   },
 ] as const;
 
-const ImagePreviewSection = ({ fileName, previewUrl }: ImagePreviewSectionProps) => {
+const ImagePreviewSection = ({
+  fileName,
+  generatedFileNames,
+  previewUrl,
+}: ImagePreviewSectionProps) => {
   return (
     <>
       <Divider />
@@ -65,6 +73,17 @@ const ImagePreviewSection = ({ fileName, previewUrl }: ImagePreviewSectionProps)
                   }}
                 />
               </Box>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{
+                  overflowWrap: 'anywhere',
+                }}
+              >
+                {variant.label === 'Desktop preview'
+                  ? generatedFileNames.desktop
+                  : generatedFileNames.mobile}
+              </Typography>
             </Stack>
           ))}
         </Stack>

@@ -1,11 +1,13 @@
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { storage } from '../lib/firebase';
 
+type ImageVariant = 'desktop' | 'mobile';
+
 type UploadImageVariantParams = {
   blob: Blob;
-  fileName: string;
+  fileNameBase: string;
   storagePrefix: string;
-  variant: 'desktop' | 'mobile';
+  variant: ImageVariant;
 };
 
 type UploadedImageVariantResult = {
@@ -14,10 +16,11 @@ type UploadedImageVariantResult = {
 };
 
 type UploadResponsiveTopicImagesParams = {
+  artistName: string;
   desktopBlob: Blob;
-  fileName: string;
   mobileBlob: Blob;
   storagePrefix: string;
+  title: string;
 };
 
 type UploadedResponsiveTopicImagesResult = {
@@ -25,24 +28,69 @@ type UploadedResponsiveTopicImagesResult = {
   mobile: UploadedImageVariantResult;
 };
 
-const sanitizeFileName = (fileName: string) =>
-  fileName
+const sanitizeFileNamePart = (value: string) =>
+  value
     .normalize('NFKD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/\.[^.]+$/, '')
     .replace(/[^a-zA-Z0-9-]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .toLowerCase();
 
+const getArtistLastNamePart = (artistName: string) => {
+  const tokens = artistName.trim().split(/\s+/).filter(Boolean);
+
+  if (tokens.length === 0) {
+    return 'artist';
+  }
+
+  const lastNameTokens = [tokens.at(-1) ?? 'artist'];
+
+  for (let index = tokens.length - 2; index >= 0; index -= 1) {
+    const token = tokens[index];
+
+    if (token.toLowerCase() === token) {
+      lastNameTokens.unshift(token);
+      continue;
+    }
+
+    break;
+  }
+
+  return sanitizeFileNamePart(lastNameTokens.join('')) || 'artist';
+};
+
+const getTitlePart = (title: string) =>
+  sanitizeFileNamePart(title.replace(/\s+/g, '')) || 'untitled';
+
+export const getImageVariantFileName = ({
+  artistName,
+  title,
+  variant,
+}: {
+  artistName: string;
+  title: string;
+  variant: ImageVariant;
+}) => `${getArtistLastNamePart(artistName)}-${getTitlePart(title)}-${variant}.jpg`;
+
+export const getResponsiveImageFileNames = ({
+  artistName,
+  title,
+}: {
+  artistName: string;
+  title: string;
+}) => ({
+  desktop: getImageVariantFileName({ artistName, title, variant: 'desktop' }),
+  mobile: getImageVariantFileName({ artistName, title, variant: 'mobile' }),
+});
+
 export const uploadImageVariant = async ({
   blob,
-  fileName,
+  fileNameBase,
   storagePrefix,
   variant,
 }: UploadImageVariantParams): Promise<UploadedImageVariantResult> => {
   const timestamp = Date.now();
-  const safeName = sanitizeFileName(fileName) || 'image';
-  const path = `${storagePrefix}/${variant}/${timestamp}-${safeName}.jpg`;
+  const path = `${storagePrefix}/${variant}/${timestamp}-${fileNameBase}`;
   const storageRef = ref(storage, path);
 
   await uploadBytes(storageRef, blob, {
@@ -56,21 +104,24 @@ export const uploadImageVariant = async ({
 };
 
 export const uploadResponsiveTopicImages = async ({
+  artistName,
   desktopBlob,
-  fileName,
   mobileBlob,
   storagePrefix,
+  title,
 }: UploadResponsiveTopicImagesParams): Promise<UploadedResponsiveTopicImagesResult> => {
+  const fileNames = getResponsiveImageFileNames({ artistName, title });
+
   const [desktop, mobile] = await Promise.all([
     uploadImageVariant({
       blob: desktopBlob,
-      fileName,
+      fileNameBase: fileNames.desktop,
       storagePrefix,
       variant: 'desktop',
     }),
     uploadImageVariant({
       blob: mobileBlob,
-      fileName,
+      fileNameBase: fileNames.mobile,
       storagePrefix,
       variant: 'mobile',
     }),

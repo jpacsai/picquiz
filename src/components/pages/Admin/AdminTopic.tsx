@@ -7,7 +7,7 @@ type AdminTopicProps = { topic: Topic };
 const AdminTopic = ({ topic }: AdminTopicProps) => {
   return (
     <Box>
-      <Fields fields={topic.fields} />
+      <Fields fields={topic.fields} storagePrefix={topic.storage_prefix} />
     </Box>
   );
 };
