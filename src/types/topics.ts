@@ -22,6 +22,17 @@ export type TopicField =
   | (BaseTopicField & {
       type: 'select';
       options: string[];
+    })
+  | (BaseTopicField & {
+      type: 'imageUpload';
+      fileNameFields: {
+        artist: string;
+        title: string;
+      };
+      targetFields: {
+        desktop: string;
+        mobile: string;
+      };
     });
 
 export type Topic = {

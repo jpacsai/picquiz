@@ -65,7 +65,7 @@ export const getDerivationIndex = (fields: TopicField[]) =>
 
 export const getFieldValidator = (field: TopicField) => {
   const schema =
-    field.type === 'string' || field.type === 'select'
+    field.type === 'string' || field.type === 'select' || field.type === 'imageUpload'
       ? field.required
         ? yup.string().required('Required')
         : yup.string().notRequired()

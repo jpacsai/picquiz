@@ -18,10 +18,6 @@ const Fields = ({ fields }: FieldsProps) => {
   const defaultValues = getDefaultValues(fields);
   const derivationIndex = getDerivationIndex(fields);
 
-  const hasImageTargets =
-    fields.some((field) => field.key === 'image_url_desktop') &&
-    fields.some((field) => field.key === 'image_url_mobile');
-
   const renderPendingDerivedField = (key: string) => (
     <Box
       key={key}
@@ -123,6 +119,50 @@ const Fields = ({ fields }: FieldsProps) => {
             }}
           </form.Field>
         );
+      case 'imageUpload':
+        return (
+          <form.Subscribe key={key} selector={(state) => state.values}>
+            {(values) => {
+              const artistValue = values[field.fileNameFields.artist];
+              const titleValue = values[field.fileNameFields.title];
+              const isReadyForUpload =
+                typeof artistValue === 'string' &&
+                artistValue.trim().length > 0 &&
+                typeof titleValue === 'string' &&
+                titleValue.trim().length > 0;
+
+              return (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    gap: 1,
+                  }}
+                >
+                  <Button
+                    variant="contained"
+                    disabled={!isReadyForUpload}
+                    onClick={() => setIsImageDialogOpen(true)}
+                  >
+                    {label}
+                  </Button>
+                  {!isReadyForUpload ? (
+                    <Box
+                      component="span"
+                      sx={{
+                        color: 'text.secondary',
+                        fontSize: 12,
+                      }}
+                    >
+                      A képfeltöltéshez előbb add meg a művész nevét és a címet.
+                    </Box>
+                  ) : null}
+                </Box>
+              );
+            }}
+          </form.Subscribe>
+        );
       default:
         return <Box key={key}>{label}</Box>;
     }
@@ -144,14 +184,6 @@ const Fields = ({ fields }: FieldsProps) => {
         void form.handleSubmit();
       }}
     >
-      {hasImageTargets ? (
-        <Box sx={{ mb: 3 }}>
-          <Button variant="contained" onClick={() => setIsImageDialogOpen(true)}>
-            Képfeltöltés
-          </Button>
-        </Box>
-      ) : null}
-
       <Box
         sx={{
           display: 'grid',

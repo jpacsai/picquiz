@@ -2,20 +2,28 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import type { Topic, TopicField } from '../types/topics';
 
-type LegacyTopicField = Omit<TopicField, 'type'> & {
-  type: 'string' | 'number' | 'select';
-  options?: string[] | string;
-};
+type LegacyTopicField =
+  | Extract<TopicField, { type: 'string' | 'number' | 'imageUpload' }>
+  | {
+      key: string;
+      label: string;
+      required?: boolean;
+      readonly?: boolean;
+      fn?: TopicField['fn'];
+      hideInEdit?: boolean;
+      type: 'string' | 'number' | 'select';
+      options?: string[] | string;
+    };
 
 type TopicDocument = Omit<Topic, 'id' | 'fields'> & {
   fields: LegacyTopicField[];
 };
 
-const normalizeOptions = (options: LegacyTopicField['options']): string[] => {
+const normalizeOptions = (options: string[] | string | undefined): string[] => {
   if (typeof options === 'string') {
     return options
       .split(',')
-      .map((option) => option.trim())
+      .map((option: string) => option.trim())
       .filter(Boolean);
   }
 
@@ -26,7 +34,7 @@ const normalizeOptions = (options: LegacyTopicField['options']): string[] => {
   if (options.length === 1) {
     return options[0]
       .split(',')
-      .map((option) => option.trim())
+      .map((option: string) => option.trim())
       .filter(Boolean);
   }
 
@@ -34,7 +42,11 @@ const normalizeOptions = (options: LegacyTopicField['options']): string[] => {
 };
 
 const normalizeField = (field: LegacyTopicField): TopicField => {
-  const normalizedOptions = normalizeOptions(field.options);
+  if (field.type === 'imageUpload') {
+    return field;
+  }
+
+  const normalizedOptions = normalizeOptions('options' in field ? field.options : undefined);
 
   if (field.type === 'select' || normalizedOptions.length) {
     return {
