@@ -7,7 +7,8 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import ImagePreviewSection from './ImagePreviewSection';
 
 type ImageUploadDialogProps = {
   onClose: () => void;
@@ -17,13 +18,37 @@ type ImageUploadDialogProps = {
 const ImageUploadDialog = ({ onClose, open }: ImageUploadDialogProps) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedFileName, setSelectedFileName] = useState<string>('');
+  const [previewUrl, setPreviewUrl] = useState<string>('');
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   const handlePickImage = () => {
     fileInputRef.current?.click();
   };
 
+  const handleClose = () => {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      setPreviewUrl('');
+    }
+
+    setSelectedFileName('');
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+
+    onClose();
+  };
+
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
       <DialogTitle>Image upload</DialogTitle>
       <DialogContent>
         <Stack spacing={3} sx={{ pt: 1 }}>
@@ -48,7 +73,13 @@ const ImageUploadDialog = ({ onClose, open }: ImageUploadDialogProps) => {
             hidden
             onChange={(event) => {
               const file = event.target.files?.[0];
+
+              if (previewUrl) {
+                URL.revokeObjectURL(previewUrl);
+              }
+
               setSelectedFileName(file?.name ?? '');
+              setPreviewUrl(file ? URL.createObjectURL(file) : '');
             }}
           />
 
@@ -60,10 +91,14 @@ const ImageUploadDialog = ({ onClose, open }: ImageUploadDialogProps) => {
               {selectedFileName || 'Még nincs kiválasztott fájl'}
             </Typography>
           </Stack>
+
+          {previewUrl ? (
+            <ImagePreviewSection fileName={selectedFileName} previewUrl={previewUrl} />
+          ) : null}
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Bezárás</Button>
+        <Button onClick={handleClose}>Bezárás</Button>
       </DialogActions>
     </Dialog>
   );
