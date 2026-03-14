@@ -1,6 +1,7 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import AppLayout from '../components/layout/AppLayout';
+
 import { authStore } from '../auth/authStore';
+import AppLayout from '../components/layout/AppLayout';
 
 const RouteComponent = () => {
   return <AppLayout />;

@@ -1,4 +1,5 @@
 import { createFileRoute, useLoaderData } from '@tanstack/react-router';
+
 import Admin from '../../../components/pages/Admin/Admin';
 import { topicsOptions } from '../../../queries/topics';
 

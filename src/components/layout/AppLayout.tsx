@@ -1,8 +1,9 @@
 import { AppBar, Box, Toolbar, Typography } from '@mui/material';
-import { Outlet } from '@tanstack/react-router';
-import { NavLink } from '../ui/NavLink';
 import { blue } from '@mui/material/colors';
+import { Outlet } from '@tanstack/react-router';
+
 import usePageMeta from '../../utils/usePageMeta';
+import { NavLink } from '../ui/NavLink';
 
 const AppLayout = () => {
   const { title, subTitle } = usePageMeta();

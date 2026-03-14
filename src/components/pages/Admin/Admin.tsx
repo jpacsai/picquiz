@@ -1,4 +1,5 @@
 import { Box, Card } from '@mui/material';
+
 import type { Topic } from '../../../types/topics';
 import { NavLink } from '../../ui/NavLink';
 

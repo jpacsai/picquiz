@@ -9,6 +9,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
+
 import ImagePreviewSection from './ImagePreviewSection';
 
 type ImageUploadDialogProps = {

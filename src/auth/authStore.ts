@@ -1,4 +1,5 @@
 import { onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebase/auth';
+
 import { auth, provider } from '../lib/firebase';
 
 export type AuthSnapshot = Readonly<{ ready: boolean; user: User | null }>;

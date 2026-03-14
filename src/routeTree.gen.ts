@@ -63,9 +63,9 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/home': typeof AppHomeRoute
   '/admin/$topicId': typeof AppAdminTopicIdRoute
-  '/$topicId': typeof AppTopicIdIndexRoute
-  '/admin': typeof AppAdminIndexRoute
-  '/quiz': typeof AppQuizIndexRoute
+  '/$topicId/': typeof AppTopicIdIndexRoute
+  '/admin/': typeof AppAdminIndexRoute
+  '/quiz/': typeof AppQuizIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,9 +94,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/home'
     | '/admin/$topicId'
-    | '/$topicId'
-    | '/admin'
-    | '/quiz'
+    | '/$topicId/'
+    | '/admin/'
+    | '/quiz/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -136,7 +136,7 @@ declare module '@tanstack/react-router' {
     '/_app': {
       id: '/_app'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -157,21 +157,21 @@ declare module '@tanstack/react-router' {
     '/_app/quiz/': {
       id: '/_app/quiz/'
       path: '/quiz'
-      fullPath: '/quiz'
+      fullPath: '/quiz/'
       preLoaderRoute: typeof AppQuizIndexRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/admin/': {
       id: '/_app/admin/'
       path: '/admin'
-      fullPath: '/admin'
+      fullPath: '/admin/'
       preLoaderRoute: typeof AppAdminIndexRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/$topicId/': {
       id: '/_app/$topicId/'
       path: '/$topicId'
-      fullPath: '/$topicId'
+      fullPath: '/$topicId/'
       preLoaderRoute: typeof AppTopicIdIndexRouteImport
       parentRoute: typeof AppRoute
     }

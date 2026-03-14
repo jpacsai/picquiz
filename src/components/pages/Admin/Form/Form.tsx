@@ -1,12 +1,13 @@
-import type { TopicField } from '../../../../types/topics';
-import { useForm } from '@tanstack/react-form';
 import { Box, Button } from '@mui/material';
+import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
+
 import { getResponsiveImageFileNames, uploadResponsiveTopicImages } from '../../../../data/storage';
 import { generateResponsiveImageVariants } from '../../../../lib/image';
+import type { TopicField } from '../../../../types/topics';
 import FormInput from '../../../ui/Form/FormInput';
-import ImageUploadDialog from './ImageUploadDialog';
 import FormSelect from '../../../ui/Form/FormSelect';
+import ImageUploadDialog from './ImageUploadDialog';
 import { getDefaultValues, getDerivationIndex, getDerivedValue, getFieldValidator } from './utils';
 
 type FieldsProps = {

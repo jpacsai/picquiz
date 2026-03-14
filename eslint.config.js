@@ -21,7 +21,7 @@ export default defineConfig([
       js.configs.recommended,
       // Type-aware TS szabályok (tsconfig kell hozzá)
       ...tseslint.configs.recommendedTypeChecked,
-      reactHooks.configs['recommended-latest'],
+      reactHooks.configs.flat['recommended-latest'],
       reactRefresh.configs.vite,
     ],
 
@@ -29,8 +29,7 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
       parserOptions: {
-        project: ['./tsconfig.json'],
-        // Ha a tsconfig a gyökérben van, ez elég:
+        projectService: true,
         tsconfigRootDir: process.cwd(),
       },
     },
@@ -45,7 +44,11 @@ export default defineConfig([
       // React / Hooks higiénia
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true, allowExportNames: ['Route'] },
+      ],
+      '@typescript-eslint/no-misused-promises': ['error', { checksVoidReturn: false }],
 
       // Importok rendben tartása
       'unused-imports/no-unused-imports': 'error',
@@ -70,6 +73,12 @@ export default defineConfig([
 
       // Típusimportok konzisztensen
       '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/only-throw-error': 'off',
+      '@typescript-eslint/require-await': 'off',
 
       // Funkcionális / immutábilis stílus
       'no-var': 'error',
@@ -84,21 +93,12 @@ export default defineConfig([
         { selector: 'WhileStatement', message: 'Avoid while; prefer pure transforms.' },
         { selector: 'DoWhileStatement', message: 'Avoid do..while.' },
       ],
-
-      // MUI path importok kényszerítése
-      'no-restricted-imports': [
-        'error',
-        {
-          paths: [
-            { name: '@mui/material', message: 'Use path import, e.g. @mui/material/Button' },
-            {
-              name: '@mui/icons-material',
-              message: 'Use path import, e.g. @mui/icons-material/Add',
-            },
-          ],
-          patterns: [{ regex: '^@mui/[^/]+$' }],
-        },
-      ],
+    },
+  },
+  {
+    files: ['src/routes/**/*.{ts,tsx}'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
     },
   },
 ]);

@@ -1,6 +1,7 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import Landing from '../components/pages/Landing';
+
 import { authStore } from '../auth/authStore';
+import Landing from '../components/pages/Landing';
 
 const RouteComponent = () => {
   return <Landing />;

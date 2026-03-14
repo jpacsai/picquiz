@@ -2,9 +2,10 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
-import { useAuth } from './useAuth';
-import { authStore } from './authStore';
 import type { ReactNode } from 'react';
+
+import { authStore } from './authStore';
+import { useAuth } from './useAuth';
 
 type AuthGateProps = { children: ReactNode };
 

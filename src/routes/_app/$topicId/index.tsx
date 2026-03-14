@@ -1,6 +1,7 @@
 import { createFileRoute, useLoaderData } from '@tanstack/react-router';
-import { topicsOptions } from '../../../queries/topics';
+
 import Quiz from '../../../components/pages/Quiz/Quiz';
+import { topicsOptions } from '../../../queries/topics';
 
 const path = '/_app/$topicId/';
 

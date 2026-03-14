@@ -1,5 +1,6 @@
 import { Button, Card, CardActions, CardContent, Typography } from '@mui/material';
 import { useRouter, useSearch } from '@tanstack/react-router';
+
 import { authStore } from '../../auth/authStore';
 
 const Login = () => {

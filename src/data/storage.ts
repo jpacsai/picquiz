@@ -1,4 +1,5 @@
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+
 import { storage } from '../lib/firebase';
 
 type ImageVariant = 'desktop' | 'mobile';
@@ -43,18 +44,17 @@ const getArtistLastNamePart = (artistName: string) => {
     return 'artist';
   }
 
-  const lastNameTokens = [tokens.at(-1) ?? 'artist'];
+  const trailingLowercaseTokens = tokens.slice(0, -1).reduceRight<string[]>(
+    (acc, token) => {
+      if (acc.length === 0 || token.toLowerCase() === token) {
+        return [token, ...acc];
+      }
 
-  for (let index = tokens.length - 2; index >= 0; index -= 1) {
-    const token = tokens[index];
-
-    if (token.toLowerCase() === token) {
-      lastNameTokens.unshift(token);
-      continue;
-    }
-
-    break;
-  }
+      return acc;
+    },
+    [],
+  );
+  const lastNameTokens = [...trailingLowercaseTokens, tokens.at(-1) ?? 'artist'];
 
   return sanitizeFileNamePart(lastNameTokens.join('')) || 'artist';
 };

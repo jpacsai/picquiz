@@ -1,6 +1,7 @@
-import Box from '@mui/material/Box';
-import type { Topic } from '../../types/topics';
 import { Card, CardContent } from '@mui/material';
+import Box from '@mui/material/Box';
+
+import type { Topic } from '../../types/topics';
 import { RouterLink } from '../ui/RouterLink';
 
 type DashboardProps = {

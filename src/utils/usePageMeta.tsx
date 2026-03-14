@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMatches } from '@tanstack/react-router';
 import { useMemo } from 'react';
+
 import type { PageMeta } from '../types/pageMeta';
 
 const usePageMeta = (): PageMeta => {

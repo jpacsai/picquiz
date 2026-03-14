@@ -1,6 +1,6 @@
-import { QUERY_KEYS } from './queryKeys';
-import { listTopics } from '../data/topics';
 import { getTopicById } from '../data/collections';
+import { listTopics } from '../data/topics';
+import { QUERY_KEYS } from './queryKeys';
 
 export const topicsOptions = () => ({
   queryKey: QUERY_KEYS.TOPICS.list(),
