@@ -3,24 +3,51 @@ import { db } from '../lib/firebase';
 import type { Topic, TopicField } from '../types/topics';
 
 type LegacyTopicField = Omit<TopicField, 'type'> & {
-  type: 'string' | 'number';
-  options?: string[];
+  type: 'string' | 'number' | 'select';
+  options?: string[] | string;
 };
 
 type TopicDocument = Omit<Topic, 'id' | 'fields'> & {
   fields: LegacyTopicField[];
 };
 
+const normalizeOptions = (options: LegacyTopicField['options']): string[] => {
+  if (typeof options === 'string') {
+    return options
+      .split(',')
+      .map((option) => option.trim())
+      .filter(Boolean);
+  }
+
+  if (!options?.length) {
+    return [];
+  }
+
+  if (options.length === 1) {
+    return options[0]
+      .split(',')
+      .map((option) => option.trim())
+      .filter(Boolean);
+  }
+
+  return options;
+};
+
 const normalizeField = (field: LegacyTopicField): TopicField => {
-  if (field.options?.length) {
+  const normalizedOptions = normalizeOptions(field.options);
+
+  if (field.type === 'select' || normalizedOptions.length) {
     return {
       ...field,
       type: 'select',
-      options: field.options,
+      options: normalizedOptions,
     };
   }
 
-  return field;
+  return {
+    ...field,
+    type: field.type,
+  };
 };
 
 const normalizeTopic = (id: string, data: TopicDocument): Topic => ({

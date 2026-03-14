@@ -1,10 +1,7 @@
-import { InputLabel, MenuItem, TextField } from '@mui/material';
+import { Box, InputLabel, MenuItem, TextField } from '@mui/material';
 import { useId, type ReactNode } from 'react';
 
-type FormInputProps = Omit<
-  React.ComponentProps<typeof TextField>,
-  'error'
-> & {
+type FormInputProps = Omit<React.ComponentProps<typeof TextField>, 'error'> & {
   errorMessage?: ReactNode;
   options?: string[];
 };
@@ -24,8 +21,10 @@ const FormInput = ({
   const isSelect = Boolean(options?.length);
 
   return (
-    <>
-      <InputLabel htmlFor={finalId}>{label}</InputLabel>
+    <Box sx={{ width: '100%' }}>
+      <InputLabel htmlFor={finalId} required={required}>
+        {label}
+      </InputLabel>
       <TextField
         id={finalId}
         error={!!errorMessage}
@@ -41,7 +40,7 @@ const FormInput = ({
           </MenuItem>
         ))}
       </TextField>
-    </>
+    </Box>
   );
 };
 
