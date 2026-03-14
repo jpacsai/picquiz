@@ -13,6 +13,10 @@ import { useEffect, useRef, useState } from 'react';
 import ImagePreviewSection from './ImagePreviewSection';
 
 type ImageUploadDialogProps = {
+  existingSelection?: {
+    file: File;
+    previewUrl: string;
+  } | null;
   generatedFileNames: {
     desktop: string;
     mobile: string;
@@ -23,6 +27,7 @@ type ImageUploadDialogProps = {
 };
 
 const ImageUploadDialog = ({
+  existingSelection,
   generatedFileNames,
   onClose,
   onSelect,
@@ -35,32 +40,63 @@ const ImageUploadDialog = ({
   const [status, setStatus] = useState<'idle' | 'ready' | 'success' | 'error'>('idle');
 
   useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    setSelectedFile(existingSelection?.file ?? null);
+    setSelectedFileName(existingSelection?.file.name ?? '');
+    setPreviewUrl(existingSelection?.previewUrl ?? '');
+    setStatus(existingSelection ? 'ready' : 'idle');
+  }, [existingSelection, open]);
+
+  useEffect(() => {
     return () => {
-      if (previewUrl) {
+      if (previewUrl && previewUrl !== existingSelection?.previewUrl) {
         URL.revokeObjectURL(previewUrl);
       }
     };
-  }, [previewUrl]);
+  }, [existingSelection?.previewUrl, previewUrl]);
 
   const handlePickImage = () => {
     fileInputRef.current?.click();
   };
 
   const handleClose = () => {
-    if (previewUrl) {
+    if (previewUrl && previewUrl !== existingSelection?.previewUrl) {
       URL.revokeObjectURL(previewUrl);
-      setPreviewUrl('');
     }
 
-    setSelectedFileName('');
-    setSelectedFile(null);
-    setStatus('idle');
+    setPreviewUrl(existingSelection?.previewUrl ?? '');
+    setSelectedFile(existingSelection?.file ?? null);
+    setSelectedFileName(existingSelection?.file.name ?? '');
+    setStatus(existingSelection ? 'ready' : 'idle');
 
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
 
     onClose();
+  };
+
+  const handleFileChange = (file: File | null) => {
+    if (previewUrl && previewUrl !== existingSelection?.previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+
+    setSelectedFile(file);
+    setSelectedFileName('');
+    setPreviewUrl('');
+
+    if (!file) {
+      setStatus(existingSelection ? 'ready' : 'idle');
+      return;
+    }
+
+    setSelectedFile(file);
+    setSelectedFileName(file.name);
+    setPreviewUrl(URL.createObjectURL(file));
+    setStatus('ready');
   };
 
   const handleUseImage = () => {
@@ -99,16 +135,7 @@ const ImageUploadDialog = ({
             accept="image/*"
             hidden
             onChange={(event) => {
-              const file = event.target.files?.[0];
-
-              if (previewUrl) {
-                URL.revokeObjectURL(previewUrl);
-              }
-
-              setSelectedFile(file ?? null);
-              setSelectedFileName(file?.name ?? '');
-              setPreviewUrl(file ? URL.createObjectURL(file) : '');
-              setStatus(file ? 'ready' : 'idle');
+              handleFileChange(event.target.files?.[0] ?? null);
             }}
           />
 

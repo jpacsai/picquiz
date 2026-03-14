@@ -8,12 +8,22 @@ import ImageUploadDialog from '../../pages/Admin/Form/ImageUploadDialog';
 
 type ImageUploadFieldProps = {
   artistName: string;
+  existingSelection?: {
+    file: File;
+    previewUrl: string;
+  } | null;
   field: Extract<TopicField, { type: 'imageUpload' }>;
   onSelectImage: (file: File) => void;
   title: string;
 };
 
-const ImageUploadField = ({ artistName, field, onSelectImage, title }: ImageUploadFieldProps) => {
+const ImageUploadField = ({
+  artistName,
+  existingSelection,
+  field,
+  onSelectImage,
+  title,
+}: ImageUploadFieldProps) => {
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const isReadyForUpload = artistName.trim().length > 0 && title.trim().length > 0;
   const generatedFileNames = getResponsiveImageFileNames({
@@ -54,6 +64,7 @@ const ImageUploadField = ({ artistName, field, onSelectImage, title }: ImageUplo
       </Box>
 
       <ImageUploadDialog
+        existingSelection={existingSelection}
         open={isImageDialogOpen}
         onClose={() => setIsImageDialogOpen(false)}
         generatedFileNames={generatedFileNames}

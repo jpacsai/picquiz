@@ -93,6 +93,7 @@ const Form = ({ fields, storagePrefix }: FormProps) => {
             field={field}
             form={form}
             derivationIndex={derivationIndex}
+            pendingImageSelection={pendingImageSelection}
             onSelectPendingImage={({ field: imageUploadField, file }) => {
               if (pendingImageSelection?.previewUrl) {
                 URL.revokeObjectURL(pendingImageSelection.previewUrl);

@@ -30,6 +30,11 @@ type FormFieldProps = {
     field: Extract<TopicField, { type: 'imageUpload' }>;
     file: File;
   }) => void;
+  pendingImageSelection?: {
+    field: Extract<TopicField, { type: 'imageUpload' }>;
+    file: File;
+    previewUrl: string;
+  } | null;
 };
 
 const renderPendingDerivedField = (key: string) => (
@@ -43,7 +48,13 @@ const renderPendingDerivedField = (key: string) => (
   />
 );
 
-const FormField = ({ derivationIndex, field, form, onSelectPendingImage }: FormFieldProps) => {
+const FormField = ({
+  derivationIndex,
+  field,
+  form,
+  onSelectPendingImage,
+  pendingImageSelection,
+}: FormFieldProps) => {
   const { key, type, readonly, required, label, fn, hideInEdit } = field;
 
   if (hideInEdit) return null;
@@ -145,6 +156,9 @@ const FormField = ({ derivationIndex, field, form, onSelectPendingImage }: FormF
                 field={field}
                 artistName={typeof artistValue === 'string' ? artistValue : ''}
                 title={typeof titleValue === 'string' ? titleValue : ''}
+                existingSelection={
+                  pendingImageSelection?.field.key === field.key ? pendingImageSelection : null
+                }
                 onSelectImage={(file) => {
                   onSelectPendingImage({ field, file });
                 }}
