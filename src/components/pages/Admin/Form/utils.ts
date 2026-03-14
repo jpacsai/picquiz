@@ -28,7 +28,7 @@ export type FormValues = Record<string, string | number>;
 
 export const getDefaultValues = (fields: TopicField[]): FormValues => {
   const initValFields = fields.reduce((acc, field) => {
-    const val = { [field.key]: field.type === 'number' ? 0 : '' };
+    const val = { [field.key]: '' };
     return { ...acc, ...val };
   }, {} as FormValues);
   return initValFields;
