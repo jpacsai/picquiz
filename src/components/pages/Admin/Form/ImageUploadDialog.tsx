@@ -13,11 +13,13 @@ import ImagePreviewSection from './ImagePreviewSection';
 
 type ImageUploadDialogProps = {
   onClose: () => void;
+  onUpload: (file: File) => void;
   open: boolean;
 };
 
-const ImageUploadDialog = ({ onClose, open }: ImageUploadDialogProps) => {
+const ImageUploadDialog = ({ onClose, onUpload, open }: ImageUploadDialogProps) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedFileName, setSelectedFileName] = useState<string>('');
   const [previewUrl, setPreviewUrl] = useState<string>('');
   const [status, setStatus] = useState<'idle' | 'ready' | 'success' | 'error'>('idle');
@@ -41,6 +43,7 @@ const ImageUploadDialog = ({ onClose, open }: ImageUploadDialogProps) => {
     }
 
     setSelectedFileName('');
+    setSelectedFile(null);
     setStatus('idle');
 
     if (fileInputRef.current) {
@@ -81,6 +84,7 @@ const ImageUploadDialog = ({ onClose, open }: ImageUploadDialogProps) => {
                 URL.revokeObjectURL(previewUrl);
               }
 
+              setSelectedFile(file ?? null);
               setSelectedFileName(file?.name ?? '');
               setPreviewUrl(file ? URL.createObjectURL(file) : '');
               setStatus(file ? 'ready' : 'idle');
@@ -122,8 +126,14 @@ const ImageUploadDialog = ({ onClose, open }: ImageUploadDialogProps) => {
         <Button onClick={handleClose}>Bezárás</Button>
         <Button
           variant="contained"
-          disabled={!previewUrl}
+          disabled={!selectedFile}
           onClick={() => {
+            if (!selectedFile) {
+              setStatus('error');
+              return;
+            }
+
+            onUpload(selectedFile);
             setStatus('success');
           }}
         >

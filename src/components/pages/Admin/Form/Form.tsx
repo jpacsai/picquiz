@@ -166,7 +166,13 @@ const Fields = ({ fields }: FieldsProps) => {
         Submit
       </Button>
 
-      <ImageUploadDialog open={isImageDialogOpen} onClose={() => setIsImageDialogOpen(false)} />
+      <ImageUploadDialog
+        open={isImageDialogOpen}
+        onClose={() => setIsImageDialogOpen(false)}
+        onUpload={(file) => {
+          console.log('selected image file', file);
+        }}
+      />
     </form>
   );
 };
