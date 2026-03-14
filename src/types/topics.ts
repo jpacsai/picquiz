@@ -9,6 +9,7 @@ type BaseTopicField = {
   required?: boolean;
   readonly?: boolean;
   fn?: TopicFieldFn;
+  hideInEdit?: boolean;
 };
 
 export type TopicField =

@@ -1,7 +1,9 @@
 import type { TopicField } from '../../../../types/topics';
 import { useForm } from '@tanstack/react-form';
 import { Box, Button } from '@mui/material';
+import { useState } from 'react';
 import FormInput from '../../../ui/Form/FormInput';
+import ImageUploadDialog from './ImageUploadDialog';
 import FormSelect from '../../../ui/Form/FormSelect';
 import { getDefaultValues, getDerivationIndex, getDerivedValue, getFieldValidator } from './utils';
 
@@ -10,12 +12,32 @@ type FieldsProps = {
 };
 
 const Fields = ({ fields }: FieldsProps) => {
+  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+
   const defaultValues = getDefaultValues(fields);
   const derivationIndex = getDerivationIndex(fields);
 
+  const hasImageTargets =
+    fields.some((field) => field.key === 'image_url_desktop') &&
+    fields.some((field) => field.key === 'image_url_mobile');
+
+  const renderPendingDerivedField = (key: string) => (
+    <Box
+      key={key}
+      aria-hidden
+      sx={{
+        minHeight: 80,
+        width: '100%',
+      }}
+    />
+  );
+
   const renderField = (field: TopicField) => {
-    const { key, type, readonly, required, label } = field;
-    switch (field.type) {
+    const { key, type, readonly, required, label, fn, hideInEdit } = field;
+
+    if (hideInEdit) return;
+
+    switch (type) {
       case 'string':
       case 'number':
         return (
@@ -24,6 +46,12 @@ const Fields = ({ fields }: FieldsProps) => {
               const errorMessage = fieldApi.state.meta.isTouched
                 ? fieldApi.state.meta.errors[0]
                 : undefined;
+
+              const isPendingDerivedField = Boolean(fn) && fieldApi.state.value === '';
+
+              if (isPendingDerivedField) {
+                return renderPendingDerivedField(key);
+              }
 
               return (
                 <FormInput
@@ -62,6 +90,12 @@ const Fields = ({ fields }: FieldsProps) => {
               const errorMessage = fieldApi.state.meta.isTouched
                 ? fieldApi.state.meta.errors[0]
                 : undefined;
+
+              const isPendingDerivedField = Boolean(field.fn) && fieldApi.state.value === '';
+
+              if (isPendingDerivedField) {
+                return renderPendingDerivedField(key);
+              }
 
               return (
                 <FormSelect
@@ -109,6 +143,14 @@ const Fields = ({ fields }: FieldsProps) => {
         void form.handleSubmit();
       }}
     >
+      {hasImageTargets ? (
+        <Box sx={{ mb: 3 }}>
+          <Button variant="contained" onClick={() => setIsImageDialogOpen(true)}>
+            Képfeltöltés
+          </Button>
+        </Box>
+      ) : null}
+
       <Box
         sx={{
           display: 'grid',
@@ -120,9 +162,11 @@ const Fields = ({ fields }: FieldsProps) => {
         {fields.map((field) => renderField(field))}
       </Box>
 
-      <Button type="submit" variant="outlined">
+      <Button type="submit" variant="contained">
         Submit
       </Button>
+
+      <ImageUploadDialog open={isImageDialogOpen} onClose={() => setIsImageDialogOpen(false)} />
     </form>
   );
 };
