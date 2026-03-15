@@ -7,31 +7,11 @@ import { useNavigate } from '@tanstack/react-router';
 
 import type { Topic } from '@/types/topics';
 import type { TopicItem } from '@service/items';
+import AdminTopicItem from '@/components/pages/Admin/AdminTopicItem';
 
 type AdminTopicCollectionProps = {
   items: ReadonlyArray<TopicItem>;
   topic: Topic;
-};
-
-const getItemTitle = (item: TopicItem) => {
-  if (typeof item.title === 'string' && item.title.trim().length > 0) {
-    return item.title;
-  }
-
-  if (typeof item.artist === 'string' && item.artist.trim().length > 0) {
-    return item.artist;
-  }
-
-  return item.id;
-};
-
-const getItemSubtitle = (item: TopicItem) => {
-  const parts = [item.artist, item.year]
-    .filter((value): value is string | number => typeof value === 'string' || typeof value === 'number')
-    .map(String)
-    .filter((value) => value.trim().length > 0);
-
-  return parts.join(' - ');
 };
 
 const AdminTopicCollection = ({ items, topic }: AdminTopicCollectionProps) => {
@@ -56,16 +36,7 @@ const AdminTopicCollection = ({ items, topic }: AdminTopicCollectionProps) => {
       {items.length ? (
         <Box sx={{ display: 'grid', gap: 2 }}>
           {items.map((item) => (
-            <Card key={item.id}>
-              <CardContent sx={{ display: 'grid', gap: 0.5 }}>
-                <Typography variant="h6">{getItemTitle(item)}</Typography>
-                {getItemSubtitle(item) ? (
-                  <Typography color="text.secondary" variant="body2">
-                    {getItemSubtitle(item)}
-                  </Typography>
-                ) : null}
-              </CardContent>
-            </Card>
+            <AdminTopicItem item={item} />
           ))}
         </Box>
       ) : (
