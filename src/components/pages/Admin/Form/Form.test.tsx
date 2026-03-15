@@ -171,4 +171,40 @@ describe('Admin Form saving', () => {
       },
     });
   });
+
+  it('blocks submit when a required imageUpload field has no selected image', async () => {
+    const user = userEvent.setup();
+    const fields: TopicField[] = [
+      { key: 'artist', label: 'Artist', required: true, type: 'string' },
+      { key: 'title', label: 'Title', required: true, type: 'string' },
+      { key: 'image_url_desktop', label: 'Desktop URL', hideInEdit: true, type: 'string' },
+      { key: 'image_url_mobile', label: 'Mobile URL', hideInEdit: true, type: 'string' },
+      {
+        buttonLabel: 'Upload after artist and title',
+        fileNameFields: { artist: 'artist', title: 'title' },
+        key: 'image_upload',
+        label: 'Upload image',
+        required: true,
+        targetFields: { desktop: 'image_url_desktop', mobile: 'image_url_mobile' },
+        type: 'imageUpload',
+      },
+    ];
+
+    render(
+      <Form
+        collectionName="art"
+        fields={fields}
+        storagePrefix="art"
+        topicId="art"
+      />,
+    );
+
+    await user.type(screen.getByTestId('form-input-artist'), 'Leonardo da Vinci');
+    await user.type(screen.getByTestId('form-input-title'), 'Mona Lisa');
+    await user.click(screen.getByRole('button', { name: 'Mentés' }));
+
+    expect(await screen.findByText('Upload image kötelező.')).toBeInTheDocument();
+    expect(createTopicItemMock).not.toHaveBeenCalled();
+    expect(navigateMock).not.toHaveBeenCalled();
+  });
 });

@@ -15,11 +15,46 @@ import type { TopicField } from '@/types/topics';
 import FormField from './FormField';
 import { getDefaultValues, getDerivationIndex } from './utils';
 
+type PendingImageSelection = {
+  field: Extract<TopicField, { type: 'imageUpload' }>;
+  file: File;
+  previewUrl: string;
+};
+
 type FormProps = {
   collectionName: string;
   fields: TopicField[];
   storagePrefix: string;
   topicId: string;
+};
+
+const getRequiredImageUploadError = ({
+  field,
+  pendingImageSelection,
+  values,
+}: {
+  field: Extract<TopicField, { type: 'imageUpload' }>;
+  pendingImageSelection: PendingImageSelection | null;
+  values: Record<string, string | number>;
+}) => {
+  if (!field.required) {
+    return undefined;
+  }
+
+  const hasPendingSelection = pendingImageSelection?.field.key === field.key;
+  const desktopUrl = values[field.targetFields.desktop];
+  const mobileUrl = values[field.targetFields.mobile];
+  const hasPersistedUrls =
+    typeof desktopUrl === 'string' &&
+    desktopUrl.trim().length > 0 &&
+    typeof mobileUrl === 'string' &&
+    mobileUrl.trim().length > 0;
+
+  if (!hasPendingSelection && !hasPersistedUrls) {
+    return `${field.label} kötelező.`;
+  }
+
+  return undefined;
 };
 
 const Form = ({ collectionName, fields, storagePrefix, topicId }: FormProps) => {
@@ -28,11 +63,9 @@ const Form = ({ collectionName, fields, storagePrefix, topicId }: FormProps) => 
   const navigate = useNavigate();
   const [submitError, setSubmitError] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [pendingImageSelection, setPendingImageSelection] = useState<{
-    field: Extract<TopicField, { type: 'imageUpload' }>;
-    file: File;
-    previewUrl: string;
-  } | null>(null);
+  const [pendingImageSelection, setPendingImageSelection] = useState<PendingImageSelection | null>(
+    null,
+  );
 
   useEffect(() => {
     return () => {
@@ -50,6 +83,23 @@ const Form = ({ collectionName, fields, storagePrefix, topicId }: FormProps) => 
 
       try {
         let submittedValue = { ...value };
+        const requiredImageUploadError = fields
+          .filter(
+            (field): field is Extract<TopicField, { type: 'imageUpload' }> =>
+              field.type === 'imageUpload',
+          )
+          .map((field) =>
+            getRequiredImageUploadError({
+              field,
+              pendingImageSelection,
+              values: submittedValue,
+            }),
+          )
+          .find(Boolean);
+
+        if (requiredImageUploadError) {
+          throw new Error(requiredImageUploadError);
+        }
 
         if (pendingImageSelection) {
           const { field, file } = pendingImageSelection;
