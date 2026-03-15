@@ -6,6 +6,7 @@ export type TopicFieldFn = {
 type BaseTopicField = {
   key: string;
   label: string;
+  display?: 'title' | 'subtitle' | 'meta';
   required?: boolean;
   readonly?: boolean;
   fn?: TopicFieldFn;
