@@ -1,4 +1,8 @@
-import { Box, Button, Typography } from '@mui/material';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
 import { useForm } from '@tanstack/react-form';
 import { useEffect, useState } from 'react';
 
@@ -18,6 +22,9 @@ type FormProps = {
 const Form = ({ collectionName, fields, storagePrefix }: FormProps) => {
   const defaultValues = getDefaultValues(fields);
   const derivationIndex = getDerivationIndex(fields);
+  const [submitError, setSubmitError] = useState<string>('');
+  const [submitSuccessMessage, setSubmitSuccessMessage] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [pendingImageSelection, setPendingImageSelection] = useState<{
     field: Extract<TopicField, { type: 'imageUpload' }>;
     file: File;
@@ -35,66 +42,89 @@ const Form = ({ collectionName, fields, storagePrefix }: FormProps) => {
   const form = useForm({
     defaultValues,
     onSubmit: async ({ value }) => {
-      let submittedValue = { ...value };
+      setSubmitError('');
+      setSubmitSuccessMessage('');
+      setIsSubmitting(true);
 
-      if (pendingImageSelection) {
-        const { field, file } = pendingImageSelection;
-        const artistValue = submittedValue[field.fileNameFields.artist];
-        const titleValue = submittedValue[field.fileNameFields.title];
-        const artistName = typeof artistValue === 'string' ? artistValue : '';
-        const title = typeof titleValue === 'string' ? titleValue : '';
+      try {
+        let submittedValue = { ...value };
 
-        if (artistName && title) {
-          const { desktop, mobile } = await generateResponsiveImageVariants(file);
-          const uploadedImages = await uploadResponsiveTopicImages({
-            artistName,
-            title,
-            storagePrefix,
-            desktopBlob: desktop.blob,
-            mobileBlob: mobile.blob,
-          });
+        if (pendingImageSelection) {
+          const { field, file } = pendingImageSelection;
+          const desktopTargetField = field.targetFields?.desktop;
+          const mobileTargetField = field.targetFields?.mobile;
 
-          form.setFieldValue(field.targetFields.desktop, uploadedImages.desktop.url);
-          form.setFieldValue(field.targetFields.mobile, uploadedImages.mobile.url);
+          if (!desktopTargetField || !mobileTargetField) {
+            throw new Error(
+              'Az imageUpload field nincs jól konfigurálva: hiányzik a targetFields.desktop vagy targetFields.mobile.',
+            );
+          }
 
-          submittedValue = {
-            ...submittedValue,
-            [field.targetFields.desktop]: uploadedImages.desktop.url,
-            [field.targetFields.mobile]: uploadedImages.mobile.url,
+          const artistValue = submittedValue[field.fileNameFields.artist];
+          const titleValue = submittedValue[field.fileNameFields.title];
+          const artistName = typeof artistValue === 'string' ? artistValue : '';
+          const title = typeof titleValue === 'string' ? titleValue : '';
+
+          if (artistName && title) {
+            const { desktop, mobile } = await generateResponsiveImageVariants(file);
+            const uploadedImages = await uploadResponsiveTopicImages({
+              artistName,
+              title,
+              storagePrefix,
+              desktopBlob: desktop.blob,
+              mobileBlob: mobile.blob,
+            });
+
+            form.setFieldValue(desktopTargetField, uploadedImages.desktop.url);
+            form.setFieldValue(mobileTargetField, uploadedImages.mobile.url);
+
+            submittedValue = {
+              ...submittedValue,
+              [desktopTargetField]: uploadedImages.desktop.url,
+              [mobileTargetField]: uploadedImages.mobile.url,
+            };
+
+            URL.revokeObjectURL(pendingImageSelection.previewUrl);
+            setPendingImageSelection(null);
+          }
+        }
+
+        const persistableValue = fields.reduce<Record<string, string | number>>((acc, field) => {
+          if (field.type === 'imageUpload') {
+            return acc;
+          }
+
+          const nextValue = submittedValue[field.key];
+
+          if (nextValue === undefined) {
+            return acc;
+          }
+
+          const isEmptyValue = nextValue === '';
+
+          if (!field.required && isEmptyValue) {
+            return acc;
+          }
+
+          return {
+            ...acc,
+            [field.key]: nextValue,
           };
+        }, {});
 
-          URL.revokeObjectURL(pendingImageSelection.previewUrl);
-          setPendingImageSelection(null);
-        }
+        await createTopicItem({
+          collectionName,
+          values: persistableValue,
+        });
+
+        setSubmitSuccessMessage(`Sikeres mentés a "${collectionName}" collectionbe.`);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Ismeretlen mentési hiba.';
+        console.error('Sikertelen mentés', error);
+        setSubmitError(message);
+      } finally {
+        setIsSubmitting(false);
       }
-
-      const persistableValue = fields.reduce<Record<string, string | number>>((acc, field) => {
-        if (field.type === 'imageUpload') {
-          return acc;
-        }
-
-        const nextValue = submittedValue[field.key];
-
-        if (nextValue === undefined) {
-          return acc;
-        }
-
-        const isEmptyValue = nextValue === '';
-
-        if (!field.required && isEmptyValue) {
-          return acc;
-        }
-
-        return {
-          ...acc,
-          [field.key]: nextValue,
-        };
-      }, {});
-
-      await createTopicItem({
-        collectionName,
-        values: persistableValue,
-      });
     },
   });
 
@@ -144,7 +174,7 @@ const Form = ({ collectionName, fields, storagePrefix }: FormProps) => {
           }}
         >
           <Typography gutterBottom variant="subtitle2">
-            Feltoltesre varo kep
+            Feltöltésre váró kép
           </Typography>
           <Box
             component="img"
@@ -168,8 +198,27 @@ const Form = ({ collectionName, fields, storagePrefix }: FormProps) => {
         </Box>
       ) : null}
 
-      <Button type="submit" variant="contained">
-        Submit
+      {submitError ? (
+        <Alert severity="error" sx={{ marginBottom: '16px' }}>
+          {submitError}
+        </Alert>
+      ) : null}
+
+      {submitSuccessMessage ? (
+        <Alert severity="success" sx={{ marginBottom: '16px' }}>
+          {submitSuccessMessage}
+        </Alert>
+      ) : null}
+
+      <Button type="submit" variant="contained" disabled={isSubmitting}>
+        {isSubmitting ? (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <CircularProgress size={18} color="inherit" />
+            Mentés...
+          </Box>
+        ) : (
+          'Mentés'
+        )}
       </Button>
     </form>
   );
