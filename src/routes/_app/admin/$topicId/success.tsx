@@ -18,7 +18,6 @@ export const Route = createFileRoute(path)({
     return {
       topic,
       title: 'Sikeres mentés',
-      subtitle: 'A rekord elmentve. Feltöltesz még egyet?',
     };
   },
   component: RouteComponent,

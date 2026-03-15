@@ -20,7 +20,6 @@ const AdminSuccess = ({ topicId, topicLabel }: AdminSuccessProps) => {
       }}
     >
       <Box sx={{ display: 'grid', gap: 1 }}>
-        <Typography variant="h2">Sikeres mentés</Typography>
         <Typography color="text.secondary" variant="body1">
           A(z) {topicLabel} elem sikeresen elmentődött.
         </Typography>
