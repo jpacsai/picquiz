@@ -30,7 +30,7 @@ const AdminTopicItem = ({ item }: AdminTopicItemProps) => {
   };
 
   return (
-    <Card key={item.id}>
+    <Card key={item.id} sx={{ width: '100%' }}>
       <CardContent sx={{ display: 'grid', gap: 0.5 }}>
         <Typography variant="h6">{getItemTitle()}</Typography>
         {getItemSubtitle() ? (
