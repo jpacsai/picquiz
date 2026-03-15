@@ -3,6 +3,7 @@ import { blue } from '@mui/material/colors';
 import { Outlet } from '@tanstack/react-router';
 
 import usePageMeta from '../../utils/usePageMeta';
+import AppBreadcrumbs from './AppBreadcrumbs';
 import { NavLink } from '../ui/NavLink';
 
 const AppLayout = () => {
@@ -39,6 +40,9 @@ const AppLayout = () => {
         maxWidth="xl"
         sx={{ padding: '20px', display: 'flex', margin: 'auto', flexDirection: 'column' }}
       >
+        <Box sx={{ marginBottom: '20px' }}>
+          <AppBreadcrumbs />
+        </Box>
         {(title || subTitle) && (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
             {title && <Typography variant="h1">{title}</Typography>}

@@ -8,7 +8,7 @@ type AdminTopicProps = { topic: Topic };
 
 const AdminTopic = ({ topic }: AdminTopicProps) => {
   return (
-    <Box>
+    <Box sx={{ display: 'grid', gap: 3 }}>
       <Form
         collectionName={topic.slug}
         fields={topic.fields}
