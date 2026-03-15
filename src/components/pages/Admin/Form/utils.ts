@@ -25,6 +25,12 @@ export const fnRegistry = {
 };
 
 export type FormValues = Record<string, string | number>;
+export type PersistableFormValues = Record<string, string | number>;
+export type PendingImageSelection = {
+  field: Extract<TopicField, { type: 'imageUpload' }>;
+  file: File;
+  previewUrl: string;
+};
 
 export const getDefaultValues = (fields: TopicField[]): FormValues => {
   const initValFields = fields.reduce((acc, field) => {
@@ -95,6 +101,87 @@ export const getFieldValidator = (field: TopicField) => {
     }
   };
 };
+
+export const getRequiredImageUploadError = ({
+  field,
+  pendingImageSelection,
+  values,
+}: {
+  field: Extract<TopicField, { type: 'imageUpload' }>;
+  pendingImageSelection: PendingImageSelection | null;
+  values: FormValues;
+}) => {
+  if (!field.required) {
+    return undefined;
+  }
+
+  const hasPendingSelection = pendingImageSelection?.field.key === field.key;
+  const desktopUrl = values[field.targetFields.desktop];
+  const mobileUrl = values[field.targetFields.mobile];
+  const hasPersistedUrls =
+    typeof desktopUrl === 'string' &&
+    desktopUrl.trim().length > 0 &&
+    typeof mobileUrl === 'string' &&
+    mobileUrl.trim().length > 0;
+
+  if (!hasPendingSelection && !hasPersistedUrls) {
+    return `${field.label} kötelező.`;
+  }
+
+  return undefined;
+};
+
+export const validateImageUploads = ({
+  fields,
+  pendingImageSelection,
+  values,
+}: {
+  fields: TopicField[];
+  pendingImageSelection: PendingImageSelection | null;
+  values: FormValues;
+}) =>
+  fields
+    .filter(
+      (field): field is Extract<TopicField, { type: 'imageUpload' }> => field.type === 'imageUpload',
+    )
+    .map((field) =>
+      getRequiredImageUploadError({
+        field,
+        pendingImageSelection,
+        values,
+      }),
+    )
+    .find(Boolean);
+
+export const getPersistableValue = ({
+  fields,
+  values,
+}: {
+  fields: TopicField[];
+  values: FormValues;
+}): PersistableFormValues =>
+  fields.reduce<PersistableFormValues>((acc, field) => {
+    if (field.type === 'imageUpload') {
+      return acc;
+    }
+
+    const nextValue = values[field.key];
+
+    if (nextValue === undefined) {
+      return acc;
+    }
+
+    const isEmptyValue = nextValue === '';
+
+    if (!field.required && isEmptyValue) {
+      return acc;
+    }
+
+    return {
+      ...acc,
+      [field.key]: nextValue,
+    };
+  }, {});
 
 export const getDerivedValue = (
   field: FormDeriveField | undefined,
