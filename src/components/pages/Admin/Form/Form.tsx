@@ -2,6 +2,7 @@ import { Box, Button, Typography } from '@mui/material';
 import { useForm } from '@tanstack/react-form';
 import { useEffect, useState } from 'react';
 
+import { createTopicItem } from '../../../../service/items';
 import { uploadResponsiveTopicImages } from '../../../../data/storage';
 import { generateResponsiveImageVariants } from '../../../../lib/image';
 import type { TopicField } from '../../../../types/topics';
@@ -9,11 +10,12 @@ import FormField from './FormField';
 import { getDefaultValues, getDerivationIndex } from './utils';
 
 type FormProps = {
+  collectionName: string;
   fields: TopicField[];
   storagePrefix: string;
 };
 
-const Form = ({ fields, storagePrefix }: FormProps) => {
+const Form = ({ collectionName, fields, storagePrefix }: FormProps) => {
   const defaultValues = getDefaultValues(fields);
   const derivationIndex = getDerivationIndex(fields);
   const [pendingImageSelection, setPendingImageSelection] = useState<{
@@ -66,7 +68,33 @@ const Form = ({ fields, storagePrefix }: FormProps) => {
         }
       }
 
-      console.log('submit', submittedValue);
+      const persistableValue = fields.reduce<Record<string, string | number>>((acc, field) => {
+        if (field.type === 'imageUpload') {
+          return acc;
+        }
+
+        const nextValue = submittedValue[field.key];
+
+        if (nextValue === undefined) {
+          return acc;
+        }
+
+        const isEmptyValue = nextValue === '';
+
+        if (!field.required && isEmptyValue) {
+          return acc;
+        }
+
+        return {
+          ...acc,
+          [field.key]: nextValue,
+        };
+      }, {});
+
+      await createTopicItem({
+        collectionName,
+        values: persistableValue,
+      });
     },
   });
 

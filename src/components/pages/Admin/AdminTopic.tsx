@@ -8,7 +8,11 @@ type AdminTopicProps = { topic: Topic };
 const AdminTopic = ({ topic }: AdminTopicProps) => {
   return (
     <Box>
-      <Form fields={topic.fields} storagePrefix={topic.storage_prefix} />
+      <Form
+        collectionName={topic.slug}
+        fields={topic.fields}
+        storagePrefix={topic.storage_prefix}
+      />
     </Box>
   );
 };
