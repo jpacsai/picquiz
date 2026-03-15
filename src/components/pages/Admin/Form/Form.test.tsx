@@ -1,8 +1,9 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { TopicField } from '../../../../types/topics';
+import type { TopicField } from '@/types/topics';
+
 import Form from './Form';
 
 const navigateMock = vi.fn();
@@ -21,13 +22,13 @@ vi.mock('@tanstack/react-router', async () => {
   };
 });
 
-vi.mock('../../../../service/items', () => ({
+vi.mock('@service/items', () => ({
   createTopicItem: (...args: unknown[]) => createTopicItemMock(...args),
 }));
 
-vi.mock('../../../../data/storage', async () => {
-  const actual = await vi.importActual<typeof import('../../../../data/storage')>(
-    '../../../../data/storage',
+vi.mock('@data/storage', async () => {
+  const actual = await vi.importActual<typeof import('@data/storage')>(
+    '@data/storage',
   );
 
   return {
@@ -36,7 +37,7 @@ vi.mock('../../../../data/storage', async () => {
   };
 });
 
-vi.mock('../../../../lib/image', () => ({
+vi.mock('@lib/image', () => ({
   generateResponsiveImageVariants: (...args: unknown[]) => generateResponsiveImageVariantsMock(...args),
 }));
 

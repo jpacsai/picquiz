@@ -7,10 +7,11 @@ import { useForm } from '@tanstack/react-form';
 import { useNavigate } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
-import { createTopicItem } from '../../../../service/items';
-import { uploadResponsiveTopicImages } from '../../../../data/storage';
-import { generateResponsiveImageVariants } from '../../../../lib/image';
-import type { TopicField } from '../../../../types/topics';
+import { uploadResponsiveTopicImages } from '@data/storage';
+import { generateResponsiveImageVariants } from '@lib/image';
+import { createTopicItem } from '@service/items';
+import type { TopicField } from '@/types/topics';
+
 import FormField from './FormField';
 import { getDefaultValues, getDerivationIndex } from './utils';
 

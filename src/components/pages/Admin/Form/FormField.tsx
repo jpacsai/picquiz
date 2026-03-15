@@ -1,7 +1,8 @@
 import Box from '@mui/material/Box';
 import type { ComponentType, Key, ReactNode } from 'react';
 
-import type { TopicField } from '../../../../types/topics';
+import type { TopicField } from '@/types/topics';
+
 import FormInput from '../../../ui/Form/FormInput';
 import ImageUploadField from '../../../ui/Form/ImageUploadField';
 import FormSelect from '../../../ui/Form/FormSelect';

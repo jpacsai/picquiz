@@ -1,6 +1,7 @@
 import { Box } from '@mui/material';
 
-import type { Topic } from '../../../types/topics';
+import type { Topic } from '@/types/topics';
+
 import Form from './Form/Form';
 
 type AdminTopicProps = { topic: Topic };
