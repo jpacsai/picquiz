@@ -9,10 +9,12 @@ type FormInputProps = Omit<React.ComponentProps<typeof TextField>, 'error'> & {
 const FormInput = ({
   id,
   label,
+  name,
   placeholder,
   required,
   errorMessage,
   helperText,
+  inputProps,
   options,
   ...props
 }: FormInputProps) => {
@@ -29,9 +31,14 @@ const FormInput = ({
         id={finalId}
         error={!!errorMessage}
         helperText={errorMessage ?? helperText}
+        inputProps={{
+          ...inputProps,
+          'data-testid': name ? `form-input-${String(name)}` : inputProps?.['data-testid'],
+        }}
         placeholder={placeholder}
         required={required}
         select={isSelect}
+        name={name}
         {...props}
       >
         {options?.map((option) => (
