@@ -16,6 +16,11 @@ export const Route = createFileRoute(path)({
     const topicId = params.topicId;
     const topics = await context.queryClient.ensureQueryData(topicsOptions());
     const topic = topics.find(({ id }) => id === topicId);
+
+    if (!topic) {
+      throw new Error(`Topic not found: ${topicId}`);
+    }
+
     return { topic };
   },
   component: RouteComponent,

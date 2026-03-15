@@ -5,7 +5,7 @@ import type { Topic } from '../../types/topics';
 import { RouterLink } from '../ui/RouterLink';
 
 type DashboardProps = {
-  topics: Topic[];
+  topics: ReadonlyArray<Topic>;
 };
 
 const Dashboard = ({ topics }: DashboardProps) => {
@@ -15,9 +15,9 @@ const Dashboard = ({ topics }: DashboardProps) => {
         return (
           <Card key={topic.id}>
             <CardContent>
-              <RouterLink></RouterLink>
               <RouterLink
-                to={`/${topic.id}`}
+                to="/$topicId"
+                params={{ topicId: topic.id }}
                 activeOptions={{ exact: true }}
                 underline="none"
                 preload="intent"
