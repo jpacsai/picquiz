@@ -32,7 +32,7 @@ const AdminSuccess = ({ topicId, topicLabel }: AdminSuccessProps) => {
         <Button
           variant="contained"
           onClick={() => {
-            void navigate({ to: '/admin/$topicId', params: { topicId } });
+            void navigate({ to: '/admin/$topicId/new', params: { topicId } });
           }}
         >
           Igen, feltöltök még egyet
@@ -40,10 +40,10 @@ const AdminSuccess = ({ topicId, topicLabel }: AdminSuccessProps) => {
         <Button
           variant="outlined"
           onClick={() => {
-            void navigate({ to: '/admin' });
+            void navigate({ to: '/admin/$topicId', params: { topicId } });
           }}
         >
-          Vissza az adminhoz
+          Vissza a collectionhöz
         </Button>
       </Box>
     </Box>

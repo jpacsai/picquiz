@@ -1,8 +1,11 @@
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, getDocs, serverTimestamp } from 'firebase/firestore';
 
 import { db } from '../lib/firebase';
 
 export type TopicItemValues = Record<string, string | number>;
+export type TopicItem = {
+  id: string;
+} & Record<string, unknown>;
 
 export const createTopicItem = async ({
   collectionName,
@@ -15,4 +18,17 @@ export const createTopicItem = async ({
     ...values,
     created_at: serverTimestamp(),
   });
+};
+
+export const listTopicItems = async ({
+  collectionName,
+}: {
+  collectionName: string;
+}): Promise<ReadonlyArray<TopicItem>> => {
+  const snap = await getDocs(collection(db, collectionName));
+
+  return snap.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
 };

@@ -35,19 +35,20 @@ describe('AdminSuccess', () => {
 
     expect(navigateMock).toHaveBeenCalledWith({
       params: { topicId: 'art' },
-      to: '/admin/$topicId',
+      to: '/admin/$topicId/new',
     });
   });
 
-  it('lets the user navigate back to the admin overview', async () => {
+  it('lets the user navigate back to the collection page', async () => {
     const user = userEvent.setup();
 
     render(<AdminSuccess topicId="art" topicLabel="Műalkotás" />);
 
-    await user.click(screen.getByRole('button', { name: 'Vissza az adminhoz' }));
+    await user.click(screen.getByRole('button', { name: 'Vissza a collectionhöz' }));
 
     expect(navigateMock).toHaveBeenCalledWith({
-      to: '/admin',
+      params: { topicId: 'art' },
+      to: '/admin/$topicId',
     });
   });
 });
