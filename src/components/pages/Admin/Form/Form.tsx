@@ -4,6 +4,7 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import { useForm } from '@tanstack/react-form';
+import { useNavigate } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
 import { createTopicItem } from '../../../../service/items';
@@ -17,13 +18,14 @@ type FormProps = {
   collectionName: string;
   fields: TopicField[];
   storagePrefix: string;
+  topicId: string;
 };
 
-const Form = ({ collectionName, fields, storagePrefix }: FormProps) => {
+const Form = ({ collectionName, fields, storagePrefix, topicId }: FormProps) => {
   const defaultValues = getDefaultValues(fields);
   const derivationIndex = getDerivationIndex(fields);
+  const navigate = useNavigate();
   const [submitError, setSubmitError] = useState<string>('');
-  const [submitSuccessMessage, setSubmitSuccessMessage] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pendingImageSelection, setPendingImageSelection] = useState<{
     field: Extract<TopicField, { type: 'imageUpload' }>;
@@ -43,7 +45,6 @@ const Form = ({ collectionName, fields, storagePrefix }: FormProps) => {
     defaultValues,
     onSubmit: async ({ value }) => {
       setSubmitError('');
-      setSubmitSuccessMessage('');
       setIsSubmitting(true);
 
       try {
@@ -117,7 +118,10 @@ const Form = ({ collectionName, fields, storagePrefix }: FormProps) => {
           values: persistableValue,
         });
 
-        setSubmitSuccessMessage(`Sikeres mentés a "${collectionName}" collectionbe.`);
+        await navigate({
+          to: '/admin/$topicId/success',
+          params: { topicId },
+        });
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Ismeretlen mentési hiba.';
         console.error('Sikertelen mentés', error);
@@ -201,12 +205,6 @@ const Form = ({ collectionName, fields, storagePrefix }: FormProps) => {
       {submitError ? (
         <Alert severity="error" sx={{ marginBottom: '16px' }}>
           {submitError}
-        </Alert>
-      ) : null}
-
-      {submitSuccessMessage ? (
-        <Alert severity="success" sx={{ marginBottom: '16px' }}>
-          {submitSuccessMessage}
         </Alert>
       ) : null}
 

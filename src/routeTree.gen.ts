@@ -17,6 +17,7 @@ import { Route as AppQuizIndexRouteImport } from './routes/_app/quiz/index'
 import { Route as AppAdminIndexRouteImport } from './routes/_app/admin/index'
 import { Route as AppTopicIdIndexRouteImport } from './routes/_app/$topicId/index'
 import { Route as AppAdminTopicIdRouteImport } from './routes/_app/admin/$topicId'
+import { Route as AppAdminTopicIdSuccessRouteImport } from './routes/_app/admin/$topicId/success'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -57,24 +58,31 @@ const AppAdminTopicIdRoute = AppAdminTopicIdRouteImport.update({
   path: '/admin/$topicId',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminTopicIdSuccessRoute = AppAdminTopicIdSuccessRouteImport.update({
+  id: '/success',
+  path: '/success',
+  getParentRoute: () => AppAdminTopicIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/home': typeof AppHomeRoute
-  '/admin/$topicId': typeof AppAdminTopicIdRoute
+  '/admin/$topicId': typeof AppAdminTopicIdRouteWithChildren
   '/$topicId/': typeof AppTopicIdIndexRoute
   '/admin/': typeof AppAdminIndexRoute
   '/quiz/': typeof AppQuizIndexRoute
+  '/admin/$topicId/success': typeof AppAdminTopicIdSuccessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/home': typeof AppHomeRoute
-  '/admin/$topicId': typeof AppAdminTopicIdRoute
+  '/admin/$topicId': typeof AppAdminTopicIdRouteWithChildren
   '/$topicId': typeof AppTopicIdIndexRoute
   '/admin': typeof AppAdminIndexRoute
   '/quiz': typeof AppQuizIndexRoute
+  '/admin/$topicId/success': typeof AppAdminTopicIdSuccessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -82,10 +90,11 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/_app/home': typeof AppHomeRoute
-  '/_app/admin/$topicId': typeof AppAdminTopicIdRoute
+  '/_app/admin/$topicId': typeof AppAdminTopicIdRouteWithChildren
   '/_app/$topicId/': typeof AppTopicIdIndexRoute
   '/_app/admin/': typeof AppAdminIndexRoute
   '/_app/quiz/': typeof AppQuizIndexRoute
+  '/_app/admin/$topicId/success': typeof AppAdminTopicIdSuccessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/$topicId/'
     | '/admin/'
     | '/quiz/'
+    | '/admin/$topicId/success'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
     | '/$topicId'
     | '/admin'
     | '/quiz'
+    | '/admin/$topicId/success'
   id:
     | '__root__'
     | '/'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/_app/$topicId/'
     | '/_app/admin/'
     | '/_app/quiz/'
+    | '/_app/admin/$topicId/success'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -182,12 +194,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminTopicIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/admin/$topicId/success': {
+      id: '/_app/admin/$topicId/success'
+      path: '/success'
+      fullPath: '/admin/$topicId/success'
+      preLoaderRoute: typeof AppAdminTopicIdSuccessRouteImport
+      parentRoute: typeof AppAdminTopicIdRoute
+    }
   }
 }
 
+interface AppAdminTopicIdRouteChildren {
+  AppAdminTopicIdSuccessRoute: typeof AppAdminTopicIdSuccessRoute
+}
+
+const AppAdminTopicIdRouteChildren: AppAdminTopicIdRouteChildren = {
+  AppAdminTopicIdSuccessRoute: AppAdminTopicIdSuccessRoute,
+}
+
+const AppAdminTopicIdRouteWithChildren = AppAdminTopicIdRoute._addFileChildren(
+  AppAdminTopicIdRouteChildren,
+)
+
 interface AppRouteChildren {
   AppHomeRoute: typeof AppHomeRoute
-  AppAdminTopicIdRoute: typeof AppAdminTopicIdRoute
+  AppAdminTopicIdRoute: typeof AppAdminTopicIdRouteWithChildren
   AppTopicIdIndexRoute: typeof AppTopicIdIndexRoute
   AppAdminIndexRoute: typeof AppAdminIndexRoute
   AppQuizIndexRoute: typeof AppQuizIndexRoute
@@ -195,7 +226,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppHomeRoute: AppHomeRoute,
-  AppAdminTopicIdRoute: AppAdminTopicIdRoute,
+  AppAdminTopicIdRoute: AppAdminTopicIdRouteWithChildren,
   AppTopicIdIndexRoute: AppTopicIdIndexRoute,
   AppAdminIndexRoute: AppAdminIndexRoute,
   AppQuizIndexRoute: AppQuizIndexRoute,

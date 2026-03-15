@@ -12,6 +12,7 @@ const AdminTopic = ({ topic }: AdminTopicProps) => {
         collectionName={topic.slug}
         fields={topic.fields}
         storagePrefix={topic.storage_prefix}
+        topicId={topic.id}
       />
     </Box>
   );
