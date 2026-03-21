@@ -13,8 +13,9 @@ const Admin = ({ topics }: AdminProps) => {
       {topics.map((topic) => (
         <RouterLink
           key={topic.id}
-          to="/admin/$topicId"
           params={{ topicId: topic.id }}
+          search={{ saved: undefined }}
+          to="/admin/$topicId"
           underline="none"
           preload="intent"
           sx={{

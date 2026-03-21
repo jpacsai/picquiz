@@ -6,10 +6,14 @@ import { topicOptions } from '@queries/topics';
 
 const path = '/_app/admin/$topicId/';
 
+const parseSearch = (search: Record<string, unknown>) =>
+  ({ saved: search.saved === 'edited' ? 'edited' : undefined }) as const;
+
 const RouteComponent = () => {
   const { items, topic } = useLoaderData({ from: path });
+  const { saved } = Route.useSearch();
 
-  return <AdminTopicCollection items={items} topic={topic} />;
+  return <AdminTopicCollection items={items} saved={saved} topic={topic} />;
 };
 
 export const Route = createFileRoute('/_app/admin/$topicId/')({
@@ -26,4 +30,5 @@ export const Route = createFileRoute('/_app/admin/$topicId/')({
     };
   },
   component: RouteComponent,
+  validateSearch: parseSearch,
 });

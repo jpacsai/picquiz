@@ -5,17 +5,36 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import type { TopicItem } from '@service/items';
 import { useNavigate } from '@tanstack/react-router';
+import { useSnackbar } from 'notistack';
+import { useEffect } from 'react';
 
 import AdminTopicItem from '@/components/pages/Admin/AdminTopicItem';
 import type { Topic } from '@/types/topics';
 
 type AdminTopicCollectionProps = {
   items: ReadonlyArray<TopicItem>;
+  saved?: 'edited';
   topic: Topic;
 };
 
-const AdminTopicCollection = ({ items, topic }: AdminTopicCollectionProps) => {
+const AdminTopicCollection = ({ items, saved, topic }: AdminTopicCollectionProps) => {
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
+
+  useEffect(() => {
+    if (saved !== 'edited') {
+      return;
+    }
+
+    enqueueSnackbar('Az elem módosításai elmentve.', { variant: 'success' });
+
+    void navigate({
+      replace: true,
+      search: { saved: undefined },
+      to: '/admin/$topicId',
+      params: { topicId: topic.id },
+    });
+  }, [enqueueSnackbar, navigate, saved, topic.id]);
 
   return (
     <Box sx={{ display: 'grid', gap: 3 }}>

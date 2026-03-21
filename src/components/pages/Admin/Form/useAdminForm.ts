@@ -262,6 +262,7 @@ export const useAdminForm = ({
         await navigate(
           mode === 'edit'
             ? {
+                search: { saved: 'edited' },
                 to: '/admin/$topicId',
                 params: { topicId },
               }

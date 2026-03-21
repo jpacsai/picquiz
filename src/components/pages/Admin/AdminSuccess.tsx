@@ -40,7 +40,11 @@ const AdminSuccess = ({ topicId, topicLabel }: AdminSuccessProps) => {
         <Button
           variant="outlined"
           onClick={() => {
-            void navigate({ to: '/admin/$topicId', params: { topicId } });
+            void navigate({
+              to: '/admin/$topicId',
+              params: { topicId },
+              search: { saved: undefined },
+            });
           }}
         >
           Vissza a collectionhöz
