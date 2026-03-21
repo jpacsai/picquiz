@@ -29,6 +29,21 @@ const field: Extract<TopicField, { type: 'imageUpload' }> = {
 };
 
 describe('ImageUploadField', () => {
+  it('shows a loader while the stored image preview is loading', () => {
+    render(
+      <ImageUploadField
+        artistName="Leonardo da Vinci"
+        existingImageUrl="https://example.com/existing.jpg"
+        field={field}
+        mode="edit"
+        onSelectImage={vi.fn()}
+        title="Mona Lisa"
+      />,
+    );
+
+    expect(screen.getByLabelText('Kep elonezet toltese')).toBeInTheDocument();
+  });
+
   it('shows a placeholder in edit mode when there is no stored image', () => {
     render(
       <ImageUploadField
@@ -60,5 +75,22 @@ describe('ImageUploadField', () => {
 
     expect(screen.getByRole('img', { name: 'Hibas vagy hianyzo kep' })).toBeInTheDocument();
     expect(screen.getAllByText('Hibas vagy hianyzo kep')).toHaveLength(2);
+  });
+
+  it('hides the loader after the stored image preview has loaded', () => {
+    render(
+      <ImageUploadField
+        artistName="Leonardo da Vinci"
+        existingImageUrl="https://example.com/existing.jpg"
+        field={field}
+        mode="edit"
+        onSelectImage={vi.fn()}
+        title="Mona Lisa"
+      />,
+    );
+
+    fireEvent.load(screen.getByRole('img', { name: 'Mona Lisa' }));
+
+    expect(screen.queryByLabelText('Kep elonezet toltese')).not.toBeInTheDocument();
   });
 });
