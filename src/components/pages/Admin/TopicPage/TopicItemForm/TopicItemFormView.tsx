@@ -99,8 +99,8 @@ const TopicItemFormView = ({
         </Alert>
       ) : null}
 
-      <form.Subscribe selector={(state) => state.isDirty}>
-        {(isDirty) => (
+      <form.Subscribe selector={(state: { isDirty: boolean }) => state.isDirty}>
+        {(isDirty: boolean) => (
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
             {(() => {
               const isActionEnabled = isDirty || Boolean(pendingImageSelection);
