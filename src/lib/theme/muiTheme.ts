@@ -1,13 +1,17 @@
 import { createTheme } from '@mui/material/styles';
 
 import components from './components';
-import palette from './palette';
-import typography from './typography.ts';
+import { getPalette } from './palette';
+import { defaultThemePresetId, type ThemePresetId } from './themePresets';
+import { getTypography } from './typography.ts';
 
-const theme = createTheme({
-  components,
-  palette,
-  typography,
-});
+export const createAppTheme = (presetId: ThemePresetId = defaultThemePresetId) =>
+  createTheme({
+    components,
+    palette: getPalette(presetId),
+    typography: getTypography(presetId),
+  });
+
+const theme = createAppTheme();
 
 export default theme;

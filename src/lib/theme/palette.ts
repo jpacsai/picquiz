@@ -1,35 +1,32 @@
-import { blue, grey } from '@mui/material/colors';
 import type { ThemeOptions } from '@mui/material/styles';
 
-export const themeColors = {
-  brand: {
-    primary: blue[300],
-    primaryLight: blue[200],
-  },
-  surface: {
-    page: '#0f172a',
-    card: '#1e293b',
-  },
-  text: {
-    primary: '#f8fafc',
-    secondary: grey[400],
-  },
-};
+import {
+  defaultThemePresetId,
+  getThemePreset,
+  type ThemeColorTokens,
+  type ThemePresetId,
+} from './themePresets';
 
-const palette: ThemeOptions['palette'] = {
-  mode: 'dark',
+export const createPalette = (colors: ThemeColorTokens): ThemeOptions['palette'] => ({
+  mode: colors.mode,
   primary: {
-    main: themeColors.brand.primary,
-    light: themeColors.brand.primaryLight,
+    main: colors.brand.primary,
+    light: colors.brand.primaryLight,
   },
   background: {
-    default: themeColors.surface.page,
-    paper: themeColors.surface.card,
+    default: colors.surface.page,
+    paper: colors.surface.card,
   },
   text: {
-    primary: themeColors.text.primary,
-    secondary: themeColors.text.secondary,
+    primary: colors.text.primary,
+    secondary: colors.text.secondary,
   },
+});
+
+export const getPalette = (presetId: ThemePresetId = defaultThemePresetId) => {
+  return createPalette(getThemePreset(presetId).colors);
 };
+
+const palette = getPalette();
 
 export default palette;
