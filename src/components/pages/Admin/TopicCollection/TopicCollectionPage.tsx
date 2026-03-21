@@ -30,7 +30,11 @@ const AdminTopicCollectionPage = ({ items, saved, topic }: AdminTopicCollectionP
       return;
     }
 
-    enqueueSnackbar('Az elem módosításai elmentve.', { variant: 'success' });
+    enqueueSnackbar('Az elem módosításai elmentve.', {
+      key: 'admin-topic-item-edited',
+      preventDuplicate: true,
+      variant: 'success',
+    });
 
     void navigate({
       replace: true,
