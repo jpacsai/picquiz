@@ -1,3 +1,4 @@
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { useState } from 'react';
@@ -14,6 +15,7 @@ type ImageUploadFieldProps = {
     previewUrl: string;
   } | null;
   field: Extract<TopicField, { type: 'imageUpload' }>;
+  mode?: 'create' | 'edit';
   onSelectImage: (file: File) => void;
   title: string;
 };
@@ -23,15 +25,23 @@ const ImageUploadField = ({
   existingImageUrl,
   existingSelection,
   field,
+  mode = 'create',
   onSelectImage,
   title,
 }: ImageUploadFieldProps) => {
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+  const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
   const isReadyForUpload = artistName.trim().length > 0 && title.trim().length > 0;
   const generatedFileNames = getResponsiveImageFileNames({
     artistName,
     title,
   });
+  const showExistingImage = Boolean(
+    existingImageUrl && !existingSelection && failedImageUrl !== existingImageUrl,
+  );
+  const existingImageSrc = showExistingImage ? existingImageUrl ?? undefined : undefined;
+  const showMissingImagePlaceholder =
+    mode === 'edit' && !existingSelection && (!existingImageUrl || failedImageUrl === existingImageUrl);
 
   return (
     <>
@@ -64,7 +74,7 @@ const ImageUploadField = ({
           </Box>
         ) : null}
 
-        {existingImageUrl && !existingSelection ? (
+        {showExistingImage ? (
           <Box
             sx={{
               display: 'grid',
@@ -82,8 +92,11 @@ const ImageUploadField = ({
             </Box>
             <Box
               component="img"
-              src={existingImageUrl}
+              src={existingImageSrc}
               alt={title || 'Jelenlegi kép'}
+              onError={() => {
+                setFailedImageUrl(existingImageUrl ?? null);
+              }}
               sx={{
                 display: 'block',
                 width: 180,
@@ -96,6 +109,35 @@ const ImageUploadField = ({
                 backgroundColor: 'background.paper',
               }}
             />
+          </Box>
+        ) : null}
+
+        {showMissingImagePlaceholder ? (
+          <Box
+            sx={{
+              alignItems: 'center',
+              border: '1px dashed',
+              borderColor: 'error.main',
+              borderRadius: 1,
+              color: 'error.main',
+              display: 'flex',
+              gap: 1,
+              maxWidth: '100%',
+              minHeight: 72,
+              px: 2,
+              width: 180,
+            }}
+          >
+            <ErrorOutlineIcon fontSize="small" titleAccess="Hibas vagy hianyzo kep" />
+            <Box
+              component="span"
+              sx={{
+                fontSize: 12,
+                lineHeight: 1.4,
+              }}
+            >
+              Hibas vagy hianyzo kep
+            </Box>
           </Box>
         ) : null}
       </Box>

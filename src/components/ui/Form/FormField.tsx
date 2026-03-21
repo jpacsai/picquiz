@@ -176,6 +176,7 @@ const FormField = ({
                 field={field}
                 artistName={typeof artistValue === 'string' ? artistValue : ''}
                 existingImageUrl={existingImageUrl}
+                mode={mode}
                 title={typeof titleValue === 'string' ? titleValue : ''}
                 existingSelection={
                   pendingImageSelection?.field.key === field.key ? pendingImageSelection : null
