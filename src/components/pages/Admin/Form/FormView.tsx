@@ -99,23 +99,33 @@ const FormView = ({
         </Alert>
       ) : null}
 
-      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-        {mode === 'edit' ? (
-          <Button type="button" variant="outlined" disabled={isSubmitting} onClick={onUndo}>
-            Visszaállítás
-          </Button>
-        ) : null}
-        <Button type="submit" variant="contained" disabled={isSubmitting}>
-          {isSubmitting ? (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <CircularProgress size={18} color="inherit" />
-              Mentés...
-            </Box>
-          ) : (
-            'Mentés'
-          )}
-        </Button>
-      </Box>
+      <form.Subscribe selector={(state) => state.isDirty}>
+        {(isDirty) => (
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            {mode === 'edit' ? (
+              <Button
+                type="button"
+                variant="outlined"
+                disabled={isSubmitting || !isDirty}
+                onClick={onUndo}
+              >
+                Visszaállítás
+              </Button>
+            ) : null}
+
+            <Button type="submit" variant="contained" disabled={isSubmitting || !isDirty}>
+              {isSubmitting ? (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <CircularProgress size={18} color="inherit" />
+                  Mentés...
+                </Box>
+              ) : (
+                'Mentés'
+              )}
+            </Button>
+          </Box>
+        )}
+      </form.Subscribe>
     </form>
   );
 };

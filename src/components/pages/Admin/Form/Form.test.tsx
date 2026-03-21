@@ -94,8 +94,11 @@ describe('Admin Form saving', () => {
       />,
     );
 
+    expect(screen.getByRole('button', { name: 'Mentés' })).toBeDisabled();
+
     await user.type(screen.getByTestId('form-input-artist'), 'Leonardo da Vinci');
     await user.type(screen.getByTestId('form-input-title'), 'Mona Lisa');
+    expect(screen.getByRole('button', { name: 'Mentés' })).toBeEnabled();
     await user.click(screen.getByRole('button', { name: 'Mentés' }));
 
     await waitFor(() => {
@@ -374,11 +377,15 @@ describe('Admin Form saving', () => {
       />,
     );
 
+    expect(screen.getByRole('button', { name: 'Visszaállítás' })).toBeDisabled();
+
     await user.clear(screen.getByTestId('form-input-title'));
     await user.type(screen.getByTestId('form-input-title'), 'Changed title');
     await user.click(screen.getByTestId('mock-image-upload-button'));
 
     expect(screen.getByText('Feltöltésre váró kép')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Visszaállítás' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Mentés' })).toBeEnabled();
 
     await user.click(screen.getByRole('button', { name: 'Visszaállítás' }));
 
@@ -386,5 +393,7 @@ describe('Admin Form saving', () => {
     expect(screen.getByDisplayValue('art/desktop/original.jpg')).toBeDisabled();
     expect(screen.getByDisplayValue('art/mobile/original.jpg')).toBeDisabled();
     expect(screen.queryByText('Feltöltésre váró kép')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Visszaállítás' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Mentés' })).toBeDisabled();
   });
 });

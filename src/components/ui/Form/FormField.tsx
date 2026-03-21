@@ -6,7 +6,6 @@ import type { TopicField } from '@/types/topics';
 
 import {
   type FormDeriveField,
-  type FormValues,
   getDerivedValue,
   getFieldValidator,
 } from '../../pages/Admin/Form/utils';
@@ -40,9 +39,9 @@ export type FormFieldFormApi = {
     };
   }>;
   Subscribe: ComponentType<{
-    children: (values: FormValues) => ReactNode;
+    children: (value: any) => ReactNode;
     key?: Key;
-    selector: (state: { values: FormValues }) => FormValues;
+    selector: (state: any) => any;
   }>;
   setFieldValue: (field: string, value: string | number) => void;
   handleSubmit: () => Promise<void>;
