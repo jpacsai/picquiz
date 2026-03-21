@@ -13,13 +13,21 @@ export const createPalette = (colors: ThemeColorTokens): ThemeOptions['palette']
     main: colors.brand.primary,
     light: colors.brand.primaryLight,
   },
+  secondary: {
+    main: colors.brand.accent,
+    dark: colors.brand.accentDark,
+  },
   background: {
     default: colors.surface.page,
     paper: colors.surface.card,
   },
+  divider: colors.border.main,
   text: {
     primary: colors.text.primary,
     secondary: colors.text.secondary,
+  },
+  action: {
+    hover: colors.surface.alt,
   },
 });
 
