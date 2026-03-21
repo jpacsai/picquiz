@@ -59,6 +59,7 @@ const DeleteItemDialog = ({
           </Alert>
         </Stack>
       </DialogContent>
+
       <DialogActions>
         <Button onClick={onClose} disabled={isDeleting}>
           Mégse
