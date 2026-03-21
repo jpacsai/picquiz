@@ -1,10 +1,9 @@
+import { RouterLink } from '@components/ui/RouterLink';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Typography from '@mui/material/Typography';
 import { useMatches } from '@tanstack/react-router';
 
 import type { FileRoutesByTo } from '@/routeTree.gen';
-
-import { RouterLink } from '@components/ui/RouterLink';
 
 type BreadcrumbTo = keyof FileRoutesByTo;
 
@@ -62,7 +61,9 @@ const getAdminItems = (context: RouteContext, currentLabel?: string): Breadcrumb
     return [{ label: 'Admin' }];
   }
 
-  return currentLabel ? [ADMIN_ITEM, topicItem, { label: currentLabel }] : [ADMIN_ITEM, { label: topicItem.label }];
+  return currentLabel
+    ? [ADMIN_ITEM, topicItem, { label: currentLabel }]
+    : [ADMIN_ITEM, { label: topicItem.label }];
 };
 
 const getTopicItems = ({ topicLabel }: RouteContext, currentLabel?: string): BreadcrumbItem[] => {
@@ -70,7 +71,9 @@ const getTopicItems = ({ topicLabel }: RouteContext, currentLabel?: string): Bre
     return [HOME_ITEM];
   }
 
-  return currentLabel ? [HOME_ITEM, { label: topicLabel }, { label: currentLabel }] : [HOME_ITEM, { label: topicLabel }];
+  return currentLabel
+    ? [HOME_ITEM, { label: topicLabel }, { label: currentLabel }]
+    : [HOME_ITEM, { label: topicLabel }];
 };
 
 const getItems = (matches: ReturnType<typeof useMatches>): BreadcrumbItem[] => {
@@ -110,7 +113,7 @@ const AppBreadcrumbs = () => {
   const matches = useMatches();
   const items = getItems(matches);
 
-  if (!items.length) {
+  if (!items.length || items.length === 1) {
     return null;
   }
 
