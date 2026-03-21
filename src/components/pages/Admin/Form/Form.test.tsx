@@ -8,6 +8,7 @@ import Form from './Form';
 
 const navigateMock = vi.fn();
 const invalidateQueriesMock = vi.fn();
+const setQueryDataMock = vi.fn();
 const createTopicItemMock = vi.fn();
 const updateTopicItemMock = vi.fn();
 const uploadResponsiveTopicImagesMock = vi.fn();
@@ -17,6 +18,7 @@ const generateResponsiveImageVariantsMock = vi.fn();
 vi.mock('@tanstack/react-query', () => ({
   useQueryClient: () => ({
     invalidateQueries: invalidateQueriesMock,
+    setQueryData: setQueryDataMock,
   }),
 }));
 
@@ -64,6 +66,7 @@ describe('Admin Form saving', () => {
   beforeEach(() => {
     navigateMock.mockReset();
     invalidateQueriesMock.mockReset();
+    setQueryDataMock.mockReset();
     createTopicItemMock.mockReset();
     updateTopicItemMock.mockReset();
     uploadResponsiveTopicImagesMock.mockReset();
@@ -73,6 +76,7 @@ describe('Admin Form saving', () => {
     createTopicItemMock.mockResolvedValue({ id: 'doc-1' });
     updateTopicItemMock.mockResolvedValue(undefined);
     invalidateQueriesMock.mockResolvedValue(undefined);
+    setQueryDataMock.mockReturnValue(undefined);
     deleteTopicImageByPathMock.mockResolvedValue(undefined);
     navigateMock.mockResolvedValue(undefined);
   });
@@ -395,5 +399,51 @@ describe('Admin Form saving', () => {
     expect(screen.queryByText('Feltöltésre váró kép')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Visszaállítás' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Mentés' })).toBeDisabled();
+  });
+
+  it('enables edit actions when only a new image is selected', async () => {
+    const user = userEvent.setup();
+    const fields: TopicField[] = [
+      { key: 'artist', label: 'Artist', required: true, type: 'string' },
+      { key: 'title', label: 'Title', required: true, type: 'string' },
+      { key: 'image_url_desktop', label: 'Desktop URL', readonly: true, type: 'string' },
+      { key: 'image_url_mobile', label: 'Mobile URL', readonly: true, type: 'string' },
+      {
+        buttonLabel: 'Upload after artist and title',
+        fileNameFields: { artist: 'artist', title: 'title' },
+        key: 'image_upload',
+        label: 'Upload image',
+        targetFields: {
+          desktop: 'image_url_desktop',
+          mobile: 'image_url_mobile',
+        },
+        type: 'imageUpload',
+      },
+    ];
+
+    render(
+      <Form
+        collectionName="art"
+        fields={fields}
+        initialValues={{
+          artist: 'Leonardo da Vinci',
+          title: 'Mona Lisa',
+          image_url_desktop: 'https://example.com/old-desktop.jpg',
+          image_url_mobile: 'https://example.com/old-mobile.jpg',
+        }}
+        itemId="item-1"
+        mode="edit"
+        storagePrefix="art"
+        topicId="art"
+      />,
+    );
+
+    expect(screen.getByRole('button', { name: 'Visszaállítás' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Mentés' })).toBeDisabled();
+
+    await user.click(screen.getByTestId('mock-image-upload-button'));
+
+    expect(screen.getByRole('button', { name: 'Visszaállítás' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Mentés' })).toBeEnabled();
   });
 });

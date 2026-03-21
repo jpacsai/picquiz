@@ -102,18 +102,23 @@ const FormView = ({
       <form.Subscribe selector={(state) => state.isDirty}>
         {(isDirty) => (
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            {(() => {
+              const isActionEnabled = isDirty || Boolean(pendingImageSelection);
+
+              return (
+                <>
             {mode === 'edit' ? (
               <Button
                 type="button"
                 variant="outlined"
-                disabled={isSubmitting || !isDirty}
+                disabled={isSubmitting || !isActionEnabled}
                 onClick={onUndo}
               >
                 Visszaállítás
               </Button>
             ) : null}
 
-            <Button type="submit" variant="contained" disabled={isSubmitting || !isDirty}>
+            <Button type="submit" variant="contained" disabled={isSubmitting || !isActionEnabled}>
               {isSubmitting ? (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <CircularProgress size={18} color="inherit" />
@@ -123,6 +128,9 @@ const FormView = ({
                 'Mentés'
               )}
             </Button>
+                </>
+              );
+            })()}
           </Box>
         )}
       </form.Subscribe>
