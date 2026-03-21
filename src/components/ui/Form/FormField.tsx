@@ -162,11 +162,20 @@ const FormField = ({
           {(values) => {
             const artistValue = values[field.fileNameFields.artist];
             const titleValue = values[field.fileNameFields.title];
+            const desktopImageValue = values[field.targetFields.desktop];
+            const mobileImageValue = values[field.targetFields.mobile];
+            const existingImageUrl =
+              typeof desktopImageValue === 'string' && desktopImageValue.trim().length > 0
+                ? desktopImageValue
+                : typeof mobileImageValue === 'string' && mobileImageValue.trim().length > 0
+                  ? mobileImageValue
+                  : null;
 
             return (
               <ImageUploadField
                 field={field}
                 artistName={typeof artistValue === 'string' ? artistValue : ''}
+                existingImageUrl={existingImageUrl}
                 title={typeof titleValue === 'string' ? titleValue : ''}
                 existingSelection={
                   pendingImageSelection?.field.key === field.key ? pendingImageSelection : null

@@ -8,6 +8,7 @@ import ImageUploadDialog from '../../pages/Admin/Form/components/ImageUploadDial
 
 type ImageUploadFieldProps = {
   artistName: string;
+  existingImageUrl?: string | null;
   existingSelection?: {
     file: File;
     previewUrl: string;
@@ -19,6 +20,7 @@ type ImageUploadFieldProps = {
 
 const ImageUploadField = ({
   artistName,
+  existingImageUrl,
   existingSelection,
   field,
   onSelectImage,
@@ -59,6 +61,41 @@ const ImageUploadField = ({
             }}
           >
             {field.buttonLabel}
+          </Box>
+        ) : null}
+
+        {existingImageUrl && !existingSelection ? (
+          <Box
+            sx={{
+              display: 'grid',
+              gap: 1,
+            }}
+          >
+            <Box
+              component="span"
+              sx={{
+                color: 'text.secondary',
+                fontSize: 12,
+              }}
+            >
+              Jelenlegi kép
+            </Box>
+            <Box
+              component="img"
+              src={existingImageUrl}
+              alt={title || 'Jelenlegi kép'}
+              sx={{
+                display: 'block',
+                width: 180,
+                maxWidth: '100%',
+                height: 'auto',
+                borderRadius: 1,
+                border: '1px solid',
+                borderColor: 'divider',
+                objectFit: 'contain',
+                backgroundColor: 'background.paper',
+              }}
+            />
           </Box>
         ) : null}
       </Box>
