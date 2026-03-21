@@ -1,8 +1,5 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
 import { topicItemsOptions } from '@queries/items';
 import type { TopicItem } from '@service/items';
 import { useQuery } from '@tanstack/react-query';
@@ -10,7 +7,8 @@ import { useNavigate } from '@tanstack/react-router';
 import { useSnackbar } from 'notistack';
 import { useEffect } from 'react';
 
-import AdminTopicItem from '@/components/pages/Admin/TopicCollection/TopicItem/components/AdminTopicItem';
+import AdminTopicItemCard from '@/components/pages/Admin/TopicCollection/TopicItem/components/AdminTopicItemCard';
+import EmptyCollectionCard from '@/components/pages/Admin/TopicCollection/TopicItem/components/EmptyCollectionCard';
 import type { Topic } from '@/types/topics';
 
 type AdminTopicCollectionPageProps = {
@@ -61,7 +59,7 @@ const AdminTopicCollectionPage = ({ items, saved, topic }: AdminTopicCollectionP
       {liveItems.length ? (
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
           {liveItems.map((item) => (
-            <AdminTopicItem
+            <AdminTopicItemCard
               collectionName={topic.slug}
               fields={topic.fields}
               item={item}
@@ -71,13 +69,7 @@ const AdminTopicCollectionPage = ({ items, saved, topic }: AdminTopicCollectionP
           ))}
         </Box>
       ) : (
-        <Card>
-          <CardContent>
-            <Typography color="text.secondary" variant="body1">
-              Ebben a collectionben még nincs feltöltött item.
-            </Typography>
-          </CardContent>
-        </Card>
+        <EmptyCollectionCard />
       )}
     </Box>
   );

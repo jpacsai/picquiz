@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useState } from 'react';
 
-import ImageUploadDialog from '@/components/pages/Admin/TopicCollection/TopicItem/TopicItemForm/components/ImageUploadDialog';
+import ImageUploadDialog from '@/components/pages/Admin/TopicCollection/TopicItem/TopicItemFormPage/TopicItemForm/components/ImageUploadDialog';
 
 import { getResponsiveImageFileNames } from '../../../data/storage';
 import type { TopicField } from '../../../types/topics';

@@ -1,17 +1,22 @@
 import { Box } from '@mui/material';
 
-import TopicItemForm from '@/components/pages/Admin/TopicCollection/TopicItem/TopicItemForm/TopicItemForm';
+import TopicItemForm from '@/components/pages/Admin/TopicCollection/TopicItem/TopicItemFormPage/TopicItemForm/TopicItemForm';
 import type { TopicItem } from '@/service/items';
 import type { Topic } from '@/types/topics';
 
-type AdminTopicPageProps = {
+type AdminTopicItemFormPageProps = {
   initialValues?: Record<string, unknown>;
   item?: TopicItem;
   mode?: 'create' | 'edit';
   topic: Topic;
 };
 
-const AdminTopicPage = ({ initialValues, item, mode = 'create', topic }: AdminTopicPageProps) => {
+const AdminTopicItemFormPage = ({
+  initialValues,
+  item,
+  mode = 'create',
+  topic,
+}: AdminTopicItemFormPageProps) => {
   return (
     <Box sx={{ display: 'grid', gap: 3 }}>
       <TopicItemForm
@@ -27,4 +32,4 @@ const AdminTopicPage = ({ initialValues, item, mode = 'create', topic }: AdminTo
   );
 };
 
-export default AdminTopicPage;
+export default AdminTopicItemFormPage;

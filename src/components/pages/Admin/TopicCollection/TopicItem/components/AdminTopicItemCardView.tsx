@@ -2,7 +2,7 @@ import { Button, Card, CardActions, CardContent, Typography } from '@mui/materia
 
 import DeleteItemDialog from './DeleteItemDialog';
 
-type AdminTopicItemViewProps = {
+type AdminTopicItemCardViewProps = {
   description?: string;
   isDeleteDialogOpen: boolean;
   isDeleting: boolean;
@@ -15,7 +15,7 @@ type AdminTopicItemViewProps = {
   title: string;
 };
 
-const AdminTopicItemView = ({
+const AdminTopicItemCardView = ({
   description,
   isDeleteDialogOpen,
   isDeleting,
@@ -26,7 +26,7 @@ const AdminTopicItemView = ({
   onOpenDeleteDialog,
   subtitle,
   title,
-}: AdminTopicItemViewProps) => {
+}: AdminTopicItemCardViewProps) => {
   return (
     <Card sx={{ width: '100%' }}>
       <CardContent sx={{ display: 'grid', gap: 0.5 }}>
@@ -64,4 +64,4 @@ const AdminTopicItemView = ({
   );
 };
 
-export default AdminTopicItemView;
+export default AdminTopicItemCardView;

@@ -6,7 +6,7 @@ import {
   type FormDeriveField,
   getDerivedValue,
   getFieldValidator,
-} from '@/components/pages/Admin/TopicCollection/TopicItem/TopicItemForm/utils';
+} from '@/components/pages/Admin/TopicCollection/TopicItem/TopicItemFormPage/TopicItemForm/utils';
 import type { TopicField } from '@/types/topics';
 
 import FormInput from './FormInput';

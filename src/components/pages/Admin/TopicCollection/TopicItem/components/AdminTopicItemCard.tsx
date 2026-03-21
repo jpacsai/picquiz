@@ -1,7 +1,7 @@
 import type { TopicItem } from '@/service/items';
 import type { TopicField } from '@/types/topics';
 
-import AdminTopicItemView from './AdminTopicItemView';
+import AdminTopicItemCardView from './AdminTopicItemCardView';
 import { useAdminTopicItem } from './useAdminTopicItem';
 
 type AdminTopicItemProps = {
@@ -11,7 +11,7 @@ type AdminTopicItemProps = {
   topicId: string;
 };
 
-const AdminTopicItem = ({ collectionName, fields, item, topicId }: AdminTopicItemProps) => {
+const AdminTopicItemCard = ({ collectionName, fields, item, topicId }: AdminTopicItemProps) => {
   const viewModel = useAdminTopicItem({
     collectionName,
     fields,
@@ -19,7 +19,7 @@ const AdminTopicItem = ({ collectionName, fields, item, topicId }: AdminTopicIte
     topicId,
   });
 
-  return <AdminTopicItemView {...viewModel} />;
+  return <AdminTopicItemCardView {...viewModel} />;
 };
 
-export default AdminTopicItem;
+export default AdminTopicItemCard;

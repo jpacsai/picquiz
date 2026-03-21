@@ -1,14 +1,14 @@
 import { topicOptions } from '@queries/topics';
 import { createFileRoute, useLoaderData } from '@tanstack/react-router';
 
-import AdminTopicPage from '@/components/pages/Admin/TopicCollection/TopicItem/TopicItemPage';
+import AdminTopicItemFormPage from '@/components/pages/Admin/TopicCollection/TopicItem/TopicItemFormPage/TopicItemFormPage';
 
 const path = '/_app/admin/$topicId/new';
 
 const RouteComponent = () => {
   const { topic } = useLoaderData({ from: path });
 
-  return <AdminTopicPage topic={topic} />;
+  return <AdminTopicItemFormPage topic={topic} />;
 };
 
 export const Route = createFileRoute(path)({
