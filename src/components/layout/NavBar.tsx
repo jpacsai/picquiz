@@ -1,5 +1,4 @@
 import { AppBar, Box, Toolbar, Typography } from '@mui/material';
-import blue from 'node_modules/@mui/material/esm/colors/blue';
 
 import { NavLink } from '@/components/ui/NavLink';
 
@@ -18,7 +17,7 @@ const NavBar = () => {
           }}
         >
           <NavLink to="/home" activeOptions={{ exact: true }} underline="none" preload="intent">
-            <Typography variant="h2" sx={{ color: blue.A700, marginRight: '60px' }}>
+            <Typography variant="h2" sx={{ color: 'primary.main', marginRight: '60px' }}>
               QuizPic
             </Typography>
           </NavLink>

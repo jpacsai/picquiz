@@ -3,23 +3,24 @@ import type { ThemeOptions } from '@mui/material/styles';
 
 export const themeColors = {
   brand: {
-    primary: blue[600],
-    primaryLight: blue.A100,
+    primary: blue[300],
+    primaryLight: blue[200],
   },
   surface: {
-    page: grey[50],
-    card: blue.A100,
+    page: '#0f172a',
+    card: '#1e293b',
   },
   text: {
-    primary: grey[900],
-    secondary: grey[700],
+    primary: '#f8fafc',
+    secondary: grey[400],
   },
 };
 
 const palette: ThemeOptions['palette'] = {
-  mode: 'light',
+  mode: 'dark',
   primary: {
     main: themeColors.brand.primary,
+    light: themeColors.brand.primaryLight,
   },
   background: {
     default: themeColors.surface.page,
