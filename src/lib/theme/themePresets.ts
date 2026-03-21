@@ -1,16 +1,17 @@
 export const themePresetIds = [
   'othello',
   'fleurs',
-  'blume',
   'paper',
   'blue-botanique',
+  'blue-porcelaine',
   'blush-sage',
   'jungle-ember',
-  'sepia',
   'sepia-nocturne',
   'porcelaine',
   'eunoia-teal',
-  'blue-porcelaine',
+  'waterlily',
+  'venus',
+  'sunset',
 ] as const;
 
 export type ThemePresetId = (typeof themePresetIds)[number];
@@ -29,6 +30,15 @@ export type ThemeSurfaceTokens = {
   alt: string;
 };
 
+export type ThemeOnSurfaceTokens = {
+  pagePrimary: string;
+  pageSecondary: string;
+  cardPrimary: string;
+  cardSecondary: string;
+  altPrimary: string;
+  altSecondary: string;
+};
+
 export type ThemeTextTokens = {
   primary: string;
   primaryHover: string;
@@ -44,6 +54,7 @@ export type ThemeColorTokens = {
   mode: 'light' | 'dark';
   brand: ThemeBrandTokens;
   surface: ThemeSurfaceTokens;
+  onSurface?: ThemeOnSurfaceTokens;
   border: ThemeBorderTokens;
   text: ThemeTextTokens;
 };
@@ -82,6 +93,21 @@ export type ThemePresetDefinition = {
 
 export const defaultThemePresetId: ThemePresetId = 'othello';
 
+export const resolveOnSurfaceTokens = (colors: ThemeColorTokens): ThemeOnSurfaceTokens => {
+  if (colors.onSurface) {
+    return colors.onSurface;
+  }
+
+  return {
+    pagePrimary: colors.text.primary,
+    pageSecondary: colors.text.secondary,
+    cardPrimary: colors.text.primary,
+    cardSecondary: colors.text.secondary,
+    altPrimary: colors.text.primary,
+    altSecondary: colors.text.secondary,
+  };
+};
+
 export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
   {
     meta: {
@@ -89,29 +115,37 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
       label: 'Othello',
     },
     colors: {
-      mode: 'dark',
-      brand: {
-        primary: '#C59676',
-        primaryLight: '#D2A487',
-        primaryHover: '#D2A487',
-        accent: '#9A6748',
-        accentDark: '#6E472F',
-      },
-      surface: {
-        page: '#0B1022',
-        card: '#141A33',
-        alt: '#20284A',
-      },
-      border: {
-        main: '#31395F',
-      },
-      text: {
-        primary: '#EEE4DE',
-        primaryHover: '#F5ECE7',
-        secondary: '#9C92A5',
-        secondaryHover: '#B0A7B8',
-      },
-    },
+  mode: 'dark',
+  brand: {
+    primary: '#C59676',
+    primaryLight: '#D2A487',
+    primaryHover: '#D2A487',
+    accent: '#9A6748',
+    accentDark: '#6E472F',
+  },
+  surface: {
+    page: '#0B1022',
+    card: '#141A33',
+    alt: '#20284A',
+  },
+  onSurface: {
+    pagePrimary: '#F2E9E3',
+    pageSecondary: '#B8AFBF',
+    cardPrimary: '#F4ECE6',
+    cardSecondary: '#C0B6C4',
+    altPrimary: '#F6EEE8',
+    altSecondary: '#C8BFCC',
+  },
+  border: {
+    main: '#68739D',
+  },
+  text: {
+    primary: '#F2E9E3',
+    primaryHover: '#FBF3EE',
+    secondary: '#B8AFBF',
+    secondaryHover: '#C8BFCC',
+  },
+},
     typography: {
       fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
       h1: {
@@ -148,29 +182,37 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
       label: 'Fleurs',
     },
     colors: {
-      mode: 'dark',
-      brand: {
-        primary: '#D0AE96',
-        primaryLight: '#E8E3DA',
-        primaryHover: '#BC977E',
-        accent: '#7A2E43',
-        accentDark: '#4A2333',
-      },
-      surface: {
-        page: '#0B171B',
-        card: '#102B36',
-        alt: '#1A3A46',
-      },
-      border: {
-        main: '#24363D',
-      },
-      text: {
-        primary: '#E8E3DA',
-        primaryHover: '#D0AE96',
-        secondary: '#8A9294',
-        secondaryHover: '#A3AAAC',
-      },
-    },
+  mode: 'dark',
+  brand: {
+    primary: '#D0AE96',
+    primaryLight: '#E0C0AA',
+    primaryHover: '#DEBBA4',
+    accent: '#8A2F4D',
+    accentDark: '#5C2036',
+  },
+  surface: {
+    page: '#0B171B',
+    card: '#102B36',
+    alt: '#1A3A46',
+  },
+  onSurface: {
+    pagePrimary: '#F0E7DE',
+    pageSecondary: '#C1B4B0',
+    cardPrimary: '#F5ECE4',
+    cardSecondary: '#CABDB8',
+    altPrimary: '#FAF0E8',
+    altSecondary: '#D0C3BE',
+  },
+  border: {
+    main: '#34505A',
+  },
+  text: {
+    primary: '#F0E7DE',
+    primaryHover: '#FBF2EA',
+    secondary: '#C1B4B0',
+    secondaryHover: '#D0C3BE',
+  },
+},
     typography: {
       fontFamily: '"Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif',
       h1: {
@@ -203,92 +245,41 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
   },
   {
     meta: {
-      id: 'blume',
-      label: 'Blume',
-    },
-    colors: {
-      mode: 'dark',
-      brand: {
-        primary: '#20241F',
-        primaryLight: '#C7C7BD',
-        primaryHover: '#d8d8d0',
-        accent: '#8d5a4f',
-        accentDark: '#5f3a33',
-      },
-      surface: {
-        page: '#343C31',
-        card: '#B9A58A',
-        alt: '#d2c2ab',
-      },
-      border: {
-        main: '#8d816e',
-      },
-      text: {
-        primary: '#343C31',
-        primaryHover: '#20241F',
-        secondary: '#343C31',
-        secondaryHover: '#20241F',
-      },
-    },
-    typography: {
-      fontFamily: '"Gill Sans", "Trebuchet MS", "Segoe UI", sans-serif',
-      h1: {
-        fontSize: '1.9rem',
-        fontWeight: 800,
-      },
-      h2: {
-        fontSize: '1.55rem',
-        fontWeight: 700,
-      },
-      h3: {
-        fontSize: '1.25rem',
-        fontWeight: 700,
-      },
-      h4: {
-        fontSize: '1.125rem',
-        fontWeight: 700,
-      },
-      body1: {
-        fontSize: '.875rem',
-        lineHeight: '1.45rem',
-        fontWeight: 400,
-      },
-      body2: {
-        fontSize: '.75rem',
-        lineHeight: '1.3rem',
-        fontWeight: 400,
-      },
-    },
-  },
-  {
-    meta: {
       id: 'paper',
       label: 'Paper',
     },
     colors: {
-      mode: 'light',
-      brand: {
-        primary: '#C8A36A',
-        primaryLight: '#D8B57B',
-        primaryHover: '#D8B57B',
-        accent: '#7A6257',
-        accentDark: '#56433C',
-      },
-      surface: {
-        page: '#E7E0DA',
-        card: '#B8A8A6',
-        alt: '#D2C7C2',
-      },
-      border: {
-        main: '#C9BDB7',
-      },
-      text: {
-        primary: '#5E4A43',
-        primaryHover: '#715A52',
-        secondary: '#9C8E88',
-        secondaryHover: '#8A7B75',
-      },
-    },
+  mode: 'light',
+  brand: {
+    primary: '#6F5B54',
+    primaryLight: '#8A736B',
+    primaryHover: '#5E4C46',
+    accent: '#B3905C',
+    accentDark: '#876A3D',
+  },
+  surface: {
+    page: '#F5F1EC',
+    card: '#E7DDD7',
+    alt: '#D8CDCA',
+  },
+  onSurface: {
+    pagePrimary: '#342B28',
+    pageSecondary: '#625654',
+    cardPrimary: '#312825',
+    cardSecondary: '#5C514E',
+    altPrimary: '#2E2623',
+    altSecondary: '#564C48',
+  },
+  border: {
+    main: '#CEC2BC',
+  },
+  text: {
+    primary: '#342B28',
+    primaryHover: '#281F1D',
+    secondary: '#625654',
+    secondaryHover: '#564C48',
+  },
+},
     typography: {
       fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
       h1: {
@@ -325,27 +316,102 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
       label: 'Blue botanique',
     },
     colors: {
+  mode: 'light',
+  brand: {
+    primary: '#2F5E8E',
+    primaryLight: '#4C7AA9',
+    primaryHover: '#264E75',
+    accent: '#9B7A2F',
+    accentDark: '#6F5620',
+  },
+  surface: {
+    page: '#F4EFE6',
+    card: '#E4ECE6',
+    alt: '#D3E0DA',
+  },
+  onSurface: {
+    pagePrimary: '#2E382F',
+    pageSecondary: '#5E675A',
+    cardPrimary: '#29342E',
+    cardSecondary: '#566156',
+    altPrimary: '#243731',
+    altSecondary: '#4E635C',
+  },
+  border: {
+    main: '#CDD6CC',
+  },
+  text: {
+    primary: '#2E382F',
+    primaryHover: '#232B25',
+    secondary: '#5E675A',
+    secondaryHover: '#4F584C',
+  },
+},
+    typography: {
+      fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+      h1: {
+        fontSize: '1.875rem',
+        fontWeight: 700,
+      },
+      h2: {
+        fontSize: '1.5rem',
+        fontWeight: 700,
+      },
+      h3: {
+        fontSize: '1.25rem',
+        fontWeight: 700,
+      },
+      h4: {
+        fontSize: '1.125rem',
+        fontWeight: 700,
+      },
+      body1: {
+        fontSize: '.875rem',
+        lineHeight: '1.375rem',
+        fontWeight: 400,
+      },
+      body2: {
+        fontSize: '.75rem',
+        lineHeight: '1.25rem',
+        fontWeight: 400,
+      },
+    },
+  },
+  {
+    meta: {
+      id: 'blue-porcelaine',
+      label: 'Blue Porcelaine',
+    },
+    colors: {
       mode: 'light',
       brand: {
-        primary: '#2F5E8E',
-        primaryLight: '#3E73A8',
-        primaryHover: '#3E73A8',
-        accent: '#9B7A2F',
-        accentDark: '#6F5620',
+        primary: '#4F6F9E',
+        primaryLight: '#6A87B5',
+        primaryHover: '#3F5F8D',
+        accent: '#8FA9C8',
+        accentDark: '#355277',
       },
       surface: {
-        page: '#F3EFE5',
-        card: '#DCE4DA',
-        alt: '#BFD1C9',
+        page: '#F5F4F1',
+        card: '#E8EDF3',
+        alt: '#D6E0EB',
+      },
+      onSurface: {
+        pagePrimary: '#243246',
+        pageSecondary: '#5B697D',
+        cardPrimary: '#223045',
+        cardSecondary: '#556479',
+        altPrimary: '#1F2C40',
+        altSecondary: '#4F5E73',
       },
       border: {
-        main: '#D5CBB8',
+        main: '#C9D2DD',
       },
       text: {
-        primary: '#5A4B2F',
-        primaryHover: '#6B5A39',
-        secondary: '#8D846E',
-        secondaryHover: '#7C745F',
+        primary: '#243246',
+        primaryHover: '#1E2A3C',
+        secondary: '#5B697D',
+        secondaryHover: '#4F5E73',
       },
     },
     typography: {
@@ -443,88 +509,37 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
       label: 'Jungle Ember',
     },
     colors: {
-      mode: 'dark',
-      brand: {
-        primary: '#BD6809',
-        primaryLight: '#D4811F',
-        primaryHover: '#D4811F',
-        accent: '#9A3F4A',
-        accentDark: '#3D1419',
-      },
-      surface: {
-        page: '#121B13',
-        card: '#2F4731',
-        alt: '#3C5A3F',
-      },
-      border: {
-        main: '#4A5B46',
-      },
-      text: {
-        primary: '#F2E8D8',
-        primaryHover: '#FBF1E1',
-        secondary: '#B7A78D',
-        secondaryHover: '#C8B89D',
-      },
-    },
-    typography: {
-      fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-      h1: {
-        fontSize: '1.875rem',
-        fontWeight: 700,
-      },
-      h2: {
-        fontSize: '1.5rem',
-        fontWeight: 700,
-      },
-      h3: {
-        fontSize: '1.25rem',
-        fontWeight: 700,
-      },
-      h4: {
-        fontSize: '1.125rem',
-        fontWeight: 700,
-      },
-      body1: {
-        fontSize: '.875rem',
-        lineHeight: '1.375rem',
-        fontWeight: 400,
-      },
-      body2: {
-        fontSize: '.75rem',
-        lineHeight: '1.25rem',
-        fontWeight: 400,
-      },
-    },
+  mode: 'dark',
+  brand: {
+    primary: '#D08A1F',
+    primaryLight: '#E2A23A',
+    primaryHover: '#E2A23A',
+    accent: '#A7355A',
+    accentDark: '#671833',
   },
-  {
-    meta: {
-      id: 'sepia',
-      label: 'Sepia',
-    },
-    colors: {
-      mode: 'light',
-      brand: {
-        primary: '#B38773',
-        primaryLight: '#C69A85',
-        primaryHover: '#C69A85',
-        accent: '#6C432D',
-        accentDark: '#24170F',
-      },
-      surface: {
-        page: '#F0E1D0',
-        card: '#0B0907',
-        alt: '#D6BEA6',
-      },
-      border: {
-        main: '#C7AF97',
-      },
-      text: {
-        primary: '#3D2A20',
-        primaryHover: '#52392C',
-        secondary: '#9A7C68',
-        secondaryHover: '#876A57',
-      },
-    },
+  surface: {
+    page: '#0A120E',
+    card: '#102017',
+    alt: '#1A3023',
+  },
+  onSurface: {
+    pagePrimary: '#F4EBDD',
+    pageSecondary: '#C6B89F',
+    cardPrimary: '#F7EEE1',
+    cardSecondary: '#CDBFA8',
+    altPrimary: '#FAF1E4',
+    altSecondary: '#D3C5AE',
+  },
+  border: {
+    main: '#395142',
+  },
+  text: {
+    primary: '#F4EBDD',
+    primaryHover: '#FFF7EC',
+    secondary: '#C6B89F',
+    secondaryHover: '#D3C5AE',
+  },
+},
     typography: {
       fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
       h1: {
@@ -561,29 +576,37 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
       label: 'Sepia Nocturne',
     },
     colors: {
-      mode: 'dark',
-      brand: {
-        primary: '#C39A81',
-        primaryLight: '#D2AA90',
-        primaryHover: '#D2AA90',
-        accent: '#8A5B43',
-        accentDark: '#3A251A',
-      },
-      surface: {
-        page: '#0A0807',
-        card: '#17110E',
-        alt: '#241A15',
-      },
-      border: {
-        main: '#4B382E',
-      },
-      text: {
-        primary: '#F1E1D0',
-        primaryHover: '#F7E9D9',
-        secondary: '#B89B86',
-        secondaryHover: '#C9AD99',
-      },
-    },
+  mode: 'dark',
+  brand: {
+    primary: '#C79B84',
+    primaryLight: '#D7AF9B',
+    primaryHover: '#D7AF9B',
+    accent: '#8A5A47',
+    accentDark: '#5A372A',
+  },
+  surface: {
+    page: '#0A0908',
+    card: '#14110F',
+    alt: '#211A16',
+  },
+  onSurface: {
+    pagePrimary: '#F3E7DE',
+    pageSecondary: '#C5AEA0',
+    cardPrimary: '#F6EBE3',
+    cardSecondary: '#CBB7AB',
+    altPrimary: '#F8EDE5',
+    altSecondary: '#D2BEB2',
+  },
+  border: {
+    main: '#4A392F',
+  },
+  text: {
+    primary: '#F3E7DE',
+    primaryHover: '#FFF6F0',
+    secondary: '#C5AEA0',
+    secondaryHover: '#D2BEB2',
+  },
+},
     typography: {
       fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
       h1: {
@@ -620,27 +643,102 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
       label: 'Porcelaine',
     },
     colors: {
+  mode: 'light',
+  brand: {
+    primary: '#5E7468',
+    primaryLight: '#73897D',
+    primaryHover: '#4E6258',
+    accent: '#8FAEA3',
+    accentDark: '#5F7A71',
+  },
+  surface: {
+    page: '#F4F5F2',
+    card: '#E8EBE5',
+    alt: '#D9DED6',
+  },
+  onSurface: {
+    pagePrimary: '#2A2E2B',
+    pageSecondary: '#5E6660',
+    cardPrimary: '#252A27',
+    cardSecondary: '#57605A',
+    altPrimary: '#222826',
+    altSecondary: '#505A54',
+  },
+  border: {
+    main: '#D0D6CE',
+  },
+  text: {
+    primary: '#2A2E2B',
+    primaryHover: '#1F2321',
+    secondary: '#5E6660',
+    secondaryHover: '#505A54',
+  },
+},
+    typography: {
+      fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+      h1: {
+        fontSize: '1.875rem',
+        fontWeight: 700,
+      },
+      h2: {
+        fontSize: '1.5rem',
+        fontWeight: 700,
+      },
+      h3: {
+        fontSize: '1.25rem',
+        fontWeight: 700,
+      },
+      h4: {
+        fontSize: '1.125rem',
+        fontWeight: 700,
+      },
+      body1: {
+        fontSize: '.875rem',
+        lineHeight: '1.375rem',
+        fontWeight: 400,
+      },
+      body2: {
+        fontSize: '.75rem',
+        lineHeight: '1.25rem',
+        fontWeight: 400,
+      },
+    },
+  },
+  {
+    meta: {
+      id: 'waterlily',
+      label: 'Waterlily',
+    },
+    colors: {
       mode: 'light',
       brand: {
-        primary: '#5E7468',
-        primaryLight: '#6E8578',
-        primaryHover: '#6E8578',
-        accent: '#8FAEA3',
-        accentDark: '#4A5F57',
+        primary: '#2C6370',
+        primaryLight: '#4C8591',
+        primaryHover: '#255460',
+        accent: '#A86F9B',
+        accentDark: '#744D70',
       },
       surface: {
-        page: '#F3F4F1',
-        card: '#E7E9E4',
-        alt: '#D7DCD4',
+        page: '#F6FAF9',
+        card: '#EAF2F0',
+        alt: '#DDECE8',
+      },
+      onSurface: {
+        pagePrimary: '#23373E',
+        pageSecondary: '#50686F',
+        cardPrimary: '#20343B',
+        cardSecondary: '#4B636A',
+        altPrimary: '#1F3940',
+        altSecondary: '#466168',
       },
       border: {
-        main: '#D4D8D1',
+        main: '#C6D8D5',
       },
       text: {
-        primary: '#2B2B29',
-        primaryHover: '#3A3A37',
-        secondary: '#8B9087',
-        secondaryHover: '#7A7F77',
+        primary: '#23373E',
+        primaryHover: '#1B2C32',
+        secondary: '#50686F',
+        secondaryHover: '#43595F',
       },
     },
     typography: {
@@ -675,31 +773,39 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
   },
   {
     meta: {
-      id: 'eunoia-teal',
-      label: 'Eunoia Teal',
+      id: 'venus',
+      label: 'Venus',
     },
     colors: {
       mode: 'light',
       brand: {
-        primary: '#1F6D78',
-        primaryLight: '#2A8190',
-        primaryHover: '#2A8190',
-        accent: '#A45C8C',
-        accentDark: '#5E3C54',
+        primary: '#3F6F73',
+        primaryLight: '#5D8A8D',
+        primaryHover: '#345C5F',
+        accent: '#A86E6C',
+        accentDark: '#7A4E4C',
       },
       surface: {
-        page: '#E7E1E3',
-        card: '#B79AA9',
-        alt: '#9EC2CC',
+        page: '#F7F5EF',
+        card: '#EDF2EE',
+        alt: '#DEE7E0',
+      },
+      onSurface: {
+        pagePrimary: '#253433',
+        pageSecondary: '#526360',
+        cardPrimary: '#223230',
+        cardSecondary: '#4D5E5B',
+        altPrimary: '#203432',
+        altSecondary: '#49605C',
       },
       border: {
-        main: '#D3C8CC',
+        main: '#CCD7D0',
       },
       text: {
-        primary: '#3F3341',
-        primaryHover: '#504252',
-        secondary: '#8F7F8A',
-        secondaryHover: '#7D6D78',
+        primary: '#253433',
+        primaryHover: '#1E2A29',
+        secondary: '#526360',
+        secondaryHover: '#445552',
       },
     },
     typography: {
@@ -734,31 +840,39 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
   },
   {
     meta: {
-      id: 'blue-porcelaine',
-      label: 'Blue Porcelaine',
+      id: 'sunset',
+      label: 'Sunset',
     },
     colors: {
-      mode: 'light',
+      mode: 'dark',
       brand: {
-        primary: '#6A87B5',
-        primaryLight: '#5A78A7',
-        primaryHover: '#5A78A7',
-        accent: '#9BB4D2',
-        accentDark: '#49658E',
+        primary: '#E08A5C',
+        primaryLight: '#F0A176',
+        primaryHover: '#F0A176',
+        accent: '#A5658D',
+        accentDark: '#6E4766',
       },
       surface: {
-        page: '#F5F4F1',
-        card: '#E6EBF1',
-        alt: '#CDD9E6',
+        page: '#141625',
+        card: '#1B1E31',
+        alt: '#262347',
+      },
+      onSurface: {
+        pagePrimary: '#F7EEE8',
+        pageSecondary: '#C8BAC6',
+        cardPrimary: '#F8F0EA',
+        cardSecondary: '#CEC1CC',
+        altPrimary: '#FAF2ED',
+        altSecondary: '#D4C7D0',
       },
       border: {
-        main: '#D7DEE7',
+        main: '#434369',
       },
       text: {
-        primary: '#37404F',
-        primaryHover: '#2D3542',
-        secondary: '#7F8D9E',
-        secondaryHover: '#6E7C8D',
+        primary: '#F7EEE8',
+        primaryHover: '#FFF7F2',
+        secondary: '#C8BAC6',
+        secondaryHover: '#D4C7D0',
       },
     },
     typography: {
@@ -794,9 +908,9 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
 ];
 
 export const themePresetOptions: ReadonlyArray<ThemePresetOption> = themePresets.map(
-  ({ meta }) => ({
+  ({ colors, meta }) => ({
     id: meta.id,
-    label: meta.label,
+    label: colors.mode === 'dark' ? `${meta.label} - dark` : meta.label,
   }),
 );
 

@@ -9,7 +9,7 @@ const NavBar = () => {
       position="static"
       sx={(theme) => ({
         backgroundColor: theme.palette.background.paper,
-        color: theme.palette.text.primary,
+        color: theme.customTokens.onSurface.cardPrimary,
         borderBottom: `1px solid ${theme.customTokens.border.main}`,
         boxShadow: 'none',
       })}

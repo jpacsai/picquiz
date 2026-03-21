@@ -12,10 +12,10 @@ export const NavLink: React.FC<RLProps> = (props) => (
         px: 1,
         py: 0.5,
         borderRadius: 1,
-        color: theme.palette.text.secondary,
+        color: theme.customTokens.onSurface.cardSecondary,
         transition: 'color 150ms ease, background-color 150ms ease',
         '&:hover': {
-          color: theme.customTokens.text.primaryHover,
+          color: theme.customTokens.onSurface.altPrimary,
           backgroundColor: theme.customTokens.surface.alt,
         },
       }),

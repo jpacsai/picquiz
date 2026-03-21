@@ -6,7 +6,13 @@ const card: Components<Theme>['MuiCard'] = {
       width: 'min-content',
       padding: '10px',
       backgroundColor: theme.palette.background.paper,
-      color: theme.palette.text.primary,
+      color: theme.customTokens.onSurface.cardPrimary,
+      '& .MuiTypography-colorTextPrimary': {
+        color: theme.customTokens.onSurface.cardPrimary,
+      },
+      '& .MuiTypography-colorTextSecondary': {
+        color: theme.customTokens.onSurface.cardSecondary,
+      },
     }),
   },
 };

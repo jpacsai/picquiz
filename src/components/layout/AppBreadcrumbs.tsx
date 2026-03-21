@@ -122,9 +122,9 @@ const AppBreadcrumbs = () => {
       aria-label="breadcrumb"
       separator="›"
       sx={(theme) => ({
-        color: theme.palette.text.secondary,
+        color: theme.customTokens.onSurface.pageSecondary,
         '& .MuiBreadcrumbs-separator': {
-          color: theme.palette.text.secondary,
+          color: theme.customTokens.onSurface.pageSecondary,
         },
       })}
     >
@@ -144,10 +144,10 @@ const AppBreadcrumbs = () => {
             key={`${item.label}-${index}`}
             params={item.params}
             sx={(theme) => ({
-              color: theme.palette.text.secondary,
+              color: theme.customTokens.onSurface.pageSecondary,
               transition: 'color 150ms ease',
               '&:hover': {
-                color: theme.customTokens.text.secondaryHover,
+                color: theme.customTokens.onSurface.pagePrimary,
               },
             })}
             to={item.to}
