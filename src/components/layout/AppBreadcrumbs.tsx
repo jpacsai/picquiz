@@ -118,7 +118,16 @@ const AppBreadcrumbs = () => {
   }
 
   return (
-    <Breadcrumbs aria-label="breadcrumb" separator="›">
+    <Breadcrumbs
+      aria-label="breadcrumb"
+      separator="›"
+      sx={(theme) => ({
+        color: theme.palette.text.secondary,
+        '& .MuiBreadcrumbs-separator': {
+          color: theme.palette.text.secondary,
+        },
+      })}
+    >
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
 
@@ -133,8 +142,14 @@ const AppBreadcrumbs = () => {
         return (
           <RouterLink
             key={`${item.label}-${index}`}
-            color="inherit"
             params={item.params}
+            sx={(theme) => ({
+              color: theme.palette.text.secondary,
+              transition: 'color 150ms ease',
+              '&:hover': {
+                color: theme.customTokens.text.secondaryHover,
+              },
+            })}
             to={item.to}
             underline="hover"
             variant="body2"

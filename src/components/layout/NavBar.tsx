@@ -5,7 +5,15 @@ import StyleSelector from '@/components/ui/StyleSelector';
 
 const NavBar = () => {
   return (
-    <AppBar position="static">
+    <AppBar
+      position="static"
+      sx={(theme) => ({
+        backgroundColor: theme.palette.background.paper,
+        color: theme.palette.text.primary,
+        borderBottom: `1px solid ${theme.customTokens.border.main}`,
+        boxShadow: 'none',
+      })}
+    >
       <Toolbar disableGutters>
         <Box
           maxWidth="xl"
@@ -18,7 +26,17 @@ const NavBar = () => {
           }}
         >
           <NavLink to="/home" activeOptions={{ exact: true }} underline="none" preload="intent">
-            <Typography variant="h2" sx={{ color: 'primary.main', marginRight: '60px' }}>
+            <Typography
+              variant="h2"
+              sx={(theme) => ({
+                color: theme.palette.primary.main,
+                marginRight: '60px',
+                transition: 'color 150ms ease',
+                '&:hover': {
+                  color: theme.customTokens.brand.primaryHover,
+                },
+              })}
+            >
               QuizPic
             </Typography>
           </NavLink>
