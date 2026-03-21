@@ -30,5 +30,6 @@ export const Route = createFileRoute('/_app/admin/$topicId/')({
     };
   },
   component: RouteComponent,
+  shouldReload: true,
   validateSearch: parseSearch,
 });

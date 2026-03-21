@@ -24,4 +24,5 @@ export const Route = createFileRoute(path)({
     };
   },
   component: RouteComponent,
+  shouldReload: true,
 });
