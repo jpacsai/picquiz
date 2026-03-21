@@ -3,7 +3,9 @@ import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
+import { topicItemsOptions } from '@queries/items';
 import type { TopicItem } from '@service/items';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { useSnackbar } from 'notistack';
 import { useEffect } from 'react';
@@ -20,6 +22,10 @@ type AdminTopicCollectionPageProps = {
 const AdminTopicCollectionPage = ({ items, saved, topic }: AdminTopicCollectionPageProps) => {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
+  const { data: liveItems = items } = useQuery({
+    ...topicItemsOptions(topic.slug),
+    initialData: items,
+  });
 
   useEffect(() => {
     if (saved !== 'edited') {
@@ -52,9 +58,9 @@ const AdminTopicCollectionPage = ({ items, saved, topic }: AdminTopicCollectionP
         </Button>
       </Box>
 
-      {items.length ? (
+      {liveItems.length ? (
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
-          {items.map((item) => (
+          {liveItems.map((item) => (
             <AdminTopicItem
               collectionName={topic.slug}
               fields={topic.fields}
