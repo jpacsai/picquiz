@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Box from '@mui/material/Box';
 import type { ComponentType, Key, ReactNode } from 'react';
 
 import type { TopicField } from '@/types/topics';
 
 import FormInput from '../../../ui/Form/FormInput';
-import ImageUploadField from '../../../ui/Form/ImageUploadField';
 import FormSelect from '../../../ui/Form/FormSelect';
-import { getDerivedValue, getFieldValidator, type FormValues, type FormDeriveField } from './utils';
+import ImageUploadField from '../../../ui/Form/ImageUploadField';
+import { type FormDeriveField, type FormValues, getDerivedValue, getFieldValidator } from './utils';
 
 type FormFieldProps = {
   derivationIndex: Record<string, FormDeriveField>;
@@ -36,6 +37,7 @@ type FormFieldProps = {
     file: File;
     previewUrl: string;
   } | null;
+  mode: 'create' | 'edit';
 };
 
 const renderPendingDerivedField = (key: string) => (
@@ -53,12 +55,13 @@ const FormField = ({
   derivationIndex,
   field,
   form,
+  mode,
   onSelectPendingImage,
   pendingImageSelection,
 }: FormFieldProps) => {
   const { key, type, readonly, required, label, fn, hideInEdit } = field;
 
-  if (hideInEdit) return null;
+  if (mode === 'edit' && hideInEdit) return null;
 
   switch (type) {
     case 'string':
@@ -147,7 +150,7 @@ const FormField = ({
       );
     case 'imageUpload':
       return (
-        <form.Subscribe key={key} selector={(state) => state.values as FormValues}>
+        <form.Subscribe key={key} selector={(state) => state.values}>
           {(values) => {
             const artistValue = values[field.fileNameFields.artist];
             const titleValue = values[field.fileNameFields.title];

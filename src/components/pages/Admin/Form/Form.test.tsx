@@ -7,32 +7,33 @@ import type { TopicField } from '@/types/topics';
 import Form from './Form';
 
 const navigateMock = vi.fn();
+const invalidateQueriesMock = vi.fn();
 const createTopicItemMock = vi.fn();
+const updateTopicItemMock = vi.fn();
 const uploadResponsiveTopicImagesMock = vi.fn();
+const deleteTopicImageByPathMock = vi.fn();
 const generateResponsiveImageVariantsMock = vi.fn();
 
-vi.mock('@tanstack/react-router', async () => {
-  const actual = await vi.importActual<typeof import('@tanstack/react-router')>(
-    '@tanstack/react-router',
-  );
+vi.mock('@tanstack/react-query', () => ({
+  useQueryClient: () => ({
+    invalidateQueries: invalidateQueriesMock,
+  }),
+}));
 
+vi.mock('@tanstack/react-router', async () => {
   return {
-    ...actual,
     useNavigate: () => navigateMock,
   };
 });
 
 vi.mock('@service/items', () => ({
   createTopicItem: (...args: unknown[]) => createTopicItemMock(...args),
+  updateTopicItem: (...args: unknown[]) => updateTopicItemMock(...args),
 }));
 
 vi.mock('@data/storage', async () => {
-  const actual = await vi.importActual<typeof import('@data/storage')>(
-    '@data/storage',
-  );
-
   return {
-    ...actual,
+    deleteTopicImageByPath: (...args: unknown[]) => deleteTopicImageByPathMock(...args),
     uploadResponsiveTopicImages: (...args: unknown[]) => uploadResponsiveTopicImagesMock(...args),
   };
 });
@@ -62,11 +63,17 @@ vi.mock('../../../ui/Form/ImageUploadField', () => ({
 describe('Admin Form saving', () => {
   beforeEach(() => {
     navigateMock.mockReset();
+    invalidateQueriesMock.mockReset();
     createTopicItemMock.mockReset();
+    updateTopicItemMock.mockReset();
     uploadResponsiveTopicImagesMock.mockReset();
+    deleteTopicImageByPathMock.mockReset();
     generateResponsiveImageVariantsMock.mockReset();
 
     createTopicItemMock.mockResolvedValue({ id: 'doc-1' });
+    updateTopicItemMock.mockResolvedValue(undefined);
+    invalidateQueriesMock.mockResolvedValue(undefined);
+    deleteTopicImageByPathMock.mockResolvedValue(undefined);
     navigateMock.mockResolvedValue(undefined);
   });
 
@@ -114,14 +121,21 @@ describe('Admin Form saving', () => {
     const fields: TopicField[] = [
       { key: 'artist', label: 'Artist', required: true, type: 'string' },
       { key: 'title', label: 'Title', required: true, type: 'string' },
-      { key: 'image_url_desktop', label: 'Desktop URL', hideInEdit: true, type: 'string' },
-      { key: 'image_url_mobile', label: 'Mobile URL', hideInEdit: true, type: 'string' },
+      { key: 'image_url_desktop', label: 'Desktop URL', readonly: true, type: 'string' },
+      { key: 'image_url_mobile', label: 'Mobile URL', readonly: true, type: 'string' },
+      { key: 'image_path_desktop', label: 'Desktop path', readonly: true, type: 'string' },
+      { key: 'image_path_mobile', label: 'Mobile path', readonly: true, type: 'string' },
       {
         buttonLabel: 'Upload after artist and title',
         fileNameFields: { artist: 'artist', title: 'title' },
         key: 'image_upload',
         label: 'Upload image',
-        targetFields: { desktop: 'image_url_desktop', mobile: 'image_url_mobile' },
+        targetFields: {
+          desktop: 'image_url_desktop',
+          mobile: 'image_url_mobile',
+          desktopPath: 'image_path_desktop',
+          mobilePath: 'image_path_mobile',
+        },
         type: 'imageUpload',
       },
     ];
@@ -165,6 +179,8 @@ describe('Admin Form saving', () => {
       collectionName: 'art',
       values: {
         artist: 'Leonardo da Vinci',
+        image_path_desktop: 'art/desktop/test.jpg',
+        image_path_mobile: 'art/mobile/test.jpg',
         image_url_desktop: 'https://example.com/desktop.jpg',
         image_url_mobile: 'https://example.com/mobile.jpg',
         title: 'Mona Lisa',
@@ -177,8 +193,8 @@ describe('Admin Form saving', () => {
     const fields: TopicField[] = [
       { key: 'artist', label: 'Artist', required: true, type: 'string' },
       { key: 'title', label: 'Title', required: true, type: 'string' },
-      { key: 'image_url_desktop', label: 'Desktop URL', hideInEdit: true, type: 'string' },
-      { key: 'image_url_mobile', label: 'Mobile URL', hideInEdit: true, type: 'string' },
+      { key: 'image_url_desktop', label: 'Desktop URL', readonly: true, type: 'string' },
+      { key: 'image_url_mobile', label: 'Mobile URL', readonly: true, type: 'string' },
       {
         buttonLabel: 'Upload after artist and title',
         fileNameFields: { artist: 'artist', title: 'title' },
@@ -206,5 +222,117 @@ describe('Admin Form saving', () => {
     expect(await screen.findByText('Upload image kötelező.')).toBeInTheDocument();
     expect(createTopicItemMock).not.toHaveBeenCalled();
     expect(navigateMock).not.toHaveBeenCalled();
+  });
+
+  it('shows hideInEdit fields on create but hides them on edit', () => {
+    const fields: TopicField[] = [
+      { key: 'artist', label: 'Artist', required: true, type: 'string' },
+      { key: 'internal_note', label: 'Internal note', hideInEdit: true, type: 'string' },
+    ];
+
+    const { rerender } = render(
+      <Form collectionName="art" fields={fields} storagePrefix="art" topicId="art" />,
+    );
+
+    expect(screen.getByTestId('form-input-internal_note')).toBeInTheDocument();
+
+    rerender(
+      <Form
+        collectionName="art"
+        fields={fields}
+        initialValues={{ artist: 'Leonardo da Vinci', internal_note: 'Hidden in edit' }}
+        itemId="item-1"
+        mode="edit"
+        storagePrefix="art"
+        topicId="art"
+      />,
+    );
+
+    expect(screen.queryByTestId('form-input-internal_note')).not.toBeInTheDocument();
+  });
+
+  it('prefills edit values, keeps readonly path fields visible, and updates an item', async () => {
+    const user = userEvent.setup();
+    const desktopBlob = new Blob(['desktop'], { type: 'image/jpeg' });
+    const mobileBlob = new Blob(['mobile'], { type: 'image/jpeg' });
+    const fields: TopicField[] = [
+      { key: 'artist', label: 'Artist', required: true, type: 'string' },
+      { key: 'title', label: 'Title', required: true, type: 'string' },
+      { key: 'image_url_desktop', label: 'Desktop URL', readonly: true, type: 'string' },
+      { key: 'image_url_mobile', label: 'Mobile URL', readonly: true, type: 'string' },
+      { key: 'image_path_desktop', label: 'Desktop path', readonly: true, type: 'string' },
+      { key: 'image_path_mobile', label: 'Mobile path', readonly: true, type: 'string' },
+      {
+        buttonLabel: 'Upload after artist and title',
+        fileNameFields: { artist: 'artist', title: 'title' },
+        key: 'image_upload',
+        label: 'Upload image',
+        targetFields: {
+          desktop: 'image_url_desktop',
+          mobile: 'image_url_mobile',
+          desktopPath: 'image_path_desktop',
+          mobilePath: 'image_path_mobile',
+        },
+        type: 'imageUpload',
+      },
+    ];
+
+    generateResponsiveImageVariantsMock.mockResolvedValue({
+      desktop: { blob: desktopBlob, height: 600, width: 800 },
+      mobile: { blob: mobileBlob, height: 400, width: 330 },
+    });
+    uploadResponsiveTopicImagesMock.mockResolvedValue({
+      desktop: { path: 'art/desktop/new.jpg', url: 'https://example.com/new-desktop.jpg' },
+      mobile: { path: 'art/mobile/new.jpg', url: 'https://example.com/new-mobile.jpg' },
+    });
+
+    render(
+      <Form
+        collectionName="art"
+        fields={fields}
+        initialValues={{
+          artist: 'Leonardo da Vinci',
+          title: 'Mona Lisa',
+          image_url_desktop: 'https://example.com/old-desktop.jpg',
+          image_url_mobile: 'https://example.com/old-mobile.jpg',
+          image_path_desktop: 'art/desktop/old.jpg',
+          image_path_mobile: 'art/mobile/old.jpg',
+        }}
+        itemId="item-1"
+        mode="edit"
+        storagePrefix="art"
+        topicId="art"
+      />,
+    );
+
+    expect(screen.getByDisplayValue('art/desktop/old.jpg')).toBeDisabled();
+    expect(screen.getByDisplayValue('art/mobile/old.jpg')).toBeDisabled();
+
+    await user.clear(screen.getByTestId('form-input-title'));
+    await user.type(screen.getByTestId('form-input-title'), 'Mona Lisa Restored');
+    await user.click(screen.getByTestId('mock-image-upload-button'));
+    await user.click(screen.getByRole('button', { name: 'Mentés' }));
+
+    await waitFor(() => {
+      expect(updateTopicItemMock).toHaveBeenCalledWith({
+        collectionName: 'art',
+        itemId: 'item-1',
+        values: {
+          artist: 'Leonardo da Vinci',
+          image_path_desktop: 'art/desktop/new.jpg',
+          image_path_mobile: 'art/mobile/new.jpg',
+          image_url_desktop: 'https://example.com/new-desktop.jpg',
+          image_url_mobile: 'https://example.com/new-mobile.jpg',
+          title: 'Mona Lisa Restored',
+        },
+      });
+    });
+
+    expect(deleteTopicImageByPathMock).toHaveBeenCalledWith('art/desktop/old.jpg');
+    expect(deleteTopicImageByPathMock).toHaveBeenCalledWith('art/mobile/old.jpg');
+    expect(navigateMock).toHaveBeenCalledWith({
+      params: { topicId: 'art' },
+      to: '/admin/$topicId',
+    });
   });
 });

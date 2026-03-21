@@ -32,13 +32,19 @@ export type PendingImageSelection = {
   previewUrl: string;
 };
 
-export const getDefaultValues = (fields: TopicField[]): FormValues => {
-  const initValFields = fields.reduce((acc, field) => {
-    const val = { [field.key]: '' };
-    return { ...acc, ...val };
+export const getInitialValues = (
+  fields: TopicField[],
+  values?: Record<string, unknown>,
+): FormValues =>
+  fields.reduce((acc, field) => {
+    const nextValue = values?.[field.key];
+
+    return {
+      ...acc,
+      [field.key]:
+        typeof nextValue === 'string' || typeof nextValue === 'number' ? nextValue : '',
+    };
   }, {} as FormValues);
-  return initValFields;
-};
 
 const buildDerivation = (fields: readonly TopicField[]): FormDeriveFieldIndex[] => {
   return fields.map((field) => ({

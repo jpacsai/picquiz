@@ -33,6 +33,8 @@ export type TopicField =
       targetFields: {
         desktop: string;
         mobile: string;
+        desktopPath?: string;
+        mobilePath?: string;
       };
       label: string;
       buttonLabel?: string;
