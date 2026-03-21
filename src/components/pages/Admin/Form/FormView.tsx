@@ -16,6 +16,7 @@ type FormViewProps = {
   isSubmitting: boolean;
   mode: FormMode;
   onSelectPendingImage: UseAdminFormResult['handleSelectPendingImage'];
+  onUndo: UseAdminFormResult['handleUndo'];
   pendingImageSelection: UseAdminFormResult['pendingImageSelection'];
   submitError: string;
 };
@@ -27,6 +28,7 @@ const FormView = ({
   isSubmitting,
   mode,
   onSelectPendingImage,
+  onUndo,
   pendingImageSelection,
   submitError,
 }: FormViewProps) => {
@@ -97,16 +99,23 @@ const FormView = ({
         </Alert>
       ) : null}
 
-      <Button type="submit" variant="contained" disabled={isSubmitting}>
-        {isSubmitting ? (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <CircularProgress size={18} color="inherit" />
-            Mentés...
-          </Box>
-        ) : (
-          'Mentés'
-        )}
-      </Button>
+      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+        {mode === 'edit' ? (
+          <Button type="button" variant="outlined" disabled={isSubmitting} onClick={onUndo}>
+            Visszaállítás
+          </Button>
+        ) : null}
+        <Button type="submit" variant="contained" disabled={isSubmitting}>
+          {isSubmitting ? (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <CircularProgress size={18} color="inherit" />
+              Mentés...
+            </Box>
+          ) : (
+            'Mentés'
+          )}
+        </Button>
+      </Box>
     </form>
   );
 };

@@ -40,6 +40,7 @@ export type UseAdminFormResult = {
     field: Extract<TopicField, { type: 'imageUpload' }>;
     file: File;
   }) => void;
+  handleUndo: () => void;
   isSubmitting: boolean;
   mode: FormMode;
   pendingImageSelection: PendingImageSelection | null;
@@ -299,10 +300,21 @@ export const useAdminForm = ({
     });
   };
 
+  const handleUndo = () => {
+    if (pendingImageSelection?.previewUrl) {
+      URL.revokeObjectURL(pendingImageSelection.previewUrl);
+    }
+
+    setPendingImageSelection(null);
+    setSubmitError('');
+    form.reset();
+  };
+
   return {
     derivationIndex,
     form: form as FormFieldFormApi,
     handleSelectPendingImage,
+    handleUndo,
     isSubmitting,
     mode,
     pendingImageSelection,

@@ -26,6 +26,7 @@ const Form = ({
     derivationIndex,
     form,
     handleSelectPendingImage,
+    handleUndo,
     isSubmitting,
     pendingImageSelection,
     submitError,
@@ -47,6 +48,7 @@ const Form = ({
       isSubmitting={isSubmitting}
       mode={mode}
       onSelectPendingImage={handleSelectPendingImage}
+      onUndo={handleUndo}
       pendingImageSelection={pendingImageSelection}
       submitError={submitError}
     />

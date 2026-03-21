@@ -46,6 +46,7 @@ export type FormFieldFormApi = {
   }>;
   setFieldValue: (field: string, value: string | number) => void;
   handleSubmit: () => Promise<void>;
+  reset: () => void;
 };
 
 const renderPendingDerivedField = (key: string) => (

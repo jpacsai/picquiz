@@ -332,7 +332,59 @@ describe('Admin Form saving', () => {
     expect(deleteTopicImageByPathMock).toHaveBeenCalledWith('art/mobile/old.jpg');
     expect(navigateMock).toHaveBeenCalledWith({
       params: { topicId: 'art' },
+      search: { saved: 'edited' },
       to: '/admin/$topicId',
     });
+  });
+
+  it('restores the original edit values when undo is clicked', async () => {
+    const user = userEvent.setup();
+    const fields: TopicField[] = [
+      { key: 'artist', label: 'Artist', required: true, type: 'string' },
+      { key: 'title', label: 'Title', required: true, type: 'string' },
+      { key: 'image_path_desktop', label: 'Desktop path', readonly: true, type: 'string' },
+      { key: 'image_path_mobile', label: 'Mobile path', readonly: true, type: 'string' },
+      {
+        buttonLabel: 'Upload after artist and title',
+        fileNameFields: { artist: 'artist', title: 'title' },
+        key: 'image_upload',
+        label: 'Upload image',
+        targetFields: {
+          desktop: 'image_path_desktop',
+          mobile: 'image_path_mobile',
+        },
+        type: 'imageUpload',
+      },
+    ];
+
+    render(
+      <Form
+        collectionName="art"
+        fields={fields}
+        initialValues={{
+          artist: 'Leonardo da Vinci',
+          title: 'Mona Lisa',
+          image_path_desktop: 'art/desktop/original.jpg',
+          image_path_mobile: 'art/mobile/original.jpg',
+        }}
+        itemId="item-1"
+        mode="edit"
+        storagePrefix="art"
+        topicId="art"
+      />,
+    );
+
+    await user.clear(screen.getByTestId('form-input-title'));
+    await user.type(screen.getByTestId('form-input-title'), 'Changed title');
+    await user.click(screen.getByTestId('mock-image-upload-button'));
+
+    expect(screen.getByText('Feltöltésre váró kép')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Visszaállítás' }));
+
+    expect(screen.getByTestId('form-input-title')).toHaveValue('Mona Lisa');
+    expect(screen.getByDisplayValue('art/desktop/original.jpg')).toBeDisabled();
+    expect(screen.getByDisplayValue('art/mobile/original.jpg')).toBeDisabled();
+    expect(screen.queryByText('Feltöltésre váró kép')).not.toBeInTheDocument();
   });
 });
