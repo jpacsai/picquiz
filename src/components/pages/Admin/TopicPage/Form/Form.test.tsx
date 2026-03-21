@@ -34,7 +34,10 @@ vi.mock('@service/items', () => ({
 }));
 
 vi.mock('@data/storage', async () => {
+  const actual = await vi.importActual('@data/storage');
+
   return {
+    ...actual,
     deleteTopicImageByPath: (...args: unknown[]) => deleteTopicImageByPathMock(...args),
     uploadResponsiveTopicImages: (...args: unknown[]) => uploadResponsiveTopicImagesMock(...args),
   };
@@ -44,7 +47,7 @@ vi.mock('@lib/image', () => ({
   generateResponsiveImageVariants: (...args: unknown[]) => generateResponsiveImageVariantsMock(...args),
 }));
 
-vi.mock('../../../ui/Form/ImageUploadField', () => ({
+vi.mock('../../../../ui/Form/ImageUploadField', () => ({
   default: ({
     onSelectImage,
   }: {

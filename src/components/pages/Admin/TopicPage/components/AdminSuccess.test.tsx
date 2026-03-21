@@ -7,9 +7,7 @@ import AdminSuccess from './AdminSuccess';
 const navigateMock = vi.fn();
 
 vi.mock('@tanstack/react-router', async () => {
-  const actual = await vi.importActual<typeof import('@tanstack/react-router')>(
-    '@tanstack/react-router',
-  );
+  const actual = await vi.importActual('@tanstack/react-router');
 
   return {
     ...actual,
@@ -48,6 +46,7 @@ describe('AdminSuccess', () => {
 
     expect(navigateMock).toHaveBeenCalledWith({
       params: { topicId: 'art' },
+      search: { saved: undefined },
       to: '/admin/$topicId',
     });
   });

@@ -4,9 +4,9 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 
+import FormField from '@/components/ui/Form/FormField';
 import type { TopicField } from '@/types/topics';
 
-import FormField from '../../../ui/Form/FormField';
 import type { FormMode, UseAdminFormResult } from './useAdminForm';
 
 type FormViewProps = {

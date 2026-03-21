@@ -1,9 +1,8 @@
 import { Box } from '@mui/material';
 
+import Form from '@/components/pages/Admin/TopicPage/Form/Form';
 import type { TopicItem } from '@/service/items';
 import type { Topic } from '@/types/topics';
-
-import Form from './Form/Form';
 
 type AdminTopicProps = {
   initialValues?: Record<string, unknown>;

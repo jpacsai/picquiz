@@ -1,4 +1,4 @@
-import AdminTopic from '@components/pages/Admin/AdminTopic';
+import AdminTopic from '@components/pages/Admin/TopicPage/components/AdminTopic';
 import { topicOptions } from '@queries/topics';
 import { createFileRoute, useLoaderData } from '@tanstack/react-router';
 

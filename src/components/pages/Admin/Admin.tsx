@@ -1,7 +1,7 @@
+import { RouterLink } from '@components/ui/RouterLink';
 import { Box, Card } from '@mui/material';
 
 import type { Topic } from '../../../types/topics';
-import { RouterLink } from '@components/ui/RouterLink';
 
 type AdminProps = {
   topics: ReadonlyArray<Topic>;

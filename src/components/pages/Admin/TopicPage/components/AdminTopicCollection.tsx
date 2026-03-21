@@ -8,7 +8,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { useSnackbar } from 'notistack';
 import { useEffect } from 'react';
 
-import AdminTopicItem from '@/components/pages/Admin/AdminTopicItem';
+import AdminTopicItem from '@/components/pages/Admin/TopicPage/components/AdminTopicItem';
 import type { Topic } from '@/types/topics';
 
 type AdminTopicCollectionProps = {

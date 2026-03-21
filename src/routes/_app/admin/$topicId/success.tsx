@@ -1,7 +1,6 @@
-import { createFileRoute, useLoaderData } from '@tanstack/react-router';
-
-import AdminSuccess from '@components/pages/Admin/AdminSuccess';
+import AdminSuccess from '@components/pages/Admin/TopicPage/components/AdminSuccess';
 import { topicOptions } from '@queries/topics';
+import { createFileRoute, useLoaderData } from '@tanstack/react-router';
 
 const path = '/_app/admin/$topicId/success';
 
