@@ -32,6 +32,17 @@ const TopicItemFormView = ({
   pendingImageSelection,
   submitError,
 }: TopicItemFormViewProps) => {
+  const hiddenFieldKeys = new Set(
+    fields.flatMap((field) =>
+      field.type === 'imageUpload'
+        ? [field.targetFields.desktop, field.targetFields.mobile].filter((targetKey) =>
+            /url/i.test(targetKey),
+          )
+        : [],
+    ),
+  );
+  const visibleFields = fields.filter((field) => !hiddenFieldKeys.has(field.key));
+
   return (
     <form
       noValidate
@@ -49,7 +60,7 @@ const TopicItemFormView = ({
           marginBottom: '30px',
         }}
       >
-        {fields.map((field) => (
+        {visibleFields.map((field) => (
           <FormField
             key={field.key}
             field={field}
