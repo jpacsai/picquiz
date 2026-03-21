@@ -3,11 +3,11 @@ import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
+import type { TopicItem } from '@service/items';
 import { useNavigate } from '@tanstack/react-router';
 
-import type { Topic } from '@/types/topics';
-import type { TopicItem } from '@service/items';
 import AdminTopicItem from '@/components/pages/Admin/AdminTopicItem';
+import type { Topic } from '@/types/topics';
 
 type AdminTopicCollectionProps = {
   items: ReadonlyArray<TopicItem>;
