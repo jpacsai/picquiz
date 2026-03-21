@@ -55,7 +55,13 @@ const AdminTopicCollection = ({ items, saved, topic }: AdminTopicCollectionProps
       {items.length ? (
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
           {items.map((item) => (
-            <AdminTopicItem fields={topic.fields} item={item} key={item.id} topicId={topic.id} />
+            <AdminTopicItem
+              collectionName={topic.slug}
+              fields={topic.fields}
+              item={item}
+              key={item.id}
+              topicId={topic.id}
+            />
           ))}
         </Box>
       ) : (

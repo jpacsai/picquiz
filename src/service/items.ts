@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -60,6 +61,16 @@ export const updateTopicItem = async ({
     ...values,
     updated_at: serverTimestamp(),
   });
+};
+
+export const deleteTopicItem = async ({
+  collectionName,
+  itemId,
+}: {
+  collectionName: string;
+  itemId: string;
+}) => {
+  return deleteDoc(doc(db, collectionName, itemId));
 };
 
 export const listTopicItems = async ({
