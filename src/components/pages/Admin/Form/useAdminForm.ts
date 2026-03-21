@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 
 import type { TopicField } from '@/types/topics';
 
+import type { FormFieldFormApi } from './FormField';
 import {
   getDerivationIndex,
   getInitialValues,
@@ -27,6 +28,22 @@ export type UseAdminFormParams = {
   mode?: FormMode;
   storagePrefix: string;
   topicId: string;
+};
+
+export type UseAdminFormResult = {
+  derivationIndex: Record<string, ReturnType<typeof getDerivationIndex>[string]>;
+  form: FormFieldFormApi;
+  handleSelectPendingImage: ({
+    field,
+    file,
+  }: {
+    field: Extract<TopicField, { type: 'imageUpload' }>;
+    file: File;
+  }) => void;
+  isSubmitting: boolean;
+  mode: FormMode;
+  pendingImageSelection: PendingImageSelection | null;
+  submitError: string;
 };
 
 const getUploadedImageValues = ({
@@ -156,7 +173,7 @@ export const useAdminForm = ({
   mode = 'create',
   storagePrefix,
   topicId,
-}: UseAdminFormParams) => {
+}: UseAdminFormParams): UseAdminFormResult => {
   const defaultValues = getInitialValues(fields, initialValues);
   const derivationIndex = getDerivationIndex(fields);
   const navigate = useNavigate();
@@ -283,7 +300,7 @@ export const useAdminForm = ({
 
   return {
     derivationIndex,
-    form,
+    form: form as FormFieldFormApi,
     handleSelectPendingImage,
     isSubmitting,
     mode,

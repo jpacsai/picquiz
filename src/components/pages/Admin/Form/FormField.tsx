@@ -12,22 +12,7 @@ import { type FormDeriveField, type FormValues, getDerivedValue, getFieldValidat
 type FormFieldProps = {
   derivationIndex: Record<string, FormDeriveField>;
   field: TopicField;
-  form: {
-    Field: ComponentType<{
-      children: (fieldApi: any) => ReactNode;
-      key?: Key;
-      name: string;
-      validators?: {
-        onChange?: (props: { value: string | number }) => string | undefined;
-      };
-    }>;
-    Subscribe: ComponentType<{
-      children: (values: FormValues) => ReactNode;
-      key?: Key;
-      selector: (state: { values: FormValues }) => FormValues;
-    }>;
-    setFieldValue: (field: string, value: string | number) => void;
-  };
+  form: FormFieldFormApi;
   onSelectPendingImage: (selection: {
     field: Extract<TopicField, { type: 'imageUpload' }>;
     file: File;
@@ -38,6 +23,24 @@ type FormFieldProps = {
     previewUrl: string;
   } | null;
   mode: 'create' | 'edit';
+};
+
+export type FormFieldFormApi = {
+  Field: ComponentType<{
+    children: (fieldApi: any) => ReactNode;
+    key?: Key;
+    name: string;
+    validators?: {
+      onChange?: (props: { value: string | number }) => string | undefined;
+    };
+  }>;
+  Subscribe: ComponentType<{
+    children: (values: FormValues) => ReactNode;
+    key?: Key;
+    selector: (state: { values: FormValues }) => FormValues;
+  }>;
+  setFieldValue: (field: string, value: string | number) => void;
+  handleSubmit: () => Promise<void>;
 };
 
 const renderPendingDerivedField = (key: string) => (
