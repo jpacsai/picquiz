@@ -1,6 +1,7 @@
 import { deleteTopicImageByPath, uploadResponsiveTopicImages } from '@data/storage';
 import { generateResponsiveImageVariants } from '@lib/image';
 import { QUERY_KEYS } from '@queries/queryKeys';
+import type { TopicItem } from '@service/items';
 import { createTopicItem, updateTopicItem } from '@service/items';
 import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
@@ -166,6 +167,31 @@ const resolveSubmittedValues = async ({
   };
 };
 
+const syncUpdatedItemCache = ({
+  collectionName,
+  itemId,
+  queryClient,
+  values,
+}: {
+  collectionName: string;
+  itemId: string;
+  queryClient: ReturnType<typeof useQueryClient>;
+  values: Record<string, string | number>;
+}) => {
+  const nextItem: TopicItem = {
+    id: itemId,
+    ...values,
+  };
+
+  queryClient.setQueryData(QUERY_KEYS.ITEMS.detail(collectionName, itemId), nextItem);
+  queryClient.setQueryData<ReadonlyArray<TopicItem>>(
+    QUERY_KEYS.ITEMS.byTopic(collectionName),
+    (previousItems) =>
+      previousItems?.map((item) => (item.id === itemId ? { ...item, ...nextItem } : item)) ??
+      previousItems,
+  );
+};
+
 export const useAdminForm = ({
   collectionName,
   fields,
@@ -237,6 +263,13 @@ export const useAdminForm = ({
           await updateTopicItem({
             collectionName,
             itemId,
+            values: persistableValue,
+          });
+
+          syncUpdatedItemCache({
+            collectionName,
+            itemId,
+            queryClient,
             values: persistableValue,
           });
         } else {

@@ -7,6 +7,7 @@ import { useAdminForm } from './useAdminForm';
 
 const navigateMock = vi.fn();
 const invalidateQueriesMock = vi.fn();
+const setQueryDataMock = vi.fn();
 const createTopicItemMock = vi.fn();
 const updateTopicItemMock = vi.fn();
 const uploadResponsiveTopicImagesMock = vi.fn();
@@ -18,6 +19,7 @@ const revokeObjectUrlMock = vi.fn();
 vi.mock('@tanstack/react-query', () => ({
   useQueryClient: () => ({
     invalidateQueries: invalidateQueriesMock,
+    setQueryData: setQueryDataMock,
   }),
 }));
 
@@ -80,6 +82,7 @@ describe('useAdminForm', () => {
   beforeEach(() => {
     navigateMock.mockReset();
     invalidateQueriesMock.mockReset();
+    setQueryDataMock.mockReset();
     createTopicItemMock.mockReset();
     updateTopicItemMock.mockReset();
     uploadResponsiveTopicImagesMock.mockReset();
@@ -90,6 +93,7 @@ describe('useAdminForm', () => {
 
     navigateMock.mockResolvedValue(undefined);
     invalidateQueriesMock.mockResolvedValue(undefined);
+    setQueryDataMock.mockReturnValue(undefined);
     createTopicItemMock.mockResolvedValue({ id: 'doc-1' });
     updateTopicItemMock.mockResolvedValue(undefined);
     uploadResponsiveTopicImagesMock.mockResolvedValue({
@@ -142,7 +146,7 @@ describe('useAdminForm', () => {
     expect(invalidateQueriesMock).not.toHaveBeenCalled();
   });
 
-  it('invalidates topic and detail queries after a successful edit', async () => {
+  it('updates item caches and invalidates topic and detail queries after a successful edit', async () => {
     const { result } = renderHook(() =>
       useAdminForm({
         collectionName: 'art',
@@ -180,7 +184,17 @@ describe('useAdminForm', () => {
     expect(invalidateQueriesMock).toHaveBeenCalledWith({
       queryKey: ['items', 'detail', { topic: 'art', id: 'item-1' }],
     });
+    expect(setQueryDataMock).toHaveBeenCalledWith(['items', 'detail', { topic: 'art', id: 'item-1' }], {
+      artist: 'Leonardo da Vinci',
+      id: 'item-1',
+      title: 'Mona Lisa',
+    });
+    expect(setQueryDataMock).toHaveBeenCalledWith(
+      ['items', 'byTopic', 'art'],
+      expect.any(Function),
+    );
     expect(navigateMock).toHaveBeenCalledWith({
+      search: { saved: 'edited' },
       params: { topicId: 'art' },
       to: '/admin/$topicId',
     });
