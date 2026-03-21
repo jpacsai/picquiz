@@ -1,13 +1,12 @@
-import { blue } from '@mui/material/colors';
 import type { Components, Theme } from '@mui/material/styles';
 
 const card: Components<Theme>['MuiCard'] = {
   styleOverrides: {
-    root: () => ({
+    root: ({ theme }) => ({
       width: 'min-content',
       padding: '10px',
-      backgroundColor: blue.A100,
-      color: 'black',
+      backgroundColor: theme.palette.background.paper,
+      color: theme.palette.text.primary,
     }),
   },
 };
