@@ -10,6 +10,8 @@ import { useState } from 'react';
 import type { TopicItem } from '@/service/items';
 import type { TopicField } from '@/types/topics';
 
+import DeleteItemDialog from './DeleteItemDialog';
+
 type AdminTopicItemProps = {
   collectionName: string;
   fields: ReadonlyArray<TopicField>;
@@ -84,6 +86,7 @@ const AdminTopicItem = ({ collectionName, fields, item, topicId }: AdminTopicIte
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const titleValues = getValuesByDisplay(fields, item, 'title');
   const subtitleValues = getValuesByDisplay(fields, item, 'subtitle');
   const metaValues = getValuesByDisplay(fields, item, 'meta');
@@ -94,14 +97,6 @@ const AdminTopicItem = ({ collectionName, fields, item, topicId }: AdminTopicIte
   const imagePathsToDelete = getImagePathsToDelete({ fields, item });
 
   const handleDelete = async () => {
-    if (
-      !window.confirm(
-        `Biztosan torlod ezt az elemet?\n\n${title}${subtitle ? `\n${subtitle}` : ''}`,
-      )
-    ) {
-      return;
-    }
-
     setIsDeleting(true);
 
     try {
@@ -123,6 +118,7 @@ const AdminTopicItem = ({ collectionName, fields, item, topicId }: AdminTopicIte
       });
 
       enqueueSnackbar('Az elem törölve.', { variant: 'success' });
+      setIsDeleteDialogOpen(false);
 
       if (imagePathsToDelete.length) {
         try {
@@ -176,11 +172,19 @@ const AdminTopicItem = ({ collectionName, fields, item, topicId }: AdminTopicIte
           color="error"
           variant="text"
           disabled={isDeleting}
-          onClick={() => void handleDelete()}
+          onClick={() => setIsDeleteDialogOpen(true)}
         >
           {isDeleting ? 'Törlés...' : 'Törlés'}
         </Button>
       </CardActions>
+      <DeleteItemDialog
+        description={subtitle || meta || undefined}
+        isDeleting={isDeleting}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={() => void handleDelete()}
+        open={isDeleteDialogOpen}
+        title={title}
+      />
     </Card>
   );
 };

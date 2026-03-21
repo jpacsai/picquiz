@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -13,7 +13,6 @@ const invalidateQueriesMock = vi.fn();
 const enqueueSnackbarMock = vi.fn();
 const deleteTopicItemMock = vi.fn();
 const deleteTopicImageByPathMock = vi.fn();
-const confirmMock = vi.fn();
 
 vi.mock('@tanstack/react-router', () => ({
   useNavigate: () => navigateMock,
@@ -54,14 +53,6 @@ describe('AdminTopicItem', () => {
     deleteTopicItemMock.mockResolvedValue(undefined);
     deleteTopicImageByPathMock.mockResolvedValue(undefined);
     invalidateQueriesMock.mockResolvedValue(undefined);
-    confirmMock.mockReset();
-    confirmMock.mockReturnValue(true);
-  });
-
-  Object.defineProperty(window, 'confirm', {
-    configurable: true,
-    value: confirmMock,
-    writable: true,
   });
 
   it('deletes the item from the list view and cleans up image paths', async () => {
@@ -107,7 +98,12 @@ describe('AdminTopicItem', () => {
       />,
     );
 
-    await user.click(screen.getByRole('button', { name: 'Torles' }));
+    await user.click(screen.getByRole('button', { name: 'Törlés' }));
+    const dialog = screen.getByRole('dialog');
+    expect(within(dialog).getByRole('heading', { name: 'Elem törlése' })).toBeInTheDocument();
+    expect(within(dialog).getByText('Mona Lisa')).toBeInTheDocument();
+    expect(within(dialog).getByText('Leonardo da Vinci')).toBeInTheDocument();
+    await user.click(within(dialog).getByRole('button', { name: 'Törlés végleg' }));
 
     await waitFor(() => {
       expect(deleteTopicItemMock).toHaveBeenCalledWith({
@@ -125,6 +121,27 @@ describe('AdminTopicItem', () => {
     });
     expect(deleteTopicImageByPathMock).toHaveBeenCalledWith('art/desktop/monalisa.jpg');
     expect(deleteTopicImageByPathMock).toHaveBeenCalledWith('art/mobile/monalisa.jpg');
-    expect(enqueueSnackbarMock).toHaveBeenCalledWith('Az elem torolve.', { variant: 'success' });
+    expect(enqueueSnackbarMock).toHaveBeenCalledWith('Az elem törölve.', { variant: 'success' });
+  });
+
+  it('closes the delete dialog without deleting when cancelled', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <AdminTopicItem
+        collectionName="art"
+        fields={[{ key: 'title', label: 'Title', required: true, type: 'string', display: 'title' }]}
+        item={{ id: 'item-1', title: 'Mona Lisa' }}
+        topicId="art-topic"
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Törlés' }));
+    await user.click(screen.getByRole('button', { name: 'Mégse' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+    expect(deleteTopicItemMock).not.toHaveBeenCalled();
   });
 });
