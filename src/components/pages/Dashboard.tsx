@@ -32,7 +32,7 @@ const Dashboard = ({ topics }: DashboardProps) => {
                   },
                 }}
               >
-                {topic.id}
+                {topic.label}
               </RouterLink>
             </CardContent>
           </Card>
