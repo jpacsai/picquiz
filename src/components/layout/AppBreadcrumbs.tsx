@@ -97,7 +97,7 @@ const getItems = (matches: ReturnType<typeof useMatches>): BreadcrumbItem[] => {
     case '/_app/admin/$topicId/':
       return getAdminItems(context);
     case '/_app/admin/$topicId/new':
-      return getAdminItems(context, 'Uj item');
+      return getAdminItems(context, 'Új elem');
     case '/_app/admin/$topicId/success':
       return getAdminItems(context, 'Sikeres mentés');
     case '/_app/$topicId/':
