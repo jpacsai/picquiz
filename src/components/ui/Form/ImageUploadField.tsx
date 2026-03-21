@@ -4,9 +4,10 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useState } from 'react';
 
+import ImageUploadDialog from '@/components/pages/Admin/TopicCollection/TopicItem/TopicItemForm/components/ImageUploadDialog';
+
 import { getResponsiveImageFileNames } from '../../../data/storage';
 import type { TopicField } from '../../../types/topics';
-import ImageUploadDialog from '../../pages/Admin/TopicPage/TopicItemForm/components/ImageUploadDialog';
 
 type ImageUploadFieldProps = {
   artistName: string;
@@ -41,12 +42,14 @@ const ImageUploadField = ({
   const showExistingImage = Boolean(
     existingImageUrl && !existingSelection && failedImageUrl !== existingImageUrl,
   );
-  const existingImageSrc = showExistingImage ? existingImageUrl ?? undefined : undefined;
+  const existingImageSrc = showExistingImage ? (existingImageUrl ?? undefined) : undefined;
   const showExistingImageLoader = Boolean(
     showExistingImage && existingImageUrl && loadedImageUrl !== existingImageUrl,
   );
   const showMissingImagePlaceholder =
-    mode === 'edit' && !existingSelection && (!existingImageUrl || failedImageUrl === existingImageUrl);
+    mode === 'edit' &&
+    !existingSelection &&
+    (!existingImageUrl || failedImageUrl === existingImageUrl);
 
   return (
     <>
@@ -97,7 +100,7 @@ const ImageUploadField = ({
             </Box>
             {showExistingImage ? (
               <Box
-              sx={{
+                sx={{
                   border: '1px solid',
                   borderColor: 'divider',
                   backgroundColor: 'background.paper',

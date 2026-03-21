@@ -8,16 +8,16 @@ import { useNavigate } from '@tanstack/react-router';
 import { useSnackbar } from 'notistack';
 import { useEffect } from 'react';
 
-import AdminTopicItem from '@/components/pages/Admin/TopicPage/components/AdminTopicItem';
+import AdminTopicItem from '@/components/pages/Admin/TopicCollection/TopicItem/components/AdminTopicItem';
 import type { Topic } from '@/types/topics';
 
-type AdminTopicCollectionProps = {
+type AdminTopicCollectionPageProps = {
   items: ReadonlyArray<TopicItem>;
   saved?: 'edited';
   topic: Topic;
 };
 
-const AdminTopicCollection = ({ items, saved, topic }: AdminTopicCollectionProps) => {
+const AdminTopicCollectionPage = ({ items, saved, topic }: AdminTopicCollectionPageProps) => {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -77,4 +77,4 @@ const AdminTopicCollection = ({ items, saved, topic }: AdminTopicCollectionProps
   );
 };
 
-export default AdminTopicCollection;
+export default AdminTopicCollectionPage;

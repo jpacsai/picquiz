@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { TopicField } from '@/types/topics';
 
-import { useTopicItemForm } from './useTopicItemForm';
+import { useTopicItemForm } from '../useTopicItemForm';
 
 const navigateMock = vi.fn();
 const invalidateQueriesMock = vi.fn();
@@ -38,7 +38,8 @@ vi.mock('@data/storage', () => ({
 }));
 
 vi.mock('@lib/image', () => ({
-  generateResponsiveImageVariants: (...args: unknown[]) => generateResponsiveImageVariantsMock(...args),
+  generateResponsiveImageVariants: (...args: unknown[]) =>
+    generateResponsiveImageVariantsMock(...args),
 }));
 
 const baseFields: TopicField[] = [
@@ -184,11 +185,14 @@ describe('useTopicItemForm', () => {
     expect(invalidateQueriesMock).toHaveBeenCalledWith({
       queryKey: ['items', 'detail', { topic: 'art', id: 'item-1' }],
     });
-    expect(setQueryDataMock).toHaveBeenCalledWith(['items', 'detail', { topic: 'art', id: 'item-1' }], {
-      artist: 'Leonardo da Vinci',
-      id: 'item-1',
-      title: 'Mona Lisa',
-    });
+    expect(setQueryDataMock).toHaveBeenCalledWith(
+      ['items', 'detail', { topic: 'art', id: 'item-1' }],
+      {
+        artist: 'Leonardo da Vinci',
+        id: 'item-1',
+        title: 'Mona Lisa',
+      },
+    );
     expect(setQueryDataMock).toHaveBeenCalledWith(
       ['items', 'byTopic', 'art'],
       expect.any(Function),

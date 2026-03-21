@@ -3,11 +3,11 @@ import { Box, Card } from '@mui/material';
 
 import type { Topic } from '../../../types/topics';
 
-type AdminProps = {
+type AdminPageProps = {
   topics: ReadonlyArray<Topic>;
 };
 
-const Admin = ({ topics }: AdminProps) => {
+const AdminPage = ({ topics }: AdminPageProps) => {
   return (
     <Box sx={{ display: 'grid', gap: '20px' }}>
       {topics.map((topic) => (
@@ -32,4 +32,4 @@ const Admin = ({ topics }: AdminProps) => {
   );
 };
 
-export default Admin;
+export default AdminPage;

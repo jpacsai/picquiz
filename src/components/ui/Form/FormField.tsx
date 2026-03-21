@@ -2,13 +2,13 @@
 import Box from '@mui/material/Box';
 import type { ComponentType, Key, ReactNode } from 'react';
 
-import type { TopicField } from '@/types/topics';
-
 import {
   type FormDeriveField,
   getDerivedValue,
   getFieldValidator,
-} from '../../pages/Admin/TopicPage/TopicItemForm/utils';
+} from '@/components/pages/Admin/TopicCollection/TopicItem/TopicItemForm/utils';
+import type { TopicField } from '@/types/topics';
+
 import FormInput from './FormInput';
 import FormSelect from './FormSelect';
 import ImageUploadField from './ImageUploadField';

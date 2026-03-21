@@ -8,9 +8,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
+import type { FormFieldFormApi } from '@/components/ui/Form/FormField';
 import type { TopicField } from '@/types/topics';
 
-import type { FormFieldFormApi } from '@/components/ui/Form/FormField';
 import {
   getDerivationIndex,
   getInitialValues,

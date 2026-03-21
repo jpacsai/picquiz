@@ -1,7 +1,8 @@
-import AdminTopicCollection from '@components/pages/Admin/TopicPage/components/AdminTopicCollection';
 import { topicItemsOptions } from '@queries/items';
 import { topicOptions } from '@queries/topics';
 import { createFileRoute, useLoaderData } from '@tanstack/react-router';
+
+import AdminTopicCollectionPage from '@/components/pages/Admin/TopicCollection/TopicCollectionPage';
 
 const path = '/_app/admin/$topicId/';
 
@@ -12,7 +13,7 @@ const RouteComponent = () => {
   const { items, topic } = useLoaderData({ from: path });
   const { saved } = Route.useSearch();
 
-  return <AdminTopicCollection items={items} saved={saved} topic={topic} />;
+  return <AdminTopicCollectionPage items={items} saved={saved} topic={topic} />;
 };
 
 export const Route = createFileRoute('/_app/admin/$topicId/')({

@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import AdminSuccess from './AdminSuccess';
+import AdminSuccess from '@/components/pages/Admin/TopicCollection/TopicItem/components/AdminSuccess';
 
 const navigateMock = vi.fn();
 

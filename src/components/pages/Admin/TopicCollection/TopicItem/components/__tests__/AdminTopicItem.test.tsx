@@ -10,7 +10,7 @@ import { QUERY_KEYS } from '@/queries/queryKeys';
 import type { TopicItem } from '@/service/items';
 import type { TopicField } from '@/types/topics';
 
-import AdminTopicItem from './AdminTopicItem';
+import AdminTopicItem from '../AdminTopicItem';
 
 const navigateMock = vi.fn();
 const deleteTopicItemMock = vi.fn();

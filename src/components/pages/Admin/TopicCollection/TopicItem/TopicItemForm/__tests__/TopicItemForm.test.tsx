@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { TopicField } from '@/types/topics';
 
-import TopicItemForm from './TopicItemForm';
+import TopicItemForm from '../TopicItemForm';
 
 const navigateMock = vi.fn();
 const invalidateQueriesMock = vi.fn();
@@ -44,15 +44,12 @@ vi.mock('@data/storage', async () => {
 });
 
 vi.mock('@lib/image', () => ({
-  generateResponsiveImageVariants: (...args: unknown[]) => generateResponsiveImageVariantsMock(...args),
+  generateResponsiveImageVariants: (...args: unknown[]) =>
+    generateResponsiveImageVariantsMock(...args),
 }));
 
-vi.mock('../../../../ui/Form/ImageUploadField', () => ({
-  default: ({
-    onSelectImage,
-  }: {
-    onSelectImage: (file: File) => void;
-  }) => (
+vi.mock('../../../../../../ui/Form/ImageUploadField', () => ({
+  default: ({ onSelectImage }: { onSelectImage: (file: File) => void }) => (
     <button
       data-testid="mock-image-upload-button"
       type="button"
@@ -93,12 +90,7 @@ describe('TopicItemForm saving', () => {
     ];
 
     render(
-      <TopicItemForm
-        collectionName="art"
-        fields={fields}
-        storagePrefix="art"
-        topicId="art"
-      />,
+      <TopicItemForm collectionName="art" fields={fields} storagePrefix="art" topicId="art" />,
     );
 
     expect(screen.getByRole('button', { name: 'Mentés' })).toBeDisabled();
@@ -160,12 +152,7 @@ describe('TopicItemForm saving', () => {
     });
 
     render(
-      <TopicItemForm
-        collectionName="art"
-        fields={fields}
-        storagePrefix="art"
-        topicId="art"
-      />,
+      <TopicItemForm collectionName="art" fields={fields} storagePrefix="art" topicId="art" />,
     );
 
     await user.type(screen.getByTestId('form-input-artist'), 'Leonardo da Vinci');
@@ -217,12 +204,7 @@ describe('TopicItemForm saving', () => {
     ];
 
     render(
-      <TopicItemForm
-        collectionName="art"
-        fields={fields}
-        storagePrefix="art"
-        topicId="art"
-      />,
+      <TopicItemForm collectionName="art" fields={fields} storagePrefix="art" topicId="art" />,
     );
 
     await user.type(screen.getByTestId('form-input-artist'), 'Leonardo da Vinci');
