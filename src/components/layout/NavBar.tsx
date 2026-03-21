@@ -1,6 +1,7 @@
 import { AppBar, Box, Toolbar, Typography } from '@mui/material';
 
 import { NavLink } from '@/components/ui/NavLink';
+import StyleSelector from '@/components/ui/StyleSelector';
 
 const NavBar = () => {
   return (
@@ -25,6 +26,10 @@ const NavBar = () => {
           <NavLink to="/admin" activeOptions={{ exact: true }} underline="none" preload="intent">
             Admin
           </NavLink>
+
+          <Box sx={{ marginLeft: 'auto' }}>
+            <StyleSelector />
+          </Box>
         </Box>
       </Toolbar>
     </AppBar>
