@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { TopicField } from '@/types/topics';
 
-import Form from './Form';
+import TopicItemForm from './TopicItemForm';
 
 const navigateMock = vi.fn();
 const invalidateQueriesMock = vi.fn();
@@ -65,7 +65,7 @@ vi.mock('../../../../ui/Form/ImageUploadField', () => ({
   ),
 }));
 
-describe('Admin Form saving', () => {
+describe('TopicItemForm saving', () => {
   beforeEach(() => {
     navigateMock.mockReset();
     invalidateQueriesMock.mockReset();
@@ -93,7 +93,7 @@ describe('Admin Form saving', () => {
     ];
 
     render(
-      <Form
+      <TopicItemForm
         collectionName="art"
         fields={fields}
         storagePrefix="art"
@@ -160,7 +160,7 @@ describe('Admin Form saving', () => {
     });
 
     render(
-      <Form
+      <TopicItemForm
         collectionName="art"
         fields={fields}
         storagePrefix="art"
@@ -217,7 +217,7 @@ describe('Admin Form saving', () => {
     ];
 
     render(
-      <Form
+      <TopicItemForm
         collectionName="art"
         fields={fields}
         storagePrefix="art"
@@ -241,13 +241,13 @@ describe('Admin Form saving', () => {
     ];
 
     const { rerender } = render(
-      <Form collectionName="art" fields={fields} storagePrefix="art" topicId="art" />,
+      <TopicItemForm collectionName="art" fields={fields} storagePrefix="art" topicId="art" />,
     );
 
     expect(screen.getByTestId('form-input-internal_note')).toBeInTheDocument();
 
     rerender(
-      <Form
+      <TopicItemForm
         collectionName="art"
         fields={fields}
         initialValues={{ artist: 'Leonardo da Vinci', internal_note: 'Hidden in edit' }}
@@ -297,7 +297,7 @@ describe('Admin Form saving', () => {
     });
 
     render(
-      <Form
+      <TopicItemForm
         collectionName="art"
         fields={fields}
         initialValues={{
@@ -368,7 +368,7 @@ describe('Admin Form saving', () => {
     ];
 
     render(
-      <Form
+      <TopicItemForm
         collectionName="art"
         fields={fields}
         initialValues={{
@@ -425,7 +425,7 @@ describe('Admin Form saving', () => {
     ];
 
     render(
-      <Form
+      <TopicItemForm
         collectionName="art"
         fields={fields}
         initialValues={{

@@ -7,21 +7,21 @@ import Typography from '@mui/material/Typography';
 import FormField from '@/components/ui/Form/FormField';
 import type { TopicField } from '@/types/topics';
 
-import type { FormMode, UseAdminFormResult } from './useAdminForm';
+import type { FormMode, UseTopicItemFormResult } from './useTopicItemForm';
 
-type FormViewProps = {
-  derivationIndex: UseAdminFormResult['derivationIndex'];
+type TopicItemFormViewProps = {
+  derivationIndex: UseTopicItemFormResult['derivationIndex'];
   fields: TopicField[];
-  form: UseAdminFormResult['form'];
+  form: UseTopicItemFormResult['form'];
   isSubmitting: boolean;
   mode: FormMode;
-  onSelectPendingImage: UseAdminFormResult['handleSelectPendingImage'];
-  onUndo: UseAdminFormResult['handleUndo'];
-  pendingImageSelection: UseAdminFormResult['pendingImageSelection'];
+  onSelectPendingImage: UseTopicItemFormResult['handleSelectPendingImage'];
+  onUndo: UseTopicItemFormResult['handleUndo'];
+  pendingImageSelection: UseTopicItemFormResult['pendingImageSelection'];
   submitError: string;
 };
 
-const FormView = ({
+const TopicItemFormView = ({
   derivationIndex,
   fields,
   form,
@@ -31,7 +31,7 @@ const FormView = ({
   onUndo,
   pendingImageSelection,
   submitError,
-}: FormViewProps) => {
+}: TopicItemFormViewProps) => {
   return (
     <form
       noValidate
@@ -138,4 +138,4 @@ const FormView = ({
   );
 };
 
-export default FormView;
+export default TopicItemFormView;

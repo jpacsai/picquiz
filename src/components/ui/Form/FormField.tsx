@@ -8,7 +8,7 @@ import {
   type FormDeriveField,
   getDerivedValue,
   getFieldValidator,
-} from '../../pages/Admin/TopicPage/Form/utils';
+} from '../../pages/Admin/TopicPage/TopicItemForm/utils';
 import FormInput from './FormInput';
 import FormSelect from './FormSelect';
 import ImageUploadField from './ImageUploadField';

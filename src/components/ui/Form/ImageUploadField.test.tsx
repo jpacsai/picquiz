@@ -5,7 +5,7 @@ import type { TopicField } from '@/types/topics';
 
 import ImageUploadField from './ImageUploadField';
 
-vi.mock('../../pages/Admin/TopicPage/Form/components/ImageUploadDialog', () => ({
+vi.mock('../../pages/Admin/TopicPage/TopicItemForm/components/ImageUploadDialog', () => ({
   default: () => null,
 }));
 

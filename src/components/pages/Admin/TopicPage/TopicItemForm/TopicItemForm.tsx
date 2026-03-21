@@ -1,9 +1,9 @@
 import type { TopicField } from '@/types/topics';
 
-import FormView from './FormView';
-import { type FormMode, useAdminForm } from './useAdminForm';
+import TopicItemFormView from './TopicItemFormView';
+import { type FormMode, useTopicItemForm } from './useTopicItemForm';
 
-type FormProps = {
+type TopicItemFormProps = {
   collectionName: string;
   fields: TopicField[];
   initialValues?: Record<string, unknown>;
@@ -13,7 +13,7 @@ type FormProps = {
   topicId: string;
 };
 
-const Form = ({
+const TopicItemForm = ({
   collectionName,
   fields,
   initialValues,
@@ -21,7 +21,7 @@ const Form = ({
   mode = 'create',
   storagePrefix,
   topicId,
-}: FormProps) => {
+}: TopicItemFormProps) => {
   const {
     derivationIndex,
     form,
@@ -30,7 +30,7 @@ const Form = ({
     isSubmitting,
     pendingImageSelection,
     submitError,
-  } = useAdminForm({
+  } = useTopicItemForm({
     collectionName,
     fields,
     initialValues,
@@ -41,7 +41,7 @@ const Form = ({
   });
 
   return (
-    <FormView
+    <TopicItemFormView
       derivationIndex={derivationIndex}
       fields={fields}
       form={form}
@@ -55,4 +55,4 @@ const Form = ({
   );
 };
 
-export default Form;
+export default TopicItemForm;

@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 import { getResponsiveImageFileNames } from '../../../data/storage';
 import type { TopicField } from '../../../types/topics';
-import ImageUploadDialog from '../../pages/Admin/TopicPage/Form/components/ImageUploadDialog';
+import ImageUploadDialog from '../../pages/Admin/TopicPage/TopicItemForm/components/ImageUploadDialog';
 
 type ImageUploadFieldProps = {
   artistName: string;

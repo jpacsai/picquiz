@@ -21,7 +21,7 @@ import {
 
 export type FormMode = 'create' | 'edit';
 
-export type UseAdminFormParams = {
+export type UseTopicItemFormParams = {
   collectionName: string;
   fields: TopicField[];
   initialValues?: Record<string, unknown>;
@@ -31,7 +31,7 @@ export type UseAdminFormParams = {
   topicId: string;
 };
 
-export type UseAdminFormResult = {
+export type UseTopicItemFormResult = {
   derivationIndex: Record<string, ReturnType<typeof getDerivationIndex>[string]>;
   form: FormFieldFormApi;
   handleSelectPendingImage: ({
@@ -192,7 +192,7 @@ const syncUpdatedItemCache = ({
   );
 };
 
-export const useAdminForm = ({
+export const useTopicItemForm = ({
   collectionName,
   fields,
   initialValues,
@@ -200,7 +200,7 @@ export const useAdminForm = ({
   mode = 'create',
   storagePrefix,
   topicId,
-}: UseAdminFormParams): UseAdminFormResult => {
+}: UseTopicItemFormParams): UseTopicItemFormResult => {
   const defaultValues = getInitialValues(fields, initialValues);
   const derivationIndex = getDerivationIndex(fields);
   const navigate = useNavigate();

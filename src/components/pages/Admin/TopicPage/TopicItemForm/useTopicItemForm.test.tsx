@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { TopicField } from '@/types/topics';
 
-import { useAdminForm } from './useAdminForm';
+import { useTopicItemForm } from './useTopicItemForm';
 
 const navigateMock = vi.fn();
 const invalidateQueriesMock = vi.fn();
@@ -68,7 +68,7 @@ const imageFields: TopicField[] = [
 ];
 
 const setFormValues = async (
-  form: ReturnType<typeof useAdminForm>['form'],
+  form: ReturnType<typeof useTopicItemForm>['form'],
   values: Record<string, string | number>,
 ) => {
   await act(async () => {
@@ -78,7 +78,7 @@ const setFormValues = async (
   });
 };
 
-describe('useAdminForm', () => {
+describe('useTopicItemForm', () => {
   beforeEach(() => {
     navigateMock.mockReset();
     invalidateQueriesMock.mockReset();
@@ -120,7 +120,7 @@ describe('useAdminForm', () => {
 
   it('sets a submit error when edit mode is missing an itemId', async () => {
     const { result } = renderHook(() =>
-      useAdminForm({
+      useTopicItemForm({
         collectionName: 'art',
         fields: baseFields,
         mode: 'edit',
@@ -148,7 +148,7 @@ describe('useAdminForm', () => {
 
   it('updates item caches and invalidates topic and detail queries after a successful edit', async () => {
     const { result } = renderHook(() =>
-      useAdminForm({
+      useTopicItemForm({
         collectionName: 'art',
         fields: baseFields,
         itemId: 'item-1',
@@ -207,7 +207,7 @@ describe('useAdminForm', () => {
     });
 
     const { result } = renderHook(() =>
-      useAdminForm({
+      useTopicItemForm({
         collectionName: 'art',
         fields: imageFields,
         initialValues: {

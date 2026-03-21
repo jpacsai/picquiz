@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 
-import Form from '@/components/pages/Admin/TopicPage/Form/Form';
+import TopicItemForm from '@/components/pages/Admin/TopicPage/TopicItemForm/TopicItemForm';
 import type { TopicItem } from '@/service/items';
 import type { Topic } from '@/types/topics';
 
@@ -14,7 +14,7 @@ type AdminTopicProps = {
 const AdminTopic = ({ initialValues, item, mode = 'create', topic }: AdminTopicProps) => {
   return (
     <Box sx={{ display: 'grid', gap: 3 }}>
-      <Form
+      <TopicItemForm
         collectionName={topic.slug}
         fields={topic.fields}
         initialValues={initialValues}
