@@ -1,4 +1,5 @@
-import { Card, CardContent, Typography } from '@mui/material';
+import { Button, Card, CardActions, CardContent, Typography } from '@mui/material';
+import { useNavigate } from '@tanstack/react-router';
 
 import type { TopicItem } from '@/service/items';
 import type { TopicField } from '@/types/topics';
@@ -6,6 +7,7 @@ import type { TopicField } from '@/types/topics';
 type AdminTopicItemProps = {
   fields: ReadonlyArray<TopicField>;
   item: TopicItem;
+  topicId: string;
 };
 
 const getDisplayValue = (value: unknown) => {
@@ -48,7 +50,8 @@ const getFallbackSubtitle = (item: TopicItem) => {
     .join(' - ');
 };
 
-const AdminTopicItem = ({ fields, item }: AdminTopicItemProps) => {
+const AdminTopicItem = ({ fields, item, topicId }: AdminTopicItemProps) => {
+  const navigate = useNavigate();
   const titleValues = getValuesByDisplay(fields, item, 'title');
   const subtitleValues = getValuesByDisplay(fields, item, 'subtitle');
   const metaValues = getValuesByDisplay(fields, item, 'meta');
@@ -72,6 +75,20 @@ const AdminTopicItem = ({ fields, item }: AdminTopicItemProps) => {
           </Typography>
         ) : null}
       </CardContent>
+
+      <CardActions sx={{ px: 2, pb: 2, pt: 0 }}>
+        <Button
+          variant="outlined"
+          onClick={() => {
+            void navigate({
+              to: '/admin/$topicId/$itemId/edit',
+              params: { itemId: item.id, topicId },
+            });
+          }}
+        >
+          Szerkesztés
+        </Button>
+      </CardActions>
     </Card>
   );
 };

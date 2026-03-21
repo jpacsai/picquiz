@@ -17,6 +17,7 @@ type BreadcrumbItem =
       label: string;
       params?: {
         topicId: string;
+        itemId?: string;
       };
       to: BreadcrumbTo;
     };
@@ -98,6 +99,8 @@ const getItems = (matches: ReturnType<typeof useMatches>): BreadcrumbItem[] => {
       return getAdminItems(context);
     case '/_app/admin/$topicId/new':
       return getAdminItems(context, 'Új elem');
+    case '/_app/admin/$topicId/$itemId/edit':
+      return getAdminItems(context, 'Szerkesztés');
     case '/_app/admin/$topicId/success':
       return getAdminItems(context, 'Sikeres mentés');
     case '/_app/$topicId/':

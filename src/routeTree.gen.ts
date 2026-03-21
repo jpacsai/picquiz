@@ -19,6 +19,7 @@ import { Route as AppTopicIdIndexRouteImport } from './routes/_app/$topicId/inde
 import { Route as AppAdminTopicIdIndexRouteImport } from './routes/_app/admin/$topicId/index'
 import { Route as AppAdminTopicIdSuccessRouteImport } from './routes/_app/admin/$topicId/success'
 import { Route as AppAdminTopicIdNewRouteImport } from './routes/_app/admin/$topicId/new'
+import { Route as AppAdminTopicIdItemIdEditRouteImport } from './routes/_app/admin/$topicId/$itemId/edit'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -69,6 +70,12 @@ const AppAdminTopicIdNewRoute = AppAdminTopicIdNewRouteImport.update({
   path: '/admin/$topicId/new',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminTopicIdItemIdEditRoute =
+  AppAdminTopicIdItemIdEditRouteImport.update({
+    id: '/admin/$topicId/$itemId/edit',
+    path: '/admin/$topicId/$itemId/edit',
+    getParentRoute: () => AppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/admin/$topicId/new': typeof AppAdminTopicIdNewRoute
   '/admin/$topicId/success': typeof AppAdminTopicIdSuccessRoute
   '/admin/$topicId/': typeof AppAdminTopicIdIndexRoute
+  '/admin/$topicId/$itemId/edit': typeof AppAdminTopicIdItemIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -91,6 +99,7 @@ export interface FileRoutesByTo {
   '/admin/$topicId/new': typeof AppAdminTopicIdNewRoute
   '/admin/$topicId/success': typeof AppAdminTopicIdSuccessRoute
   '/admin/$topicId': typeof AppAdminTopicIdIndexRoute
+  '/admin/$topicId/$itemId/edit': typeof AppAdminTopicIdItemIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -104,6 +113,7 @@ export interface FileRoutesById {
   '/_app/admin/$topicId/new': typeof AppAdminTopicIdNewRoute
   '/_app/admin/$topicId/success': typeof AppAdminTopicIdSuccessRoute
   '/_app/admin/$topicId/': typeof AppAdminTopicIdIndexRoute
+  '/_app/admin/$topicId/$itemId/edit': typeof AppAdminTopicIdItemIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/admin/$topicId/new'
     | '/admin/$topicId/success'
     | '/admin/$topicId/'
+    | '/admin/$topicId/$itemId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/admin/$topicId/new'
     | '/admin/$topicId/success'
     | '/admin/$topicId'
+    | '/admin/$topicId/$itemId/edit'
   id:
     | '__root__'
     | '/'
@@ -140,6 +152,7 @@ export interface FileRouteTypes {
     | '/_app/admin/$topicId/new'
     | '/_app/admin/$topicId/success'
     | '/_app/admin/$topicId/'
+    | '/_app/admin/$topicId/$itemId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -220,6 +233,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminTopicIdNewRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/admin/$topicId/$itemId/edit': {
+      id: '/_app/admin/$topicId/$itemId/edit'
+      path: '/admin/$topicId/$itemId/edit'
+      fullPath: '/admin/$topicId/$itemId/edit'
+      preLoaderRoute: typeof AppAdminTopicIdItemIdEditRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
@@ -231,6 +251,7 @@ interface AppRouteChildren {
   AppAdminTopicIdNewRoute: typeof AppAdminTopicIdNewRoute
   AppAdminTopicIdSuccessRoute: typeof AppAdminTopicIdSuccessRoute
   AppAdminTopicIdIndexRoute: typeof AppAdminTopicIdIndexRoute
+  AppAdminTopicIdItemIdEditRoute: typeof AppAdminTopicIdItemIdEditRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -241,6 +262,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminTopicIdNewRoute: AppAdminTopicIdNewRoute,
   AppAdminTopicIdSuccessRoute: AppAdminTopicIdSuccessRoute,
   AppAdminTopicIdIndexRoute: AppAdminTopicIdIndexRoute,
+  AppAdminTopicIdItemIdEditRoute: AppAdminTopicIdItemIdEditRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

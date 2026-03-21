@@ -6,7 +6,7 @@ import type { Topic } from '@/types/topics';
 import Form from './Form/Form';
 
 type AdminTopicProps = {
-  initialValues?: Record<string, string | number>;
+  initialValues?: Record<string, unknown>;
   item?: TopicItem;
   mode?: 'create' | 'edit';
   topic: Topic;
