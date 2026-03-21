@@ -1,4 +1,4 @@
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 import { storage } from '../lib/firebase';
 
@@ -131,4 +131,8 @@ export const uploadResponsiveTopicImages = async ({
     desktop,
     mobile,
   };
+};
+
+export const deleteTopicImageByPath = async (path: string) => {
+  await deleteObject(ref(storage, path));
 };

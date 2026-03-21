@@ -11,6 +11,7 @@ export const QUERY_KEYS = {
   },
   ITEMS: {
     byTopic: (topic: string) => ['items', 'byTopic', topic] as const,
+    detail: (topic: string, id: string) => ['items', 'detail', { topic, id }] as const,
     search: (topic: string, query: string) => ['items', 'search', { topic, query }] as const,
   },
 } as const;
