@@ -4,10 +4,15 @@ import type { ComponentType, Key, ReactNode } from 'react';
 
 import type { TopicField } from '@/types/topics';
 
-import FormInput from '../../../ui/Form/FormInput';
-import FormSelect from '../../../ui/Form/FormSelect';
-import ImageUploadField from '../../../ui/Form/ImageUploadField';
-import { type FormDeriveField, type FormValues, getDerivedValue, getFieldValidator } from './utils';
+import {
+  type FormDeriveField,
+  type FormValues,
+  getDerivedValue,
+  getFieldValidator,
+} from '../../pages/Admin/Form/utils';
+import FormInput from './FormInput';
+import FormSelect from './FormSelect';
+import ImageUploadField from './ImageUploadField';
 
 type FormFieldProps = {
   derivationIndex: Record<string, FormDeriveField>;

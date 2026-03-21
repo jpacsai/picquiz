@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 
 import type { TopicField } from '@/types/topics';
 
-import FormField from './FormField';
+import FormField from '../../../ui/Form/FormField';
 import type { FormMode, UseAdminFormResult } from './useAdminForm';
 
 type FormViewProps = {

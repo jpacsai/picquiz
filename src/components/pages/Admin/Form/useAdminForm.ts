@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 
 import type { TopicField } from '@/types/topics';
 
-import type { FormFieldFormApi } from './FormField';
+import type { FormFieldFormApi } from '../../../ui/Form/FormField';
 import {
   getDerivationIndex,
   getInitialValues,
