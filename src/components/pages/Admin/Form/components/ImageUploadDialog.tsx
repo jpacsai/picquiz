@@ -34,43 +34,40 @@ const ImageUploadDialog = ({
   open,
 }: ImageUploadDialogProps) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [selectedFileName, setSelectedFileName] = useState<string>('');
-  const [previewUrl, setPreviewUrl] = useState<string>('');
-  const [status, setStatus] = useState<'idle' | 'ready' | 'success' | 'error'>('idle');
+  const [draftSelection, setDraftSelection] = useState<{
+    file: File;
+    previewUrl: string;
+  } | null>(null);
+  const [hasSelectionError, setHasSelectionError] = useState(false);
 
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    setSelectedFile(existingSelection?.file ?? null);
-    setSelectedFileName(existingSelection?.file.name ?? '');
-    setPreviewUrl(existingSelection?.previewUrl ?? '');
-    setStatus(existingSelection ? 'ready' : 'idle');
-  }, [existingSelection, open]);
+  const selectedFile = draftSelection?.file ?? existingSelection?.file ?? null;
+  const selectedFileName = selectedFile?.name ?? '';
+  const previewUrl = draftSelection?.previewUrl ?? existingSelection?.previewUrl ?? '';
+  const status: 'idle' | 'ready' | 'error' = hasSelectionError
+    ? 'error'
+    : selectedFile
+      ? 'ready'
+      : 'idle';
 
   useEffect(() => {
     return () => {
-      if (previewUrl && previewUrl !== existingSelection?.previewUrl) {
-        URL.revokeObjectURL(previewUrl);
+      if (draftSelection?.previewUrl) {
+        URL.revokeObjectURL(draftSelection.previewUrl);
       }
     };
-  }, [existingSelection?.previewUrl, previewUrl]);
+  }, [draftSelection]);
 
   const handlePickImage = () => {
     fileInputRef.current?.click();
   };
 
   const handleClose = () => {
-    if (previewUrl && previewUrl !== existingSelection?.previewUrl) {
-      URL.revokeObjectURL(previewUrl);
+    if (draftSelection?.previewUrl) {
+      URL.revokeObjectURL(draftSelection.previewUrl);
     }
 
-    setPreviewUrl(existingSelection?.previewUrl ?? '');
-    setSelectedFile(existingSelection?.file ?? null);
-    setSelectedFileName(existingSelection?.file.name ?? '');
-    setStatus(existingSelection ? 'ready' : 'idle');
+    setDraftSelection(null);
+    setHasSelectionError(false);
 
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -80,33 +77,30 @@ const ImageUploadDialog = ({
   };
 
   const handleFileChange = (file: File | null) => {
-    if (previewUrl && previewUrl !== existingSelection?.previewUrl) {
-      URL.revokeObjectURL(previewUrl);
+    if (draftSelection?.previewUrl) {
+      URL.revokeObjectURL(draftSelection.previewUrl);
     }
 
-    setSelectedFile(file);
-    setSelectedFileName('');
-    setPreviewUrl('');
-
     if (!file) {
-      setStatus(existingSelection ? 'ready' : 'idle');
+      setDraftSelection(null);
+      setHasSelectionError(false);
       return;
     }
 
-    setSelectedFile(file);
-    setSelectedFileName(file.name);
-    setPreviewUrl(URL.createObjectURL(file));
-    setStatus('ready');
+    setDraftSelection({
+      file,
+      previewUrl: URL.createObjectURL(file),
+    });
+    setHasSelectionError(false);
   };
 
   const handleUseImage = () => {
     if (!selectedFile) {
-      setStatus('error');
+      setHasSelectionError(true);
       return;
     }
 
     onSelect(selectedFile);
-    setStatus('success');
     handleClose();
   };
 
@@ -158,18 +152,11 @@ const ImageUploadDialog = ({
 
           <Alert
             severity={
-              status === 'success'
-                ? 'success'
-                : status === 'error'
-                  ? 'error'
-                  : status === 'ready'
-                    ? 'info'
-                    : 'warning'
+              status === 'error' ? 'error' : status === 'ready' ? 'info' : 'warning'
             }
           >
             {status === 'idle' && 'Válassz egy képet a folytatáshoz.'}
             {status === 'ready' && 'A kép készen áll a formhoz adásra.'}
-            {status === 'success' && 'A kép bekerült a form ideiglenes állapotába.'}
             {status === 'error' && 'A kép kiválasztása nem sikerült.'}
           </Alert>
         </Stack>
