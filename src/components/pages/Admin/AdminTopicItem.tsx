@@ -1,6 +1,7 @@
-import type { TopicField } from '@/types/topics';
-import type { TopicItem } from '@/service/items';
 import { Card, CardContent, Typography } from '@mui/material';
+
+import type { TopicItem } from '@/service/items';
+import type { TopicField } from '@/types/topics';
 
 type AdminTopicItemProps = {
   fields: ReadonlyArray<TopicField>;
