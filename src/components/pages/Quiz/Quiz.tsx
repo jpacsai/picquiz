@@ -231,7 +231,6 @@ const Quiz = ({ answerFieldKeys, items, questionCount, showCorrectAnswer, topic 
 
                     return (
                       <Button
-                        color={showCorrect ? 'success' : showIncorrect ? 'error' : 'primary'}
                         disabled={isAnswered}
                         key={option.id}
                         onClick={() => {
@@ -244,8 +243,41 @@ const Quiz = ({ answerFieldKeys, items, questionCount, showCorrectAnswer, topic 
                             setScore((currentScore) => currentScore + 1);
                           }
                         }}
-                        sx={{ justifyContent: 'flex-start', py: 1.5 }}
-                        variant={isSelected || showCorrect ? 'contained' : 'outlined'}
+                        sx={(theme) => ({
+                          justifyContent: 'flex-start',
+                          py: 1.5,
+                          borderWidth: 2,
+                          backgroundColor: isSelected
+                            ? theme.palette.action.selected
+                            : 'transparent',
+                          borderColor: showCorrect
+                            ? theme.palette.success.main
+                            : showIncorrect
+                              ? theme.palette.error.main
+                              : undefined,
+                          color: showCorrect
+                            ? theme.palette.success.main
+                            : showIncorrect
+                              ? theme.palette.error.main
+                              : undefined,
+                          '&.Mui-disabled': {
+                            opacity: 1,
+                            borderColor: showCorrect
+                              ? theme.palette.success.main
+                              : showIncorrect
+                                ? theme.palette.error.main
+                                : undefined,
+                            color: showCorrect
+                              ? theme.palette.success.main
+                              : showIncorrect
+                                ? theme.palette.error.main
+                                : undefined,
+                            backgroundColor: isSelected
+                              ? theme.palette.action.selected
+                              : 'transparent',
+                          },
+                        })}
+                        variant="outlined"
                       >
                         {option.label}
                       </Button>
