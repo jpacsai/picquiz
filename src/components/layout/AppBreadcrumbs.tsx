@@ -67,14 +67,26 @@ const getAdminItems = (context: RouteContext, currentLabel?: string): Breadcrumb
     : [ADMIN_ITEM, { label: topicItem.label }];
 };
 
-const getTopicItems = ({ topicLabel }: RouteContext, currentLabel?: string): BreadcrumbItem[] => {
-  if (!topicLabel) {
+const getTopicItem = ({ topicId, topicLabel }: RouteContext): BreadcrumbItem | null => {
+  if (!topicId || !topicLabel) {
+    return null;
+  }
+
+  return { label: topicLabel, params: { topicId }, to: '/$topicId' };
+};
+
+const getTopicItems = (context: RouteContext, currentLabel?: string): BreadcrumbItem[] => {
+  const topicItem = getTopicItem(context);
+
+  if (!topicItem) {
     return [HOME_ITEM];
   }
 
-  return currentLabel
-    ? [HOME_ITEM, { label: topicLabel }, { label: currentLabel }]
-    : [HOME_ITEM, { label: topicLabel }];
+  if (!currentLabel) {
+    return [HOME_ITEM, { label: topicItem.label }];
+  }
+
+  return [HOME_ITEM, topicItem, { label: currentLabel }];
 };
 
 const getItems = (matches: ReturnType<typeof useMatches>): BreadcrumbItem[] => {
@@ -105,6 +117,10 @@ const getItems = (matches: ReturnType<typeof useMatches>): BreadcrumbItem[] => {
       return getAdminItems(context, 'Sikeres mentés');
     case '/_app/$topicId/':
       return getTopicItems(context);
+    case '/_app/$topicId/quiz-config':
+      return getTopicItems(context, 'Kvíz beállításai');
+    case '/_app/$topicId/quiz':
+      return getTopicItems(context, 'Kvíz');
     case '/_app/quiz/':
       return [HOME_ITEM, { label: 'Kvíz' }];
     default:

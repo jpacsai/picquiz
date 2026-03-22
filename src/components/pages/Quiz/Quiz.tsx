@@ -123,6 +123,17 @@ const Quiz = ({ answerFieldKey, items, questionCount, showCorrectAnswer, topic }
               </Typography>
               <Button
                 onClick={() => {
+                  void navigate({
+                    to: '/$topicId/quiz-config',
+                    params: { topicId: topic.id },
+                  });
+                }}
+                variant="outlined"
+              >
+                Vissza a beállításokhoz
+              </Button>
+              <Button
+                onClick={() => {
                   setCurrentQuestionIndex(0);
                   setScore(0);
                   setSelectedOptionId('');
