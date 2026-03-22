@@ -77,7 +77,7 @@ const item: TopicItem = {
   title: 'Mona Lisa',
 };
 
-const renderAdminTopicItem = ({
+const renderAdminTopicItemCard = ({
   queryClient,
   itemOverride,
 }: {
@@ -109,7 +109,7 @@ const renderAdminTopicItem = ({
   );
 };
 
-describe('AdminTopicItem UI', () => {
+describe('AdminTopicItemCard UI', () => {
   beforeEach(() => {
     navigateMock.mockReset();
     deleteTopicItemMock.mockReset();
@@ -128,7 +128,7 @@ describe('AdminTopicItem UI', () => {
       },
     });
 
-    renderAdminTopicItem({ queryClient });
+    renderAdminTopicItemCard({ queryClient });
 
     await user.click(screen.getByRole('button', { name: 'Törlés' }));
 
@@ -166,7 +166,7 @@ describe('AdminTopicItem UI', () => {
       },
     });
 
-    renderAdminTopicItem({ queryClient });
+    renderAdminTopicItemCard({ queryClient });
 
     await user.click(screen.getByRole('button', { name: 'Törlés' }));
     const dialog = screen.getByRole('dialog');
