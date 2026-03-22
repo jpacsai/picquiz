@@ -9,6 +9,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useNavigate } from '@tanstack/react-router';
 import { useEffect, useMemo, useState } from 'react';
 
+import QuizError from '@/components/pages/Quiz/components/QuizError';
 import QuizFinished from '@/components/pages/Quiz/components/QuizFinished';
 import type { TopicItem } from '@/service/items';
 
@@ -107,29 +108,14 @@ const Quiz = ({
 
   if (!questions.length) {
     return (
-      <Stack spacing={3}>
-        <Card sx={{ width: '100%' }} variant="outlined">
-          <CardContent>
-            <Stack spacing={2}>
-              <Typography variant="h5">Nem indítható a kvíz</Typography>
-              <Typography color="text.secondary">
-                A kiválasztott mezőhöz nincs elég használható item vagy válaszlehetőség.
-              </Typography>
-              <Button
-                onClick={() => {
-                  void navigate({
-                    to: '/$topicId/quiz-config',
-                    params: { topicId: topic.id },
-                  });
-                }}
-                variant="contained"
-              >
-                Vissza a beállításokhoz
-              </Button>
-            </Stack>
-          </CardContent>
-        </Card>
-      </Stack>
+      <QuizError
+        onReturnToConfig={() => {
+          void navigate({
+            to: '/$topicId/quiz-config',
+            params: { topicId: topic.id },
+          });
+        }}
+      />
     );
   }
 
