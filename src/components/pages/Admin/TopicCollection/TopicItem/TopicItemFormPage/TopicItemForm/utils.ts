@@ -160,6 +160,35 @@ export const validateImageUploads = ({
     )
     .find(Boolean);
 
+export const mergeRefreshedSelectFieldOptions = ({
+  currentFields,
+  refreshedFields,
+}: {
+  currentFields: TopicField[];
+  refreshedFields: TopicField[];
+}) => {
+  const refreshedSelectFieldsByKey = new Map(
+    refreshedFields
+      .filter((field): field is Extract<TopicField, { type: 'select' }> => field.type === 'select')
+      .map((field) => [field.key, field]),
+  );
+
+  return currentFields.map((field) => {
+    if (field.type !== 'select') {
+      return field;
+    }
+
+    const refreshedField = refreshedSelectFieldsByKey.get(field.key);
+
+    return refreshedField
+      ? {
+          ...field,
+          options: refreshedField.options,
+        }
+      : field;
+  });
+};
+
 export const getPersistableValue = ({
   fields,
   values,

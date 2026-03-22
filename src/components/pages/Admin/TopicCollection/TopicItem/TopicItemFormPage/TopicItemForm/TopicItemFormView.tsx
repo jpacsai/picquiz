@@ -1,7 +1,9 @@
+import RefreshIcon from '@mui/icons-material/Refresh';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 
 import FormField from '@/components/ui/Form/FormField';
@@ -13,9 +15,11 @@ type TopicItemFormViewProps = {
   derivationIndex: UseTopicItemFormResult['derivationIndex'];
   fields: TopicField[];
   form: UseTopicItemFormResult['form'];
+  isRefreshingSelectOptions?: boolean;
   isSubmitting: boolean;
   mode: FormMode;
   onSelectPendingImage: UseTopicItemFormResult['handleSelectPendingImage'];
+  onRefreshSelectOptions?: () => void;
   onUndo: UseTopicItemFormResult['handleUndo'];
   pendingImageSelection: UseTopicItemFormResult['pendingImageSelection'];
   submitError: string;
@@ -25,13 +29,16 @@ const TopicItemFormView = ({
   derivationIndex,
   fields,
   form,
+  isRefreshingSelectOptions = false,
   isSubmitting,
   mode,
   onSelectPendingImage,
+  onRefreshSelectOptions,
   onUndo,
   pendingImageSelection,
   submitError,
 }: TopicItemFormViewProps) => {
+  const hasRefreshableSelectFields = fields.some((field) => field.type === 'select');
   const hiddenFieldKeys = new Set(
     fields.flatMap((field) =>
       field.type === 'imageUpload'
@@ -118,6 +125,21 @@ const TopicItemFormView = ({
 
               return (
                 <>
+            {hasRefreshableSelectFields && onRefreshSelectOptions ? (
+              <IconButton
+                type="button"
+                aria-label="Selectek frissítése"
+                disabled={isSubmitting || isRefreshingSelectOptions}
+                onClick={onRefreshSelectOptions}
+              >
+                {isRefreshingSelectOptions ? (
+                  <CircularProgress size={18} />
+                ) : (
+                  <RefreshIcon />
+                )}
+              </IconButton>
+            ) : null}
+
             {mode === 'edit' ? (
               <Button
                 type="button"
