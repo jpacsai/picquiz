@@ -121,6 +121,26 @@ type QuizPlayableItem = {
 const resolveMaxNumericValue = (maxValue: number | 'todayYear'): number =>
   maxValue === 'todayYear' ? new Date().getFullYear() : maxValue;
 
+const resolveMinNumericValue = ({
+  maxValue,
+  minOffset,
+  minValue,
+}: {
+  maxValue: number | 'todayYear';
+  minOffset?: number;
+  minValue?: number;
+}): number | null => {
+  if (typeof minValue === 'number') {
+    return minValue;
+  }
+
+  if (typeof minOffset === 'number') {
+    return resolveMaxNumericValue(maxValue) - minOffset;
+  }
+
+  return null;
+};
+
 const getDistinctTopicValues = ({
   answerFieldKey,
   items,
@@ -140,47 +160,61 @@ const getFieldOptions = (field: TopicField): string[] =>
 const buildNumericRangeDistractors = ({
   correctValue,
   maxValue,
+  minOffset,
   minValue,
 }: {
   correctValue: string;
   maxValue: number | 'todayYear';
-  minValue: number;
+  minOffset?: number;
+  minValue?: number;
 }): string[] => {
   const correctNumber = Number(correctValue);
   const resolvedMaxValue = resolveMaxNumericValue(maxValue);
+  const resolvedMinValue = resolveMinNumericValue({ maxValue, minOffset, minValue });
 
-  if (Number.isNaN(correctNumber) || minValue > resolvedMaxValue) {
+  if (Number.isNaN(correctNumber) || resolvedMinValue === null || resolvedMinValue > resolvedMaxValue) {
     return [];
   }
 
-  return Array.from({ length: resolvedMaxValue - minValue + 1 }, (_, index) => String(minValue + index)).filter(
-    (value) => value !== correctValue,
-  );
+  return Array.from(
+    { length: resolvedMaxValue - resolvedMinValue + 1 },
+    (_, index) => String(resolvedMinValue + index),
+  ).filter((value) => value !== correctValue);
 };
 
 const buildDerivedRangeDistractors = ({
   correctValue,
   item,
   maxValue,
+  minOffset,
   minValue,
   sourceField,
 }: {
   correctValue: string;
   item: TopicItem;
   maxValue: number | 'todayYear';
-  minValue: number;
+  minOffset?: number;
+  minValue?: number;
   sourceField: string;
 }) => {
   const sourceValue = item[sourceField];
   const resolvedMaxValue = resolveMaxNumericValue(maxValue);
+  const resolvedMinValue = resolveMinNumericValue({ maxValue, minOffset, minValue });
 
-  if ((typeof sourceValue !== 'string' && typeof sourceValue !== 'number') || minValue > resolvedMaxValue) {
+  if (
+    (typeof sourceValue !== 'string' && typeof sourceValue !== 'number') ||
+    resolvedMinValue === null ||
+    resolvedMinValue > resolvedMaxValue
+  ) {
     return [];
   }
 
   return Array.from(
     new Set(
-      Array.from({ length: resolvedMaxValue - minValue + 1 }, (_, index) => minValue + index)
+      Array.from(
+        { length: resolvedMaxValue - resolvedMinValue + 1 },
+        (_, index) => resolvedMinValue + index,
+      )
         .map((value) => derivationRegistry.yearToCentury(value))
         .filter((value) => value !== correctValue),
     ),
@@ -216,6 +250,7 @@ const getWrongAnswerCandidates = ({
     return buildNumericRangeDistractors({
       correctValue: playableItem.value,
       maxValue: distractor.maxValue,
+      minOffset: distractor.minOffset,
       minValue: distractor.minValue,
     });
   }
@@ -224,6 +259,7 @@ const getWrongAnswerCandidates = ({
     correctValue: playableItem.value,
     item: playableItem.item,
     maxValue: distractor.maxValue,
+    minOffset: distractor.minOffset,
     minValue: distractor.minValue,
     sourceField: distractor.sourceField,
   });
