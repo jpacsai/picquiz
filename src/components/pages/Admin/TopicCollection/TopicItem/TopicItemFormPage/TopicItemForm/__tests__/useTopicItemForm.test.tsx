@@ -205,6 +205,39 @@ describe('useTopicItemForm', () => {
     });
   });
 
+  it('trims all string inputs before edit submit', async () => {
+    const { result } = renderHook(() =>
+      useTopicItemForm({
+        collectionName: 'art',
+        fields: baseFields,
+        itemId: 'item-1',
+        mode: 'edit',
+        storagePrefix: 'art',
+        topicId: 'art',
+      }),
+    );
+
+    await setFormValues(result.current.form, {
+      artist: '  Leonardo da Vinci  ',
+      title: '  Mona Lisa  ',
+    });
+
+    await act(async () => {
+      await result.current.form.handleSubmit();
+    });
+
+    await waitFor(() => {
+      expect(updateTopicItemMock).toHaveBeenCalledWith({
+        collectionName: 'art',
+        itemId: 'item-1',
+        values: {
+          artist: 'Leonardo da Vinci',
+          title: 'Mona Lisa',
+        },
+      });
+    });
+  });
+
   it('deletes only changed image paths after replacing an image in edit mode', async () => {
     uploadResponsiveTopicImagesMock.mockResolvedValue({
       desktop: { path: 'art/desktop/old.jpg', url: 'https://example.com/new-desktop.jpg' },

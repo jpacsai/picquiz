@@ -178,7 +178,9 @@ export const getPersistableValue = ({
       return acc;
     }
 
-    const isEmptyValue = nextValue === '';
+    const normalizedValue =
+      field.type === 'string' && typeof nextValue === 'string' ? nextValue.trim() : nextValue;
+    const isEmptyValue = normalizedValue === '';
 
     if (!field.required && isEmptyValue) {
       return acc;
@@ -186,7 +188,7 @@ export const getPersistableValue = ({
 
     return {
       ...acc,
-      [field.key]: nextValue,
+      [field.key]: normalizedValue,
     };
   }, {});
 

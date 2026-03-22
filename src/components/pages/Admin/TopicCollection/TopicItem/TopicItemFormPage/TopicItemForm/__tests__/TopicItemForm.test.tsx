@@ -116,6 +116,38 @@ describe('TopicItemForm saving', () => {
     });
   });
 
+  it('trims all string inputs before create submit', async () => {
+    const user = userEvent.setup();
+    const fields: TopicField[] = [
+      { key: 'artist', label: 'Artist', required: true, type: 'string' },
+      { key: 'title', label: 'Title', required: true, type: 'string' },
+      { key: 'movement', label: 'Movement', required: false, type: 'string' },
+      { key: 'year', label: 'Year', type: 'number' },
+    ];
+
+    render(
+      <TopicItemForm collectionName="art" fields={fields} storagePrefix="art" topicId="art" />,
+    );
+
+    await user.type(screen.getByTestId('form-input-artist'), '  Leonardo da Vinci  ');
+    await user.type(screen.getByTestId('form-input-title'), '  Mona Lisa  ');
+    await user.type(screen.getByTestId('form-input-movement'), '  Renaissance  ');
+    await user.type(screen.getByTestId('form-input-year'), '1503');
+    await user.click(screen.getByRole('button', { name: 'Mentés' }));
+
+    await waitFor(() => {
+      expect(createTopicItemMock).toHaveBeenCalledWith({
+        collectionName: 'art',
+        values: {
+          artist: 'Leonardo da Vinci',
+          title: 'Mona Lisa',
+          movement: 'Renaissance',
+          year: 1503,
+        },
+      });
+    });
+  });
+
   it('uploads responsive image variants on submit and persists their URLs', async () => {
     const user = userEvent.setup();
     const desktopBlob = new Blob(['desktop'], { type: 'image/jpeg' });
