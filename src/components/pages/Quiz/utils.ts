@@ -28,6 +28,7 @@ export type QuizQuestion = {
 
 const QUESTION_COUNT_STEP = 5;
 const MIN_OPTION_COUNT = 4;
+const DISTRACTOR_COUNT = MIN_OPTION_COUNT - 1;
 
 const isQuizAnswerField = (
   field: TopicField,
@@ -36,6 +37,13 @@ const isQuizAnswerField = (
 
 const getQuizPrompt = (field: TopicField): string =>
   field.quiz?.enabled ? field.quiz.prompt : '';
+
+const derivationRegistry = {
+  yearToCentury: (year: number) => {
+    const centuryNum = Math.floor((year - 1) / 100) + 1;
+    return `${centuryNum}-ik század`;
+  },
+} as const;
 
 const getImageField = (topic: Topic): Extract<TopicField, { type: 'imageUpload' }> | null =>
   topic.fields.find(
@@ -92,6 +100,140 @@ type QuizPlayableItem = {
   value: string;
 };
 
+const resolveMaxNumericValue = (maxValue: number | 'todayYear'): number =>
+  maxValue === 'todayYear' ? new Date().getFullYear() : maxValue;
+
+const getDistinctTopicValues = ({
+  answerFieldKey,
+  items,
+  topic,
+}: {
+  answerFieldKey: string;
+  items: ReadonlyArray<TopicItem>;
+  topic: Topic;
+}) =>
+  Array.from(
+    new Set(getPlayableQuizItems({ answerFieldKey, items, topic }).map(({ value }) => value)),
+  );
+
+const getFieldOptions = (field: TopicField): string[] =>
+  field.type === 'select' ? field.options : [];
+
+const buildNumericRangeDistractors = ({
+  correctValue,
+  maxValue,
+  minValue,
+}: {
+  correctValue: string;
+  maxValue: number | 'todayYear';
+  minValue: number;
+}): string[] => {
+  const correctNumber = Number(correctValue);
+  const resolvedMaxValue = resolveMaxNumericValue(maxValue);
+
+  if (Number.isNaN(correctNumber) || minValue > resolvedMaxValue) {
+    return [];
+  }
+
+  return Array.from({ length: resolvedMaxValue - minValue + 1 }, (_, index) => String(minValue + index)).filter(
+    (value) => value !== correctValue,
+  );
+};
+
+const buildDerivedRangeDistractors = ({
+  correctValue,
+  item,
+  maxValue,
+  minValue,
+  sourceField,
+}: {
+  correctValue: string;
+  item: TopicItem;
+  maxValue: number | 'todayYear';
+  minValue: number;
+  sourceField: string;
+}) => {
+  const sourceValue = item[sourceField];
+  const resolvedMaxValue = resolveMaxNumericValue(maxValue);
+
+  if ((typeof sourceValue !== 'string' && typeof sourceValue !== 'number') || minValue > resolvedMaxValue) {
+    return [];
+  }
+
+  return Array.from(
+    new Set(
+      Array.from({ length: resolvedMaxValue - minValue + 1 }, (_, index) => minValue + index)
+        .map((value) => derivationRegistry.yearToCentury(value))
+        .filter((value) => value !== correctValue),
+    ),
+  );
+};
+
+const getWrongAnswerCandidates = ({
+  answerField,
+  answerFieldKey,
+  items,
+  playableItem,
+  topic,
+}: {
+  answerField: Extract<TopicField, { type: 'string' | 'number' | 'select' }>;
+  answerFieldKey: string;
+  items: ReadonlyArray<TopicItem>;
+  playableItem: QuizPlayableItem;
+  topic: Topic;
+}): string[] => {
+  const distractor = answerField.quiz?.enabled ? answerField.quiz.distractor : undefined;
+
+  if (!distractor) {
+    return getDistinctTopicValues({ answerFieldKey, items, topic }).filter(
+      (value) => value !== playableItem.value,
+    );
+  }
+
+  if (distractor.type === 'fromOptions') {
+    return getFieldOptions(answerField).filter((value) => value !== playableItem.value);
+  }
+
+  if (distractor.type === 'numericRange') {
+    return buildNumericRangeDistractors({
+      correctValue: playableItem.value,
+      maxValue: distractor.maxValue,
+      minValue: distractor.minValue,
+    });
+  }
+
+  return buildDerivedRangeDistractors({
+    correctValue: playableItem.value,
+    item: playableItem.item,
+    maxValue: distractor.maxValue,
+    minValue: distractor.minValue,
+    sourceField: distractor.sourceField,
+  });
+};
+
+const canBuildQuestionForItem = ({
+  answerField,
+  answerFieldKey,
+  items,
+  playableItem,
+  topic,
+}: {
+  answerField: Extract<TopicField, { type: 'string' | 'number' | 'select' }>;
+  answerFieldKey: string;
+  items: ReadonlyArray<TopicItem>;
+  playableItem: QuizPlayableItem;
+  topic: Topic;
+}) =>
+  new Set(
+    getWrongAnswerCandidates({
+      answerField,
+      answerFieldKey,
+      items,
+      playableItem,
+      topic,
+    }),
+  ).size >= DISTRACTOR_COUNT;
+
 export const getQuizAnswerField = (
   topic: Topic,
   answerFieldKey: string,
@@ -144,19 +286,27 @@ export const getEligibleQuizFields = ({
   topic: Topic;
 }): QuizEligibleField[] => {
   return topic.fields.filter(isQuizAnswerField).map((field) => {
-    const values = getPlayableQuizItems({
+    const playableItems = getPlayableQuizItems({
       answerFieldKey: field.key,
       items,
       topic,
     });
-
-    const distinctValueCount = new Set(values.map(({ value }) => value)).size;
-    const canStart = distinctValueCount >= MIN_OPTION_COUNT;
+    const buildableItems = playableItems.filter((playableItem) =>
+      canBuildQuestionForItem({
+        answerField: field,
+        answerFieldKey: field.key,
+        items,
+        playableItem,
+        topic,
+      }),
+    );
+    const distinctValueCount = new Set(playableItems.map(({ value }) => value)).size;
+    const canStart = buildableItems.length > 0;
 
     return {
       field,
-      eligibleItemCount: values.length,
-      maxQuestionCount: canStart ? values.length : 0,
+      eligibleItemCount: buildableItems.length,
+      maxQuestionCount: canStart ? buildableItems.length : 0,
       promptsLabel: getQuizPrompt(field),
       distinctValueCount,
     };
@@ -180,21 +330,35 @@ export const buildQuizQuestions = ({
     return [];
   }
 
-  const playableItems = getPlayableQuizItems({ answerFieldKey, items, topic });
-  const distinctValues = Array.from(new Set(playableItems.map(({ value }) => value)));
-
-  if (distinctValues.length < MIN_OPTION_COUNT) {
-    return [];
-  }
+  const playableItems = getPlayableQuizItems({ answerFieldKey, items, topic }).filter(
+    (playableItem) =>
+      canBuildQuestionForItem({
+        answerField,
+        answerFieldKey,
+        items,
+        playableItem,
+        topic,
+      }),
+  );
 
   return shuffleArray(playableItems)
     .slice(0, questionCount)
     .flatMap<QuizQuestion>((playableItem, questionIndex) => {
       const wrongAnswers = shuffleArray(
-        distinctValues.filter((value) => value !== playableItem.value),
-      ).slice(0, MIN_OPTION_COUNT - 1);
+        Array.from(
+          new Set(
+            getWrongAnswerCandidates({
+              answerField,
+              answerFieldKey,
+              items,
+              playableItem,
+              topic,
+            }),
+          ),
+        ),
+      ).slice(0, DISTRACTOR_COUNT);
 
-      if (wrongAnswers.length < MIN_OPTION_COUNT - 1) {
+      if (wrongAnswers.length < DISTRACTOR_COUNT) {
         return [];
       }
 

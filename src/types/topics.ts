@@ -3,6 +3,23 @@ export type TopicFieldFn = {
   name: string;
 };
 
+export type QuizDistractorConfig =
+  | {
+      type: 'fromOptions';
+    }
+  | {
+      type: 'numericRange';
+      minValue: number;
+      maxValue: number | 'todayYear';
+    }
+  | {
+      type: 'derivedRange';
+      sourceField: string;
+      deriveWith: 'yearToCentury';
+      minValue: number;
+      maxValue: number | 'todayYear';
+    };
+
 export type QuizFieldConfig =
   | {
       enabled: false;
@@ -10,6 +27,7 @@ export type QuizFieldConfig =
   | {
       enabled: true;
       prompt: string;
+      distractor?: QuizDistractorConfig;
     };
 
 type BaseTopicField = {
