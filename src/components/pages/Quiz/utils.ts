@@ -296,6 +296,36 @@ export const getQuestionCountOptions = (maxQuestionCount: number): number[] => {
   return options;
 };
 
+export const getSelectedQuizFields = ({
+  fieldKeys,
+  items,
+  topic,
+}: {
+  fieldKeys: readonly string[];
+  items: ReadonlyArray<TopicItem>;
+  topic: Topic;
+}): QuizEligibleField[] => {
+  const fieldKeySet = new Set(fieldKeys);
+
+  return getEligibleQuizFields({ items, topic }).filter(({ field, maxQuestionCount }) => {
+    return fieldKeySet.has(field.key) && maxQuestionCount > 0;
+  });
+};
+
+export const getMaxQuestionCountForFields = ({
+  fieldKeys,
+  items,
+  topic,
+}: {
+  fieldKeys: readonly string[];
+  items: ReadonlyArray<TopicItem>;
+  topic: Topic;
+}): number =>
+  getSelectedQuizFields({ fieldKeys, items, topic }).reduce(
+    (total, field) => total + field.maxQuestionCount,
+    0,
+  );
+
 export const getEligibleQuizFields = ({
   items,
   topic,
@@ -331,7 +361,7 @@ export const getEligibleQuizFields = ({
   });
 };
 
-export const buildQuizQuestions = ({
+const buildQuizQuestionsForField = ({
   answerFieldKey,
   items,
   questionCount,
@@ -405,4 +435,32 @@ export const buildQuizQuestions = ({
         },
       ];
     });
+};
+
+export const buildQuizQuestions = ({
+  answerFieldKeys,
+  items,
+  questionCount,
+  topic,
+}: {
+  answerFieldKeys: readonly string[];
+  items: ReadonlyArray<TopicItem>;
+  questionCount: number;
+  topic: Topic;
+}): QuizQuestion[] => {
+  if (!answerFieldKeys.length || questionCount <= 0) {
+    return [];
+  }
+
+  const uniqueFieldKeys = Array.from(new Set(answerFieldKeys));
+  const allQuestions = uniqueFieldKeys.flatMap((answerFieldKey) =>
+    buildQuizQuestionsForField({
+      answerFieldKey,
+      items,
+      questionCount,
+      topic,
+    }),
+  );
+
+  return shuffleArray(allQuestions).slice(0, questionCount);
 };

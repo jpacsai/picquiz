@@ -8,7 +8,17 @@ const path = '/_app/$topicId/quiz';
 
 const parseSearch = (search: Record<string, unknown>) =>
   ({
-    answerFieldKey: typeof search.answerFieldKey === 'string' ? search.answerFieldKey : '',
+    answerFieldKeys:
+      Array.isArray(search.answerFieldKeys)
+        ? search.answerFieldKeys.filter(
+            (fieldKey): fieldKey is string => typeof fieldKey === 'string' && fieldKey.trim().length > 0,
+          )
+        : typeof search.answerFieldKeys === 'string'
+        ? search.answerFieldKeys
+            .split(',')
+            .map((fieldKey) => fieldKey.trim())
+            .filter(Boolean)
+        : [],
     questionCount:
       typeof search.questionCount === 'number'
         ? search.questionCount
@@ -25,11 +35,11 @@ const parseSearch = (search: Record<string, unknown>) =>
 
 const RouteComponent = () => {
   const { items, topic } = useLoaderData({ from: path });
-  const { answerFieldKey, questionCount, showCorrectAnswer } = Route.useSearch();
+  const { answerFieldKeys, questionCount, showCorrectAnswer } = Route.useSearch();
 
   return (
     <Quiz
-      answerFieldKey={answerFieldKey}
+      answerFieldKeys={answerFieldKeys}
       items={items}
       questionCount={questionCount}
       showCorrectAnswer={showCorrectAnswer}

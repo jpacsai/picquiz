@@ -21,7 +21,6 @@ export const Route = createFileRoute(path)({
       items,
       topic,
       title: topic.label,
-      subtitle: 'Kvíz beállításai',
     };
   },
   component: RouteComponent,

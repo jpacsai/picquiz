@@ -118,7 +118,7 @@ const getItems = (matches: ReturnType<typeof useMatches>): BreadcrumbItem[] => {
     case '/_app/$topicId/':
       return getTopicItems(context);
     case '/_app/$topicId/quiz-config':
-      return getTopicItems(context, 'Kvíz beállításai');
+      return getTopicItems(context);
     case '/_app/$topicId/quiz':
       return getTopicItems(context, 'Kvíz');
     case '/_app/quiz/':

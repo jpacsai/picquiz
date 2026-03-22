@@ -13,33 +13,33 @@ import { useTheme } from '@mui/material/styles';
 import type { TopicItem } from '@/service/items';
 
 import type { Topic } from '../../../types/topics';
-import { buildQuizQuestions, getQuizAnswerField } from './utils';
+import { buildQuizQuestions, getSelectedQuizFields } from './utils';
 
 type QuizProps = {
-  answerFieldKey: string;
+  answerFieldKeys: string[];
   items: ReadonlyArray<TopicItem>;
   questionCount: number;
   showCorrectAnswer: boolean;
   topic: Topic;
 };
 
-const Quiz = ({ answerFieldKey, items, questionCount, showCorrectAnswer, topic }: QuizProps) => {
+const Quiz = ({ answerFieldKeys, items, questionCount, showCorrectAnswer, topic }: QuizProps) => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const navigate = useNavigate();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState('');
   const [score, setScore] = useState(0);
-  const answerField = getQuizAnswerField(topic, answerFieldKey);
+  const selectedFields = getSelectedQuizFields({ fieldKeys: answerFieldKeys, items, topic });
   const questions = useMemo(
     () =>
       buildQuizQuestions({
-        answerFieldKey,
+        answerFieldKeys,
         items,
         questionCount,
         topic,
       }),
-    [answerFieldKey, items, questionCount, topic],
+    [answerFieldKeys, items, questionCount, topic],
   );
   const currentQuestion = questions[currentQuestionIndex] ?? null;
   const isQuizFinished = currentQuestionIndex >= questions.length;
@@ -55,7 +55,7 @@ const Quiz = ({ answerFieldKey, items, questionCount, showCorrectAnswer, topic }
       : currentQuestion.imageUrls.mobile
     : '';
 
-  if (!answerField?.quiz?.enabled || !questionCount) {
+  if (!selectedFields.length || !questionCount) {
     return (
       <Stack spacing={3}>
         <Card sx={{ width: '100%' }} variant="outlined">
