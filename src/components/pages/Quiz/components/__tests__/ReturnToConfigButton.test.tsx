@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import ReturnToConfigButton from './ReturnToConfigButton';
+import ReturnToConfigButton from '../ReturnToConfigButton';
 
 const navigateMock = vi.fn();
 

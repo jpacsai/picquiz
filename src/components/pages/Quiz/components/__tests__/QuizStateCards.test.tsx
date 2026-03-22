@@ -2,9 +2,9 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import QuizError from './QuizError';
-import QuizFinished from './QuizFinished';
-import QuizMissingFields from './QuizMissingFields';
+import QuizError from '../QuizError';
+import QuizFinished from '../QuizFinished';
+import QuizMissingFields from '../QuizMissingFields';
 
 const returnToConfigButtonMock = vi.fn<(topicId: string) => void>();
 

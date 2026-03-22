@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { describe, expect, it } from 'vitest';
 
-import QuizImage from './QuizImage';
+import QuizImage from '../QuizImage';
 
 const renderWithTheme = (ui: ReactNode, mode: 'light' | 'dark') =>
   render(<ThemeProvider theme={createTheme({ palette: { mode } })}>{ui}</ThemeProvider>);
