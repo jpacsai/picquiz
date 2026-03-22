@@ -20,7 +20,10 @@ export type QuizQuestion = {
   answerFieldKey: string;
   answerFieldLabel: string;
   correctAnswer: string;
-  imageUrl: string;
+  imageUrls: {
+    desktop: string;
+    mobile: string;
+  };
   itemId: string;
   options: QuizQuestionOption[];
   prompt: string;
@@ -50,22 +53,34 @@ const getImageField = (topic: Topic): Extract<TopicField, { type: 'imageUpload' 
     (field): field is Extract<TopicField, { type: 'imageUpload' }> => field.type === 'imageUpload',
   ) ?? null;
 
-const getItemImageUrl = (
+const getItemImageUrls = (
   item: TopicItem,
   imageField: Extract<TopicField, { type: 'imageUpload' }> | null,
-): string => {
+): {
+  desktop: string;
+  mobile: string;
+} => {
   if (!imageField) {
-    return '';
+    return { desktop: '', mobile: '' };
   }
 
   const desktopUrl = item[imageField.targetFields.desktop];
   const mobileUrl = item[imageField.targetFields.mobile];
 
-  return typeof desktopUrl === 'string'
-    ? desktopUrl
-    : typeof mobileUrl === 'string'
-      ? mobileUrl
-      : '';
+  return {
+    desktop:
+      typeof desktopUrl === 'string'
+        ? desktopUrl
+        : typeof mobileUrl === 'string'
+          ? mobileUrl
+          : '',
+    mobile:
+      typeof mobileUrl === 'string'
+        ? mobileUrl
+        : typeof desktopUrl === 'string'
+          ? desktopUrl
+          : '',
+  };
 };
 
 const getItemFieldValue = (item: TopicItem, fieldKey: string): string => {
@@ -95,7 +110,10 @@ const shuffleArray = <T>(values: readonly T[]): T[] => {
 };
 
 type QuizPlayableItem = {
-  imageUrl: string;
+  imageUrls: {
+    desktop: string;
+    mobile: string;
+  };
   item: TopicItem;
   value: string;
 };
@@ -256,11 +274,11 @@ export const getPlayableQuizItems = ({
 
   return items
     .map((item) => ({
-      imageUrl: getItemImageUrl(item, imageField),
+      imageUrls: getItemImageUrls(item, imageField),
       item,
       value: getItemFieldValue(item, answerFieldKey),
     }))
-    .filter(({ imageUrl, value }) => Boolean(imageUrl) && Boolean(value));
+    .filter(({ imageUrls, value }) => Boolean(imageUrls.desktop || imageUrls.mobile) && Boolean(value));
 };
 
 export const getQuestionCountOptions = (maxQuestionCount: number): number[] => {
@@ -380,7 +398,7 @@ export const buildQuizQuestions = ({
           answerFieldKey,
           answerFieldLabel: answerField.label,
           correctAnswer: playableItem.value,
-          imageUrl: playableItem.imageUrl,
+          imageUrls: playableItem.imageUrls,
           itemId: playableItem.item.id,
           options,
           prompt: getQuizPrompt(answerField),

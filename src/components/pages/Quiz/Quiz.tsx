@@ -5,8 +5,10 @@ import CardContent from '@mui/material/CardContent';
 import LinearProgress from '@mui/material/LinearProgress';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { useNavigate } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
+import { useTheme } from '@mui/material/styles';
 
 import type { TopicItem } from '@/service/items';
 
@@ -21,6 +23,8 @@ type QuizProps = {
 };
 
 const Quiz = ({ answerFieldKey, items, questionCount, topic }: QuizProps) => {
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const navigate = useNavigate();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState('');
@@ -44,11 +48,16 @@ const Quiz = ({ answerFieldKey, items, questionCount, topic }: QuizProps) => {
   const progressValue = questions.length
     ? (Math.min(currentQuestionIndex, questions.length) / questions.length) * 100
     : 0;
+  const currentImageUrl = currentQuestion
+    ? isDesktop
+      ? currentQuestion.imageUrls.desktop
+      : currentQuestion.imageUrls.mobile
+    : '';
 
   if (!answerField?.quiz?.enabled || !questionCount) {
     return (
       <Stack spacing={3}>
-        <Card variant="outlined">
+        <Card sx={{ width: '100%' }} variant="outlined">
           <CardContent>
             <Stack spacing={2}>
               <Typography variant="h5">Hiányos kvíz konfiguráció</Typography>
@@ -76,7 +85,7 @@ const Quiz = ({ answerFieldKey, items, questionCount, topic }: QuizProps) => {
   if (!questions.length) {
     return (
       <Stack spacing={3}>
-        <Card variant="outlined">
+        <Card sx={{ width: '100%' }} variant="outlined">
           <CardContent>
             <Stack spacing={2}>
               <Typography variant="h5">Nem indítható a kvíz</Typography>
@@ -104,7 +113,7 @@ const Quiz = ({ answerFieldKey, items, questionCount, topic }: QuizProps) => {
   if (isQuizFinished) {
     return (
       <Stack spacing={3}>
-        <Card variant="outlined">
+        <Card sx={{ width: '100%' }} variant="outlined">
           <CardContent>
             <Stack spacing={2}>
               <Typography variant="h5">Kvíz vége</Typography>
@@ -130,79 +139,108 @@ const Quiz = ({ answerFieldKey, items, questionCount, topic }: QuizProps) => {
 
   return (
     <Stack spacing={3}>
-      <Card variant="outlined">
-        <CardContent>
-          <Stack spacing={2}>
-            <Typography variant="h5">
-              {currentQuestionIndex + 1}. kérdés / {questions.length}
-            </Typography>
-            <Typography color="text.secondary">{currentQuestion.prompt}</Typography>
-            <Typography color="text.secondary">
-              Aktuális pontszám: {score} / {questions.length}
-            </Typography>
-            <LinearProgress value={progressValue} variant="determinate" />
-          </Stack>
-        </CardContent>
-      </Card>
-
-      <Card variant="outlined">
+      <Card sx={{ width: '100%' }} variant="outlined">
         <CardContent>
           <Stack spacing={3}>
-            <Box
+            <Stack
               sx={{
-                border: '1px solid',
-                borderColor: 'divider',
-                borderRadius: 2,
-                overflow: 'hidden',
-                backgroundColor: 'grey.100',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                minHeight: 280,
+                display: 'grid',
+                gap: 3,
+                gridTemplateColumns: {
+                  xs: '1fr',
+                  md: 'minmax(0, 1.1fr) minmax(0, 0.9fr)',
+                },
+                alignItems: 'stretch',
               }}
             >
               <Box
-                alt={`${topic.label} - ${currentQuestion.correctAnswer}`}
-                component="img"
-                src={currentQuestion.imageUrl}
                 sx={{
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  backgroundColor: 'grey.100',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   width: '100%',
-                  maxHeight: 420,
-                  objectFit: 'contain',
-                  display: 'block',
+                  minHeight: 280,
                 }}
-              />
-            </Box>
+              >
+                <Box
+                  alt={`${topic.label} - ${currentQuestion.correctAnswer}`}
+                  component="img"
+                  src={currentImageUrl}
+                  sx={{
+                    width: '100%',
+                    maxHeight: 420,
+                    objectFit: 'contain',
+                    display: 'block',
+                  }}
+                />
+              </Box>
 
-            <Stack spacing={2}>
-              {currentQuestion.options.map((option) => {
-                const isSelected = selectedOptionId === option.id;
-                const showCorrect = isAnswered && option.isCorrect;
-                const showIncorrect = isAnswered && isSelected && !option.isCorrect;
+              <Stack
+                spacing={3}
+                sx={{
+                  minHeight: '100%',
+                }}
+              >
+                <Card sx={{ width: '100%' }} variant="outlined">
+                  <CardContent>
+                    <Stack spacing={2}>
+                      <Typography variant="h5">
+                        {currentQuestionIndex + 1}. kérdés / {questions.length}
+                      </Typography>
+                      <Typography color="text.secondary">{currentQuestion.prompt}</Typography>
+                      <Typography color="text.secondary">
+                        Aktuális pontszám: {score} / {questions.length}
+                      </Typography>
+                      <LinearProgress value={progressValue} variant="determinate" />
+                    </Stack>
+                  </CardContent>
+                </Card>
 
-                return (
-                  <Button
-                    color={showCorrect ? 'success' : showIncorrect ? 'error' : 'primary'}
-                    disabled={isAnswered}
-                    key={option.id}
-                    onClick={() => {
-                      if (isAnswered) {
-                        return;
-                      }
+                <Box
+                  sx={{
+                    marginTop: 'auto',
+                    display: 'grid',
+                    gap: 2,
+                    gridTemplateColumns: {
+                      xs: '1fr',
+                      sm: 'repeat(2, minmax(0, 1fr))',
+                    },
+                  }}
+                >
+                  {currentQuestion.options.map((option) => {
+                    const isSelected = selectedOptionId === option.id;
+                    const showCorrect = isAnswered && option.isCorrect;
+                    const showIncorrect = isAnswered && isSelected && !option.isCorrect;
 
-                      setSelectedOptionId(option.id);
-                      if (option.isCorrect) {
-                        setScore((currentScore) => currentScore + 1);
-                      }
-                    }}
-                    sx={{ justifyContent: 'flex-start', py: 1.5 }}
-                    variant={isSelected || showCorrect ? 'contained' : 'outlined'}
-                  >
-                    {option.label}
-                  </Button>
-                );
-              })}
+                    return (
+                      <Button
+                        color={showCorrect ? 'success' : showIncorrect ? 'error' : 'primary'}
+                        disabled={isAnswered}
+                        key={option.id}
+                        onClick={() => {
+                          if (isAnswered) {
+                            return;
+                          }
+
+                          setSelectedOptionId(option.id);
+                          if (option.isCorrect) {
+                            setScore((currentScore) => currentScore + 1);
+                          }
+                        }}
+                        sx={{ justifyContent: 'flex-start', py: 1.5 }}
+                        variant={isSelected || showCorrect ? 'contained' : 'outlined'}
+                      >
+                        {option.label}
+                      </Button>
+                    );
+                  })}
+                </Box>
+              </Stack>
             </Stack>
 
             {isAnswered ? (
