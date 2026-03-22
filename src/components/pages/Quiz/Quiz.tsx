@@ -9,6 +9,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useNavigate } from '@tanstack/react-router';
 import { useEffect, useMemo, useState } from 'react';
 
+import QuizFinished from '@/components/pages/Quiz/components/QuizFinished';
 import type { TopicItem } from '@/service/items';
 
 import type { Topic } from '../../../types/topics';
@@ -134,48 +135,21 @@ const Quiz = ({
 
   if (isQuizFinished) {
     return (
-      <Stack spacing={3}>
-        <Card sx={{ width: '100%' }} variant="outlined">
-          <CardContent>
-            <Stack spacing={2}>
-              <Typography variant="h5">Kvíz vége</Typography>
-              <Typography color="text.secondary">
-                {score} / {questions.length} helyes válasz.
-              </Typography>
-
-              <Box
-                sx={{
-                  display: 'grid',
-                  gap: 2,
-                  gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, minmax(0, 1fr))' },
-                }}
-              >
-                <Button
-                  onClick={() => {
-                    void navigate({
-                      to: '/$topicId/quiz-config',
-                      params: { topicId: topic.id },
-                    });
-                  }}
-                  variant="outlined"
-                >
-                  Vissza a beállításokhoz
-                </Button>
-                <Button
-                  onClick={() => {
-                    setCurrentQuestionIndex(0);
-                    setScore(0);
-                    setSelectedOptionId('');
-                  }}
-                  variant="contained"
-                >
-                  Újraindítás
-                </Button>
-              </Box>
-            </Stack>
-          </CardContent>
-        </Card>
-      </Stack>
+      <QuizFinished
+        onReturnToConfig={() => {
+          void navigate({
+            to: '/$topicId/quiz-config',
+            params: { topicId: topic.id },
+          });
+        }}
+        score={score}
+        questionsLength={questions.length}
+        onRestart={() => {
+          setCurrentQuestionIndex(0);
+          setSelectedOptionId('');
+          setScore(0);
+        }}
+      />
     );
   }
 

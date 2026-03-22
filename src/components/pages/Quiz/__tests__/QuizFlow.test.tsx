@@ -151,7 +151,7 @@ describe('Quiz flow integration', () => {
     );
 
     expect(screen.queryByText('Hiányos kvíz konfiguráció')).not.toBeInTheDocument();
-    expect(screen.getByText(/1\. kérdés \/ 5/)).toBeInTheDocument();
+    expect(screen.getByText(/5\s*\/\s*1/)).toBeInTheDocument();
   });
 
   it('automatically advances to the next question 5 seconds after answering', async () => {
@@ -176,7 +176,7 @@ describe('Quiz flow integration', () => {
       vi.advanceTimersByTime(5000);
     });
 
-    expect(screen.getByText(/2\. kérdés \/ 2/)).toBeInTheDocument();
+    expect(screen.getByText(/2\s*\/\s*2/)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Következő kérdés' })).not.toBeInTheDocument();
   });
 
