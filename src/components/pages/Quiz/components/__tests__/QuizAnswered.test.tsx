@@ -46,7 +46,7 @@ describe('QuizAnswered', () => {
       />,
     );
 
-    expect(screen.getByText('Következő kérdés 5 másodperc múlva.')).toBeInTheDocument();
+    expect(screen.getByText('Következő kérdés 3 másodperc múlva.')).toBeInTheDocument();
   });
 
   it('renders the result auto-advance message on the last question', () => {
@@ -59,6 +59,6 @@ describe('QuizAnswered', () => {
       />,
     );
 
-    expect(screen.getByText('Eredmény megjelenítése 5 másodperc múlva.')).toBeInTheDocument();
+    expect(screen.getByText('Eredmény megjelenítése 3 másodperc múlva.')).toBeInTheDocument();
   });
 });

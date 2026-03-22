@@ -154,7 +154,7 @@ describe('Quiz flow integration', () => {
     expect(screen.getByText(/5\s*\/\s*1/)).toBeInTheDocument();
   });
 
-  it('automatically advances to the next question 5 seconds after answering', async () => {
+  it('automatically advances to the next question 3 seconds after answering', async () => {
     vi.useFakeTimers();
 
     renderWithTheme(
@@ -170,10 +170,10 @@ describe('Quiz flow integration', () => {
 
     fireEvent.click(screen.getAllByRole('button')[0]);
 
-    expect(screen.getByText(/5 másodperc múlva/i)).toBeInTheDocument();
+    expect(screen.getByText(/3 másodperc múlva/i)).toBeInTheDocument();
 
     await act(async () => {
-      vi.advanceTimersByTime(5000);
+      vi.advanceTimersByTime(3000);
     });
 
     expect(screen.getByText(/2\s*\/\s*2/)).toBeInTheDocument();
@@ -187,6 +187,6 @@ describe('Quiz flow integration', () => {
     renderWithTheme(<QuizConfig items={items} topic={topic} />);
 
     expect(screen.getByRole('switch', { name: 'Helyes válasz megmutatása' })).not.toBeChecked();
-    expect(screen.getByRole('switch', { name: 'Automatikus továbblépés 5 mp után' })).toBeChecked();
+    expect(screen.getByRole('switch', { name: 'Automatikus továbblépés 3 mp után' })).toBeChecked();
   });
 });

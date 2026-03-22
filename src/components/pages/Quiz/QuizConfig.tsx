@@ -173,7 +173,7 @@ const QuizConfig = ({ items, topic }: QuizConfigProps) => {
                       }}
                     />
                   }
-                  label="Automatikus továbblépés 5 mp után"
+                  label="Automatikus továbblépés 3 mp után"
                 />
 
                 {selectedFields.length ? (

@@ -5,7 +5,7 @@ import type { Topic } from '@/types/topics';
 
 import { buildQuizQuestions, getSelectedQuizFields } from './utils';
 
-const AUTO_ADVANCE_DELAY_MS = 5000;
+const AUTO_ADVANCE_DELAY_MS = 3000;
 
 type UseQuizParams = {
   answerFieldKeys: string[];

@@ -18,8 +18,8 @@ const QuizAnswered = ({
       {autoAdvanceAfterAnswer ? (
         <Typography color="text.secondary">
           {currentQuestionIndex === questionsLength - 1
-            ? 'Eredmény megjelenítése 5 másodperc múlva.'
-            : 'Következő kérdés 5 másodperc múlva.'}
+            ? 'Eredmény megjelenítése 3 másodperc múlva.'
+            : 'Következő kérdés 3 másodperc múlva.'}
         </Typography>
       ) : (
         <Button onClick={onContinue} variant="contained">
