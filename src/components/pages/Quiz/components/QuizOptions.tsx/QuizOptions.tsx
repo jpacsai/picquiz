@@ -7,6 +7,7 @@ type QuizOptionsProps = {
   options: QuizQuestionOption[];
   isAnswered: boolean;
   selectedOptionId: string;
+  showCorrectAnswer: boolean;
   onSelectOption: (optionId: string) => void;
 };
 
@@ -14,6 +15,7 @@ const QuizOptions = ({
   options,
   isAnswered,
   selectedOptionId,
+  showCorrectAnswer,
   onSelectOption,
 }: QuizOptionsProps) => {
   return (
@@ -30,7 +32,8 @@ const QuizOptions = ({
     >
       {options.map((option) => {
         const isSelected = selectedOptionId === option.id;
-        const showCorrect = isAnswered && option.isCorrect;
+        const showCorrect =
+          (isAnswered && option.isCorrect && showCorrectAnswer) || (isSelected && option.isCorrect);
         const showIncorrect = isAnswered && isSelected && !option.isCorrect;
 
         return (

@@ -1,9 +1,6 @@
 import { Button, Stack, Typography } from '@mui/material';
 
 type QuizAnsweredProps = {
-  isCorrect: boolean;
-  showCorrectAnswer: boolean;
-  correctAnswer: string;
   autoAdvanceAfterAnswer: boolean;
   currentQuestionIndex: number;
   questionsLength: number;
@@ -11,9 +8,6 @@ type QuizAnsweredProps = {
 };
 
 const QuizAnswered = ({
-  isCorrect,
-  showCorrectAnswer,
-  correctAnswer,
   autoAdvanceAfterAnswer,
   currentQuestionIndex,
   questionsLength,
@@ -21,13 +15,6 @@ const QuizAnswered = ({
 }: QuizAnsweredProps) => {
   return (
     <Stack spacing={2}>
-      <Typography color={isCorrect ? 'success.main' : 'error.main'}>
-        {isCorrect
-          ? 'Helyes válasz.'
-          : showCorrectAnswer
-            ? `Nem ez a helyes válasz. A megoldás: ${correctAnswer}.`
-            : 'Nem ez a helyes válasz.'}
-      </Typography>
       {autoAdvanceAfterAnswer ? (
         <Typography color="text.secondary">
           {currentQuestionIndex === questionsLength - 1

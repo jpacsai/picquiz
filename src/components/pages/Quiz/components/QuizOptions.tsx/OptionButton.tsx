@@ -51,7 +51,6 @@ const OptionButton = ({
             : showIncorrect
               ? theme.palette.error.main
               : undefined,
-          backgroundColor: isSelected ? theme.palette.action.selected : 'transparent',
         },
       })}
       variant="outlined"

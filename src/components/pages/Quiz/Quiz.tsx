@@ -47,7 +47,6 @@ const Quiz = ({
     score,
     selectOption,
     selectedFields,
-    selectedOption,
     selectedOptionId,
   } = useQuiz({
     answerFieldKeys,
@@ -115,22 +114,20 @@ const Quiz = ({
                   options={currentQuestion.options}
                   isAnswered={isAnswered}
                   selectedOptionId={selectedOptionId}
+                  showCorrectAnswer={showCorrectAnswer}
                   onSelectOption={selectOption}
                 />
+
+                {isAnswered ? (
+                  <QuizAnswered
+                    autoAdvanceAfterAnswer={autoAdvanceAfterAnswer}
+                    currentQuestionIndex={currentQuestionIndex}
+                    questionsLength={questions.length}
+                    onContinue={continueToNextQuestion}
+                  />
+                ) : null}
               </Stack>
             </Stack>
-
-            {isAnswered ? (
-              <QuizAnswered
-                isCorrect={selectedOption?.isCorrect ?? false}
-                showCorrectAnswer={showCorrectAnswer}
-                correctAnswer={currentQuestion.correctAnswer}
-                autoAdvanceAfterAnswer={autoAdvanceAfterAnswer}
-                currentQuestionIndex={currentQuestionIndex}
-                questionsLength={questions.length}
-                onContinue={continueToNextQuestion}
-              />
-            ) : null}
           </Stack>
         </CardContent>
       </Card>
