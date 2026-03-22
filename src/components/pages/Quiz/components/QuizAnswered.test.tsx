@@ -1,0 +1,64 @@
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
+
+import QuizAnswered from './QuizAnswered';
+
+describe('QuizAnswered', () => {
+  it('renders a continue button before the last question and calls the handler', async () => {
+    const user = userEvent.setup();
+    const onContinue = vi.fn();
+
+    render(
+      <QuizAnswered
+        autoAdvanceAfterAnswer={false}
+        currentQuestionIndex={0}
+        questionsLength={3}
+        onContinue={onContinue}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Következő kérdés' }));
+
+    expect(onContinue).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders the result button on the last question when auto-advance is off', () => {
+    render(
+      <QuizAnswered
+        autoAdvanceAfterAnswer={false}
+        currentQuestionIndex={2}
+        questionsLength={3}
+        onContinue={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole('button', { name: 'Eredmény megtekintése' })).toBeInTheDocument();
+  });
+
+  it('renders the auto-advance message before the last question', () => {
+    render(
+      <QuizAnswered
+        autoAdvanceAfterAnswer
+        currentQuestionIndex={0}
+        questionsLength={3}
+        onContinue={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText('Következő kérdés 5 másodperc múlva.')).toBeInTheDocument();
+  });
+
+  it('renders the result auto-advance message on the last question', () => {
+    render(
+      <QuizAnswered
+        autoAdvanceAfterAnswer
+        currentQuestionIndex={2}
+        questionsLength={3}
+        onContinue={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText('Eredmény megjelenítése 5 másodperc múlva.')).toBeInTheDocument();
+  });
+});
