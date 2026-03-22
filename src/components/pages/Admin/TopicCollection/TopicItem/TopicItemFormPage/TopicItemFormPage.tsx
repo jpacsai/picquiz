@@ -1,13 +1,17 @@
 import { Box } from '@mui/material';
+import { topicItemsOptions } from '@queries/items';
 import { topicOptions } from '@queries/topics';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
 import TopicItemForm from '@/components/pages/Admin/TopicCollection/TopicItem/TopicItemFormPage/TopicItemForm/TopicItemForm';
 import type { TopicItem } from '@/service/items';
 import type { Topic } from '@/types/topics';
 
-import { mergeRefreshedSelectFieldOptions } from './TopicItemForm/utils';
+import {
+  getAutocompleteOptionsByField,
+  mergeRefreshedSelectFieldOptions,
+} from './TopicItemForm/utils';
 
 type AdminTopicItemFormPageProps = {
   initialValues?: Record<string, unknown>;
@@ -25,6 +29,12 @@ const AdminTopicItemFormPage = ({
   const queryClient = useQueryClient();
   const [fields, setFields] = useState(topic.fields);
   const [isRefreshingSelectOptions, setIsRefreshingSelectOptions] = useState(false);
+  const { data: items = [] } = useQuery(topicItemsOptions(topic.slug));
+  const autocompleteOptionsByField = getAutocompleteOptionsByField({
+    currentItemId: item?.id,
+    fields,
+    items,
+  });
 
   useEffect(() => {
     setFields(topic.fields);
@@ -50,6 +60,7 @@ const AdminTopicItemFormPage = ({
   return (
     <Box sx={{ display: 'grid', gap: 3 }}>
       <TopicItemForm
+        autocompleteOptionsByField={autocompleteOptionsByField}
         collectionName={topic.slug}
         fields={fields}
         initialValues={initialValues}

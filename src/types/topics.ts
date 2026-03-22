@@ -33,6 +33,7 @@ export type QuizFieldConfig =
     };
 
 type BaseTopicField = {
+  autocomplete?: boolean;
   key: string;
   label: string;
   display?: 'title' | 'subtitle' | 'meta';

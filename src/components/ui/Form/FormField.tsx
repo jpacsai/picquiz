@@ -17,6 +17,7 @@ type FormFieldProps = {
   derivationIndex: Record<string, FormDeriveField>;
   field: TopicField;
   form: FormFieldFormApi;
+  autocompleteOptions?: string[];
   onSelectPendingImage: (selection: {
     field: Extract<TopicField, { type: 'imageUpload' }>;
     file: File;
@@ -64,6 +65,7 @@ const FormField = ({
   derivationIndex,
   field,
   form,
+  autocompleteOptions,
   mode,
   onSelectPendingImage,
   pendingImageSelection,
@@ -96,6 +98,7 @@ const FormField = ({
                 required={required}
                 disabled={readonly}
                 value={fieldApi.state.value}
+                options={type === 'string' && field.autocomplete ? autocompleteOptions : undefined}
                 onBlur={fieldApi.handleBlur}
                 onChange={(event) => {
                   const rawValue = event.target.value;

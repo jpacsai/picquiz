@@ -1,5 +1,6 @@
 import * as yup from 'yup';
 
+import type { TopicItem } from '@/service/items';
 import type { TopicField } from '@/types/topics';
 
 type FormDeriveFieldIndex = Omit<TopicField, 'fn'> & {
@@ -188,6 +189,39 @@ export const mergeRefreshedSelectFieldOptions = ({
       : field;
   });
 };
+
+export const getAutocompleteOptionsByField = ({
+  fields,
+  items,
+  currentItemId,
+}: {
+  fields: TopicField[];
+  items: ReadonlyArray<TopicItem>;
+  currentItemId?: string;
+}) =>
+  fields.reduce<Record<string, string[]>>((acc, field) => {
+    if (field.type !== 'string' || !field.autocomplete) {
+      return acc;
+    }
+
+    const options = [...new Set(
+      items
+        .filter((item) => item.id !== currentItemId)
+        .map((item) => item[field.key])
+        .filter((value): value is string => typeof value === 'string')
+        .map((value) => value.trim())
+        .filter(Boolean),
+    )].sort((left, right) => left.localeCompare(right, 'hu'));
+
+    if (!options.length) {
+      return acc;
+    }
+
+    return {
+      ...acc,
+      [field.key]: options,
+    };
+  }, {});
 
 export const getPersistableValue = ({
   fields,

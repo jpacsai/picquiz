@@ -12,6 +12,7 @@ import type { TopicField } from '@/types/topics';
 import type { FormMode, UseTopicItemFormResult } from './useTopicItemForm';
 
 type TopicItemFormViewProps = {
+  autocompleteOptionsByField?: Record<string, string[]>;
   derivationIndex: UseTopicItemFormResult['derivationIndex'];
   fields: TopicField[];
   form: UseTopicItemFormResult['form'];
@@ -26,6 +27,7 @@ type TopicItemFormViewProps = {
 };
 
 const TopicItemFormView = ({
+  autocompleteOptionsByField,
   derivationIndex,
   fields,
   form,
@@ -70,6 +72,7 @@ const TopicItemFormView = ({
         {visibleFields.map((field) => (
           <FormField
             key={field.key}
+            autocompleteOptions={autocompleteOptionsByField?.[field.key]}
             field={field}
             form={form}
             derivationIndex={derivationIndex}

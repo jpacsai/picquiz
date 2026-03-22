@@ -325,6 +325,34 @@ describe('TopicItemForm saving', () => {
     expect(screen.queryByTestId('form-input-internal_note')).not.toBeInTheDocument();
   });
 
+  it('renders a styled autocomplete for autocomplete-enabled string fields', async () => {
+    const user = userEvent.setup();
+    const fields: TopicField[] = [
+      { key: 'artist', label: 'Artist', required: true, type: 'string', autocomplete: true },
+      { key: 'title', label: 'Title', required: true, type: 'string' },
+    ];
+
+    render(
+      <TopicItemForm
+        autocompleteOptionsByField={{ artist: ['Leonardo da Vinci', 'Michelangelo'] }}
+        collectionName="art"
+        fields={fields}
+        storagePrefix="art"
+        topicId="art"
+      />,
+    );
+
+    const artistInput = screen.getByTestId('form-input-artist');
+
+    expect(artistInput).toHaveAttribute('role', 'combobox');
+
+    await user.click(artistInput);
+
+    expect(await screen.findByText('Leonardo da Vinci')).toBeInTheDocument();
+    expect(screen.getByText('Michelangelo')).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: 'Title' })).toBe(screen.getByTestId('form-input-title'));
+  });
+
   it('prefills edit values, keeps readonly path fields visible, and updates an item', async () => {
     const user = userEvent.setup();
     const desktopBlob = new Blob(['desktop'], { type: 'image/jpeg' });

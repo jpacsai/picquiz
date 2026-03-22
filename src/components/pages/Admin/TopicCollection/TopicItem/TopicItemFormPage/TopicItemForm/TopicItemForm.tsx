@@ -4,6 +4,7 @@ import TopicItemFormView from './TopicItemFormView';
 import { type FormMode, useTopicItemForm } from './useTopicItemForm';
 
 type TopicItemFormProps = {
+  autocompleteOptionsByField?: Record<string, string[]>;
   collectionName: string;
   fields: TopicField[];
   initialValues?: Record<string, unknown>;
@@ -16,6 +17,7 @@ type TopicItemFormProps = {
 };
 
 const TopicItemForm = ({
+  autocompleteOptionsByField,
   collectionName,
   fields,
   initialValues,
@@ -46,6 +48,7 @@ const TopicItemForm = ({
 
   return (
     <TopicItemFormView
+      autocompleteOptionsByField={autocompleteOptionsByField}
       derivationIndex={derivationIndex}
       fields={fields}
       form={form}
