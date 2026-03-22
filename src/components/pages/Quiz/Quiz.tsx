@@ -4,9 +4,9 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import LinearProgress from '@mui/material/LinearProgress';
 import Stack from '@mui/material/Stack';
+import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
 import { useNavigate } from '@tanstack/react-router';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -146,27 +146,36 @@ const Quiz = ({
               <Typography color="text.secondary">
                 {score} / {questions.length} helyes válasz.
               </Typography>
-              <Button
-                onClick={() => {
-                  void navigate({
-                    to: '/$topicId/quiz-config',
-                    params: { topicId: topic.id },
-                  });
+
+              <Box
+                sx={{
+                  display: 'grid',
+                  gap: 2,
+                  gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, minmax(0, 1fr))' },
                 }}
-                variant="outlined"
               >
-                Vissza a beállításokhoz
-              </Button>
-              <Button
-                onClick={() => {
-                  setCurrentQuestionIndex(0);
-                  setScore(0);
-                  setSelectedOptionId('');
-                }}
-                variant="contained"
-              >
-                Újraindítás
-              </Button>
+                <Button
+                  onClick={() => {
+                    void navigate({
+                      to: '/$topicId/quiz-config',
+                      params: { topicId: topic.id },
+                    });
+                  }}
+                  variant="outlined"
+                >
+                  Vissza a beállításokhoz
+                </Button>
+                <Button
+                  onClick={() => {
+                    setCurrentQuestionIndex(0);
+                    setScore(0);
+                    setSelectedOptionId('');
+                  }}
+                  variant="contained"
+                >
+                  Újraindítás
+                </Button>
+              </Box>
             </Stack>
           </CardContent>
         </Card>
@@ -196,12 +205,12 @@ const Quiz = ({
                   borderColor: 'divider',
                   borderRadius: 2,
                   overflow: 'hidden',
-                  backgroundColor: 'grey.100',
+                  backgroundColor: theme.palette.mode === 'dark' ? '#000' : '#fff',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   width: '100%',
-                  minHeight: 280,
+                  minHeight: 600,
                 }}
               >
                 <Box
@@ -210,7 +219,7 @@ const Quiz = ({
                   src={currentImageUrl}
                   sx={{
                     width: '100%',
-                    maxHeight: 420,
+                    maxHeight: 600,
                     objectFit: 'contain',
                     display: 'block',
                   }}

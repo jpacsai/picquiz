@@ -126,7 +126,7 @@ describe('Quiz flow integration', () => {
     renderWithTheme(<QuizConfig items={items} topic={topic} />);
 
     await user.click(screen.getByRole('checkbox', { name: /ev - melyik evben keszult/i }));
-    await user.click(screen.getByRole('button', { name: 'Start kvíz' }));
+    await user.click(screen.getByRole('button', { name: 'Kvíz indítása' }));
 
     expect(navigateMock).toHaveBeenCalledWith({
       params: { topicId: 'art' },

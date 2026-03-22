@@ -208,7 +208,7 @@ const QuizConfig = ({ items, topic }: QuizConfigProps) => {
                   size="large"
                   variant="contained"
                 >
-                  Start kvíz
+                  Kvíz indítása
                 </Button>
               </>
             ) : (
