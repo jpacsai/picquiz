@@ -1,17 +1,17 @@
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import { useTheme } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useEffect, useMemo, useState } from 'react';
 
 import QuizAnswered from '@/components/pages/Quiz/components/QuizAnswered';
 import QuizError from '@/components/pages/Quiz/components/QuizError';
 import QuizFinished from '@/components/pages/Quiz/components/QuizFinished';
+import QuizHeader from '@/components/pages/Quiz/components/QuizHeader';
+import QuizImage from '@/components/pages/Quiz/components/QuizImage';
 import QuizMissingFields from '@/components/pages/Quiz/components/QuizMissingFields';
+import QuizOptions from '@/components/pages/Quiz/components/QuizOptions.tsx/QuizOptions';
 import type { TopicItem } from '@/service/items';
 
 import type { Topic } from '../../../types/topics';
@@ -117,32 +117,11 @@ const Quiz = ({
                 alignItems: 'stretch',
               }}
             >
-              <Box
-                sx={{
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  borderRadius: 2,
-                  overflow: 'hidden',
-                  backgroundColor: theme.palette.mode === 'dark' ? '#000' : '#fff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '100%',
-                  minHeight: 600,
-                }}
-              >
-                <Box
-                  alt={`${topic.label} - ${currentQuestion.correctAnswer}`}
-                  component="img"
-                  src={currentImageUrl}
-                  sx={{
-                    width: '100%',
-                    maxHeight: 600,
-                    objectFit: 'contain',
-                    display: 'block',
-                  }}
-                />
-              </Box>
+              <QuizImage
+                topicLabel={topic.label}
+                currentQuestionCorrectAnswer={currentQuestion.correctAnswer}
+                currentImageUrl={currentImageUrl}
+              />
 
               <Stack
                 spacing={3}
@@ -150,92 +129,28 @@ const Quiz = ({
                   minHeight: '100%',
                 }}
               >
-                <Card sx={{ width: '100%' }} variant="outlined">
-                  <CardContent sx={{ position: 'relative' }}>
-                    <Stack spacing={2}>
-                      <Box sx={{ position: 'absolute', top: 0, right: 0, p: 2 }}>
-                        <Typography>
-                          {questions.length} / {currentQuestionIndex + 1}
-                        </Typography>
-                      </Box>
-                      <Typography variant="h5" color="text.secondary">
-                        {currentQuestion.prompt}
-                      </Typography>
-                    </Stack>
-                  </CardContent>
-                </Card>
+                <QuizHeader
+                  questionLength={questions.length}
+                  currentQuestionIndex={currentQuestionIndex}
+                  prompt={currentQuestion.prompt}
+                />
 
-                <Box
-                  sx={{
-                    marginTop: 'auto',
-                    display: 'grid',
-                    gap: 2,
-                    gridTemplateColumns: {
-                      xs: '1fr',
-                      sm: 'repeat(2, minmax(0, 1fr))',
-                    },
-                  }}
-                >
-                  {currentQuestion.options.map((option) => {
-                    const isSelected = selectedOptionId === option.id;
-                    const showCorrect = isAnswered && option.isCorrect;
-                    const showIncorrect = isAnswered && isSelected && !option.isCorrect;
+                <QuizOptions
+                  options={currentQuestion.options}
+                  isAnswered={isAnswered}
+                  selectedOptionId={selectedOptionId}
+                  onSelectOption={(optionId) => {
+                    setSelectedOptionId(optionId);
 
-                    return (
-                      <Button
-                        disabled={isAnswered}
-                        key={option.id}
-                        onClick={() => {
-                          if (isAnswered) {
-                            return;
-                          }
-
-                          setSelectedOptionId(option.id);
-                          if (option.isCorrect) {
-                            setScore((currentScore) => currentScore + 1);
-                          }
-                        }}
-                        sx={(theme) => ({
-                          justifyContent: 'flex-start',
-                          py: 1.5,
-                          borderWidth: 2,
-                          backgroundColor: isSelected
-                            ? theme.palette.action.selected
-                            : 'transparent',
-                          borderColor: showCorrect
-                            ? theme.palette.success.main
-                            : showIncorrect
-                              ? theme.palette.error.main
-                              : undefined,
-                          color: showCorrect
-                            ? theme.palette.success.main
-                            : showIncorrect
-                              ? theme.palette.error.main
-                              : undefined,
-                          '&.Mui-disabled': {
-                            opacity: 1,
-                            borderColor: showCorrect
-                              ? theme.palette.success.main
-                              : showIncorrect
-                                ? theme.palette.error.main
-                                : undefined,
-                            color: showCorrect
-                              ? theme.palette.success.main
-                              : showIncorrect
-                                ? theme.palette.error.main
-                                : undefined,
-                            backgroundColor: isSelected
-                              ? theme.palette.action.selected
-                              : 'transparent',
-                          },
-                        })}
-                        variant="outlined"
-                      >
-                        {option.label}
-                      </Button>
+                    const selectedOption = currentQuestion.options.find(
+                      (option) => option.id === optionId,
                     );
-                  })}
-                </Box>
+
+                    if (selectedOption?.isCorrect) {
+                      setScore((score) => score + 1);
+                    }
+                  }}
+                />
               </Stack>
             </Stack>
 
