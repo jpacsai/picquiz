@@ -3,6 +3,15 @@ export type TopicFieldFn = {
   name: string;
 };
 
+export type QuizFieldConfig =
+  | {
+      enabled: false;
+    }
+  | {
+      enabled: true;
+      prompt: string;
+    };
+
 type BaseTopicField = {
   key: string;
   label: string;
@@ -11,6 +20,7 @@ type BaseTopicField = {
   readonly?: boolean;
   fn?: TopicFieldFn;
   hideInEdit?: boolean;
+  quiz?: QuizFieldConfig;
 };
 
 export type TopicField =
