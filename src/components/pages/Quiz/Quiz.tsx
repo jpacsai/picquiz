@@ -6,9 +6,9 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { useNavigate } from '@tanstack/react-router';
-import { useMemo, useState } from 'react';
 import { useTheme } from '@mui/material/styles';
+import { useNavigate } from '@tanstack/react-router';
+import { useEffect, useMemo, useState } from 'react';
 
 import type { TopicItem } from '@/service/items';
 
@@ -17,13 +17,23 @@ import { buildQuizQuestions, getSelectedQuizFields } from './utils';
 
 type QuizProps = {
   answerFieldKeys: string[];
+  autoAdvanceAfterAnswer: boolean;
   items: ReadonlyArray<TopicItem>;
   questionCount: number;
   showCorrectAnswer: boolean;
   topic: Topic;
 };
 
-const Quiz = ({ answerFieldKeys, items, questionCount, showCorrectAnswer, topic }: QuizProps) => {
+const AUTO_ADVANCE_DELAY_MS = 5000;
+
+const Quiz = ({
+  answerFieldKeys,
+  autoAdvanceAfterAnswer,
+  items,
+  questionCount,
+  showCorrectAnswer,
+  topic,
+}: QuizProps) => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const navigate = useNavigate();
@@ -54,6 +64,21 @@ const Quiz = ({ answerFieldKeys, items, questionCount, showCorrectAnswer, topic 
       ? currentQuestion.imageUrls.desktop
       : currentQuestion.imageUrls.mobile
     : '';
+
+  useEffect(() => {
+    if (!isAnswered || !autoAdvanceAfterAnswer) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setCurrentQuestionIndex((questionIndex) => questionIndex + 1);
+      setSelectedOptionId('');
+    }, AUTO_ADVANCE_DELAY_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [autoAdvanceAfterAnswer, isAnswered, selectedOptionId]);
 
   if (!selectedFields.length || !questionCount) {
     return (
@@ -296,17 +321,25 @@ const Quiz = ({ answerFieldKeys, items, questionCount, showCorrectAnswer, topic 
                       ? `Nem ez a helyes válasz. A megoldás: ${currentQuestion.correctAnswer}.`
                       : 'Nem ez a helyes válasz.'}
                 </Typography>
-                <Button
-                  onClick={() => {
-                    setCurrentQuestionIndex((questionIndex) => questionIndex + 1);
-                    setSelectedOptionId('');
-                  }}
-                  variant="contained"
-                >
-                  {currentQuestionIndex === questions.length - 1
-                    ? 'Eredmény megtekintése'
-                    : 'Következő kérdés'}
-                </Button>
+                {autoAdvanceAfterAnswer ? (
+                  <Typography color="text.secondary">
+                    {currentQuestionIndex === questions.length - 1
+                      ? 'Eredmény megjelenítése 5 másodperc múlva.'
+                      : 'Következő kérdés 5 másodperc múlva.'}
+                  </Typography>
+                ) : (
+                  <Button
+                    onClick={() => {
+                      setCurrentQuestionIndex((questionIndex) => questionIndex + 1);
+                      setSelectedOptionId('');
+                    }}
+                    variant="contained"
+                  >
+                    {currentQuestionIndex === questions.length - 1
+                      ? 'Eredmény megtekintése'
+                      : 'Következő kérdés'}
+                  </Button>
+                )}
               </Stack>
             ) : null}
           </Stack>

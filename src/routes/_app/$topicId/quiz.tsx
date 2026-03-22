@@ -19,6 +19,10 @@ const parseSearch = (search: Record<string, unknown>) =>
             .map((fieldKey) => fieldKey.trim())
             .filter(Boolean)
         : [],
+    autoAdvanceAfterAnswer:
+      typeof search.autoAdvanceAfterAnswer === 'boolean'
+        ? search.autoAdvanceAfterAnswer
+        : search.autoAdvanceAfterAnswer === 'true',
     questionCount:
       typeof search.questionCount === 'number'
         ? search.questionCount
@@ -35,11 +39,13 @@ const parseSearch = (search: Record<string, unknown>) =>
 
 const RouteComponent = () => {
   const { items, topic } = useLoaderData({ from: path });
-  const { answerFieldKeys, questionCount, showCorrectAnswer } = Route.useSearch();
+  const { answerFieldKeys, autoAdvanceAfterAnswer, questionCount, showCorrectAnswer } =
+    Route.useSearch();
 
   return (
     <Quiz
       answerFieldKeys={answerFieldKeys}
+      autoAdvanceAfterAnswer={autoAdvanceAfterAnswer}
       items={items}
       questionCount={questionCount}
       showCorrectAnswer={showCorrectAnswer}

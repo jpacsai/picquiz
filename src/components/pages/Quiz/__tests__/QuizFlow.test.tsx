@@ -1,5 +1,5 @@
 import { CssBaseline } from '@mui/material';
-import { render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -116,6 +116,7 @@ describe('Quiz flow integration', () => {
   beforeEach(() => {
     navigateMock.mockReset();
     navigateMock.mockResolvedValue(undefined);
+    vi.useRealTimers();
   });
 
   it('starts a quiz from multiple selected fields without falling into invalid config state', async () => {
@@ -130,6 +131,7 @@ describe('Quiz flow integration', () => {
       params: { topicId: 'art' },
       search: {
         answerFieldKeys: ['title', 'year'],
+        autoAdvanceAfterAnswer: false,
         questionCount: 5,
         showCorrectAnswer: true,
       },
@@ -139,6 +141,7 @@ describe('Quiz flow integration', () => {
     renderWithTheme(
       <Quiz
         answerFieldKeys={['title', 'year']}
+        autoAdvanceAfterAnswer={false}
         items={items}
         questionCount={5}
         showCorrectAnswer
@@ -148,5 +151,31 @@ describe('Quiz flow integration', () => {
 
     expect(screen.queryByText('Hiányos kvíz konfiguráció')).not.toBeInTheDocument();
     expect(screen.getByText(/1\. kérdés \/ 5/)).toBeInTheDocument();
+  });
+
+  it('automatically advances to the next question 5 seconds after answering', async () => {
+    vi.useFakeTimers();
+
+    renderWithTheme(
+      <Quiz
+        answerFieldKeys={['title']}
+        autoAdvanceAfterAnswer
+        items={items}
+        questionCount={2}
+        showCorrectAnswer
+        topic={topic}
+      />,
+    );
+
+    fireEvent.click(screen.getAllByRole('button')[0]);
+
+    expect(screen.getByText(/5 másodperc múlva/i)).toBeInTheDocument();
+
+    await act(async () => {
+      vi.advanceTimersByTime(5000);
+    });
+
+    expect(screen.getByText(/2\. kérdés \/ 2/)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Következő kérdés' })).not.toBeInTheDocument();
   });
 });

@@ -34,6 +34,7 @@ const QuizConfig = ({ items, topic }: QuizConfigProps) => {
   const [selectedFieldKeys, setSelectedFieldKeys] = useState<string[]>([]);
   const [selectedQuestionCount, setSelectedQuestionCount] = useState(0);
   const [showCorrectAnswer, setShowCorrectAnswer] = useState(true);
+  const [autoAdvanceAfterAnswer, setAutoAdvanceAfterAnswer] = useState(false);
 
   const effectiveSelectedFieldKeys = selectedFieldKeys.length
     ? selectedFieldKeys.filter((fieldKey) =>
@@ -127,6 +128,18 @@ const QuizConfig = ({ items, topic }: QuizConfigProps) => {
                   label="Helyes válasz megmutatása"
                 />
 
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={autoAdvanceAfterAnswer}
+                      onChange={(_, checked) => {
+                        setAutoAdvanceAfterAnswer(checked);
+                      }}
+                    />
+                  }
+                  label="Automatikus továbblépés 5 mp után"
+                />
+
                 {selectedFields.length ? (
                   <Stack spacing={1}>
                     {selectedFields.map((selectedField) => (
@@ -150,6 +163,7 @@ const QuizConfig = ({ items, topic }: QuizConfigProps) => {
                       params: { topicId: topic.id },
                       search: {
                         answerFieldKeys: effectiveSelectedFieldKeys,
+                        autoAdvanceAfterAnswer,
                         questionCount,
                         showCorrectAnswer,
                       },
