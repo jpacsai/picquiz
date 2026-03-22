@@ -8,12 +8,12 @@ const path = '/_app/$topicId/quiz';
 
 const parseSearch = (search: Record<string, unknown>) =>
   ({
-    answerFieldKeys:
-      Array.isArray(search.answerFieldKeys)
-        ? search.answerFieldKeys.filter(
-            (fieldKey): fieldKey is string => typeof fieldKey === 'string' && fieldKey.trim().length > 0,
-          )
-        : typeof search.answerFieldKeys === 'string'
+    answerFieldKeys: Array.isArray(search.answerFieldKeys)
+      ? search.answerFieldKeys.filter(
+          (fieldKey): fieldKey is string =>
+            typeof fieldKey === 'string' && fieldKey.trim().length > 0,
+        )
+      : typeof search.answerFieldKeys === 'string'
         ? search.answerFieldKeys
             .split(',')
             .map((fieldKey) => fieldKey.trim())
@@ -62,8 +62,6 @@ export const Route = createFileRoute(path)({
     return {
       items,
       topic,
-      title: topic.label,
-      subtitle: 'Kvíz',
     };
   },
   component: RouteComponent,

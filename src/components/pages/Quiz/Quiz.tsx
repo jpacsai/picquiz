@@ -2,7 +2,6 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import LinearProgress from '@mui/material/LinearProgress';
 import Stack from '@mui/material/Stack';
 import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
@@ -56,9 +55,6 @@ const Quiz = ({
   const selectedOption =
     currentQuestion?.options.find((option) => option.id === selectedOptionId) ?? null;
   const isAnswered = Boolean(selectedOption);
-  const progressValue = questions.length
-    ? (Math.min(currentQuestionIndex, questions.length) / questions.length) * 100
-    : 0;
   const currentImageUrl = currentQuestion
     ? isDesktop
       ? currentQuestion.imageUrls.desktop
@@ -233,16 +229,16 @@ const Quiz = ({
                 }}
               >
                 <Card sx={{ width: '100%' }} variant="outlined">
-                  <CardContent>
+                  <CardContent sx={{ position: 'relative' }}>
                     <Stack spacing={2}>
-                      <Typography variant="h5">
-                        {currentQuestionIndex + 1}. kérdés / {questions.length}
+                      <Box sx={{ position: 'absolute', top: 0, right: 0, p: 2 }}>
+                        <Typography>
+                          {questions.length} / {currentQuestionIndex + 1}
+                        </Typography>
+                      </Box>
+                      <Typography variant="h5" color="text.secondary">
+                        {currentQuestion.prompt}
                       </Typography>
-                      <Typography color="text.secondary">{currentQuestion.prompt}</Typography>
-                      <Typography color="text.secondary">
-                        Aktuális pontszám: {score} / {questions.length}
-                      </Typography>
-                      <LinearProgress value={progressValue} variant="determinate" />
                     </Stack>
                   </CardContent>
                 </Card>
