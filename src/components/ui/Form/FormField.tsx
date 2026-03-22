@@ -25,6 +25,7 @@ type FormFieldProps = {
     field: Extract<TopicField, { type: 'imageUpload' }>;
     file: File;
     previewUrl: string;
+    uniqueSuffix: string;
   } | null;
   mode: 'create' | 'edit';
 };
@@ -180,6 +181,11 @@ const FormField = ({
                 title={typeof titleValue === 'string' ? titleValue : ''}
                 existingSelection={
                   pendingImageSelection?.field.key === field.key ? pendingImageSelection : null
+                }
+                uniqueSuffix={
+                  pendingImageSelection?.field.key === field.key
+                    ? pendingImageSelection.uniqueSuffix
+                    : undefined
                 }
                 onSelectImage={(file) => {
                   onSelectPendingImage({ field, file });

@@ -30,6 +30,7 @@ export type PendingImageSelection = {
   field: Extract<TopicField, { type: 'imageUpload' }>;
   file: File;
   previewUrl: string;
+  uniqueSuffix: string;
 };
 
 export const getInitialValues = (

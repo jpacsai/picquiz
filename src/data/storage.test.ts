@@ -1,7 +1,7 @@
 import { deleteObject, ref } from 'firebase/storage';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { deleteTopicImageByPath } from './storage';
+import { deleteTopicImageByPath, getResponsiveImageFileNames } from './storage';
 
 vi.mock('firebase/storage', async () => {
   return {
@@ -29,5 +29,20 @@ describe('deleteTopicImageByPath', () => {
 
     expect(ref).toHaveBeenCalledWith({ name: 'mock-storage' }, 'art/desktop/old-file.jpg');
     expect(deleteObject).toHaveBeenCalledWith(storageRef);
+  });
+});
+
+describe('getResponsiveImageFileNames', () => {
+  it('appends the unique suffix when provided', () => {
+    expect(
+      getResponsiveImageFileNames({
+        artistName: 'Claude Monet',
+        title: 'Water Lilies',
+        uniqueSuffix: 'abc123',
+      }),
+    ).toEqual({
+      desktop: 'claudemonet-waterlilies-abc123-desktop.jpg',
+      mobile: 'claudemonet-waterlilies-abc123-mobile.jpg',
+    });
   });
 });

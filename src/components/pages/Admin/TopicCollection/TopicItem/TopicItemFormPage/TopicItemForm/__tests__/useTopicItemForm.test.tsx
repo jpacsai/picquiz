@@ -33,6 +33,7 @@ vi.mock('@service/items', () => ({
 }));
 
 vi.mock('@data/storage', () => ({
+  createImageFileUniqueSuffix: () => 'unique1234',
   deleteTopicImageByPath: (...args: unknown[]) => deleteTopicImageByPathMock(...args),
   uploadResponsiveTopicImages: (...args: unknown[]) => uploadResponsiveTopicImagesMock(...args),
 }));

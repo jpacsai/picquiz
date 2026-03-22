@@ -15,11 +15,13 @@ type ImageUploadFieldProps = {
   existingSelection?: {
     file: File;
     previewUrl: string;
+    uniqueSuffix: string;
   } | null;
   field: Extract<TopicField, { type: 'imageUpload' }>;
   mode?: 'create' | 'edit';
   onSelectImage: (file: File) => void;
   title: string;
+  uniqueSuffix?: string;
 };
 
 const ImageUploadField = ({
@@ -30,14 +32,18 @@ const ImageUploadField = ({
   mode = 'create',
   onSelectImage,
   title,
+  uniqueSuffix,
 }: ImageUploadFieldProps) => {
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
   const [loadedImageUrl, setLoadedImageUrl] = useState<string | null>(null);
-  const isReadyForUpload = artistName.trim().length > 0 && title.trim().length > 0;
+  const trimmedArtistName = artistName.trim();
+  const trimmedTitle = title.trim();
+  const isReadyForUpload = trimmedArtistName.length > 0 && trimmedTitle.length > 0;
   const generatedFileNames = getResponsiveImageFileNames({
-    artistName,
-    title,
+    artistName: trimmedArtistName,
+    title: trimmedTitle,
+    uniqueSuffix: existingSelection?.uniqueSuffix ?? uniqueSuffix,
   });
   const showExistingImage = Boolean(
     existingImageUrl && !existingSelection && failedImageUrl !== existingImageUrl,

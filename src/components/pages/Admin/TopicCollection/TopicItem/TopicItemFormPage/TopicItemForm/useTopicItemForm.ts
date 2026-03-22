@@ -1,4 +1,8 @@
-import { deleteTopicImageByPath, uploadResponsiveTopicImages } from '@data/storage';
+import {
+  createImageFileUniqueSuffix,
+  deleteTopicImageByPath,
+  uploadResponsiveTopicImages,
+} from '@data/storage';
 import { generateResponsiveImageVariants } from '@lib/image';
 import { QUERY_KEYS } from '@queries/queryKeys';
 import type { TopicItem } from '@service/items';
@@ -120,11 +124,11 @@ const resolveSubmittedValues = async ({
     };
   }
 
-  const { field, file } = pendingImageSelection;
+  const { field, file, uniqueSuffix } = pendingImageSelection;
   const artistValue = previousValues[field.fileNameFields.artist];
   const titleValue = previousValues[field.fileNameFields.title];
-  const artistName = typeof artistValue === 'string' ? artistValue : '';
-  const title = typeof titleValue === 'string' ? titleValue : '';
+  const artistName = typeof artistValue === 'string' ? artistValue.trim() : '';
+  const title = typeof titleValue === 'string' ? titleValue.trim() : '';
 
   if (!artistName || !title) {
     return {
@@ -140,6 +144,7 @@ const resolveSubmittedValues = async ({
     storagePrefix,
     desktopBlob: desktop.blob,
     mobileBlob: mobile.blob,
+    uniqueSuffix,
   });
 
   const uploadedImageValues = getUploadedImageValues({
@@ -330,6 +335,7 @@ export const useTopicItemForm = ({
       field,
       file,
       previewUrl: URL.createObjectURL(file),
+      uniqueSuffix: createImageFileUniqueSuffix(),
     });
   };
 

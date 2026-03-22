@@ -22,6 +22,7 @@ type UploadResponsiveTopicImagesParams = {
   mobileBlob: Blob;
   storagePrefix: string;
   title: string;
+  uniqueSuffix?: string;
 };
 
 type UploadedResponsiveTopicImagesResult = {
@@ -62,25 +63,40 @@ const getArtistLastNamePart = (artistName: string) => {
 const getTitlePart = (title: string) =>
   sanitizeFileNamePart(title.replace(/\s+/g, '')) || 'untitled';
 
+export const createImageFileUniqueSuffix = () => {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID().split('-')[0];
+  }
+
+  return Math.random().toString(36).slice(2, 10);
+};
+
 export const getImageVariantFileName = ({
   artistName,
   title,
+  uniqueSuffix,
   variant,
 }: {
   artistName: string;
   title: string;
+  uniqueSuffix?: string;
   variant: ImageVariant;
-}) => `${getArtistLastNamePart(artistName)}-${getTitlePart(title)}-${variant}.jpg`;
+}) =>
+  `${getArtistLastNamePart(artistName)}-${getTitlePart(title)}${
+    uniqueSuffix ? `-${sanitizeFileNamePart(uniqueSuffix)}` : ''
+  }-${variant}.jpg`;
 
 export const getResponsiveImageFileNames = ({
   artistName,
   title,
+  uniqueSuffix,
 }: {
   artistName: string;
   title: string;
+  uniqueSuffix?: string;
 }) => ({
-  desktop: getImageVariantFileName({ artistName, title, variant: 'desktop' }),
-  mobile: getImageVariantFileName({ artistName, title, variant: 'mobile' }),
+  desktop: getImageVariantFileName({ artistName, title, uniqueSuffix, variant: 'desktop' }),
+  mobile: getImageVariantFileName({ artistName, title, uniqueSuffix, variant: 'mobile' }),
 });
 
 export const uploadImageVariant = async ({
@@ -109,8 +125,9 @@ export const uploadResponsiveTopicImages = async ({
   mobileBlob,
   storagePrefix,
   title,
+  uniqueSuffix,
 }: UploadResponsiveTopicImagesParams): Promise<UploadedResponsiveTopicImagesResult> => {
-  const fileNames = getResponsiveImageFileNames({ artistName, title });
+  const fileNames = getResponsiveImageFileNames({ artistName, title, uniqueSuffix });
 
   const [desktop, mobile] = await Promise.all([
     uploadImageVariant({

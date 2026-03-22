@@ -170,6 +170,7 @@ describe('TopicItemForm saving', () => {
       mobileBlob,
       storagePrefix: 'art',
       title: 'Mona Lisa',
+      uniqueSuffix: expect.any(String),
     });
 
     expect(createTopicItemMock).toHaveBeenCalledWith({
@@ -182,6 +183,55 @@ describe('TopicItemForm saving', () => {
         image_url_mobile: 'https://example.com/mobile.jpg',
         title: 'Mona Lisa',
       },
+    });
+  });
+
+  it('trims artist and title before uploading images', async () => {
+    const user = userEvent.setup();
+    const desktopBlob = new Blob(['desktop'], { type: 'image/jpeg' });
+    const mobileBlob = new Blob(['mobile'], { type: 'image/jpeg' });
+    const fields: TopicField[] = [
+      { key: 'artist', label: 'Artist', required: true, type: 'string' },
+      { key: 'title', label: 'Title', required: true, type: 'string' },
+      { key: 'image_url_desktop', label: 'Desktop URL', readonly: true, type: 'string' },
+      { key: 'image_url_mobile', label: 'Mobile URL', readonly: true, type: 'string' },
+      {
+        buttonLabel: 'Upload after artist and title',
+        fileNameFields: { artist: 'artist', title: 'title' },
+        key: 'image_upload',
+        label: 'Upload image',
+        targetFields: { desktop: 'image_url_desktop', mobile: 'image_url_mobile' },
+        type: 'imageUpload',
+      },
+    ];
+
+    generateResponsiveImageVariantsMock.mockResolvedValue({
+      desktop: { blob: desktopBlob, height: 600, width: 800 },
+      mobile: { blob: mobileBlob, height: 400, width: 330 },
+    });
+    uploadResponsiveTopicImagesMock.mockResolvedValue({
+      desktop: { path: 'art/desktop/test.jpg', url: 'https://example.com/desktop.jpg' },
+      mobile: { path: 'art/mobile/test.jpg', url: 'https://example.com/mobile.jpg' },
+    });
+
+    render(
+      <TopicItemForm collectionName="art" fields={fields} storagePrefix="art" topicId="art" />,
+    );
+
+    await user.type(screen.getByTestId('form-input-artist'), '  Leonardo da Vinci  ');
+    await user.type(screen.getByTestId('form-input-title'), '  Mona Lisa  ');
+    await user.click(screen.getByTestId('mock-image-upload-button'));
+    await user.click(screen.getByRole('button', { name: 'Mentés' }));
+
+    await waitFor(() => {
+      expect(uploadResponsiveTopicImagesMock).toHaveBeenCalledWith({
+        artistName: 'Leonardo da Vinci',
+        desktopBlob,
+        mobileBlob,
+        storagePrefix: 'art',
+        title: 'Mona Lisa',
+        uniqueSuffix: expect.any(String),
+      });
     });
   });
 
