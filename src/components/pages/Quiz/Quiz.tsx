@@ -6,11 +6,12 @@ import Stack from '@mui/material/Stack';
 import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { useNavigate } from '@tanstack/react-router';
 import { useEffect, useMemo, useState } from 'react';
 
+import QuizAnswered from '@/components/pages/Quiz/components/QuizAnswered';
 import QuizError from '@/components/pages/Quiz/components/QuizError';
 import QuizFinished from '@/components/pages/Quiz/components/QuizFinished';
+import QuizMissingFields from '@/components/pages/Quiz/components/QuizMissingFields';
 import type { TopicItem } from '@/service/items';
 
 import type { Topic } from '../../../types/topics';
@@ -37,7 +38,6 @@ const Quiz = ({
 }: QuizProps) => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const navigate = useNavigate();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState('');
   const [score, setScore] = useState(0);
@@ -79,55 +79,17 @@ const Quiz = ({
   }, [autoAdvanceAfterAnswer, isAnswered, selectedOptionId]);
 
   if (!selectedFields.length || !questionCount) {
-    return (
-      <Stack spacing={3}>
-        <Card sx={{ width: '100%' }} variant="outlined">
-          <CardContent>
-            <Stack spacing={2}>
-              <Typography variant="h5">Hiányos kvíz konfiguráció</Typography>
-              <Typography color="text.secondary">
-                Válassz érvényes kérdezett mezőt és kérdésszámot a kvíz indításához.
-              </Typography>
-              <Button
-                onClick={() => {
-                  void navigate({
-                    to: '/$topicId/quiz-config',
-                    params: { topicId: topic.id },
-                  });
-                }}
-                variant="contained"
-              >
-                Vissza a beállításokhoz
-              </Button>
-            </Stack>
-          </CardContent>
-        </Card>
-      </Stack>
-    );
+    return <QuizMissingFields topicId={topic.id} />;
   }
 
   if (!questions.length) {
-    return (
-      <QuizError
-        onReturnToConfig={() => {
-          void navigate({
-            to: '/$topicId/quiz-config',
-            params: { topicId: topic.id },
-          });
-        }}
-      />
-    );
+    return <QuizError topicId={topic.id} />;
   }
 
   if (isQuizFinished) {
     return (
       <QuizFinished
-        onReturnToConfig={() => {
-          void navigate({
-            to: '/$topicId/quiz-config',
-            params: { topicId: topic.id },
-          });
-        }}
+        topicId={topic.id}
         score={score}
         questionsLength={questions.length}
         onRestart={() => {
@@ -278,34 +240,18 @@ const Quiz = ({
             </Stack>
 
             {isAnswered ? (
-              <Stack spacing={2}>
-                <Typography color={selectedOption?.isCorrect ? 'success.main' : 'error.main'}>
-                  {selectedOption?.isCorrect
-                    ? 'Helyes válasz.'
-                    : showCorrectAnswer
-                      ? `Nem ez a helyes válasz. A megoldás: ${currentQuestion.correctAnswer}.`
-                      : 'Nem ez a helyes válasz.'}
-                </Typography>
-                {autoAdvanceAfterAnswer ? (
-                  <Typography color="text.secondary">
-                    {currentQuestionIndex === questions.length - 1
-                      ? 'Eredmény megjelenítése 5 másodperc múlva.'
-                      : 'Következő kérdés 5 másodperc múlva.'}
-                  </Typography>
-                ) : (
-                  <Button
-                    onClick={() => {
-                      setCurrentQuestionIndex((questionIndex) => questionIndex + 1);
-                      setSelectedOptionId('');
-                    }}
-                    variant="contained"
-                  >
-                    {currentQuestionIndex === questions.length - 1
-                      ? 'Eredmény megtekintése'
-                      : 'Következő kérdés'}
-                  </Button>
-                )}
-              </Stack>
+              <QuizAnswered
+                isCorrect={selectedOption?.isCorrect ?? false}
+                showCorrectAnswer={showCorrectAnswer}
+                correctAnswer={currentQuestion.correctAnswer}
+                autoAdvanceAfterAnswer={autoAdvanceAfterAnswer}
+                currentQuestionIndex={currentQuestionIndex}
+                questionsLength={questions.length}
+                onContinue={() => {
+                  setCurrentQuestionIndex((questionIndex) => questionIndex + 1);
+                  setSelectedOptionId('');
+                }}
+              />
             ) : null}
           </Stack>
         </CardContent>

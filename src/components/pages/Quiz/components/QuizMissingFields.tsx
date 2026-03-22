@@ -2,19 +2,19 @@ import { Card, CardContent, Stack, Typography } from '@mui/material';
 
 import ReturnToConfigButton from '@/components/pages/Quiz/components/ReturnToConfigButton';
 
-type QuizErrorProps = {
+type QuizMissingFieldsProps = {
   topicId: string;
 };
 
-const QuizError = ({ topicId }: QuizErrorProps) => {
+const QuizMissingFields = ({ topicId }: QuizMissingFieldsProps) => {
   return (
     <Stack spacing={3}>
       <Card sx={{ width: '100%' }} variant="outlined">
         <CardContent>
           <Stack spacing={2}>
-            <Typography variant="h5">Nem indítható a kvíz</Typography>
+            <Typography variant="h5">Hiányos kvíz konfiguráció</Typography>
             <Typography color="text.secondary">
-              A kiválasztott mezőhöz nincs elég használható item vagy válaszlehetőség.
+              Válassz érvényes kérdezett mezőt és kérdésszámot a kvíz indításához.
             </Typography>
 
             <ReturnToConfigButton topicId={topicId} />
@@ -25,4 +25,4 @@ const QuizError = ({ topicId }: QuizErrorProps) => {
   );
 };
 
-export default QuizError;
+export default QuizMissingFields;
