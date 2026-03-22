@@ -14,11 +14,26 @@ const QuizFinished = ({ score, questionsLength, onRestart, topicId }: QuizFinish
     <Stack spacing={3}>
       <Card sx={{ width: '100%' }} variant="outlined">
         <CardContent>
-          <Stack spacing={2}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <Typography variant="h5">Kvíz vége</Typography>
-            <Typography color="text.secondary">
-              {score} / {questionsLength} helyes válasz.
-            </Typography>
+
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 2,
+                margin: 4,
+              }}
+            >
+              <Typography variant="h2" color="text.secondary">
+                {score} / {questionsLength} helyes válasz.
+              </Typography>
+
+              <Typography variant="h4" color="text.secondary">
+                {Math.round((score / questionsLength) * 100)} %
+              </Typography>
+            </Box>
 
             <Box
               sx={{
@@ -33,7 +48,7 @@ const QuizFinished = ({ score, questionsLength, onRestart, topicId }: QuizFinish
                 Újraindítás
               </Button>
             </Box>
-          </Stack>
+          </Box>
         </CardContent>
       </Card>
     </Stack>

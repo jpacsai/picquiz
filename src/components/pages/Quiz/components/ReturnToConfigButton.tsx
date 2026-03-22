@@ -16,7 +16,7 @@ const ReturnToConfigButton = ({ topicId }: ReturnToConfigButtonProps) => {
           params: { topicId },
         });
       }}
-      variant="contained"
+      variant="outlined"
     >
       Vissza a beállításokhoz
     </Button>
