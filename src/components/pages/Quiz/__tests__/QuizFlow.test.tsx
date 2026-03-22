@@ -117,6 +117,7 @@ describe('Quiz flow integration', () => {
     navigateMock.mockReset();
     navigateMock.mockResolvedValue(undefined);
     vi.useRealTimers();
+    window.localStorage.clear();
   });
 
   it('starts a quiz from multiple selected fields without falling into invalid config state', async () => {
@@ -177,5 +178,15 @@ describe('Quiz flow integration', () => {
 
     expect(screen.getByText(/2\. kérdés \/ 2/)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Következő kérdés' })).not.toBeInTheDocument();
+  });
+
+  it('restores toggle settings from local storage', () => {
+    window.localStorage.setItem('picquiz-quiz-show-correct-answer', 'false');
+    window.localStorage.setItem('picquiz-quiz-auto-advance-after-answer', 'true');
+
+    renderWithTheme(<QuizConfig items={items} topic={topic} />);
+
+    expect(screen.getByRole('switch', { name: 'Helyes válasz megmutatása' })).not.toBeChecked();
+    expect(screen.getByRole('switch', { name: 'Automatikus továbblépés 5 mp után' })).toBeChecked();
   });
 });

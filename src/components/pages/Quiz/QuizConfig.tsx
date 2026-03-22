@@ -11,7 +11,7 @@ import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from '@tanstack/react-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import type { TopicItem } from '@/service/items';
 import type { Topic } from '@/types/topics';
@@ -27,14 +27,50 @@ type QuizConfigProps = {
   topic: Topic;
 };
 
+const SHOW_CORRECT_ANSWER_STORAGE_KEY = 'picquiz-quiz-show-correct-answer';
+const AUTO_ADVANCE_AFTER_ANSWER_STORAGE_KEY = 'picquiz-quiz-auto-advance-after-answer';
+
+const getStoredBoolean = (storageKey: string, fallbackValue: boolean): boolean => {
+  if (typeof window === 'undefined') {
+    return fallbackValue;
+  }
+
+  const storedValue = window.localStorage.getItem(storageKey);
+
+  if (storedValue === 'true') {
+    return true;
+  }
+
+  if (storedValue === 'false') {
+    return false;
+  }
+
+  return fallbackValue;
+};
+
 const QuizConfig = ({ items, topic }: QuizConfigProps) => {
   const navigate = useNavigate();
   const eligibleFields = getEligibleQuizFields({ items, topic });
   const startableFields = eligibleFields.filter((field) => field.maxQuestionCount > 0);
   const [selectedFieldKeys, setSelectedFieldKeys] = useState<string[]>([]);
   const [selectedQuestionCount, setSelectedQuestionCount] = useState(0);
-  const [showCorrectAnswer, setShowCorrectAnswer] = useState(true);
-  const [autoAdvanceAfterAnswer, setAutoAdvanceAfterAnswer] = useState(false);
+  const [showCorrectAnswer, setShowCorrectAnswer] = useState(() =>
+    getStoredBoolean(SHOW_CORRECT_ANSWER_STORAGE_KEY, true),
+  );
+  const [autoAdvanceAfterAnswer, setAutoAdvanceAfterAnswer] = useState(() =>
+    getStoredBoolean(AUTO_ADVANCE_AFTER_ANSWER_STORAGE_KEY, false),
+  );
+
+  useEffect(() => {
+    window.localStorage.setItem(SHOW_CORRECT_ANSWER_STORAGE_KEY, String(showCorrectAnswer));
+  }, [showCorrectAnswer]);
+
+  useEffect(() => {
+    window.localStorage.setItem(
+      AUTO_ADVANCE_AFTER_ANSWER_STORAGE_KEY,
+      String(autoAdvanceAfterAnswer),
+    );
+  }, [autoAdvanceAfterAnswer]);
 
   const effectiveSelectedFieldKeys = selectedFieldKeys.length
     ? selectedFieldKeys.filter((fieldKey) =>
