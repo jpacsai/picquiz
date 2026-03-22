@@ -2,10 +2,12 @@ import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { type SelectChangeEvent } from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
+import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
@@ -26,6 +28,7 @@ const QuizConfig = ({ items, topic }: QuizConfigProps) => {
   const startableFields = eligibleFields.filter((field) => field.maxQuestionCount > 0);
   const [selectedFieldKey, setSelectedFieldKey] = useState('');
   const [selectedQuestionCount, setSelectedQuestionCount] = useState(0);
+  const [showCorrectAnswer, setShowCorrectAnswer] = useState(true);
 
   const selectedField =
     startableFields.find((field) => field.field.key === selectedFieldKey) ??
@@ -96,6 +99,18 @@ const QuizConfig = ({ items, topic }: QuizConfigProps) => {
                   </Select>
                 </FormControl>
 
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={showCorrectAnswer}
+                      onChange={(_, checked) => {
+                        setShowCorrectAnswer(checked);
+                      }}
+                    />
+                  }
+                  label="Helyes válasz megmutatása"
+                />
+
                 {selectedField ? (
                   <Typography color="text.secondary">
                     {selectedField.eligibleItemCount} használható item,{' '}
@@ -117,6 +132,7 @@ const QuizConfig = ({ items, topic }: QuizConfigProps) => {
                       search: {
                         answerFieldKey: selectedField.field.key,
                         questionCount,
+                        showCorrectAnswer,
                       },
                     });
                   }}

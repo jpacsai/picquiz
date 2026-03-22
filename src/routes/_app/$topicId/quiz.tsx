@@ -15,17 +15,24 @@ const parseSearch = (search: Record<string, unknown>) =>
         : typeof search.questionCount === 'string'
           ? Number(search.questionCount)
           : 0,
+    showCorrectAnswer:
+      typeof search.showCorrectAnswer === 'boolean'
+        ? search.showCorrectAnswer
+        : search.showCorrectAnswer === 'false'
+          ? false
+          : true,
   }) as const;
 
 const RouteComponent = () => {
   const { items, topic } = useLoaderData({ from: path });
-  const { answerFieldKey, questionCount } = Route.useSearch();
+  const { answerFieldKey, questionCount, showCorrectAnswer } = Route.useSearch();
 
   return (
     <Quiz
       answerFieldKey={answerFieldKey}
       items={items}
       questionCount={questionCount}
+      showCorrectAnswer={showCorrectAnswer}
       topic={topic}
     />
   );

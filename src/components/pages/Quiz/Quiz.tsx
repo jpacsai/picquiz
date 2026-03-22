@@ -19,10 +19,11 @@ type QuizProps = {
   answerFieldKey: string;
   items: ReadonlyArray<TopicItem>;
   questionCount: number;
+  showCorrectAnswer: boolean;
   topic: Topic;
 };
 
-const Quiz = ({ answerFieldKey, items, questionCount, topic }: QuizProps) => {
+const Quiz = ({ answerFieldKey, items, questionCount, showCorrectAnswer, topic }: QuizProps) => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const navigate = useNavigate();
@@ -248,7 +249,9 @@ const Quiz = ({ answerFieldKey, items, questionCount, topic }: QuizProps) => {
                 <Typography color={selectedOption?.isCorrect ? 'success.main' : 'error.main'}>
                   {selectedOption?.isCorrect
                     ? 'Helyes válasz.'
-                    : `Nem ez a helyes válasz. A megoldás: ${currentQuestion.correctAnswer}.`}
+                    : showCorrectAnswer
+                      ? `Nem ez a helyes válasz. A megoldás: ${currentQuestion.correctAnswer}.`
+                      : 'Nem ez a helyes válasz.'}
                 </Typography>
                 <Button
                   onClick={() => {
