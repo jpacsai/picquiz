@@ -3,7 +3,6 @@ import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { useEffect, useMemo, useState } from 'react';
 
 import QuizAnswered from '@/components/pages/Quiz/components/QuizAnswered';
 import QuizError from '@/components/pages/Quiz/components/QuizError';
@@ -15,7 +14,7 @@ import QuizOptions from '@/components/pages/Quiz/components/QuizOptions.tsx/Quiz
 import type { TopicItem } from '@/service/items';
 
 import type { Topic } from '../../../types/topics';
-import { buildQuizQuestions, getSelectedQuizFields } from './utils';
+import { useQuiz } from './useQuiz';
 
 type QuizProps = {
   answerFieldKeys: string[];
@@ -25,8 +24,6 @@ type QuizProps = {
   showCorrectAnswer: boolean;
   topic: Topic;
 };
-
-const AUTO_ADVANCE_DELAY_MS = 5000;
 
 const Quiz = ({
   answerFieldKeys,
@@ -38,45 +35,28 @@ const Quiz = ({
 }: QuizProps) => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedOptionId, setSelectedOptionId] = useState('');
-  const [score, setScore] = useState(0);
-  const selectedFields = getSelectedQuizFields({ fieldKeys: answerFieldKeys, items, topic });
-  const questions = useMemo(
-    () =>
-      buildQuizQuestions({
-        answerFieldKeys,
-        items,
-        questionCount,
-        topic,
-      }),
-    [answerFieldKeys, items, questionCount, topic],
-  );
-  const currentQuestion = questions[currentQuestionIndex] ?? null;
-  const isQuizFinished = currentQuestionIndex >= questions.length;
-  const selectedOption =
-    currentQuestion?.options.find((option) => option.id === selectedOptionId) ?? null;
-  const isAnswered = Boolean(selectedOption);
-  const currentImageUrl = currentQuestion
-    ? isDesktop
-      ? currentQuestion.imageUrls.desktop
-      : currentQuestion.imageUrls.mobile
-    : '';
-
-  useEffect(() => {
-    if (!isAnswered || !autoAdvanceAfterAnswer) {
-      return undefined;
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      setCurrentQuestionIndex((questionIndex) => questionIndex + 1);
-      setSelectedOptionId('');
-    }, AUTO_ADVANCE_DELAY_MS);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-    };
-  }, [autoAdvanceAfterAnswer, isAnswered, selectedOptionId]);
+  const {
+    continueToNextQuestion,
+    currentImageUrl,
+    currentQuestion,
+    currentQuestionIndex,
+    isAnswered,
+    isQuizFinished,
+    questions,
+    restartQuiz,
+    score,
+    selectOption,
+    selectedFields,
+    selectedOption,
+    selectedOptionId,
+  } = useQuiz({
+    answerFieldKeys,
+    autoAdvanceAfterAnswer,
+    isDesktop,
+    items,
+    questionCount,
+    topic,
+  });
 
   if (!selectedFields.length || !questionCount) {
     return <QuizMissingFields topicId={topic.id} />;
@@ -92,11 +72,7 @@ const Quiz = ({
         topicId={topic.id}
         score={score}
         questionsLength={questions.length}
-        onRestart={() => {
-          setCurrentQuestionIndex(0);
-          setSelectedOptionId('');
-          setScore(0);
-        }}
+        onRestart={restartQuiz}
       />
     );
   }
@@ -139,17 +115,7 @@ const Quiz = ({
                   options={currentQuestion.options}
                   isAnswered={isAnswered}
                   selectedOptionId={selectedOptionId}
-                  onSelectOption={(optionId) => {
-                    setSelectedOptionId(optionId);
-
-                    const selectedOption = currentQuestion.options.find(
-                      (option) => option.id === optionId,
-                    );
-
-                    if (selectedOption?.isCorrect) {
-                      setScore((score) => score + 1);
-                    }
-                  }}
+                  onSelectOption={selectOption}
                 />
               </Stack>
             </Stack>
@@ -162,10 +128,7 @@ const Quiz = ({
                 autoAdvanceAfterAnswer={autoAdvanceAfterAnswer}
                 currentQuestionIndex={currentQuestionIndex}
                 questionsLength={questions.length}
-                onContinue={() => {
-                  setCurrentQuestionIndex((questionIndex) => questionIndex + 1);
-                  setSelectedOptionId('');
-                }}
+                onContinue={continueToNextQuestion}
               />
             ) : null}
           </Stack>
