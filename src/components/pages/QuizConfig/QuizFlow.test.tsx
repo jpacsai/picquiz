@@ -233,7 +233,7 @@ describe('Quiz flow integration', () => {
 
     await user.click(screen.getByRole('checkbox', { name: /ev - melyik evben keszult/i }));
     await user.click(screen.getByRole('checkbox', { name: /cim - melyik cim tartozik a kephez/i }));
-    fireEvent.change(screen.getByRole('spinbutton', { name: 'Kérdések száma' }), {
+    fireEvent.change(screen.getByRole('spinbutton', { name: 'Kérdések száma (max: 6)' }), {
       target: { value: '6' },
     });
     await user.click(screen.getByRole('button', { name: 'Kvíz indítása' }));
@@ -287,7 +287,7 @@ describe('Quiz flow integration', () => {
     renderWithTheme(<QuizConfig items={items} topic={topic} />);
 
     await user.click(screen.getByRole('checkbox', { name: /ev - melyik evben keszult/i }));
-    fireEvent.change(screen.getByRole('spinbutton', { name: 'Kérdések száma' }), {
+    fireEvent.change(screen.getByRole('spinbutton', { name: 'Kérdések száma (max: 12)' }), {
       target: { value: '6' },
     });
     await user.click(screen.getByRole('switch', { name: 'Helyes válasz megmutatása' }));
