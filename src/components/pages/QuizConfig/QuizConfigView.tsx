@@ -1,16 +1,14 @@
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Checkbox from '@mui/material/Checkbox';
-import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Input from '@mui/material/Input';
-import Slider from '@mui/material/Slider';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 
+import NoQuiz from '@/components/pages/QuizConfig/components/NoQuiz';
+import QuestionNumberInput from '@/components/pages/QuizConfig/components/QuestionNumberInput';
 import type { UseQuizConfigResult } from '@/types/quiz';
 
 type QuizConfigViewProps = UseQuizConfigResult;
@@ -34,21 +32,6 @@ const QuizConfigView = ({
   showCorrectAnswer,
   startableFields,
 }: QuizConfigViewProps) => {
-  const sliderMax = Math.max(maxQuestionCount, 1);
-  const sliderMin =
-    maxQuestionCount > 0 ? (minQuestionCount < sliderMax ? minQuestionCount : sliderMax) : 1;
-  const sliderMarks = Array.from(
-    new Set([
-      sliderMin,
-      sliderMax,
-      ...Array.from({ length: Math.floor(sliderMax / 5) }, (_, index) => (index + 1) * 5).filter(
-        (value) => value >= sliderMin && value <= sliderMax,
-      ),
-    ]),
-  )
-    .sort((left, right) => left - right)
-    .map((value) => ({ value }));
-
   return (
     <Stack spacing={3}>
       <Card sx={{ width: '100%' }} variant="outlined">
@@ -85,42 +68,14 @@ const QuizConfigView = ({
                   </CardContent>
                 </Card>
 
-                <FormControl fullWidth>
-                  <Typography id="quiz-question-count-label" variant="subtitle2">
-                    Kérdések száma
-                  </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Input
-                      id="quiz-question-count-input"
-                      value={questionCount}
-                      size="small"
-                      onChange={(event) => {
-                        handleQuestionCountInputChange(event.target.value);
-                      }}
-                      onBlur={handleQuestionCountBlur}
-                      inputProps={{
-                        step: 1,
-                        min: minQuestionCount,
-                        max: sliderMax,
-                        type: 'number',
-                        'aria-labelledby': 'quiz-question-count-label',
-                      }}
-                      disabled={maxQuestionCount <= 0}
-                      sx={{ width: 56 }}
-                    />
-                    <Slider
-                      aria-label="Kérdések száma"
-                      value={typeof questionCount === 'number' ? questionCount : 0}
-                      onChange={handleQuestionCountSliderChange}
-                      marks={sliderMarks}
-                      min={sliderMin}
-                      max={sliderMax}
-                      step={null}
-                      disabled={maxQuestionCount <= 0}
-                      sx={{ mr: 2 }}
-                    />
-                  </Box>
-                </FormControl>
+                <QuestionNumberInput
+                  questionCount={questionCount}
+                  maxQuestionCount={maxQuestionCount}
+                  minQuestionCount={minQuestionCount}
+                  onQuestionCountInputChange={handleQuestionCountInputChange}
+                  onQuestionCountBlur={handleQuestionCountBlur}
+                  onQuestionCountSliderChange={handleQuestionCountSliderChange}
+                />
 
                 <FormControlLabel
                   control={
@@ -171,23 +126,7 @@ const QuizConfigView = ({
                 </Button>
               </>
             ) : (
-              <Stack spacing={1.5}>
-                <Typography color="text.secondary">
-                  Ehhez a topikhoz jelenleg nincs indítható quiz beállítás.
-                </Typography>
-                {eligibleFields.length ? (
-                  eligibleFields.map(({ distinctValueCount, eligibleItemCount, field }) => (
-                    <Typography color="text.secondary" key={field.key}>
-                      {field.label}: {eligibleItemCount} használható item, {distinctValueCount}{' '}
-                      különböző válasz.
-                    </Typography>
-                  ))
-                ) : (
-                  <Typography color="text.secondary">
-                    Ehhez a topikhoz még nincs quizre engedélyezett mező beállítva.
-                  </Typography>
-                )}
-              </Stack>
+              <NoQuiz eligibleFields={eligibleFields} />
             )}
           </Stack>
         </CardContent>

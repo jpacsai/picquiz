@@ -95,10 +95,6 @@ export const useQuizConfig = ({ items, topic }: UseQuizConfigParams): UseQuizCon
     setSelectedQuestionCount(0);
   };
 
-  const handleQuestionCountSliderChange = (_event: Event, nextValue: number | number[]) => {
-    setSelectedQuestionCount(Array.isArray(nextValue) ? (nextValue[0] ?? 0) : nextValue);
-  };
-
   const handleQuestionCountInputChange = (nextValue: string) => {
     setSelectedQuestionCount(nextValue === '' ? 0 : Number(nextValue));
   };
@@ -151,7 +147,7 @@ export const useQuizConfig = ({ items, topic }: UseQuizConfigParams): UseQuizCon
     handleStartQuiz,
     handleQuestionCountBlur,
     handleQuestionCountInputChange,
-    handleQuestionCountSliderChange,
+    handleQuestionCountSliderChange: (value: number) => setSelectedQuestionCount(value),
     handleToggleField,
     maxQuestionCount,
     minQuestionCount: MIN_QUESTION_COUNT,

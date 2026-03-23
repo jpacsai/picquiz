@@ -46,7 +46,7 @@ export type UseQuizConfigResult = {
   handleStartQuiz: () => void;
   handleQuestionCountBlur: () => void;
   handleQuestionCountInputChange: (nextValue: string) => void;
-  handleQuestionCountSliderChange: (_event: Event, nextValue: number | number[]) => void;
+  handleQuestionCountSliderChange: (nextValue: number) => void;
   handleToggleField: (fieldKey: string, checked: boolean) => void;
   maxQuestionCount: number;
   minQuestionCount: number;
