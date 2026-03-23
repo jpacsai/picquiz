@@ -21,7 +21,17 @@ const TopicItemSection = ({ noResultsQuery, items, topic }: TopicItemSectionProp
   }
 
   return (
-    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: {
+          xs: '1fr',
+          sm: 'repeat(2, minmax(0, 1fr))',
+          lg: 'repeat(3, minmax(0, 1fr))',
+        },
+        gap: 2,
+      }}
+    >
       {items.map((item) => (
         <AdminTopicItemCard
           collectionName={topic.slug}
