@@ -1,14 +1,15 @@
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 
 import NoQuiz from '@/components/pages/QuizConfig/components/NoQuiz';
+import QuestionFieldsInput from '@/components/pages/QuizConfig/components/QuestionFieldsInput';
 import QuestionNumberInput from '@/components/pages/QuizConfig/components/QuestionNumberInput';
+import SelectedFieldsSummary from '@/components/pages/QuizConfig/components/SelectedFieldsSummary';
 import type { UseQuizConfigResult } from '@/types/quiz';
 
 type QuizConfigViewProps = UseQuizConfigResult;
@@ -32,6 +33,8 @@ const QuizConfigView = ({
   showCorrectAnswer,
   startableFields,
 }: QuizConfigViewProps) => {
+  const hasStartableFields = startableFields.length > 0;
+
   return (
     <Stack spacing={3}>
       <Card sx={{ width: '100%' }} variant="outlined">
@@ -39,32 +42,17 @@ const QuizConfigView = ({
           <Stack spacing={3}>
             <Typography variant="h6">Kvíz beállításai</Typography>
 
-            {startableFields.length ? (
+            {!hasStartableFields ? (
+              <NoQuiz eligibleFields={eligibleFields} />
+            ) : (
               <>
                 <Card variant="outlined" sx={{ width: '100%' }}>
                   <CardContent>
-                    <Stack spacing={1.5}>
-                      <Typography variant="subtitle1">Kérdezett mezők</Typography>
-
-                      {startableFields.map(({ field, promptsLabel }) => {
-                        const isChecked = effectiveSelectedFieldKeys.includes(field.key);
-
-                        return (
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={isChecked}
-                                onChange={(_, checked) => {
-                                  handleToggleField(field.key, checked);
-                                }}
-                              />
-                            }
-                            key={field.key}
-                            label={`${field.label} - ${promptsLabel}`}
-                          />
-                        );
-                      })}
-                    </Stack>
+                    <QuestionFieldsInput
+                      startableFields={startableFields}
+                      effectiveSelectedFieldKeys={effectiveSelectedFieldKeys}
+                      onToggleField={handleToggleField}
+                    />
                   </CardContent>
                 </Card>
 
@@ -101,16 +89,7 @@ const QuizConfigView = ({
                   label="Automatikus továbblépés 3 mp után"
                 />
 
-                {selectedFields.length ? (
-                  <Stack spacing={1}>
-                    {selectedFields.map((selectedField) => (
-                      <Typography color="text.secondary" key={selectedField.field.key}>
-                        {selectedField.field.label}: {selectedField.eligibleItemCount} használható
-                        item, {selectedField.distinctValueCount} különböző válaszlehetőség.
-                      </Typography>
-                    ))}
-                  </Stack>
-                ) : null}
+                <SelectedFieldsSummary selectedFields={selectedFields} />
 
                 <Button
                   disabled={!selectedFields.length || !questionCount}
@@ -125,8 +104,6 @@ const QuizConfigView = ({
                   Alaphelyzet
                 </Button>
               </>
-            ) : (
-              <NoQuiz eligibleFields={eligibleFields} />
             )}
           </Stack>
         </CardContent>
