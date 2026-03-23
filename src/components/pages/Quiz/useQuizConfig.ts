@@ -7,7 +7,6 @@ import type { Topic } from '@/types/topics';
 import {
   getEligibleQuizFields,
   getMaxQuestionCountForFields,
-  getQuestionCountOptions,
   getStoredBoolean,
   getStoredNumber,
   getStoredStringArray,
@@ -21,6 +20,8 @@ type UseQuizConfigParams = {
 
 const MIN_QUESTION_COUNT = 4;
 const DEFAULT_QUESTION_COUNT = 10;
+const DEFAULT_SHOW_CORRECT_ANSWER = true;
+const DEFAULT_AUTO_ADVANCE_AFTER_ANSWER = false;
 
 export const useQuizConfig = ({ items, topic }: UseQuizConfigParams) => {
   const navigate = useNavigate();
@@ -35,10 +36,13 @@ export const useQuizConfig = ({ items, topic }: UseQuizConfigParams) => {
     getStoredNumber(questionCountStorageKey, 0),
   );
   const [showCorrectAnswer, setShowCorrectAnswer] = useState(() =>
-    getStoredBoolean(QUIZ_CONFIG_STORAGE_KEYS.showCorrectAnswer, true),
+    getStoredBoolean(QUIZ_CONFIG_STORAGE_KEYS.showCorrectAnswer, DEFAULT_SHOW_CORRECT_ANSWER),
   );
   const [autoAdvanceAfterAnswer, setAutoAdvanceAfterAnswer] = useState(() =>
-    getStoredBoolean(QUIZ_CONFIG_STORAGE_KEYS.autoAdvanceAfterAnswer, false),
+    getStoredBoolean(
+      QUIZ_CONFIG_STORAGE_KEYS.autoAdvanceAfterAnswer,
+      DEFAULT_AUTO_ADVANCE_AFTER_ANSWER,
+    ),
   );
 
   useEffect(() => {
@@ -123,6 +127,13 @@ export const useQuizConfig = ({ items, topic }: UseQuizConfigParams) => {
     }
   };
 
+  const handleReset = () => {
+    setSelectedFieldKeys([]);
+    setSelectedQuestionCount(defaultQuestionCount);
+    setShowCorrectAnswer(DEFAULT_SHOW_CORRECT_ANSWER);
+    setAutoAdvanceAfterAnswer(DEFAULT_AUTO_ADVANCE_AFTER_ANSWER);
+  };
+
   const handleStartQuiz = () => {
     if (!selectedFields.length || !questionCount) {
       return;
@@ -144,6 +155,7 @@ export const useQuizConfig = ({ items, topic }: UseQuizConfigParams) => {
     autoAdvanceAfterAnswer,
     effectiveSelectedFieldKeys,
     eligibleFields,
+    handleReset,
     handleStartQuiz,
     handleQuestionCountBlur,
     handleQuestionCountInputChange,

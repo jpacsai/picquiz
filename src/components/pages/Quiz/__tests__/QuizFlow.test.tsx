@@ -275,4 +275,25 @@ describe('Quiz flow integration', () => {
     expect(screen.getByRole('checkbox', { name: /ev - melyik evben keszult/i })).toBeChecked();
     expect(screen.getByRole('spinbutton', { name: 'Kérdések száma' })).toHaveValue(6);
   });
+
+  it('resets quiz config controls to their defaults', async () => {
+    const user = userEvent.setup();
+
+    renderWithTheme(<QuizConfig items={items} topic={topic} />);
+
+    await user.click(screen.getByRole('checkbox', { name: /ev - melyik evben keszult/i }));
+    fireEvent.change(screen.getByRole('spinbutton', { name: 'Kérdések száma' }), {
+      target: { value: '6' },
+    });
+    await user.click(screen.getByRole('switch', { name: 'Helyes válasz megmutatása' }));
+    await user.click(screen.getByRole('switch', { name: 'Automatikus továbblépés 3 mp után' }));
+
+    await user.click(screen.getByRole('button', { name: 'Alaphelyzet' }));
+
+    expect(screen.getByRole('checkbox', { name: /cim - melyik cim tartozik a kephez/i })).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: /ev - melyik evben keszult/i })).not.toBeChecked();
+    expect(screen.getByRole('spinbutton', { name: 'Kérdések száma' })).toHaveValue(6);
+    expect(screen.getByRole('switch', { name: 'Helyes válasz megmutatása' })).toBeChecked();
+    expect(screen.getByRole('switch', { name: 'Automatikus továbblépés 3 mp után' })).not.toBeChecked();
+  });
 });

@@ -19,6 +19,7 @@ const QuizConfigView = ({
   autoAdvanceAfterAnswer,
   effectiveSelectedFieldKeys,
   eligibleFields,
+  handleReset,
   handleStartQuiz,
   handleQuestionCountBlur,
   handleQuestionCountInputChange,
@@ -162,6 +163,10 @@ const QuizConfigView = ({
                   variant="contained"
                 >
                   Kvíz indítása
+                </Button>
+
+                <Button onClick={handleReset} size="large" variant="text">
+                  Alaphelyzet
                 </Button>
               </>
             ) : (
