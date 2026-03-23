@@ -1,4 +1,4 @@
-import { Box, Divider, Stack, Typography } from '@mui/material';
+import { Box, Divider, Stack, Typography, useTheme } from '@mui/material';
 
 import type { ImageFileNames } from '@/types/topicItemForm';
 
@@ -28,6 +28,8 @@ const ImagePreviewSection = ({
   generatedFileNames,
   previewUrl,
 }: ImagePreviewSectionProps) => {
+  const theme = useTheme();
+
   return (
     <>
       <Divider />
@@ -52,7 +54,7 @@ const ImagePreviewSection = ({
                   borderColor: 'divider',
                   borderRadius: 2,
                   overflow: 'hidden',
-                  backgroundColor: 'grey.100',
+                  backgroundColor: theme.palette.mode === 'dark' ? '#000' : '#fff',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
