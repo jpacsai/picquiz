@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { getEligibleQuizFields } from '@/components/pages/Quiz/utils';
 import type { Topic, TopicItem } from '@/types/topics';
+import { getEligibleQuizFields } from '@/utils/quiz';
 
 const topicWithMinOffset: Topic = {
   fields: [

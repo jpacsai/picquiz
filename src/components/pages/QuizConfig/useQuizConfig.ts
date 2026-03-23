@@ -2,15 +2,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
 import type { Topic, TopicItem } from '@/types/topics';
-
-import {
-  getEligibleQuizFields,
-  getMaxQuestionCountForFields,
-  getStoredBoolean,
-  getStoredNumber,
-  getStoredStringArray,
-  QUIZ_CONFIG_STORAGE_KEYS,
-} from '../Quiz/utils';
+import { getEligibleQuizFields, getMaxQuestionCountForFields, getStoredBoolean, getStoredNumber, getStoredStringArray, QUIZ_CONFIG_STORAGE_KEYS } from '@/utils/quiz';
 
 type UseQuizConfigParams = {
   items: ReadonlyArray<TopicItem>;
