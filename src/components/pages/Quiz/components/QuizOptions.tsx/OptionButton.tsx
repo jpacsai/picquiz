@@ -26,6 +26,11 @@ const OptionButton = ({
       onClick={() => onSelectOption(optionId)}
       sx={(theme) => ({
         justifyContent: 'flex-start',
+        alignItems: 'center',
+        minHeight: 64,
+        textAlign: 'left',
+        whiteSpace: 'normal',
+        lineHeight: 1.4,
         py: 1.5,
         borderWidth: 2,
         backgroundColor: isSelected ? theme.palette.action.selected : 'transparent',
@@ -41,6 +46,7 @@ const OptionButton = ({
             : undefined,
         '&.Mui-disabled': {
           opacity: 1,
+          borderWidth: 2,
           borderColor: showCorrect
             ? theme.palette.success.main
             : showIncorrect
