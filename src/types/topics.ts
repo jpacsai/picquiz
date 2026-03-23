@@ -71,6 +71,11 @@ export type TopicField =
       buttonLabel?: string;
     });
 
+export type TopicCollectionSearchField = Extract<TopicField, { type: 'string' | 'number' | 'select' }> & {
+  hideInEdit?: false;
+  quiz: Extract<QuizFieldConfig, { enabled: true }>;
+};
+
 export type Topic = {
   id: string;
   label: string;

@@ -1,4 +1,4 @@
-import type { Topic, TopicField, TopicItem } from '@/types/topics';
+import type { Topic, TopicCollectionSearchField, TopicField, TopicItem } from '@/types/topics';
 
 const getCreatedAtValue = (value: unknown) => {
   if (value && typeof value === 'object' && 'toMillis' in value) {
@@ -40,7 +40,7 @@ export const sortTopicItemsByNewestCreated = (items: ReadonlyArray<TopicItem>) =
 
 export const getSearchableTopicFields = (fields: ReadonlyArray<TopicField>) =>
   fields.filter(
-    (field): field is Extract<TopicField, { type: 'string' | 'number' | 'select' }> =>
+    (field): field is TopicCollectionSearchField =>
       (field.type === 'string' || field.type === 'number' || field.type === 'select') &&
       field.quiz?.enabled === true &&
       field.hideInEdit !== true,

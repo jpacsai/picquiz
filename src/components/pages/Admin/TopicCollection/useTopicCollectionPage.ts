@@ -11,7 +11,7 @@ import {
   sortTopicItemsByNewestCreated,
 } from '@/components/pages/Admin/TopicCollection/utils';
 import { ADMIN_TOPIC_COLLECTION_SEARCH_DEBOUNCE_MS } from '@/consts/admin';
-import type { Topic, TopicItem } from '@/types/topics';
+import type { Topic, TopicCollectionSearchField, TopicItem } from '@/types/topics';
 
 type UseTopicCollectionPageParams = {
   items: ReadonlyArray<TopicItem>;
@@ -119,3 +119,4 @@ export const useTopicCollectionPage = ({
 };
 
 export type UseTopicCollectionPageResult = ReturnType<typeof useTopicCollectionPage>;
+export type TopicCollectionPageSearchField = TopicCollectionSearchField;

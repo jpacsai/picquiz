@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import type { Topic, TopicItem } from '@/types/topics';
 
-import AdminTopicCollectionPage from './TopicCollectionPage';
+import AdminTopicCollectionPage from '../TopicCollectionPage';
 
 const navigateMock = vi.fn();
 const enqueueSnackbarMock = vi.fn();
@@ -75,9 +75,27 @@ const topic: Topic = {
 };
 
 const items: TopicItem[] = [
-  { artist: 'Leonardo da Vinci', created_at: { seconds: 100 }, id: '1', title: 'Mona Lisa', year: 1503 },
-  { artist: 'Vincent van Gogh', created_at: { seconds: 200 }, id: '2', title: 'Csillagos ég', year: 1889 },
-  { artist: 'Claude Monet', created_at: { seconds: 300 }, id: '3', title: 'Tavirózsák', year: 1906 },
+  {
+    artist: 'Leonardo da Vinci',
+    created_at: { seconds: 100 },
+    id: '1',
+    title: 'Mona Lisa',
+    year: 1503,
+  },
+  {
+    artist: 'Vincent van Gogh',
+    created_at: { seconds: 200 },
+    id: '2',
+    title: 'Csillagos ég',
+    year: 1889,
+  },
+  {
+    artist: 'Claude Monet',
+    created_at: { seconds: 300 },
+    id: '3',
+    title: 'Tavirózsák',
+    year: 1906,
+  },
 ];
 
 describe('AdminTopicCollectionPage', () => {
@@ -97,11 +115,14 @@ describe('AdminTopicCollectionPage', () => {
     await user.type(getSearchInput(), 'vin');
 
     expect(screen.getByText('Tavirózsák')).toBeInTheDocument();
-    await waitFor(() => {
-      expect(screen.getByText('Mona Lisa')).toBeInTheDocument();
-      expect(screen.getByText('Csillagos ég')).toBeInTheDocument();
-      expect(screen.queryByText('Tavirózsák')).not.toBeInTheDocument();
-    }, { timeout: 2000 });
+    await waitFor(
+      () => {
+        expect(screen.getByText('Mona Lisa')).toBeInTheDocument();
+        expect(screen.getByText('Csillagos ég')).toBeInTheDocument();
+        expect(screen.queryByText('Tavirózsák')).not.toBeInTheDocument();
+      },
+      { timeout: 2000 },
+    );
   });
 
   it('does not list hidden quiz fields in the search selector', async () => {
@@ -122,11 +143,14 @@ describe('AdminTopicCollectionPage', () => {
     render(<AdminTopicCollectionPage items={items} topic={topic} />);
 
     await user.type(getSearchInput(), 'nem letezik');
-    await waitFor(() => {
-      const message = screen.getByText(/Nincs találat a kiválasztott mezőben erre:/);
-      expect(message).toBeInTheDocument();
-      expect(within(message).getByText('nem letezik')).toBeInTheDocument();
-      expect(screen.queryByText('Mona Lisa')).not.toBeInTheDocument();
-    }, { timeout: 2000 });
+    await waitFor(
+      () => {
+        const message = screen.getByText(/Nincs találat a kiválasztott mezőben erre:/);
+        expect(message).toBeInTheDocument();
+        expect(within(message).getByText('nem letezik')).toBeInTheDocument();
+        expect(screen.queryByText('Mona Lisa')).not.toBeInTheDocument();
+      },
+      { timeout: 2000 },
+    );
   });
 });
