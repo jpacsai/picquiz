@@ -26,7 +26,6 @@ export const Route = createFileRoute('/_app/admin/$topicId/')({
       items,
       topic,
       title: topic.label,
-      subtitle: `${items.length} item`,
     };
   },
   component: RouteComponent,

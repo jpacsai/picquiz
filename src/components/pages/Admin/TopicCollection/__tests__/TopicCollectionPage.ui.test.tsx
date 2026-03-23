@@ -106,6 +106,7 @@ describe('AdminTopicCollectionPage', () => {
 
     render(<AdminTopicCollectionPage items={items} topic={topic} />);
 
+    expect(screen.getByText('Jelenleg megjelenítve: 3 elem')).toBeInTheDocument();
     expect(screen.getByText('Mona Lisa')).toBeInTheDocument();
     expect(screen.getByText('Csillagos ég')).toBeInTheDocument();
     expect(screen.getByText('Tavirózsák')).toBeInTheDocument();
@@ -120,6 +121,7 @@ describe('AdminTopicCollectionPage', () => {
         expect(screen.getByText('Mona Lisa')).toBeInTheDocument();
         expect(screen.getByText('Csillagos ég')).toBeInTheDocument();
         expect(screen.queryByText('Tavirózsák')).not.toBeInTheDocument();
+        expect(screen.getByText('Jelenleg megjelenítve: 2 elem')).toBeInTheDocument();
       },
       { timeout: 2000 },
     );
@@ -149,6 +151,7 @@ describe('AdminTopicCollectionPage', () => {
         expect(message).toBeInTheDocument();
         expect(within(message).getByText('nem letezik')).toBeInTheDocument();
         expect(screen.queryByText('Mona Lisa')).not.toBeInTheDocument();
+        expect(screen.getByText('Jelenleg megjelenítve: 0 elem')).toBeInTheDocument();
       },
       { timeout: 2000 },
     );

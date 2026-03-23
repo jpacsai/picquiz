@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 
 import TopicCollectionSearch from '@/components/pages/Admin/TopicCollection/components/TopicCollectionSearch';
 import TopicItemSection from '@/components/pages/Admin/TopicCollection/components/TopicItemSection';
@@ -46,6 +47,20 @@ const TopicCollectionPageView = ({
             onSearchQueryChange={onSearchQueryChange}
           />
         ) : null}
+      </Box>
+
+      <Box
+        sx={{
+          alignItems: { md: 'center', xs: 'stretch' },
+          display: 'flex',
+          flexDirection: { md: 'row', xs: 'column' },
+          gap: 2,
+          justifyContent: 'space-between',
+        }}
+      >
+        <Typography color="text.secondary" variant="h6">
+          {items.length} elem
+        </Typography>
 
         <Button variant="contained" onClick={onCreateNewItem}>
           Új item feltöltése
