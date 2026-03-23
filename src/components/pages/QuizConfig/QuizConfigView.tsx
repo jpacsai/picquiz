@@ -81,18 +81,6 @@ const QuizConfigView = ({
                 <FormControlLabel
                   control={
                     <Switch
-                      checked={showCorrectAnswer}
-                      onChange={(_, checked) => {
-                        setShowCorrectAnswer(checked);
-                      }}
-                    />
-                  }
-                  label="Helyes válasz megmutatása"
-                />
-
-                <FormControlLabel
-                  control={
-                    <Switch
                       checked={autoAdvanceAfterAnswer}
                       onChange={(_, checked) => {
                         setAutoAdvanceAfterAnswer(checked);
@@ -100,6 +88,18 @@ const QuizConfigView = ({
                     />
                   }
                   label="Automatikus továbblépés 3 mp után"
+                />
+
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={showCorrectAnswer}
+                      onChange={(_, checked) => {
+                        setShowCorrectAnswer(checked);
+                      }}
+                    />
+                  }
+                  label="Helyes válasz megmutatása"
                 />
 
                 <Button
