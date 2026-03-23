@@ -1,4 +1,5 @@
 import { Box, Button, Stack, Typography } from '@mui/material';
+
 import type { QuizAnswerDetail } from '@/types/quiz';
 
 type QuizAnsweredProps = {
@@ -22,15 +23,6 @@ const QuizAnswered = ({
 }: QuizAnsweredProps) => {
   return (
     <Stack spacing={2}>
-      {showAnswerDetails && answerDetails.length ? (
-        <Stack spacing={0.5}>
-          {answerDetails.map((detail) => (
-            <Typography color="text.secondary" key={detail.key}>
-              <Box component="strong">{detail.label}:</Box> {detail.value}
-            </Typography>
-          ))}
-        </Stack>
-      ) : null}
       {autoAdvanceAfterAnswer ? (
         <Typography color="text.secondary">
           {currentQuestionIndex === questionsLength - 1
@@ -44,6 +36,17 @@ const QuizAnswered = ({
             : 'Következő kérdés'}
         </Button>
       )}
+
+      {showAnswerDetails && answerDetails.length ? (
+        <Stack spacing={0.5}>
+          {answerDetails.map((detail) => (
+            <Typography color="text.secondary" variant="subtitle1" key={detail.key}>
+              {/* {detail.label} -  */}
+              <Box component="strong">{detail.value}</Box>
+            </Typography>
+          ))}
+        </Stack>
+      ) : null}
     </Stack>
   );
 };
