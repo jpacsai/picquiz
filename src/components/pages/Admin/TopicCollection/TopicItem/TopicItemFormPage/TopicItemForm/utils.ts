@@ -1,8 +1,15 @@
+import {
+  uploadResponsiveTopicImages,
+} from '@data/storage';
+import { generateResponsiveImageVariants } from '@lib/image';
+import { QUERY_KEYS } from '@queries/queryKeys';
+import type { useQueryClient } from '@tanstack/react-query';
 import * as yup from 'yup';
 
 import type {
   FormDeriveField,
   FormDeriveFieldIndex,
+  FormMode,
   FormValues,
   PendingImageSelection,
   PersistableFormValues,
@@ -256,4 +263,150 @@ export const getDerivedValue = (
   }
 
   return deriveFn(value);
+};
+
+
+const getUploadedImageValues = ({
+  field,
+  uploadedImages,
+}: {
+  field: Extract<TopicField, { type: 'imageUpload' }>;
+  uploadedImages: Awaited<ReturnType<typeof uploadResponsiveTopicImages>>;
+}) => {
+  const nextValues: Record<string, string> = {
+    [field.targetFields.desktop]: uploadedImages.desktop.url,
+    [field.targetFields.mobile]: uploadedImages.mobile.url,
+  };
+
+  if (field.targetFields.desktopPath) {
+    nextValues[field.targetFields.desktopPath] = uploadedImages.desktop.path;
+  }
+
+  if (field.targetFields.mobilePath) {
+    nextValues[field.targetFields.mobilePath] = uploadedImages.mobile.path;
+  }
+
+  return nextValues;
+};
+
+const getPathsToDelete = ({
+  field,
+  previousValues,
+  nextValues,
+}: {
+  field: Extract<TopicField, { type: 'imageUpload' }>;
+  nextValues: Record<string, string>;
+  previousValues: Record<string, string | number>;
+}) => {
+  const pathKeys = [field.targetFields.desktopPath, field.targetFields.mobilePath].filter(
+    (value): value is string => Boolean(value),
+  );
+
+  return [...new Set(pathKeys)]
+    .map((pathKey) => {
+      const previousPath = previousValues[pathKey];
+      const nextPath = nextValues[pathKey];
+
+      return typeof previousPath === 'string' &&
+        previousPath.trim().length > 0 &&
+        previousPath !== nextPath
+        ? previousPath
+        : null;
+    })
+    .filter((value): value is string => value !== null);
+};
+
+export const resolveSubmittedValues = async ({
+  form,
+  pendingImageSelection,
+  previousValues,
+  storagePrefix,
+  mode,
+}: {
+  form: {
+    setFieldValue: (field: string, value: string | number) => void;
+  };
+  mode: FormMode;
+  pendingImageSelection: PendingImageSelection | null;
+  previousValues: Record<string, string | number>;
+  storagePrefix: string;
+}) => {
+  if (!pendingImageSelection) {
+    return {
+      imagePathsToDelete: [] as string[],
+      submittedValue: previousValues,
+    };
+  }
+
+  const { field, file, uniqueSuffix } = pendingImageSelection;
+  const artistValue = previousValues[field.fileNameFields.artist];
+  const titleValue = previousValues[field.fileNameFields.title];
+  const artistName = typeof artistValue === 'string' ? artistValue.trim() : '';
+  const title = typeof titleValue === 'string' ? titleValue.trim() : '';
+
+  if (!artistName || !title) {
+    return {
+      imagePathsToDelete: [] as string[],
+      submittedValue: previousValues,
+    };
+  }
+
+  const { desktop, mobile } = await generateResponsiveImageVariants(file);
+  const uploadedImages = await uploadResponsiveTopicImages({
+    artistName,
+    title,
+    storagePrefix,
+    desktopBlob: desktop.blob,
+    mobileBlob: mobile.blob,
+    uniqueSuffix,
+  });
+
+  const uploadedImageValues = getUploadedImageValues({
+    field,
+    uploadedImages,
+  });
+
+  Object.entries(uploadedImageValues).forEach(([targetField, targetValue]) => {
+    form.setFieldValue(targetField, targetValue);
+  });
+
+  return {
+    imagePathsToDelete:
+      mode === 'edit'
+        ? getPathsToDelete({
+            field,
+            nextValues: uploadedImageValues,
+            previousValues,
+          })
+        : [],
+    submittedValue: {
+      ...previousValues,
+      ...uploadedImageValues,
+    },
+  };
+};
+
+export const syncUpdatedItemCache = ({
+  collectionName,
+  itemId,
+  queryClient,
+  values,
+}: {
+  collectionName: string;
+  itemId: string;
+  queryClient: ReturnType<typeof useQueryClient>;
+  values: Record<string, string | number>;
+}) => {
+  const nextItem: TopicItem = {
+    id: itemId,
+    ...values,
+  };
+
+  queryClient.setQueryData(QUERY_KEYS.ITEMS.detail(collectionName, itemId), nextItem);
+  queryClient.setQueryData<ReadonlyArray<TopicItem>>(
+    QUERY_KEYS.ITEMS.byTopic(collectionName),
+    (previousItems) =>
+      previousItems?.map((item) => (item.id === itemId ? { ...item, ...nextItem } : item)) ??
+      previousItems,
+  );
 };
