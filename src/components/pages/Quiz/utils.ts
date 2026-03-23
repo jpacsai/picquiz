@@ -33,6 +33,64 @@ const QUESTION_COUNT_STEP = 5;
 const MIN_OPTION_COUNT = 4;
 const DISTRACTOR_COUNT = MIN_OPTION_COUNT - 1;
 
+export const QUIZ_CONFIG_STORAGE_KEYS = {
+  autoAdvanceAfterAnswer: 'picquiz-quiz-auto-advance-after-answer',
+  showCorrectAnswer: 'picquiz-quiz-show-correct-answer',
+  questionCount: (topicId: string) => `picquiz-quiz-question-count-${topicId}`,
+  selectedFieldKeys: (topicId: string) => `picquiz-quiz-selected-field-keys-${topicId}`,
+} as const;
+
+export const getStoredBoolean = (storageKey: string, fallbackValue: boolean): boolean => {
+  if (typeof window === 'undefined') {
+    return fallbackValue;
+  }
+
+  const storedValue = window.localStorage.getItem(storageKey);
+
+  if (storedValue === 'true') {
+    return true;
+  }
+
+  if (storedValue === 'false') {
+    return false;
+  }
+
+  return fallbackValue;
+};
+
+export const getStoredNumber = (storageKey: string, fallbackValue: number): number => {
+  if (typeof window === 'undefined') {
+    return fallbackValue;
+  }
+
+  const storedValue = window.localStorage.getItem(storageKey);
+  const parsedValue = storedValue ? Number(storedValue) : Number.NaN;
+
+  return Number.isFinite(parsedValue) ? parsedValue : fallbackValue;
+};
+
+export const getStoredStringArray = (storageKey: string): string[] => {
+  if (typeof window === 'undefined') {
+    return [];
+  }
+
+  const storedValue = window.localStorage.getItem(storageKey);
+
+  if (!storedValue) {
+    return [];
+  }
+
+  try {
+    const parsedValue = JSON.parse(storedValue);
+
+    return Array.isArray(parsedValue)
+      ? parsedValue.filter((value): value is string => typeof value === 'string')
+      : [];
+  } catch {
+    return [];
+  }
+};
+
 const isQuizAnswerField = (
   field: TopicField,
 ): field is Extract<TopicField, { type: 'string' | 'number' | 'select' }> =>

@@ -11,6 +11,7 @@ import QuizHeader from '@/components/pages/Quiz/components/QuizHeader';
 import QuizImage from '@/components/pages/Quiz/components/QuizImage';
 import QuizMissingFields from '@/components/pages/Quiz/components/QuizMissingFields';
 import QuizOptions from '@/components/pages/Quiz/components/QuizOptions.tsx/QuizOptions';
+import ReturnToConfigButton from '@/components/pages/Quiz/components/ReturnToConfigButton';
 import type { TopicItem } from '@/service/items';
 
 import type { Topic } from '../../../types/topics';
@@ -128,6 +129,8 @@ const Quiz = ({
                     onContinue={continueToNextQuestion}
                   />
                 ) : null}
+
+                <ReturnToConfigButton topicId={topic.id} />
               </Stack>
             </Stack>
           </Stack>

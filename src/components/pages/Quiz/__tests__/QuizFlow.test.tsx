@@ -152,6 +152,29 @@ describe('Quiz flow integration', () => {
 
     expect(screen.queryByText('Hiányos kvíz konfiguráció')).not.toBeInTheDocument();
     expect(screen.getByText(/5\s*\/\s*1/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Vissza a beállításokhoz' })).toBeInTheDocument();
+  });
+
+  it('returns to the current topic quiz config page from a running quiz', async () => {
+    const user = userEvent.setup();
+
+    renderWithTheme(
+      <Quiz
+        answerFieldKeys={['title']}
+        autoAdvanceAfterAnswer={false}
+        items={items}
+        questionCount={2}
+        showCorrectAnswer
+        topic={topic}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Vissza a beállításokhoz' }));
+
+    expect(navigateMock).toHaveBeenCalledWith({
+      params: { topicId: 'art' },
+      to: '/$topicId/quiz-config',
+    });
   });
 
   it('automatically advances to the next question 3 seconds after answering', async () => {
@@ -193,12 +216,62 @@ describe('Quiz flow integration', () => {
   });
 
   it('restores toggle settings from local storage', () => {
+    window.localStorage.setItem('picquiz-quiz-selected-field-keys-art', JSON.stringify(['year']));
+    window.localStorage.setItem('picquiz-quiz-question-count-art', '6');
     window.localStorage.setItem('picquiz-quiz-show-correct-answer', 'false');
     window.localStorage.setItem('picquiz-quiz-auto-advance-after-answer', 'true');
 
     renderWithTheme(<QuizConfig items={items} topic={topic} />);
 
+    expect(screen.getByRole('checkbox', { name: /cim - melyik cim tartozik a kephez/i })).not.toBeChecked();
+    expect(screen.getByRole('checkbox', { name: /ev - melyik evben keszult/i })).toBeChecked();
+    expect(screen.getByRole('combobox', { name: 'Kérdések száma' })).toHaveTextContent('6 kérdés');
     expect(screen.getByRole('switch', { name: 'Helyes válasz megmutatása' })).not.toBeChecked();
     expect(screen.getByRole('switch', { name: 'Automatikus továbblépés 3 mp után' })).toBeChecked();
+  });
+
+  it('persists selected filters and restores them when returning to quiz config', async () => {
+    const user = userEvent.setup();
+
+    const configView = renderWithTheme(<QuizConfig items={items} topic={topic} />);
+
+    await user.click(screen.getByRole('checkbox', { name: /ev - melyik evben keszult/i }));
+    await user.click(screen.getByRole('checkbox', { name: /cim - melyik cim tartozik a kephez/i }));
+    await user.click(screen.getByRole('combobox', { name: 'Kérdések száma' }));
+    await user.click(await screen.findByRole('option', { name: '6 kérdés' }));
+    await user.click(screen.getByRole('button', { name: 'Kvíz indítása' }));
+
+    expect(window.localStorage.getItem('picquiz-quiz-selected-field-keys-art')).toBe(
+      JSON.stringify(['year']),
+    );
+    expect(window.localStorage.getItem('picquiz-quiz-question-count-art')).toBe('6');
+
+    configView.unmount();
+
+    const quizView = renderWithTheme(
+      <Quiz
+        answerFieldKeys={['year']}
+        autoAdvanceAfterAnswer={false}
+        items={items}
+        questionCount={6}
+        showCorrectAnswer
+        topic={topic}
+      />,
+    );
+
+    await user.click(screen.getAllByRole('button', { name: 'Vissza a beállításokhoz' })[0]);
+
+    expect(navigateMock).toHaveBeenLastCalledWith({
+      params: { topicId: 'art' },
+      to: '/$topicId/quiz-config',
+    });
+
+    quizView.unmount();
+
+    renderWithTheme(<QuizConfig items={items} topic={topic} />);
+
+    expect(screen.getByRole('checkbox', { name: /cim - melyik cim tartozik a kephez/i })).not.toBeChecked();
+    expect(screen.getByRole('checkbox', { name: /ev - melyik evben keszult/i })).toBeChecked();
+    expect(screen.getByRole('combobox', { name: 'Kérdések száma' })).toHaveTextContent('6 kérdés');
   });
 });
