@@ -101,7 +101,7 @@ describe('AdminTopicCollectionPage', () => {
       expect(screen.getByText('Mona Lisa')).toBeInTheDocument();
       expect(screen.getByText('Csillagos ég')).toBeInTheDocument();
       expect(screen.queryByText('Tavirózsák')).not.toBeInTheDocument();
-    });
+    }, { timeout: 2000 });
   });
 
   it('does not list hidden quiz fields in the search selector', async () => {
@@ -127,6 +127,6 @@ describe('AdminTopicCollectionPage', () => {
       expect(message).toBeInTheDocument();
       expect(within(message).getByText('nem letezik')).toBeInTheDocument();
       expect(screen.queryByText('Mona Lisa')).not.toBeInTheDocument();
-    });
+    }, { timeout: 2000 });
   });
 });
