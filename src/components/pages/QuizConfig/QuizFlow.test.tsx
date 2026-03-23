@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import Quiz from '@/components/pages/Quiz/Quiz';
-import QuizConfig from '@/components/pages/Quiz/QuizConfig';
+import QuizConfig from '@/components/pages/QuizConfig/QuizConfig';
 import { ThemePresetProvider } from '@/lib/theme/ThemePresetProvider';
 import type { TopicItem } from '@/service/items';
 import type { Topic } from '@/types/topics';
@@ -223,7 +223,9 @@ describe('Quiz flow integration', () => {
 
     renderWithTheme(<QuizConfig items={items} topic={topic} />);
 
-    expect(screen.getByRole('checkbox', { name: /cim - melyik cim tartozik a kephez/i })).not.toBeChecked();
+    expect(
+      screen.getByRole('checkbox', { name: /cim - melyik cim tartozik a kephez/i }),
+    ).not.toBeChecked();
     expect(screen.getByRole('checkbox', { name: /ev - melyik evben keszult/i })).toBeChecked();
     expect(screen.getByRole('spinbutton', { name: 'Kérdések száma' })).toHaveValue(6);
     expect(screen.getByRole('switch', { name: 'Helyes válasz megmutatása' })).not.toBeChecked();
@@ -271,7 +273,9 @@ describe('Quiz flow integration', () => {
 
     renderWithTheme(<QuizConfig items={items} topic={topic} />);
 
-    expect(screen.getByRole('checkbox', { name: /cim - melyik cim tartozik a kephez/i })).not.toBeChecked();
+    expect(
+      screen.getByRole('checkbox', { name: /cim - melyik cim tartozik a kephez/i }),
+    ).not.toBeChecked();
     expect(screen.getByRole('checkbox', { name: /ev - melyik evben keszult/i })).toBeChecked();
     expect(screen.getByRole('spinbutton', { name: 'Kérdések száma' })).toHaveValue(6);
   });
@@ -290,10 +294,14 @@ describe('Quiz flow integration', () => {
 
     await user.click(screen.getByRole('button', { name: 'Alaphelyzet' }));
 
-    expect(screen.getByRole('checkbox', { name: /cim - melyik cim tartozik a kephez/i })).toBeChecked();
+    expect(
+      screen.getByRole('checkbox', { name: /cim - melyik cim tartozik a kephez/i }),
+    ).toBeChecked();
     expect(screen.getByRole('checkbox', { name: /ev - melyik evben keszult/i })).not.toBeChecked();
     expect(screen.getByRole('spinbutton', { name: 'Kérdések száma' })).toHaveValue(6);
     expect(screen.getByRole('switch', { name: 'Helyes válasz megmutatása' })).toBeChecked();
-    expect(screen.getByRole('switch', { name: 'Automatikus továbblépés 3 mp után' })).not.toBeChecked();
+    expect(
+      screen.getByRole('switch', { name: 'Automatikus továbblépés 3 mp után' }),
+    ).not.toBeChecked();
   });
 });

@@ -35,7 +35,8 @@ const QuizConfigView = ({
   startableFields,
 }: QuizConfigViewProps) => {
   const sliderMax = Math.max(maxQuestionCount, 1);
-  const sliderMin = maxQuestionCount > 0 ? (minQuestionCount < sliderMax ? minQuestionCount : sliderMax) : 1;
+  const sliderMin =
+    maxQuestionCount > 0 ? (minQuestionCount < sliderMax ? minQuestionCount : sliderMax) : 1;
   const sliderMarks = Array.from(
     new Set([
       sliderMin,

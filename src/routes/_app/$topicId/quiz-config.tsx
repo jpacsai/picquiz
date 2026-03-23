@@ -2,7 +2,7 @@ import { topicItemsOptions } from '@queries/items';
 import { topicOptions } from '@queries/topics';
 import { createFileRoute, useLoaderData } from '@tanstack/react-router';
 
-import QuizConfig from '@/components/pages/Quiz/QuizConfig';
+import QuizConfig from '@/components/pages/QuizConfig/QuizConfig';
 
 const path = '/_app/$topicId/quiz-config';
 
