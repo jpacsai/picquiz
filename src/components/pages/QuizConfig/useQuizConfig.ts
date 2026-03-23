@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 
 import {
   DEFAULT_ANSWER_DETAILS_ENABLED,
+  DEFAULT_ANSWER_DETAILS_EXPANDED,
   DEFAULT_AUTO_ADVANCE_AFTER_ANSWER,
   DEFAULT_QUESTION_COUNT,
   DEFAULT_SHOW_CORRECT_ANSWER,
@@ -27,6 +28,10 @@ type UseQuizConfigParams = {
 export const useQuizConfig = ({ items, topic }: UseQuizConfigParams): UseQuizConfigResult => {
   const navigate = useNavigate();
   const defaultAnswerDetailsEnabled: boolean = DEFAULT_ANSWER_DETAILS_ENABLED;
+  const defaultAnswerDetailsExpanded: boolean = DEFAULT_ANSWER_DETAILS_EXPANDED;
+  const answerDetailsExpandedStorageKey: string = QUIZ_CONFIG_STORAGE_KEYS.answerDetailsExpanded(
+    topic.id,
+  );
   const answerDetailsEnabledStorageKey: string = QUIZ_CONFIG_STORAGE_KEYS.answerDetailsEnabled(
     topic.id,
   );
@@ -43,6 +48,9 @@ export const useQuizConfig = ({ items, topic }: UseQuizConfigParams): UseQuizCon
   );
   const [answerDetailsEnabled, setAnswerDetailsEnabled] = useState(() =>
     getStoredBoolean(answerDetailsEnabledStorageKey, defaultAnswerDetailsEnabled),
+  );
+  const [answerDetailsExpanded, setAnswerDetailsExpanded] = useState(() =>
+    getStoredBoolean(answerDetailsExpandedStorageKey, defaultAnswerDetailsExpanded),
   );
   const [selectedFieldKeys, setSelectedFieldKeys] = useState<string[]>(() =>
     getStoredStringArray(selectedFieldKeysStorageKey),
@@ -63,6 +71,10 @@ export const useQuizConfig = ({ items, topic }: UseQuizConfigParams): UseQuizCon
   useEffect(() => {
     window.localStorage.setItem(answerDetailsEnabledStorageKey, String(answerDetailsEnabled));
   }, [answerDetailsEnabled, answerDetailsEnabledStorageKey]);
+
+  useEffect(() => {
+    window.localStorage.setItem(answerDetailsExpandedStorageKey, String(answerDetailsExpanded));
+  }, [answerDetailsExpanded, answerDetailsExpandedStorageKey]);
 
   useEffect(() => {
     window.localStorage.setItem(
@@ -162,6 +174,7 @@ export const useQuizConfig = ({ items, topic }: UseQuizConfigParams): UseQuizCon
 
   const handleReset = () => {
     setAnswerDetailsEnabled(defaultAnswerDetailsEnabled);
+    setAnswerDetailsExpanded(defaultAnswerDetailsExpanded);
     setAnswerDetailFieldKeys([]);
     setSelectedFieldKeys([]);
     setSelectedQuestionCount(defaultQuestionCount);
@@ -191,6 +204,7 @@ export const useQuizConfig = ({ items, topic }: UseQuizConfigParams): UseQuizCon
     answerDetailFieldKeys: answerDetailsEnabled ? effectiveAnswerDetailFieldKeys : [],
     answerDetailFields,
     answerDetailsEnabled,
+    answerDetailsExpanded,
     autoAdvanceAfterAnswer,
     effectiveSelectedFieldKeys,
     eligibleFields,
@@ -206,6 +220,7 @@ export const useQuizConfig = ({ items, topic }: UseQuizConfigParams): UseQuizCon
     questionCount,
     selectedFields,
     setAnswerDetailsEnabled,
+    setAnswerDetailsExpanded,
     setAutoAdvanceAfterAnswer,
     setShowCorrectAnswer,
     showCorrectAnswer,

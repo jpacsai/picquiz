@@ -1,4 +1,6 @@
-import { Box } from '@mui/material';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Box, Collapse, IconButton } from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -19,6 +21,7 @@ const QuizConfigView = ({
   answerDetailFieldKeys,
   answerDetailFields,
   answerDetailsEnabled,
+  answerDetailsExpanded,
   autoAdvanceAfterAnswer,
   effectiveSelectedFieldKeys,
   eligibleFields,
@@ -34,6 +37,7 @@ const QuizConfigView = ({
   questionCount,
   selectedFields,
   setAnswerDetailsEnabled,
+  setAnswerDetailsExpanded,
   setAutoAdvanceAfterAnswer,
   setShowCorrectAnswer,
   showCorrectAnswer,
@@ -111,26 +115,54 @@ const QuizConfigView = ({
                 <Card variant="outlined" sx={{ width: '100%' }}>
                   <CardContent>
                     <Stack spacing={1.5}>
-                      <FormControlLabel
-                        control={
-                          <Switch
-                            checked={answerDetailsEnabled}
-                            onChange={(_, checked) => {
-                              setAnswerDetailsEnabled(checked);
-                            }}
-                          />
-                        }
-                        label="Plusz adatok megjelenítése a válasz után"
-                      />
-
-                      {answerDetailsEnabled ? (
-                        <AnswerDetailsSection
-                          answerDetailFieldKeys={answerDetailFieldKeys}
-                          answerDetailFields={answerDetailFields}
-                          answerDetailsEnabled={answerDetailsEnabled}
-                          onToggleAnswerDetailField={handleToggleAnswerDetailField}
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: 1,
+                        }}
+                      >
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={answerDetailsEnabled}
+                              onChange={(_, checked) => {
+                                setAnswerDetailsEnabled(checked);
+                              }}
+                            />
+                          }
+                          label="Plusz adatok megjelenítése a válasz után"
+                          sx={{ mr: 0 }}
                         />
-                      ) : null}
+
+                        {answerDetailsEnabled ? (
+                          <IconButton
+                            aria-label={
+                              answerDetailsExpanded
+                                ? 'Plusz adatok szekció összecsukása'
+                                : 'Plusz adatok szekció lenyitása'
+                            }
+                            onClick={() => {
+                              setAnswerDetailsExpanded((currentValue) => !currentValue);
+                            }}
+                            size="small"
+                          >
+                            {answerDetailsExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                          </IconButton>
+                        ) : null}
+                      </Box>
+
+                      <Collapse in={answerDetailsEnabled && answerDetailsExpanded}>
+                        {answerDetailsEnabled ? (
+                          <AnswerDetailsSection
+                            answerDetailFieldKeys={answerDetailFieldKeys}
+                            answerDetailFields={answerDetailFields}
+                            answerDetailsEnabled={answerDetailsEnabled}
+                            onToggleAnswerDetailField={handleToggleAnswerDetailField}
+                          />
+                        ) : null}
+                      </Collapse>
                     </Stack>
                   </CardContent>
                 </Card>

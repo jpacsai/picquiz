@@ -68,6 +68,7 @@ const createViewModel = (
   answerDetailFieldKeys: [],
   answerDetailFields: [...answerDetailFields],
   answerDetailsEnabled: true,
+  answerDetailsExpanded: true,
   autoAdvanceAfterAnswer: false,
   effectiveSelectedFieldKeys: ['title'],
   eligibleFields: startableFields,
@@ -83,6 +84,7 @@ const createViewModel = (
   questionCount: 10,
   selectedFields: startableFields,
   setAnswerDetailsEnabled: vi.fn(),
+  setAnswerDetailsExpanded: vi.fn(),
   setAutoAdvanceAfterAnswer: vi.fn(),
   setShowCorrectAnswer: vi.fn(),
   showCorrectAnswer: true,
@@ -161,9 +163,31 @@ describe('QuizConfigView', () => {
     expect(
       screen.getByRole('switch', { name: 'Plusz adatok megjelenítése a válasz után' }),
     ).not.toBeChecked();
+    expect(
+      screen.queryByRole('button', { name: 'Plusz adatok szekció összecsukása' }),
+    ).not.toBeInTheDocument();
     expect(screen.queryByText('Helyes válasz extra adatai')).not.toBeInTheDocument();
     expect(screen.queryByRole('checkbox', { name: 'Alkotó' })).not.toBeInTheDocument();
     expect(screen.queryByRole('checkbox', { name: 'Év' })).not.toBeInTheDocument();
+  });
+
+  it('collapses and re-expands the answer details section from the icon button', async () => {
+    const user = userEvent.setup();
+    const setAnswerDetailsExpanded = vi.fn();
+
+    render(
+      <QuizConfigView
+        {...createViewModel({
+          setAnswerDetailsExpanded,
+        })}
+      />,
+    );
+
+    expect(screen.getByRole('checkbox', { name: 'Alkotó' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Plusz adatok szekció összecsukása' }));
+
+    expect(setAnswerDetailsExpanded).toHaveBeenCalledWith(expect.any(Function));
   });
 
   it('disables quiz start when there are no selected fields or question count', () => {
@@ -206,6 +230,7 @@ describe('QuizConfigView', () => {
   it('forwards switch changes to the provided setters', async () => {
     const user = userEvent.setup();
     const setAnswerDetailsEnabled = vi.fn();
+    const setAnswerDetailsExpanded = vi.fn();
     const setShowCorrectAnswer = vi.fn();
     const setAutoAdvanceAfterAnswer = vi.fn();
 
@@ -215,6 +240,7 @@ describe('QuizConfigView', () => {
           answerDetailsEnabled: false,
           autoAdvanceAfterAnswer: false,
           setAnswerDetailsEnabled,
+          setAnswerDetailsExpanded,
           setAutoAdvanceAfterAnswer,
           setShowCorrectAnswer,
           showCorrectAnswer: true,
@@ -231,6 +257,7 @@ describe('QuizConfigView', () => {
     await user.click(screen.getByRole('switch', { name: 'Automatikus továbblépés 3 mp után' }));
 
     expect(setAnswerDetailsEnabled).toHaveBeenCalledWith(true);
+    expect(setAnswerDetailsExpanded).not.toHaveBeenCalled();
     expect(setShowCorrectAnswer).toHaveBeenCalledWith(false);
     expect(setAutoAdvanceAfterAnswer).toHaveBeenCalledWith(true);
   });

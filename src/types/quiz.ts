@@ -50,6 +50,7 @@ export type UseQuizConfigResult = {
   answerDetailFieldKeys: string[];
   answerDetailFields: QuizValueField[];
   answerDetailsEnabled: boolean;
+  answerDetailsExpanded: boolean;
   autoAdvanceAfterAnswer: boolean;
   effectiveSelectedFieldKeys: string[];
   eligibleFields: QuizEligibleField[];
@@ -65,6 +66,7 @@ export type UseQuizConfigResult = {
   questionCount: number;
   selectedFields: QuizEligibleField[];
   setAnswerDetailsEnabled: Dispatch<SetStateAction<boolean>>;
+  setAnswerDetailsExpanded: Dispatch<SetStateAction<boolean>>;
   setAutoAdvanceAfterAnswer: Dispatch<SetStateAction<boolean>>;
   setShowCorrectAnswer: Dispatch<SetStateAction<boolean>>;
   showCorrectAnswer: boolean;

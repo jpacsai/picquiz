@@ -242,6 +242,7 @@ describe('Quiz flow integration', () => {
   it('restores toggle settings from local storage', () => {
     window.localStorage.setItem('picquiz-quiz-selected-field-keys-art', JSON.stringify(['year']));
     window.localStorage.setItem('picquiz-quiz-answer-details-enabled-art', 'true');
+    window.localStorage.setItem('picquiz-quiz-answer-details-expanded-art', 'false');
     window.localStorage.setItem('picquiz-quiz-question-count-art', '6');
     window.localStorage.setItem('picquiz-quiz-show-correct-answer', 'false');
     window.localStorage.setItem('picquiz-quiz-auto-advance-after-answer', 'true');
@@ -255,7 +256,8 @@ describe('Quiz flow integration', () => {
     expect(
       screen.getByRole('switch', { name: 'Plusz adatok megjelenítése a válasz után' }),
     ).toBeChecked();
-    expect(screen.getByRole('checkbox', { name: 'Ev' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Plusz adatok szekció lenyitása' })).toBeInTheDocument();
+    expect(screen.queryByRole('checkbox', { name: 'Ev' })).not.toBeInTheDocument();
   });
 
   it('keeps answer detail field checkboxes hidden while the feature toggle is off', () => {
@@ -264,6 +266,9 @@ describe('Quiz flow integration', () => {
     expect(
       screen.getByRole('switch', { name: 'Plusz adatok megjelenítése a válasz után' }),
     ).not.toBeChecked();
+    expect(
+      screen.queryByRole('button', { name: 'Plusz adatok szekció összecsukása' }),
+    ).not.toBeInTheDocument();
     expect(screen.queryByRole('checkbox', { name: 'Cim' })).not.toBeInTheDocument();
     expect(screen.queryByRole('checkbox', { name: 'Ev' })).not.toBeInTheDocument();
   });
