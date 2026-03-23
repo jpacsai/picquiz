@@ -9,7 +9,7 @@ import { ThemePresetProvider } from '@/lib/theme/ThemePresetProvider';
 import { QUERY_KEYS } from '@/queries/queryKeys';
 import type { TopicField, TopicItem } from '@/types/topics';
 
-import AdminTopicItemCard from '../AdminTopicItemCard';
+import AdminTopicItemCard from '../components/AdminTopicItemCard';
 
 const navigateMock = vi.fn();
 const deleteTopicItemMock = vi.fn();

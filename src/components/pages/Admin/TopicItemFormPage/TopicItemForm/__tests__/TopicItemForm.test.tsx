@@ -48,7 +48,7 @@ vi.mock('@lib/image', () => ({
     generateResponsiveImageVariantsMock(...args),
 }));
 
-vi.mock('../../../../../../../ui/Form/ImageUploadField', () => ({
+vi.mock('@/components/ui/Form/ImageUploadField', () => ({
   default: ({ onSelectImage }: { onSelectImage: (file: File) => void }) => (
     <button
       data-testid="mock-image-upload-button"

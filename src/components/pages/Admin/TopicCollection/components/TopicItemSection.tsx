@@ -1,8 +1,8 @@
 import { Box } from '@mui/material';
 
+import AdminTopicItemCard from '@/components/pages/Admin/TopicCollection/components/AdminTopicItemCard';
+import EmptyCollectionCard from '@/components/pages/Admin/TopicCollection/components/EmptyCollectionCard';
 import TopicCollectionNoResults from '@/components/pages/Admin/TopicCollection/components/TopicCollectionNoResults';
-import AdminTopicItemCard from '@/components/pages/Admin/TopicCollection/TopicItem/components/AdminTopicItemCard';
-import EmptyCollectionCard from '@/components/pages/Admin/TopicCollection/TopicItem/components/EmptyCollectionCard';
 import type { Topic, TopicItem } from '@/types/topics';
 
 type TopicItemSectionProps = {

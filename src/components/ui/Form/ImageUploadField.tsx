@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useState } from 'react';
 
-import ImageUploadDialog from '@/components/pages/Admin/TopicCollection/TopicItem/TopicItemFormPage/TopicItemForm/components/ImageUploadDialog';
+import ImageUploadDialog from '@/components/pages/Admin/TopicItemFormPage/TopicItemForm/components/ImageUploadDialog';
 import type { PendingImageSelection } from '@/types/topicItemForm';
 import type { TopicField } from '@/types/topics';
 

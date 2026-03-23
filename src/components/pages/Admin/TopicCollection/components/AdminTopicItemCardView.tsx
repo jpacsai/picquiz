@@ -1,6 +1,6 @@
 import { Button, Card, CardActions, CardContent, Typography } from '@mui/material';
 
-import DeleteItemDialog from './DeleteItemDialog';
+import DeleteItemDialog from '@/components/pages/Admin/TopicCollection/components/DeleteItemDialog';
 
 type AdminTopicItemCardViewProps = {
   description?: string;

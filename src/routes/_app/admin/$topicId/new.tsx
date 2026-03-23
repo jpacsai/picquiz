@@ -1,7 +1,7 @@
 import { topicOptions } from '@queries/topics';
 import { createFileRoute, useLoaderData } from '@tanstack/react-router';
 
-import AdminTopicItemFormPage from '@/components/pages/Admin/TopicCollection/TopicItem/TopicItemFormPage/TopicItemFormPage';
+import AdminTopicItemFormPage from '@/components/pages/Admin/TopicItemFormPage/TopicItemFormPage';
 
 const path = '/_app/admin/$topicId/new';
 

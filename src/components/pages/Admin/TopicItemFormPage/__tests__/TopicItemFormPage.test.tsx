@@ -8,8 +8,8 @@ import type { Topic, TopicItem } from '@/types/topics';
 import {
   getAutocompleteOptionsByField,
   mergeRefreshedSelectFieldOptions,
-} from './TopicItemForm/utils';
-import AdminTopicItemFormPage from './TopicItemFormPage';
+} from '../TopicItemForm/utils';
+import AdminTopicItemFormPage from '../TopicItemFormPage';
 
 const fetchQueryMock = vi.fn();
 const listTopicItemsMock = vi.fn();
@@ -36,7 +36,7 @@ vi.mock('@service/items', async () => {
 });
 
 vi.mock(
-  '@/components/pages/Admin/TopicCollection/TopicItem/TopicItemFormPage/TopicItemForm/TopicItemForm',
+  '@/components/pages/Admin/TopicItemFormPage/TopicItemForm/TopicItemForm',
   () => ({
     default: (props: Record<string, unknown>) => {
       topicItemFormMock(props);

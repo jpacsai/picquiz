@@ -1,7 +1,6 @@
+import AdminTopicItemCardView from '@/components/pages/Admin/TopicCollection/components/AdminTopicItemCardView';
+import { useAdminTopicItem } from '@/components/pages/Admin/TopicCollection/components/useAdminTopicItem';
 import type { TopicField, TopicItem } from '@/types/topics';
-
-import AdminTopicItemCardView from './AdminTopicItemCardView';
-import { useAdminTopicItem } from './useAdminTopicItem';
 
 type AdminTopicItemCardProps = {
   collectionName: string;

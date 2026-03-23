@@ -36,7 +36,7 @@ vi.mock('@tanstack/react-query', async () => {
   };
 });
 
-vi.mock('@/components/pages/Admin/TopicCollection/TopicItem/components/AdminTopicItemCard', () => ({
+vi.mock('@/components/pages/Admin/TopicCollection/components/AdminTopicItemCard', () => ({
   default: ({ item }: { item: TopicItem }) => {
     const label = typeof item.title === 'string' ? item.title : item.id;
 

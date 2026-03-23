@@ -4,7 +4,7 @@ import { topicOptions } from '@queries/topics';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
-import TopicItemForm from '@/components/pages/Admin/TopicCollection/TopicItem/TopicItemFormPage/TopicItemForm/TopicItemForm';
+import TopicItemForm from '@/components/pages/Admin/TopicItemFormPage/TopicItemForm/TopicItemForm';
 import type { Topic, TopicItem } from '@/types/topics';
 
 import {

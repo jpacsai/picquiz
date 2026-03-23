@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import Box from '@mui/material/Box';
 
 import {
   getDerivedValue,
   getFieldValidator,
-} from '@/components/pages/Admin/TopicCollection/TopicItem/TopicItemFormPage/TopicItemForm/utils';
+} from '@/components/pages/Admin/TopicItemFormPage/TopicItemForm/utils';
 import type {
   FormDeriveField,
   FormFieldFormApi,

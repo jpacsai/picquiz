@@ -3,12 +3,12 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from '@tanstack/react-router';
 
-type AdminSuccessProps = {
+type AdminSuccessPageProps = {
   topicId: string;
   topicLabel: string;
 };
 
-const AdminSuccess = ({ topicId, topicLabel }: AdminSuccessProps) => {
+const AdminSuccessPage = ({ topicId, topicLabel }: AdminSuccessPageProps) => {
   const navigate = useNavigate();
 
   return (
@@ -54,4 +54,4 @@ const AdminSuccess = ({ topicId, topicLabel }: AdminSuccessProps) => {
   );
 };
 
-export default AdminSuccess;
+export default AdminSuccessPage;
