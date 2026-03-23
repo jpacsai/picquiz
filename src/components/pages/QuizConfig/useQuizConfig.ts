@@ -1,8 +1,7 @@
 import { useNavigate } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
-import type { TopicItem } from '@/service/items';
-import type { Topic } from '@/types/topics';
+import type { Topic, TopicItem } from '@/types/topics';
 
 import {
   getEligibleQuizFields,
@@ -11,7 +10,7 @@ import {
   getStoredNumber,
   getStoredStringArray,
   QUIZ_CONFIG_STORAGE_KEYS,
-} from './utils';
+} from '../Quiz/utils';
 
 type UseQuizConfigParams = {
   items: ReadonlyArray<TopicItem>;
@@ -166,7 +165,6 @@ export const useQuizConfig = ({ items, topic }: UseQuizConfigParams) => {
     questionCount,
     selectedFields,
     setAutoAdvanceAfterAnswer,
-    setSelectedQuestionCount,
     setShowCorrectAnswer,
     showCorrectAnswer,
     startableFields,

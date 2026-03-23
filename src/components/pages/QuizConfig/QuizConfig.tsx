@@ -1,8 +1,7 @@
-import { useQuizConfig } from '@/components/pages/QuizConfig/useQuizConfig';
-import type { TopicItem } from '@/service/items';
-import type { Topic } from '@/types/topics';
+import type { Topic, TopicItem } from '@/types/topics';
 
 import QuizConfigView from './QuizConfigView';
+import { useQuizConfig } from './useQuizConfig';
 
 type QuizConfigProps = {
   items: ReadonlyArray<TopicItem>;

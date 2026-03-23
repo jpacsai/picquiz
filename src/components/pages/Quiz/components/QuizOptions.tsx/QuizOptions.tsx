@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 
 import OptionButton from '@/components/pages/Quiz/components/QuizOptions.tsx/OptionButton';
-import type { QuizQuestionOption } from '@/components/pages/Quiz/utils';
+import type { QuizQuestionOption } from '@/types/topics';
 
 type QuizOptionsProps = {
   options: QuizQuestionOption[];

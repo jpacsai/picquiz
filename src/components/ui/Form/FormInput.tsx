@@ -43,7 +43,6 @@ const FormInput = ({
           freeSolo
           options={options ?? []}
           value={typeof value === 'string' ? value : ''}
-          onBlur={onBlur}
           onChange={(_, nextValue) => {
             handleValueChange(nextValue ?? '');
           }}
@@ -61,6 +60,7 @@ const FormInput = ({
               placeholder={placeholder}
               error={!!errorMessage}
               helperText={errorMessage ?? helperText}
+              onBlur={onBlur}
               inputProps={{
                 ...params.inputProps,
                 ...inputProps,

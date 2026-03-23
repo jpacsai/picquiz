@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { topicItemsOptions } from '@queries/items';
-import type { TopicItem } from '@service/items';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { useSnackbar } from 'notistack';
@@ -9,39 +8,14 @@ import { useEffect } from 'react';
 
 import AdminTopicItemCard from '@/components/pages/Admin/TopicCollection/TopicItem/components/AdminTopicItemCard';
 import EmptyCollectionCard from '@/components/pages/Admin/TopicCollection/TopicItem/components/EmptyCollectionCard';
-import type { Topic } from '@/types/topics';
+import { sortTopicItemsByNewestCreated } from '@/components/pages/Admin/TopicCollection/utils';
+import type { Topic, TopicItem } from '@/types/topics';
 
 type AdminTopicCollectionPageProps = {
   items: ReadonlyArray<TopicItem>;
   saved?: 'edited';
   topic: Topic;
 };
-
-const getCreatedAtValue = (value: unknown) => {
-  if (value && typeof value === 'object' && 'toMillis' in value) {
-    const toMillis = value.toMillis;
-
-    if (typeof toMillis === 'function') {
-      return toMillis.call(value);
-    }
-  }
-
-  if (value && typeof value === 'object' && 'seconds' in value) {
-    const seconds = value.seconds;
-    const nanoseconds = 'nanoseconds' in value ? value.nanoseconds : 0;
-
-    if (typeof seconds === 'number') {
-      return seconds * 1_000 + (typeof nanoseconds === 'number' ? nanoseconds / 1_000_000 : 0);
-    }
-  }
-
-  return 0;
-};
-
-export const sortTopicItemsByNewestCreated = (items: ReadonlyArray<TopicItem>) =>
-  [...items].sort(
-    (left, right) => getCreatedAtValue(right.created_at) - getCreatedAtValue(left.created_at),
-  );
 
 const AdminTopicCollectionPage = ({ items, saved, topic }: AdminTopicCollectionPageProps) => {
   const navigate = useNavigate();

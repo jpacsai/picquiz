@@ -5,7 +5,6 @@ import {
 } from '@data/storage';
 import { generateResponsiveImageVariants } from '@lib/image';
 import { QUERY_KEYS } from '@queries/queryKeys';
-import type { TopicItem } from '@service/items';
 import { createTopicItem, updateTopicItem } from '@service/items';
 import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
@@ -13,7 +12,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
 import type { FormFieldFormApi } from '@/components/ui/Form/FormField';
-import type { TopicField } from '@/types/topics';
+import type { TopicField, TopicItem } from '@/types/topics';
 
 import {
   getDerivationIndex,

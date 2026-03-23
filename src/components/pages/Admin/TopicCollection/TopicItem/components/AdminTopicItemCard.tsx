@@ -1,5 +1,4 @@
-import type { TopicItem } from '@/service/items';
-import type { TopicField } from '@/types/topics';
+import type { TopicField, TopicItem } from '@/types/topics';
 
 import AdminTopicItemCardView from './AdminTopicItemCardView';
 import { useAdminTopicItem } from './useAdminTopicItem';

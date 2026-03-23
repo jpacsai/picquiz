@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import type { TopicItem } from '@/service/items';
-import type { Topic } from '@/types/topics';
-
-import { buildQuizQuestions, getSelectedQuizFields } from './utils';
+import type { Topic, TopicItem } from '@/types/topics';
+import { buildQuizQuestions, getSelectedQuizFields } from '@/utils/quiz';
 
 const AUTO_ADVANCE_DELAY_MS = 3000;
 const AUTO_ADVANCE_INTERVAL_MS = 1000;
+const INITIAL_AUTO_ADVANCE_COUNTDOWN_SECONDS =
+  AUTO_ADVANCE_DELAY_MS / AUTO_ADVANCE_INTERVAL_MS;
 
 type UseQuizParams = {
   answerFieldKeys: string[];
@@ -27,7 +27,7 @@ export const useQuiz = ({
 }: UseQuizParams) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [autoAdvanceCountdownSeconds, setAutoAdvanceCountdownSeconds] = useState(
-    AUTO_ADVANCE_DELAY_MS / AUTO_ADVANCE_INTERVAL_MS,
+    INITIAL_AUTO_ADVANCE_COUNTDOWN_SECONDS,
   );
   const [selectedOptionId, setSelectedOptionId] = useState('');
   const [score, setScore] = useState(0);
@@ -56,11 +56,8 @@ export const useQuiz = ({
 
   useEffect(() => {
     if (!isAnswered || !autoAdvanceAfterAnswer) {
-      setAutoAdvanceCountdownSeconds(AUTO_ADVANCE_DELAY_MS / AUTO_ADVANCE_INTERVAL_MS);
       return undefined;
     }
-
-    setAutoAdvanceCountdownSeconds(AUTO_ADVANCE_DELAY_MS / AUTO_ADVANCE_INTERVAL_MS);
 
     const intervalId = window.setInterval(() => {
       setAutoAdvanceCountdownSeconds((currentSeconds) => Math.max(currentSeconds - 1, 1));
@@ -79,16 +76,19 @@ export const useQuiz = ({
 
   const restartQuiz = () => {
     setCurrentQuestionIndex(0);
+    setAutoAdvanceCountdownSeconds(INITIAL_AUTO_ADVANCE_COUNTDOWN_SECONDS);
     setSelectedOptionId('');
     setScore(0);
   };
 
   const continueToNextQuestion = () => {
     setCurrentQuestionIndex((questionIndex) => questionIndex + 1);
+    setAutoAdvanceCountdownSeconds(INITIAL_AUTO_ADVANCE_COUNTDOWN_SECONDS);
     setSelectedOptionId('');
   };
 
   const selectOption = (optionId: string) => {
+    setAutoAdvanceCountdownSeconds(INITIAL_AUTO_ADVANCE_COUNTDOWN_SECONDS);
     setSelectedOptionId(optionId);
 
     const nextSelectedOption = currentQuestion?.options.find((option) => option.id === optionId);

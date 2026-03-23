@@ -1,7 +1,6 @@
 import * as yup from 'yup';
 
-import type { TopicItem } from '@/service/items';
-import type { TopicField } from '@/types/topics';
+import type { TopicField, TopicItem } from '@/types/topics';
 
 type FormDeriveFieldIndex = Omit<TopicField, 'fn'> & {
   fn?: {

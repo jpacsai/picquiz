@@ -7,8 +7,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import Quiz from '@/components/pages/Quiz/Quiz';
 import QuizConfig from '@/components/pages/QuizConfig/QuizConfig';
 import { ThemePresetProvider } from '@/lib/theme/ThemePresetProvider';
-import type { TopicItem } from '@/service/items';
-import type { Topic } from '@/types/topics';
+import type { Topic, TopicItem } from '@/types/topics';
 
 const navigateMock = vi.fn();
 

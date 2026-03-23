@@ -5,8 +5,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
 import TopicItemForm from '@/components/pages/Admin/TopicCollection/TopicItem/TopicItemFormPage/TopicItemForm/TopicItemForm';
-import type { TopicItem } from '@/service/items';
-import type { Topic } from '@/types/topics';
+import type { Topic, TopicItem } from '@/types/topics';
 
 import {
   getAutocompleteOptionsByField,

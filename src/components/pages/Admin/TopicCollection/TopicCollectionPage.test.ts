@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { sortTopicItemsByNewestCreated } from './TopicCollectionPage';
+import { sortTopicItemsByNewestCreated } from '@/components/pages/Admin/TopicCollection/utils';
+
 
 describe('sortTopicItemsByNewestCreated', () => {
   it('sorts items by created_at descending', () => {

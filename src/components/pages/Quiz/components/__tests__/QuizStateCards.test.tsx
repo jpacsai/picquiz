@@ -8,7 +8,7 @@ import QuizMissingFields from '../QuizMissingFields';
 
 const returnToConfigButtonMock = vi.fn<(topicId: string) => void>();
 
-vi.mock('./ReturnToConfigButton', () => ({
+vi.mock('@/components/pages/Quiz/components/ReturnToConfigButton', () => ({
   default: ({ topicId }: { topicId: string }) => {
     returnToConfigButtonMock(topicId);
 

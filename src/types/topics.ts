@@ -78,3 +78,46 @@ export type Topic = {
   storage_prefix: string;
   fields: TopicField[];
 };
+
+export type QuizPlayableItem = {
+  imageUrls: {
+    desktop: string;
+    mobile: string;
+  };
+  item: TopicItem;
+  value: string;
+};
+
+export type TopicItemValues = Record<string, string | number>;
+
+export type TopicItem = {
+  id: string;
+} & Record<string, unknown>;
+
+
+export type QuizEligibleField = {
+  field: Extract<TopicField, { type: 'string' | 'number' | 'select' }>;
+  eligibleItemCount: number;
+  maxQuestionCount: number;
+  promptsLabel: string;
+  distinctValueCount: number;
+};
+
+export type QuizQuestionOption = {
+  id: string;
+  isCorrect: boolean;
+  label: string;
+};
+
+export type QuizQuestion = {
+  answerFieldKey: string;
+  answerFieldLabel: string;
+  correctAnswer: string;
+  imageUrls: {
+    desktop: string;
+    mobile: string;
+  };
+  itemId: string;
+  options: QuizQuestionOption[];
+  prompt: string;
+};

@@ -9,12 +9,9 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 
-import { db } from '../lib/firebase';
+import type { TopicItem, TopicItemValues } from '@/types/topics';
 
-export type TopicItemValues = Record<string, string | number>;
-export type TopicItem = {
-  id: string;
-} & Record<string, unknown>;
+import { db } from '../lib/firebase';
 
 export const createTopicItem = async ({
   collectionName,

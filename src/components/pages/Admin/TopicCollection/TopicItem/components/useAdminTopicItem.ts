@@ -6,8 +6,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 
-import type { TopicItem } from '@/service/items';
-import type { TopicField } from '@/types/topics';
+import type { TopicField, TopicItem } from '@/types/topics';
 
 type UseAdminTopicItemParams = {
   collectionName: string;
