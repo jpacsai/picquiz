@@ -24,41 +24,54 @@ const OptionButton = ({
       disabled={isAnswered}
       key={optionId}
       onClick={() => onSelectOption(optionId)}
-      sx={(theme) => ({
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        minHeight: 64,
-        textAlign: 'left',
-        whiteSpace: 'normal',
-        lineHeight: 1.4,
-        py: 1.5,
-        borderWidth: 2,
-        backgroundColor: isSelected ? theme.palette.action.selected : 'transparent',
-        borderColor: showCorrect
-          ? theme.palette.success.main
-          : showIncorrect
-            ? theme.palette.error.main
-            : undefined,
-        color: showCorrect
-          ? theme.palette.success.main
-          : showIncorrect
-            ? theme.palette.error.main
-            : undefined,
-        '&.Mui-disabled': {
-          opacity: 1,
+      sx={(theme) => {
+        const defaultBorderColor = theme.customTokens?.border.main ?? theme.palette.divider;
+        const hoverBorderColor = theme.customTokens?.brand.accent ?? theme.palette.secondary.main;
+
+        return {
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          minHeight: 64,
+          textAlign: 'left',
+          whiteSpace: 'normal',
+          lineHeight: 1.4,
+          py: 1.5,
           borderWidth: 2,
+          backgroundColor: isSelected ? theme.palette.action.selected : 'transparent',
           borderColor: showCorrect
             ? theme.palette.success.main
             : showIncorrect
               ? theme.palette.error.main
-              : undefined,
+              : defaultBorderColor,
           color: showCorrect
             ? theme.palette.success.main
             : showIncorrect
               ? theme.palette.error.main
               : undefined,
-        },
-      })}
+          '&:hover': {
+            borderWidth: 2,
+            borderColor: showCorrect
+              ? theme.palette.success.main
+              : showIncorrect
+                ? theme.palette.error.main
+                : hoverBorderColor,
+          },
+          '&.Mui-disabled': {
+            opacity: 1,
+            borderWidth: 2,
+            borderColor: showCorrect
+              ? theme.palette.success.main
+              : showIncorrect
+                ? theme.palette.error.main
+                : undefined,
+            color: showCorrect
+              ? theme.palette.success.main
+              : showIncorrect
+                ? theme.palette.error.main
+                : undefined,
+          },
+        };
+      }}
       variant="outlined"
     >
       {optionLabel}

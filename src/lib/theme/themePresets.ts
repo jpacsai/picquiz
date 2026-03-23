@@ -109,6 +109,7 @@ export const resolveOnSurfaceTokens = (colors: ThemeColorTokens): ThemeOnSurface
 };
 
 export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
+  // --- OTHELLO ---
   {
     meta: {
       id: 'othello',
@@ -176,6 +177,7 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
       },
     },
   },
+  // --- FLEAURS ---
   {
     meta: {
       id: 'fleurs',
@@ -243,6 +245,7 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
       },
     },
   },
+  // --- PAPER ---
   {
     meta: {
       id: 'paper',
@@ -310,6 +313,7 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
       },
     },
   },
+  // --- BLUE BOTANIQUE ---
   {
     meta: {
       id: 'blue-botanique',
@@ -377,6 +381,7 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
       },
     },
   },
+  // --- BLUE PORCELAINE ---
   {
     meta: {
       id: 'blue-porcelaine',
@@ -444,6 +449,7 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
       },
     },
   },
+  // --- BLUSH SAGE ---
   {
     meta: {
       id: 'blush-sage',
@@ -503,6 +509,7 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
       },
     },
   },
+  // --- JUNGLE EMBER ---
   {
     meta: {
       id: 'jungle-ember',
@@ -570,6 +577,7 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
       },
     },
   },
+  // --- SEPIA NOCTURNE ---
   {
     meta: {
       id: 'sepia-nocturne',
@@ -637,6 +645,7 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
       },
     },
   },
+  // --- PORCELAINE ---
   {
     meta: {
       id: 'porcelaine',
@@ -704,6 +713,7 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
       },
     },
   },
+  // --- EUNOIA TEAL ---
   {
     meta: {
       id: 'waterlily',
@@ -771,6 +781,7 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
       },
     },
   },
+  // --- VENUS ---
   {
     meta: {
       id: 'venus',
@@ -838,6 +849,7 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
       },
     },
   },
+  // --- SUNSET ---
   {
     meta: {
       id: 'sunset',
