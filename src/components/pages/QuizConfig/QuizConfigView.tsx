@@ -1,3 +1,4 @@
+import { Box } from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -40,7 +41,20 @@ const QuizConfigView = ({
       <Card sx={{ width: '100%' }} variant="outlined">
         <CardContent>
           <Stack spacing={3}>
-            <Typography variant="h6">Kvíz beállításai</Typography>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 1,
+              }}
+            >
+              <Typography variant="h6">Kvíz beállításai</Typography>
+
+              <Button onClick={handleReset} size="large" variant="text">
+                Alaphelyzet
+              </Button>
+            </Box>
 
             {!hasStartableFields ? (
               <NoQuiz eligibleFields={eligibleFields} />
@@ -98,10 +112,6 @@ const QuizConfigView = ({
                   variant="contained"
                 >
                   Kvíz indítása
-                </Button>
-
-                <Button onClick={handleReset} size="large" variant="text">
-                  Alaphelyzet
                 </Button>
               </>
             )}
