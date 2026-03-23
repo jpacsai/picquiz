@@ -3,14 +3,14 @@ import type { TopicField, TopicItem } from '@/types/topics';
 import AdminTopicItemCardView from './AdminTopicItemCardView';
 import { useAdminTopicItem } from './useAdminTopicItem';
 
-type AdminTopicItemProps = {
+type AdminTopicItemCardProps = {
   collectionName: string;
   fields: ReadonlyArray<TopicField>;
   item: TopicItem;
   topicId: string;
 };
 
-const AdminTopicItemCard = ({ collectionName, fields, item, topicId }: AdminTopicItemProps) => {
+const AdminTopicItemCard = ({ collectionName, fields, item, topicId }: AdminTopicItemCardProps) => {
   const viewModel = useAdminTopicItem({
     collectionName,
     fields,

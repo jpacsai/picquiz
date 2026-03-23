@@ -1,4 +1,6 @@
-import type { TopicField } from "@/types/topics";
+import type { Dispatch, SetStateAction } from 'react';
+
+import type { TopicField, TopicItem } from '@/types/topics';
 
 export type QuizEligibleField = {
   field: Extract<TopicField, { type: 'string' | 'number' | 'select' }>;
@@ -25,4 +27,33 @@ export type QuizQuestion = {
   itemId: string;
   options: QuizQuestionOption[];
   prompt: string;
+};
+
+export type QuizPlayableItem = {
+  imageUrls: {
+    desktop: string;
+    mobile: string;
+  };
+  item: TopicItem;
+  value: string;
+};
+
+export type UseQuizConfigResult = {
+  autoAdvanceAfterAnswer: boolean;
+  effectiveSelectedFieldKeys: string[];
+  eligibleFields: QuizEligibleField[];
+  handleReset: () => void;
+  handleStartQuiz: () => void;
+  handleQuestionCountBlur: () => void;
+  handleQuestionCountInputChange: (nextValue: string) => void;
+  handleQuestionCountSliderChange: (_event: Event, nextValue: number | number[]) => void;
+  handleToggleField: (fieldKey: string, checked: boolean) => void;
+  maxQuestionCount: number;
+  minQuestionCount: number;
+  questionCount: number;
+  selectedFields: QuizEligibleField[];
+  setAutoAdvanceAfterAnswer: Dispatch<SetStateAction<boolean>>;
+  setShowCorrectAnswer: Dispatch<SetStateAction<boolean>>;
+  showCorrectAnswer: boolean;
+  startableFields: QuizEligibleField[];
 };

@@ -11,9 +11,9 @@ import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 
-import type { useQuizConfig } from './useQuizConfig';
+import type { UseQuizConfigResult } from '@/types/quiz';
 
-type QuizConfigViewProps = ReturnType<typeof useQuizConfig>;
+type QuizConfigViewProps = UseQuizConfigResult;
 
 const QuizConfigView = ({
   autoAdvanceAfterAnswer,

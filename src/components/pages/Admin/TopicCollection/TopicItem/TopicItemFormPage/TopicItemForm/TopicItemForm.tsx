@@ -1,7 +1,8 @@
+import type { FormMode } from '@/types/topicItemForm';
 import type { TopicField } from '@/types/topics';
 
 import TopicItemFormView from './TopicItemFormView';
-import { type FormMode, useTopicItemForm } from './useTopicItemForm';
+import { useTopicItemForm } from './useTopicItemForm';
 
 type TopicItemFormProps = {
   autocompleteOptionsByField?: Record<string, string[]>;

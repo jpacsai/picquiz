@@ -1,36 +1,19 @@
 import * as yup from 'yup';
 
+import type {
+  FormDeriveField,
+  FormDeriveFieldIndex,
+  FormValues,
+  PendingImageSelection,
+  PersistableFormValues,
+} from '@/types/topicItemForm';
 import type { TopicField, TopicItem } from '@/types/topics';
-
-type FormDeriveFieldIndex = Omit<TopicField, 'fn'> & {
-  fn?: {
-    target: string;
-    source: string;
-    name: string;
-  };
-};
-
-export type FormDeriveField = Omit<TopicField, 'fn'> & {
-  fn?: {
-    target: string;
-    name: string;
-  };
-};
 
 export const fnRegistry = {
   yearToCentury: (year: number) => {
     const centuryNum = Math.floor((year - 1) / 100) + 1;
     return `${centuryNum}-ik század`;
   },
-};
-
-export type FormValues = Record<string, string | number>;
-export type PersistableFormValues = Record<string, string | number>;
-export type PendingImageSelection = {
-  field: Extract<TopicField, { type: 'imageUpload' }>;
-  file: File;
-  previewUrl: string;
-  uniqueSuffix: string;
 };
 
 export const getInitialValues = (

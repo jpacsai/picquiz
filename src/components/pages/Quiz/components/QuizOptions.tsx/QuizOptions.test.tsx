@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import type { ReactElement } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { QuizQuestionOption } from '@/types/topics';
+import type { QuizQuestionOption } from '@/types/quiz';
 
 import QuizOptions from './QuizOptions';
 

@@ -10,17 +10,13 @@ import {
 } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 
+import type { ImageFileNames, PendingImageSelection } from '@/types/topicItemForm';
+
 import ImagePreviewSection from './ImagePreviewSection';
 
 type ImageUploadDialogProps = {
-  existingSelection?: {
-    file: File;
-    previewUrl: string;
-  } | null;
-  generatedFileNames: {
-    desktop: string;
-    mobile: string;
-  };
+  existingSelection?: Pick<PendingImageSelection, 'file' | 'previewUrl'> | null;
+  generatedFileNames: ImageFileNames;
   onClose: () => void;
   onSelect: (file: File) => void;
   open: boolean;

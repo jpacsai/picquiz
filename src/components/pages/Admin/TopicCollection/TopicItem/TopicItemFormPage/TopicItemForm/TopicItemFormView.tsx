@@ -7,9 +7,8 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 
 import FormField from '@/components/ui/Form/FormField';
+import type { FormMode, UseTopicItemFormResult } from '@/types/topicItemForm';
 import type { TopicField } from '@/types/topics';
-
-import type { FormMode, UseTopicItemFormResult } from './useTopicItemForm';
 
 type TopicItemFormViewProps = {
   autocompleteOptionsByField?: Record<string, string[]>;
@@ -19,8 +18,8 @@ type TopicItemFormViewProps = {
   isRefreshingSelectOptions?: boolean;
   isSubmitting: boolean;
   mode: FormMode;
-  onSelectPendingImage: UseTopicItemFormResult['handleSelectPendingImage'];
   onRefreshSelectOptions?: () => void;
+  onSelectPendingImage: UseTopicItemFormResult['handleSelectPendingImage'];
   onUndo: UseTopicItemFormResult['handleUndo'];
   pendingImageSelection: UseTopicItemFormResult['pendingImageSelection'];
   submitError: string;
@@ -128,42 +127,42 @@ const TopicItemFormView = ({
 
               return (
                 <>
-            {hasRefreshableSelectFields && onRefreshSelectOptions ? (
-              <IconButton
-                type="button"
-                aria-label="Selectek frissítése"
-                disabled={isSubmitting || isRefreshingSelectOptions}
-                onClick={onRefreshSelectOptions}
-              >
-                {isRefreshingSelectOptions ? (
-                  <CircularProgress size={18} />
-                ) : (
-                  <RefreshIcon />
-                )}
-              </IconButton>
-            ) : null}
+                  {hasRefreshableSelectFields && onRefreshSelectOptions ? (
+                    <IconButton
+                      type="button"
+                      aria-label="Selectek frissítése"
+                      disabled={isSubmitting || isRefreshingSelectOptions}
+                      onClick={onRefreshSelectOptions}
+                    >
+                      {isRefreshingSelectOptions ? <CircularProgress size={18} /> : <RefreshIcon />}
+                    </IconButton>
+                  ) : null}
 
-            {mode === 'edit' ? (
-              <Button
-                type="button"
-                variant="outlined"
-                disabled={isSubmitting || !isActionEnabled}
-                onClick={onUndo}
-              >
-                Visszaállítás
-              </Button>
-            ) : null}
+                  {mode === 'edit' ? (
+                    <Button
+                      type="button"
+                      variant="outlined"
+                      disabled={isSubmitting || !isActionEnabled}
+                      onClick={onUndo}
+                    >
+                      Visszaállítás
+                    </Button>
+                  ) : null}
 
-            <Button type="submit" variant="contained" disabled={isSubmitting || !isActionEnabled}>
-              {isSubmitting ? (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <CircularProgress size={18} color="inherit" />
-                  Mentés...
-                </Box>
-              ) : (
-                'Mentés'
-              )}
-            </Button>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    disabled={isSubmitting || !isActionEnabled}
+                  >
+                    {isSubmitting ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <CircularProgress size={18} color="inherit" />
+                        Mentés...
+                      </Box>
+                    ) : (
+                      'Mentés'
+                    )}
+                  </Button>
                 </>
               );
             })()}

@@ -5,18 +5,15 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { useState } from 'react';
 
 import ImageUploadDialog from '@/components/pages/Admin/TopicCollection/TopicItem/TopicItemFormPage/TopicItemForm/components/ImageUploadDialog';
+import type { PendingImageSelection } from '@/types/topicItemForm';
+import type { TopicField } from '@/types/topics';
 
 import { getResponsiveImageFileNames } from '../../../data/storage';
-import type { TopicField } from '../../../types/topics';
 
 type ImageUploadFieldProps = {
   artistName: string;
   existingImageUrl?: string | null;
-  existingSelection?: {
-    file: File;
-    previewUrl: string;
-    uniqueSuffix: string;
-  } | null;
+  existingSelection?: PendingImageSelection | null;
   field: Extract<TopicField, { type: 'imageUpload' }>;
   mode?: 'create' | 'edit';
   onSelectImage: (file: File) => void;

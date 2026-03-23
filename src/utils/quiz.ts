@@ -1,5 +1,9 @@
-
-import type { QuizEligibleField, QuizQuestion, Topic, TopicField, TopicItem } from '@/types/topics';
+import type {
+  QuizEligibleField,
+  QuizPlayableItem,
+  QuizQuestion,
+} from '@/types/quiz';
+import type { Topic, TopicField, TopicItem } from '@/types/topics';
 
 const QUESTION_COUNT_STEP = 5;
 const MIN_OPTION_COUNT = 4;
@@ -137,15 +141,6 @@ const shuffleArray = <T>(values: readonly T[]): T[] => {
 
     return shuffledValues;
   }, [...values]);
-};
-
-type QuizPlayableItem = {
-  imageUrls: {
-    desktop: string;
-    mobile: string;
-  };
-  item: TopicItem;
-  value: string;
 };
 
 const resolveMaxNumericValue = (maxValue: number | 'todayYear'): number =>

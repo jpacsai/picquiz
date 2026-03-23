@@ -1,12 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Box from '@mui/material/Box';
-import type { ComponentType, Key, ReactNode } from 'react';
 
 import {
-  type FormDeriveField,
   getDerivedValue,
   getFieldValidator,
 } from '@/components/pages/Admin/TopicCollection/TopicItem/TopicItemFormPage/TopicItemForm/utils';
+import type {
+  FormDeriveField,
+  FormFieldFormApi,
+  FormMode,
+  PendingImageSelection,
+  PendingImageSelectionInput,
+} from '@/types/topicItemForm';
 import type { TopicField } from '@/types/topics';
 
 import FormInput from './FormInput';
@@ -18,36 +23,9 @@ type FormFieldProps = {
   field: TopicField;
   form: FormFieldFormApi;
   autocompleteOptions?: string[];
-  onSelectPendingImage: (selection: {
-    field: Extract<TopicField, { type: 'imageUpload' }>;
-    file: File;
-  }) => void;
-  pendingImageSelection?: {
-    field: Extract<TopicField, { type: 'imageUpload' }>;
-    file: File;
-    previewUrl: string;
-    uniqueSuffix: string;
-  } | null;
-  mode: 'create' | 'edit';
-};
-
-export type FormFieldFormApi = {
-  Field: ComponentType<{
-    children: (fieldApi: any) => ReactNode;
-    key?: Key;
-    name: string;
-    validators?: {
-      onChange?: (props: { value: string | number }) => string | undefined;
-    };
-  }>;
-  Subscribe: ComponentType<{
-    children: (value: any) => ReactNode;
-    key?: Key;
-    selector: (state: any) => any;
-  }>;
-  setFieldValue: (field: string, value: string | number) => void;
-  handleSubmit: () => Promise<void>;
-  reset: () => void;
+  onSelectPendingImage: (selection: PendingImageSelectionInput) => void;
+  pendingImageSelection?: PendingImageSelection | null;
+  mode: FormMode;
 };
 
 const renderPendingDerivedField = (key: string) => (

@@ -1,7 +1,7 @@
 import { Autocomplete, Box, InputLabel, TextField } from '@mui/material';
-import { type ChangeEvent, type ReactNode, useId } from 'react';
+import { type ChangeEvent, type ComponentProps, type ReactNode, useId } from 'react';
 
-type FormInputProps = Omit<React.ComponentProps<typeof TextField>, 'error'> & {
+type FormInputProps = Omit<ComponentProps<typeof TextField>, 'error'> & {
   errorMessage?: ReactNode;
   options?: string[];
 };

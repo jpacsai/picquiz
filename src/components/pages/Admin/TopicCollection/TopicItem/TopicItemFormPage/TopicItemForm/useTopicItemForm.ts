@@ -11,20 +11,22 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
-import type { FormFieldFormApi } from '@/components/ui/Form/FormField';
+import type {
+  FormFieldFormApi,
+  FormMode,
+  PendingImageSelection,
+  UseTopicItemFormResult,
+} from '@/types/topicItemForm';
 import type { TopicField, TopicItem } from '@/types/topics';
 
 import {
   getDerivationIndex,
   getInitialValues,
   getPersistableValue,
-  type PendingImageSelection,
   validateImageUploads,
 } from './utils';
 
-export type FormMode = 'create' | 'edit';
-
-export type UseTopicItemFormParams = {
+type UseTopicItemFormParams = {
   collectionName: string;
   fields: TopicField[];
   initialValues?: Record<string, unknown>;
@@ -32,23 +34,6 @@ export type UseTopicItemFormParams = {
   mode?: FormMode;
   storagePrefix: string;
   topicId: string;
-};
-
-export type UseTopicItemFormResult = {
-  derivationIndex: Record<string, ReturnType<typeof getDerivationIndex>[string]>;
-  form: FormFieldFormApi;
-  handleSelectPendingImage: ({
-    field,
-    file,
-  }: {
-    field: Extract<TopicField, { type: 'imageUpload' }>;
-    file: File;
-  }) => void;
-  handleUndo: () => void;
-  isSubmitting: boolean;
-  mode: FormMode;
-  pendingImageSelection: PendingImageSelection | null;
-  submitError: string;
 };
 
 const getUploadedImageValues = ({

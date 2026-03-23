@@ -1,11 +1,10 @@
 import { Box, Divider, Stack, Typography } from '@mui/material';
 
+import type { ImageFileNames } from '@/types/topicItemForm';
+
 type ImagePreviewSectionProps = {
   fileName: string;
-  generatedFileNames: {
-    desktop: string;
-    mobile: string;
-  };
+  generatedFileNames: ImageFileNames;
   previewUrl: string;
 };
 

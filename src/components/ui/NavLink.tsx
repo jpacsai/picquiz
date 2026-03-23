@@ -2,9 +2,9 @@ import * as React from 'react';
 
 import { RouterLink } from './RouterLink';
 
-type RLProps = React.ComponentProps<typeof RouterLink>;
+type NavLinkProps = React.ComponentProps<typeof RouterLink>;
 
-export const NavLink: React.FC<RLProps> = (props) => (
+export const NavLink: React.FC<NavLinkProps> = (props) => (
   <RouterLink
     {...props}
     sx={[
