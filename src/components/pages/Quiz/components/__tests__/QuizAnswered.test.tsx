@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import QuizAnswered from './QuizAnswered';
+import QuizAnswered from '../QuizAnswered';
 
 describe('QuizAnswered', () => {
   it('renders a continue button before the last question and calls the handler', async () => {
@@ -12,6 +12,7 @@ describe('QuizAnswered', () => {
     render(
       <QuizAnswered
         autoAdvanceAfterAnswer={false}
+        autoAdvanceCountdownSeconds={3}
         currentQuestionIndex={0}
         questionsLength={3}
         onContinue={onContinue}
@@ -27,6 +28,7 @@ describe('QuizAnswered', () => {
     render(
       <QuizAnswered
         autoAdvanceAfterAnswer={false}
+        autoAdvanceCountdownSeconds={3}
         currentQuestionIndex={2}
         questionsLength={3}
         onContinue={vi.fn()}
@@ -40,6 +42,7 @@ describe('QuizAnswered', () => {
     render(
       <QuizAnswered
         autoAdvanceAfterAnswer
+        autoAdvanceCountdownSeconds={3}
         currentQuestionIndex={0}
         questionsLength={3}
         onContinue={vi.fn()}
@@ -53,12 +56,13 @@ describe('QuizAnswered', () => {
     render(
       <QuizAnswered
         autoAdvanceAfterAnswer
+        autoAdvanceCountdownSeconds={1}
         currentQuestionIndex={2}
         questionsLength={3}
         onContinue={vi.fn()}
       />,
     );
 
-    expect(screen.getByText('Eredmény megjelenítése 3 másodperc múlva.')).toBeInTheDocument();
+    expect(screen.getByText('Eredmény megjelenítése 1 másodperc múlva.')).toBeInTheDocument();
   });
 });

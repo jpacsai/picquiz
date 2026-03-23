@@ -173,7 +173,19 @@ describe('Quiz flow integration', () => {
     expect(screen.getByText(/3 másodperc múlva/i)).toBeInTheDocument();
 
     await act(async () => {
-      vi.advanceTimersByTime(3000);
+      vi.advanceTimersByTime(1000);
+    });
+
+    expect(screen.getByText(/2 másodperc múlva/i)).toBeInTheDocument();
+
+    await act(async () => {
+      vi.advanceTimersByTime(1000);
+    });
+
+    expect(screen.getByText(/1 másodperc múlva/i)).toBeInTheDocument();
+
+    await act(async () => {
+      vi.advanceTimersByTime(1000);
     });
 
     expect(screen.getByText(/2\s*\/\s*2/)).toBeInTheDocument();

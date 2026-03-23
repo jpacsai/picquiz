@@ -36,6 +36,7 @@ const Quiz = ({
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const {
+    autoAdvanceCountdownSeconds,
     continueToNextQuestion,
     currentImageUrl,
     currentQuestion,
@@ -121,6 +122,7 @@ const Quiz = ({
                 {isAnswered ? (
                   <QuizAnswered
                     autoAdvanceAfterAnswer={autoAdvanceAfterAnswer}
+                    autoAdvanceCountdownSeconds={autoAdvanceCountdownSeconds}
                     currentQuestionIndex={currentQuestionIndex}
                     questionsLength={questions.length}
                     onContinue={continueToNextQuestion}

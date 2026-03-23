@@ -6,6 +6,7 @@ import type { Topic } from '@/types/topics';
 import { buildQuizQuestions, getSelectedQuizFields } from './utils';
 
 const AUTO_ADVANCE_DELAY_MS = 3000;
+const AUTO_ADVANCE_INTERVAL_MS = 1000;
 
 type UseQuizParams = {
   answerFieldKeys: string[];
@@ -25,6 +26,9 @@ export const useQuiz = ({
   topic,
 }: UseQuizParams) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [autoAdvanceCountdownSeconds, setAutoAdvanceCountdownSeconds] = useState(
+    AUTO_ADVANCE_DELAY_MS / AUTO_ADVANCE_INTERVAL_MS,
+  );
   const [selectedOptionId, setSelectedOptionId] = useState('');
   const [score, setScore] = useState(0);
 
@@ -52,8 +56,15 @@ export const useQuiz = ({
 
   useEffect(() => {
     if (!isAnswered || !autoAdvanceAfterAnswer) {
+      setAutoAdvanceCountdownSeconds(AUTO_ADVANCE_DELAY_MS / AUTO_ADVANCE_INTERVAL_MS);
       return undefined;
     }
+
+    setAutoAdvanceCountdownSeconds(AUTO_ADVANCE_DELAY_MS / AUTO_ADVANCE_INTERVAL_MS);
+
+    const intervalId = window.setInterval(() => {
+      setAutoAdvanceCountdownSeconds((currentSeconds) => Math.max(currentSeconds - 1, 1));
+    }, AUTO_ADVANCE_INTERVAL_MS);
 
     const timeoutId = window.setTimeout(() => {
       setCurrentQuestionIndex((questionIndex) => questionIndex + 1);
@@ -61,6 +72,7 @@ export const useQuiz = ({
     }, AUTO_ADVANCE_DELAY_MS);
 
     return () => {
+      window.clearInterval(intervalId);
       window.clearTimeout(timeoutId);
     };
   }, [autoAdvanceAfterAnswer, isAnswered, selectedOptionId]);
@@ -87,6 +99,7 @@ export const useQuiz = ({
   };
 
   return {
+    autoAdvanceCountdownSeconds,
     continueToNextQuestion,
     currentImageUrl,
     currentQuestion,

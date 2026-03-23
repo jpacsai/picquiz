@@ -2,6 +2,7 @@ import { Button, Stack, Typography } from '@mui/material';
 
 type QuizAnsweredProps = {
   autoAdvanceAfterAnswer: boolean;
+  autoAdvanceCountdownSeconds: number;
   currentQuestionIndex: number;
   questionsLength: number;
   onContinue: () => void;
@@ -9,6 +10,7 @@ type QuizAnsweredProps = {
 
 const QuizAnswered = ({
   autoAdvanceAfterAnswer,
+  autoAdvanceCountdownSeconds,
   currentQuestionIndex,
   questionsLength,
   onContinue,
@@ -18,8 +20,8 @@ const QuizAnswered = ({
       {autoAdvanceAfterAnswer ? (
         <Typography color="text.secondary">
           {currentQuestionIndex === questionsLength - 1
-            ? 'Eredmény megjelenítése 3 másodperc múlva.'
-            : 'Következő kérdés 3 másodperc múlva.'}
+            ? `Eredmény megjelenítése ${autoAdvanceCountdownSeconds} másodperc múlva.`
+            : `Következő kérdés ${autoAdvanceCountdownSeconds} másodperc múlva.`}
         </Typography>
       ) : (
         <Button onClick={onContinue} variant="contained">
