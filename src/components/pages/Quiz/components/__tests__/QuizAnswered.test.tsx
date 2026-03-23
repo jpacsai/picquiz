@@ -93,7 +93,6 @@ describe('QuizAnswered', () => {
       />,
     );
 
-    expect(screen.getByText('Alkotó:')).toBeInTheDocument();
     expect(screen.getByText(/Leonardo da Vinci/i)).toBeInTheDocument();
   });
 });

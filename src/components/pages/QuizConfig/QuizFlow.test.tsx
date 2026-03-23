@@ -129,6 +129,9 @@ const getCurrentCorrectAnswer = () => {
   return correctAnswer;
 };
 
+const getItemYearByTitle = (title: string) =>
+  items.find((item) => item.title === title)?.year;
+
 describe('Quiz flow integration', () => {
   beforeEach(() => {
     navigateMock.mockReset();
@@ -406,15 +409,14 @@ describe('Quiz flow integration', () => {
       />,
     );
 
-    await user.click(screen.getByRole('button', { name: getCurrentCorrectAnswer() }));
+    const correctAnswer = getCurrentCorrectAnswer();
+    const correctYear = getItemYearByTitle(correctAnswer);
 
-    expect(
-      screen.getByText(
-        (_, element) =>
-          element?.tagName === 'P' &&
-          element.textContent?.includes('Ev:'),
-      ),
-    ).toBeInTheDocument();
+    expect(correctYear).toBeDefined();
+
+    await user.click(screen.getByRole('button', { name: correctAnswer }));
+
+    expect(screen.getByText(String(correctYear))).toBeInTheDocument();
   });
 
   it('hides selected extra answer details after a wrong answer when correct answers are hidden', async () => {
@@ -441,7 +443,6 @@ describe('Quiz flow integration', () => {
 
     await user.click(wrongAnswerButton!);
 
-    expect(screen.queryByText((_, element) => element?.textContent === 'Ev:')).not.toBeInTheDocument();
-    expect(screen.queryByText('1503')).not.toBeInTheDocument();
+    expect(screen.queryByText(/^(1503|1498|1665|1642|1937|1908)$/)).not.toBeInTheDocument();
   });
 });
