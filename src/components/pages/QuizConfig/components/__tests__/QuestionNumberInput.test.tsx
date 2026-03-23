@@ -20,7 +20,7 @@ describe('QuestionNumberInput', () => {
       />,
     );
 
-    const input = screen.getByRole('spinbutton', { name: 'Kérdések száma' });
+    const input = screen.getByRole('spinbutton', { name: 'Kérdések száma (max: 12)' });
 
     expect(input).toHaveValue(10);
     expect(screen.getByRole('slider', { name: 'Kérdések száma' })).toHaveAttribute(
@@ -54,7 +54,7 @@ describe('QuestionNumberInput', () => {
       />,
     );
 
-    expect(screen.getByRole('spinbutton', { name: 'Kérdések száma' })).toBeDisabled();
+    expect(screen.getByRole('spinbutton', { name: 'Kérdések száma (max: 0)' })).toBeDisabled();
     expect(screen.getByRole('slider', { name: 'Kérdések száma' })).toBeDisabled();
   });
 });

@@ -37,7 +37,7 @@ const QuestionNumberInput = ({
   return (
     <FormControl fullWidth>
       <Typography id="quiz-question-count-label" variant="subtitle2">
-        Kérdések száma
+        Kérdések száma (max: {maxQuestionCount})
       </Typography>
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
