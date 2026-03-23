@@ -1,20 +1,13 @@
+import {
+  DISTRACTOR_COUNT,
+  QUESTION_COUNT_STEP,
+} from '@/consts/quiz';
 import type {
   QuizEligibleField,
   QuizPlayableItem,
   QuizQuestion,
 } from '@/types/quiz';
 import type { Topic, TopicField, TopicItem } from '@/types/topics';
-
-const QUESTION_COUNT_STEP = 5;
-const MIN_OPTION_COUNT = 4;
-const DISTRACTOR_COUNT = MIN_OPTION_COUNT - 1;
-
-export const QUIZ_CONFIG_STORAGE_KEYS = {
-  autoAdvanceAfterAnswer: 'picquiz-quiz-auto-advance-after-answer',
-  showCorrectAnswer: 'picquiz-quiz-show-correct-answer',
-  questionCount: (topicId: string) => `picquiz-quiz-question-count-${topicId}`,
-  selectedFieldKeys: (topicId: string) => `picquiz-quiz-selected-field-keys-${topicId}`,
-} as const;
 
 export const getStoredBoolean = (storageKey: string, fallbackValue: boolean): boolean => {
   if (typeof window === 'undefined') {

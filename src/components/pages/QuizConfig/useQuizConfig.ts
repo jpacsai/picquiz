@@ -1,19 +1,27 @@
 import { useNavigate } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
+import {
+  DEFAULT_AUTO_ADVANCE_AFTER_ANSWER,
+  DEFAULT_QUESTION_COUNT,
+  DEFAULT_SHOW_CORRECT_ANSWER,
+  MIN_QUESTION_COUNT,
+  QUIZ_CONFIG_STORAGE_KEYS,
+} from '@/consts/quiz';
 import type { UseQuizConfigResult } from '@/types/quiz';
 import type { Topic, TopicItem } from '@/types/topics';
-import { getEligibleQuizFields, getMaxQuestionCountForFields, getStoredBoolean, getStoredNumber, getStoredStringArray, QUIZ_CONFIG_STORAGE_KEYS } from '@/utils/quiz';
+import {
+  getEligibleQuizFields,
+  getMaxQuestionCountForFields,
+  getStoredBoolean,
+  getStoredNumber,
+  getStoredStringArray,
+} from '@/utils/quiz';
 
 type UseQuizConfigParams = {
   items: ReadonlyArray<TopicItem>;
   topic: Topic;
 };
-
-const MIN_QUESTION_COUNT = 4;
-const DEFAULT_QUESTION_COUNT = 10;
-const DEFAULT_SHOW_CORRECT_ANSWER = true;
-const DEFAULT_AUTO_ADVANCE_AFTER_ANSWER = false;
 
 export const useQuizConfig = ({ items, topic }: UseQuizConfigParams): UseQuizConfigResult => {
   const navigate = useNavigate();

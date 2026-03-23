@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 
+import {
+  AUTO_ADVANCE_DELAY_MS,
+  AUTO_ADVANCE_INTERVAL_MS,
+  INITIAL_AUTO_ADVANCE_COUNTDOWN_SECONDS,
+} from '@/consts/quiz';
 import type { Topic, TopicItem } from '@/types/topics';
 import { buildQuizQuestions, getSelectedQuizFields } from '@/utils/quiz';
-
-const AUTO_ADVANCE_DELAY_MS = 3000;
-const AUTO_ADVANCE_INTERVAL_MS = 1000;
-const INITIAL_AUTO_ADVANCE_COUNTDOWN_SECONDS =
-  AUTO_ADVANCE_DELAY_MS / AUTO_ADVANCE_INTERVAL_MS;
 
 type UseQuizParams = {
   answerFieldKeys: string[];
