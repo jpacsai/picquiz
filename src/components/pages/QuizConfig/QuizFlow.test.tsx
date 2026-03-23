@@ -222,11 +222,6 @@ describe('Quiz flow integration', () => {
 
     renderWithTheme(<QuizConfig items={items} topic={topic} />);
 
-    expect(
-      screen.getByRole('checkbox', { name: /cim - melyik cim tartozik a kephez/i }),
-    ).not.toBeChecked();
-    expect(screen.getByRole('checkbox', { name: /ev - melyik evben keszult/i })).toBeChecked();
-    expect(screen.getByRole('spinbutton', { name: 'Kérdések száma' })).toHaveValue(6);
     expect(screen.getByRole('switch', { name: 'Helyes válasz megmutatása' })).not.toBeChecked();
     expect(screen.getByRole('switch', { name: 'Automatikus továbblépés 3 mp után' })).toBeChecked();
   });
@@ -272,11 +267,18 @@ describe('Quiz flow integration', () => {
 
     renderWithTheme(<QuizConfig items={items} topic={topic} />);
 
-    expect(
-      screen.getByRole('checkbox', { name: /cim - melyik cim tartozik a kephez/i }),
-    ).not.toBeChecked();
-    expect(screen.getByRole('checkbox', { name: /ev - melyik evben keszult/i })).toBeChecked();
-    expect(screen.getByRole('spinbutton', { name: 'Kérdések száma' })).toHaveValue(6);
+    fireEvent.click(screen.getByRole('button', { name: 'Kvíz indítása' }));
+
+    expect(navigateMock).toHaveBeenLastCalledWith({
+      params: { topicId: 'art' },
+      search: {
+        answerFieldKeys: ['year'],
+        autoAdvanceAfterAnswer: false,
+        questionCount: 6,
+        showCorrectAnswer: true,
+      },
+      to: '/$topicId/quiz',
+    });
   });
 
   it('resets quiz config controls to their defaults', async () => {
@@ -293,14 +295,22 @@ describe('Quiz flow integration', () => {
 
     await user.click(screen.getByRole('button', { name: 'Alaphelyzet' }));
 
-    expect(
-      screen.getByRole('checkbox', { name: /cim - melyik cim tartozik a kephez/i }),
-    ).toBeChecked();
-    expect(screen.getByRole('checkbox', { name: /ev - melyik evben keszult/i })).not.toBeChecked();
-    expect(screen.getByRole('spinbutton', { name: 'Kérdések száma' })).toHaveValue(6);
     expect(screen.getByRole('switch', { name: 'Helyes válasz megmutatása' })).toBeChecked();
     expect(
       screen.getByRole('switch', { name: 'Automatikus továbblépés 3 mp után' }),
     ).not.toBeChecked();
+
+    await user.click(screen.getByRole('button', { name: 'Kvíz indítása' }));
+
+    expect(navigateMock).toHaveBeenLastCalledWith({
+      params: { topicId: 'art' },
+      search: {
+        answerFieldKeys: ['title'],
+        autoAdvanceAfterAnswer: false,
+        questionCount: 6,
+        showCorrectAnswer: true,
+      },
+      to: '/$topicId/quiz',
+    });
   });
 });
