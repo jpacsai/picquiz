@@ -9,7 +9,7 @@ import {
   MIN_QUESTION_COUNT,
   QUIZ_CONFIG_STORAGE_KEYS,
 } from '@/consts/quiz';
-import type { UseQuizConfigResult } from '@/types/quiz';
+import type { QuizValueField, UseQuizConfigResult } from '@/types/quiz';
 import type { Topic, TopicItem } from '@/types/topics';
 import {
   getEligibleQuizFields,
@@ -26,18 +26,23 @@ type UseQuizConfigParams = {
 
 export const useQuizConfig = ({ items, topic }: UseQuizConfigParams): UseQuizConfigResult => {
   const navigate = useNavigate();
-  const answerDetailsEnabledStorageKey = QUIZ_CONFIG_STORAGE_KEYS.answerDetailsEnabled(topic.id);
-  const answerDetailFieldKeysStorageKey = QUIZ_CONFIG_STORAGE_KEYS.answerDetailFieldKeys(topic.id);
-  const selectedFieldKeysStorageKey = QUIZ_CONFIG_STORAGE_KEYS.selectedFieldKeys(topic.id);
-  const questionCountStorageKey = QUIZ_CONFIG_STORAGE_KEYS.questionCount(topic.id);
+  const defaultAnswerDetailsEnabled: boolean = DEFAULT_ANSWER_DETAILS_ENABLED;
+  const answerDetailsEnabledStorageKey: string = QUIZ_CONFIG_STORAGE_KEYS.answerDetailsEnabled(
+    topic.id,
+  );
+  const answerDetailFieldKeysStorageKey: string = QUIZ_CONFIG_STORAGE_KEYS.answerDetailFieldKeys(
+    topic.id,
+  );
+  const selectedFieldKeysStorageKey: string = QUIZ_CONFIG_STORAGE_KEYS.selectedFieldKeys(topic.id);
+  const questionCountStorageKey: string = QUIZ_CONFIG_STORAGE_KEYS.questionCount(topic.id);
   const eligibleFields = getEligibleQuizFields({ items, topic });
   const startableFields = eligibleFields.filter((field) => field.maxQuestionCount > 0);
-  const answerDetailFields = startableFields.map(({ field }) => field);
+  const answerDetailFields: QuizValueField[] = startableFields.map(({ field }) => field);
   const [answerDetailFieldKeys, setAnswerDetailFieldKeys] = useState<string[]>(() =>
     getStoredStringArray(answerDetailFieldKeysStorageKey),
   );
   const [answerDetailsEnabled, setAnswerDetailsEnabled] = useState(() =>
-    getStoredBoolean(answerDetailsEnabledStorageKey, DEFAULT_ANSWER_DETAILS_ENABLED),
+    getStoredBoolean(answerDetailsEnabledStorageKey, defaultAnswerDetailsEnabled),
   );
   const [selectedFieldKeys, setSelectedFieldKeys] = useState<string[]>(() =>
     getStoredStringArray(selectedFieldKeysStorageKey),
@@ -156,7 +161,7 @@ export const useQuizConfig = ({ items, topic }: UseQuizConfigParams): UseQuizCon
   };
 
   const handleReset = () => {
-    setAnswerDetailsEnabled(DEFAULT_ANSWER_DETAILS_ENABLED);
+    setAnswerDetailsEnabled(defaultAnswerDetailsEnabled);
     setAnswerDetailFieldKeys([]);
     setSelectedFieldKeys([]);
     setSelectedQuestionCount(defaultQuestionCount);

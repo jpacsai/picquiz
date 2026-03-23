@@ -161,6 +161,7 @@ describe('QuizConfigView', () => {
     expect(
       screen.getByRole('switch', { name: 'Plusz adatok megjelenítése a válasz után' }),
     ).not.toBeChecked();
+    expect(screen.queryByText('Helyes válasz extra adatai')).not.toBeInTheDocument();
     expect(screen.queryByRole('checkbox', { name: 'Alkotó' })).not.toBeInTheDocument();
     expect(screen.queryByRole('checkbox', { name: 'Év' })).not.toBeInTheDocument();
   });

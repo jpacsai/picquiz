@@ -1,4 +1,4 @@
-import { Box, Checkbox } from '@mui/material';
+import { Box } from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -7,6 +7,7 @@ import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 
+import AnswerDetailsSection from '@/components/pages/QuizConfig/components/AnswerDetailsSection';
 import NoQuiz from '@/components/pages/QuizConfig/components/NoQuiz';
 import QuestionFieldsInput from '@/components/pages/QuizConfig/components/QuestionFieldsInput';
 import QuestionNumberInput from '@/components/pages/QuizConfig/components/QuestionNumberInput';
@@ -123,28 +124,12 @@ const QuizConfigView = ({
                       />
 
                       {answerDetailsEnabled ? (
-                        <>
-                          <Typography variant="subtitle1">Helyes válasz extra adatai</Typography>
-
-                          {answerDetailFields.map((field) => {
-                            const isChecked = answerDetailFieldKeys.includes(field.key);
-
-                            return (
-                              <FormControlLabel
-                                control={
-                                  <Checkbox
-                                    checked={isChecked}
-                                    onChange={(_, checked) => {
-                                      handleToggleAnswerDetailField(field.key, checked);
-                                    }}
-                                  />
-                                }
-                                key={field.key}
-                                label={field.label}
-                              />
-                            );
-                          })}
-                        </>
+                        <AnswerDetailsSection
+                          answerDetailFieldKeys={answerDetailFieldKeys}
+                          answerDetailFields={answerDetailFields}
+                          answerDetailsEnabled={answerDetailsEnabled}
+                          onToggleAnswerDetailField={handleToggleAnswerDetailField}
+                        />
                       ) : null}
                     </Stack>
                   </CardContent>

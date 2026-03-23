@@ -2,8 +2,10 @@ import type { Dispatch, SetStateAction } from 'react';
 
 import type { TopicField, TopicItem } from '@/types/topics';
 
+export type QuizValueField = Extract<TopicField, { type: 'string' | 'number' | 'select' }>;
+
 export type QuizEligibleField = {
-  field: Extract<TopicField, { type: 'string' | 'number' | 'select' }>;
+  field: QuizValueField;
   eligibleItemCount: number;
   maxQuestionCount: number;
   promptsLabel: string;
@@ -46,7 +48,7 @@ export type QuizPlayableItem = {
 
 export type UseQuizConfigResult = {
   answerDetailFieldKeys: string[];
-  answerDetailFields: Extract<TopicField, { type: 'string' | 'number' | 'select' }>[];
+  answerDetailFields: QuizValueField[];
   answerDetailsEnabled: boolean;
   autoAdvanceAfterAnswer: boolean;
   effectiveSelectedFieldKeys: string[];

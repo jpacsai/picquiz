@@ -252,6 +252,17 @@ describe('Quiz flow integration', () => {
     expect(
       screen.getByRole('switch', { name: 'Plusz adatok megjelenítése a válasz után' }),
     ).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'Ev' })).toBeInTheDocument();
+  });
+
+  it('keeps answer detail field checkboxes hidden while the feature toggle is off', () => {
+    renderWithTheme(<QuizConfig items={items} topic={topic} />);
+
+    expect(
+      screen.getByRole('switch', { name: 'Plusz adatok megjelenítése a válasz után' }),
+    ).not.toBeChecked();
+    expect(screen.queryByRole('checkbox', { name: 'Cim' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('checkbox', { name: 'Ev' })).not.toBeInTheDocument();
   });
 
   it('persists selected filters and restores them when returning to quiz config', async () => {

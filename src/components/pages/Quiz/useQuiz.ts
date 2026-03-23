@@ -5,7 +5,7 @@ import {
   AUTO_ADVANCE_INTERVAL_MS,
   INITIAL_AUTO_ADVANCE_COUNTDOWN_SECONDS,
 } from '@/consts/quiz';
-import type { QuizAnswerDetail } from '@/types/quiz';
+import type { QuizAnswerDetail, QuizValueField } from '@/types/quiz';
 import type { Topic, TopicItem } from '@/types/topics';
 import { buildQuizQuestions, getSelectedQuizFields } from '@/utils/quiz';
 
@@ -114,9 +114,7 @@ export const useQuiz = ({
 
     return topic.fields
       .filter(
-        (
-          field,
-        ): field is Extract<Topic['fields'][number], { type: 'string' | 'number' | 'select' }> =>
+        (field): field is QuizValueField =>
           (field.type === 'string' || field.type === 'number' || field.type === 'select') &&
           answerDetailFieldKeys.includes(field.key) &&
           field.key !== currentQuestion.answerFieldKey,
