@@ -100,13 +100,15 @@ const items: TopicItem[] = [
 
 describe('AdminTopicCollectionPage', () => {
   const getSearchInput = () => screen.getByRole('combobox', { name: 'Keresett érték' });
+  const getDisplayedCount = (count: number) =>
+    screen.getByText(`${count} elem`);
 
   it('filters the rendered list by the selected field', async () => {
     const user = userEvent.setup();
 
     render(<AdminTopicCollectionPage items={items} topic={topic} />);
 
-    expect(screen.getByText('Jelenleg megjelenítve: 3 elem')).toBeInTheDocument();
+    expect(getDisplayedCount(3)).toBeInTheDocument();
     expect(screen.getByText('Mona Lisa')).toBeInTheDocument();
     expect(screen.getByText('Csillagos ég')).toBeInTheDocument();
     expect(screen.getByText('Tavirózsák')).toBeInTheDocument();
@@ -121,7 +123,7 @@ describe('AdminTopicCollectionPage', () => {
         expect(screen.getByText('Mona Lisa')).toBeInTheDocument();
         expect(screen.getByText('Csillagos ég')).toBeInTheDocument();
         expect(screen.queryByText('Tavirózsák')).not.toBeInTheDocument();
-        expect(screen.getByText('Jelenleg megjelenítve: 2 elem')).toBeInTheDocument();
+        expect(getDisplayedCount(2)).toBeInTheDocument();
       },
       { timeout: 2000 },
     );
@@ -151,9 +153,37 @@ describe('AdminTopicCollectionPage', () => {
         expect(message).toBeInTheDocument();
         expect(within(message).getByText('nem letezik')).toBeInTheDocument();
         expect(screen.queryByText('Mona Lisa')).not.toBeInTheDocument();
-        expect(screen.getByText('Jelenleg megjelenítve: 0 elem')).toBeInTheDocument();
+        expect(getDisplayedCount(0)).toBeInTheDocument();
       },
       { timeout: 2000 },
     );
+  });
+
+  it('resets the filter to its default state when the reset button is clicked', async () => {
+    const user = userEvent.setup();
+
+    render(<AdminTopicCollectionPage items={items} topic={topic} />);
+
+    await user.click(screen.getByRole('combobox', { name: 'Keresés mező szerint' }));
+    await user.click(screen.getByRole('option', { name: 'Alkotó' }));
+    await user.type(getSearchInput(), 'claude');
+
+    await waitFor(() => {
+      expect(getDisplayedCount(1)).toBeInTheDocument();
+      expect(screen.queryByText('Mona Lisa')).not.toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Szűrő visszaállítása' }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('combobox', { name: 'Keresés mező szerint' })).toHaveTextContent(
+        'Cím',
+      );
+      expect(getSearchInput()).toHaveValue('');
+      expect(getDisplayedCount(3)).toBeInTheDocument();
+      expect(screen.getByText('Mona Lisa')).toBeInTheDocument();
+      expect(screen.getByText('Csillagos ég')).toBeInTheDocument();
+      expect(screen.getByText('Tavirózsák')).toBeInTheDocument();
+    });
   });
 });

@@ -18,6 +18,7 @@ const TopicCollectionPageView = ({
   items,
   noResultsQuery,
   onCreateNewItem,
+  onResetSearch,
   onSearchFieldChange,
   onSearchQueryChange,
   searchFieldKey,
@@ -43,6 +44,7 @@ const TopicCollectionPageView = ({
             searchableFields={searchableFields}
             searchOptions={searchOptions}
             searchQuery={searchQuery}
+            onResetSearch={onResetSearch}
             onSearchFieldChange={onSearchFieldChange}
             onSearchQueryChange={onSearchQueryChange}
           />

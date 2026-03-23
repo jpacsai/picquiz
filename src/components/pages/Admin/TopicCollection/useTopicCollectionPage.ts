@@ -110,6 +110,11 @@ export const useTopicCollectionPage = ({
       setSearchQuery('');
     },
     onSearchQueryChange: setSearchQuery,
+    onResetSearch: () => {
+      setSearchFieldKey(defaultSearchFieldKey);
+      setSearchQuery('');
+      setDebouncedSearchQuery('');
+    },
     searchFieldKey: activeSearchFieldKey,
     searchOptions,
     searchQuery,
