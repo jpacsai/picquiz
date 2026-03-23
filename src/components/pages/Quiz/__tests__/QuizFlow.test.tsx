@@ -133,7 +133,7 @@ describe('Quiz flow integration', () => {
       search: {
         answerFieldKeys: ['title', 'year'],
         autoAdvanceAfterAnswer: false,
-        questionCount: 5,
+        questionCount: 10,
         showCorrectAnswer: true,
       },
       to: '/$topicId/quiz',
@@ -144,14 +144,14 @@ describe('Quiz flow integration', () => {
         answerFieldKeys={['title', 'year']}
         autoAdvanceAfterAnswer={false}
         items={items}
-        questionCount={5}
+        questionCount={10}
         showCorrectAnswer
         topic={topic}
       />,
     );
 
     expect(screen.queryByText('Hiányos kvíz konfiguráció')).not.toBeInTheDocument();
-    expect(screen.getByText(/5\s*\/\s*1/)).toBeInTheDocument();
+    expect(screen.getByText(/10\s*\/\s*1/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Vissza a beállításokhoz' })).toBeInTheDocument();
   });
 
@@ -225,7 +225,7 @@ describe('Quiz flow integration', () => {
 
     expect(screen.getByRole('checkbox', { name: /cim - melyik cim tartozik a kephez/i })).not.toBeChecked();
     expect(screen.getByRole('checkbox', { name: /ev - melyik evben keszult/i })).toBeChecked();
-    expect(screen.getByRole('combobox', { name: 'Kérdések száma' })).toHaveTextContent('6 kérdés');
+    expect(screen.getByRole('spinbutton', { name: 'Kérdések száma' })).toHaveValue(6);
     expect(screen.getByRole('switch', { name: 'Helyes válasz megmutatása' })).not.toBeChecked();
     expect(screen.getByRole('switch', { name: 'Automatikus továbblépés 3 mp után' })).toBeChecked();
   });
@@ -237,8 +237,9 @@ describe('Quiz flow integration', () => {
 
     await user.click(screen.getByRole('checkbox', { name: /ev - melyik evben keszult/i }));
     await user.click(screen.getByRole('checkbox', { name: /cim - melyik cim tartozik a kephez/i }));
-    await user.click(screen.getByRole('combobox', { name: 'Kérdések száma' }));
-    await user.click(await screen.findByRole('option', { name: '6 kérdés' }));
+    fireEvent.change(screen.getByRole('spinbutton', { name: 'Kérdések száma' }), {
+      target: { value: '6' },
+    });
     await user.click(screen.getByRole('button', { name: 'Kvíz indítása' }));
 
     expect(window.localStorage.getItem('picquiz-quiz-selected-field-keys-art')).toBe(
@@ -272,6 +273,6 @@ describe('Quiz flow integration', () => {
 
     expect(screen.getByRole('checkbox', { name: /cim - melyik cim tartozik a kephez/i })).not.toBeChecked();
     expect(screen.getByRole('checkbox', { name: /ev - melyik evben keszult/i })).toBeChecked();
-    expect(screen.getByRole('combobox', { name: 'Kérdések száma' })).toHaveTextContent('6 kérdés');
+    expect(screen.getByRole('spinbutton', { name: 'Kérdések száma' })).toHaveValue(6);
   });
 });

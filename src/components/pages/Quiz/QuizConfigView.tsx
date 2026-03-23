@@ -1,12 +1,12 @@
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select, { type SelectChangeEvent } from '@mui/material/Select';
+import Input from '@mui/material/Input';
+import Slider from '@mui/material/Slider';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
@@ -20,16 +20,33 @@ const QuizConfigView = ({
   effectiveSelectedFieldKeys,
   eligibleFields,
   handleStartQuiz,
+  handleQuestionCountBlur,
+  handleQuestionCountInputChange,
+  handleQuestionCountSliderChange,
   handleToggleField,
+  maxQuestionCount,
+  minQuestionCount,
   questionCount,
-  questionCountOptions,
   selectedFields,
   setAutoAdvanceAfterAnswer,
-  setSelectedQuestionCount,
   setShowCorrectAnswer,
   showCorrectAnswer,
   startableFields,
 }: QuizConfigViewProps) => {
+  const sliderMax = Math.max(maxQuestionCount, 1);
+  const sliderMin = maxQuestionCount > 0 ? (minQuestionCount < sliderMax ? minQuestionCount : sliderMax) : 1;
+  const sliderMarks = Array.from(
+    new Set([
+      sliderMin,
+      sliderMax,
+      ...Array.from({ length: Math.floor(sliderMax / 5) }, (_, index) => (index + 1) * 5).filter(
+        (value) => value >= sliderMin && value <= sliderMax,
+      ),
+    ]),
+  )
+    .sort((left, right) => left - right)
+    .map((value) => ({ value }));
+
   return (
     <Stack spacing={3}>
       <Card sx={{ width: '100%' }} variant="outlined">
@@ -67,22 +84,40 @@ const QuizConfigView = ({
                 </Card>
 
                 <FormControl fullWidth>
-                  <InputLabel id="quiz-question-count-label">Kérdések száma</InputLabel>
-                  <Select
-                    id="quiz-question-count"
-                    label="Kérdések száma"
-                    labelId="quiz-question-count-label"
-                    onChange={(event: SelectChangeEvent<string>) => {
-                      setSelectedQuestionCount(Number(event.target.value));
-                    }}
-                    value={questionCount ? String(questionCount) : ''}
-                  >
-                    {questionCountOptions.map((count) => (
-                      <MenuItem key={count} value={String(count)}>
-                        {count} kérdés
-                      </MenuItem>
-                    ))}
-                  </Select>
+                  <Typography id="quiz-question-count-label" variant="subtitle2">
+                    Kérdések száma
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Input
+                      id="quiz-question-count-input"
+                      value={questionCount}
+                      size="small"
+                      onChange={(event) => {
+                        handleQuestionCountInputChange(event.target.value);
+                      }}
+                      onBlur={handleQuestionCountBlur}
+                      inputProps={{
+                        step: 1,
+                        min: minQuestionCount,
+                        max: sliderMax,
+                        type: 'number',
+                        'aria-labelledby': 'quiz-question-count-label',
+                      }}
+                      disabled={maxQuestionCount <= 0}
+                      sx={{ width: 56 }}
+                    />
+                    <Slider
+                      aria-label="Kérdések száma"
+                      value={typeof questionCount === 'number' ? questionCount : 0}
+                      onChange={handleQuestionCountSliderChange}
+                      marks={sliderMarks}
+                      min={sliderMin}
+                      max={sliderMax}
+                      step={null}
+                      disabled={maxQuestionCount <= 0}
+                      sx={{ mr: 2 }}
+                    />
+                  </Box>
                 </FormControl>
 
                 <FormControlLabel

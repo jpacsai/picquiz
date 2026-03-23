@@ -19,6 +19,9 @@ type UseQuizConfigParams = {
   topic: Topic;
 };
 
+const MIN_QUESTION_COUNT = 4;
+const DEFAULT_QUESTION_COUNT = 10;
+
 export const useQuizConfig = ({ items, topic }: UseQuizConfigParams) => {
   const navigate = useNavigate();
   const selectedFieldKeysStorageKey = QUIZ_CONFIG_STORAGE_KEYS.selectedFieldKeys(topic.id);
@@ -65,10 +68,16 @@ export const useQuizConfig = ({ items, topic }: UseQuizConfigParams) => {
     items,
     topic,
   });
-  const questionCountOptions = getQuestionCountOptions(maxQuestionCount);
-  const questionCount = questionCountOptions.includes(selectedQuestionCount)
-    ? selectedQuestionCount
-    : (questionCountOptions[0] ?? 0);
+  const defaultQuestionCount =
+    maxQuestionCount >= DEFAULT_QUESTION_COUNT
+      ? DEFAULT_QUESTION_COUNT
+      : maxQuestionCount >= MIN_QUESTION_COUNT
+        ? maxQuestionCount
+        : 0;
+  const questionCount =
+    selectedQuestionCount >= MIN_QUESTION_COUNT && selectedQuestionCount <= maxQuestionCount
+      ? selectedQuestionCount
+      : defaultQuestionCount;
 
   useEffect(() => {
     window.localStorage.setItem(
@@ -88,6 +97,30 @@ export const useQuizConfig = ({ items, topic }: UseQuizConfigParams) => {
 
     setSelectedFieldKeys(nextFieldKeys);
     setSelectedQuestionCount(0);
+  };
+
+  const handleQuestionCountSliderChange = (_event: Event, nextValue: number | number[]) => {
+    setSelectedQuestionCount(Array.isArray(nextValue) ? (nextValue[0] ?? 0) : nextValue);
+  };
+
+  const handleQuestionCountInputChange = (nextValue: string) => {
+    setSelectedQuestionCount(nextValue === '' ? 0 : Number(nextValue));
+  };
+
+  const handleQuestionCountBlur = () => {
+    if (maxQuestionCount <= 0) {
+      setSelectedQuestionCount(0);
+      return;
+    }
+
+    if (selectedQuestionCount < MIN_QUESTION_COUNT) {
+      setSelectedQuestionCount(Math.min(MIN_QUESTION_COUNT, maxQuestionCount));
+      return;
+    }
+
+    if (selectedQuestionCount > maxQuestionCount) {
+      setSelectedQuestionCount(maxQuestionCount);
+    }
   };
 
   const handleStartQuiz = () => {
@@ -112,9 +145,13 @@ export const useQuizConfig = ({ items, topic }: UseQuizConfigParams) => {
     effectiveSelectedFieldKeys,
     eligibleFields,
     handleStartQuiz,
+    handleQuestionCountBlur,
+    handleQuestionCountInputChange,
+    handleQuestionCountSliderChange,
     handleToggleField,
+    maxQuestionCount,
+    minQuestionCount: MIN_QUESTION_COUNT,
     questionCount,
-    questionCountOptions,
     selectedFields,
     setAutoAdvanceAfterAnswer,
     setSelectedQuestionCount,
