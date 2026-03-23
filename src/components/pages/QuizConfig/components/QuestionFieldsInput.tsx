@@ -1,4 +1,4 @@
-import { Checkbox, FormControlLabel, Stack, Typography } from '@mui/material';
+import { Box, Checkbox, FormControlLabel, Stack, Typography } from '@mui/material';
 
 import type { QuizEligibleField } from '@/types/quiz';
 
@@ -17,7 +17,7 @@ const QuestionFieldsInput = ({
     <Stack spacing={1.5}>
       <Typography variant="subtitle1">Kérdezett mezők</Typography>
 
-      {startableFields.map(({ field, promptsLabel }) => {
+      {startableFields.map(({ distinctValueCount, eligibleItemCount, field, promptsLabel }) => {
         const isChecked = effectiveSelectedFieldKeys.includes(field.key);
 
         return (
@@ -31,7 +31,15 @@ const QuestionFieldsInput = ({
               />
             }
             key={field.key}
-            label={`${field.label} - ${promptsLabel}`}
+            label={
+              <Box component="span">
+                <Box component="strong" sx={{ fontSize: '1.05rem' }}>
+                  {field.label}
+                </Box>{' '}
+                - {promptsLabel} - {eligibleItemCount} elem, {distinctValueCount} különböző
+                válaszlehetőség
+              </Box>
+            }
           />
         );
       })}

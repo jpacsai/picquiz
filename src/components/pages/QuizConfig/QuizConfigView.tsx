@@ -10,7 +10,6 @@ import Typography from '@mui/material/Typography';
 import NoQuiz from '@/components/pages/QuizConfig/components/NoQuiz';
 import QuestionFieldsInput from '@/components/pages/QuizConfig/components/QuestionFieldsInput';
 import QuestionNumberInput from '@/components/pages/QuizConfig/components/QuestionNumberInput';
-import SelectedFieldsSummary from '@/components/pages/QuizConfig/components/SelectedFieldsSummary';
 import type { UseQuizConfigResult } from '@/types/quiz';
 
 type QuizConfigViewProps = UseQuizConfigResult;
@@ -102,8 +101,6 @@ const QuizConfigView = ({
                   }
                   label="Automatikus továbblépés 3 mp után"
                 />
-
-                <SelectedFieldsSummary selectedFields={selectedFields} />
 
                 <Button
                   disabled={!selectedFields.length || !questionCount}

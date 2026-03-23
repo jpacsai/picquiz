@@ -9,7 +9,6 @@ import QuizConfigView from './QuizConfigView';
 const noQuizMock = vi.fn();
 const questionFieldsInputMock = vi.fn();
 const questionNumberInputMock = vi.fn();
-const selectedFieldsSummaryMock = vi.fn();
 
 vi.mock('@/components/pages/QuizConfig/components/NoQuiz', () => ({
   default: (props: unknown) => {
@@ -29,13 +28,6 @@ vi.mock('@/components/pages/QuizConfig/components/QuestionNumberInput', () => ({
   default: (props: unknown) => {
     questionNumberInputMock(props);
     return <div data-testid="question-number-input" />;
-  },
-}));
-
-vi.mock('@/components/pages/QuizConfig/components/SelectedFieldsSummary', () => ({
-  default: (props: unknown) => {
-    selectedFieldsSummaryMock(props);
-    return <div data-testid="selected-fields-summary" />;
   },
 }));
 
@@ -85,7 +77,6 @@ describe('QuizConfigView', () => {
     noQuizMock.mockClear();
     questionFieldsInputMock.mockClear();
     questionNumberInputMock.mockClear();
-    selectedFieldsSummaryMock.mockClear();
   });
 
   it('renders the no-quiz branch when there are no startable fields', () => {
@@ -117,7 +108,6 @@ describe('QuizConfigView', () => {
 
     expect(screen.getByTestId('question-fields-input')).toBeInTheDocument();
     expect(screen.getByTestId('question-number-input')).toBeInTheDocument();
-    expect(screen.getByTestId('selected-fields-summary')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Kvíz indítása' })).toBeEnabled();
 
     expect(questionFieldsInputMock).toHaveBeenCalledWith(
@@ -135,11 +125,6 @@ describe('QuizConfigView', () => {
         onQuestionCountBlur: viewModel.handleQuestionCountBlur,
         onQuestionCountInputChange: viewModel.handleQuestionCountInputChange,
         onQuestionCountSliderChange: viewModel.handleQuestionCountSliderChange,
-      }),
-    );
-    expect(selectedFieldsSummaryMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        selectedFields: viewModel.selectedFields,
       }),
     );
   });

@@ -54,8 +54,12 @@ describe('QuestionFieldsInput', () => {
 
     expect(screen.getByText('Kérdezett mezők')).toBeInTheDocument();
 
-    const artistCheckbox = screen.getByRole('checkbox', { name: 'Művész - Ki az alkotó?' });
-    const yearCheckbox = screen.getByRole('checkbox', { name: 'Év - Mikor készült?' });
+    const artistCheckbox = screen.getByRole('checkbox', {
+      name: 'Művész - Ki az alkotó? - 10 használható item, 6 különböző válaszlehetőség',
+    });
+    const yearCheckbox = screen.getByRole('checkbox', {
+      name: 'Év - Mikor készült? - 10 használható item, 6 különböző válaszlehetőség',
+    });
 
     expect(artistCheckbox).toBeChecked();
     expect(yearCheckbox).not.toBeChecked();
