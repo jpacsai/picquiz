@@ -29,6 +29,12 @@ export type QuizQuestion = {
   prompt: string;
 };
 
+export type QuizAnswerDetail = {
+  key: string;
+  label: string;
+  value: string;
+};
+
 export type QuizPlayableItem = {
   imageUrls: {
     desktop: string;
@@ -39,9 +45,13 @@ export type QuizPlayableItem = {
 };
 
 export type UseQuizConfigResult = {
+  answerDetailFieldKeys: string[];
+  answerDetailFields: Extract<TopicField, { type: 'string' | 'number' | 'select' }>[];
+  answerDetailsEnabled: boolean;
   autoAdvanceAfterAnswer: boolean;
   effectiveSelectedFieldKeys: string[];
   eligibleFields: QuizEligibleField[];
+  handleToggleAnswerDetailField: (fieldKey: string, checked: boolean) => void;
   handleReset: () => void;
   handleStartQuiz: () => void;
   handleQuestionCountBlur: () => void;
@@ -52,6 +62,7 @@ export type UseQuizConfigResult = {
   minQuestionCount: number;
   questionCount: number;
   selectedFields: QuizEligibleField[];
+  setAnswerDetailsEnabled: Dispatch<SetStateAction<boolean>>;
   setAutoAdvanceAfterAnswer: Dispatch<SetStateAction<boolean>>;
   setShowCorrectAnswer: Dispatch<SetStateAction<boolean>>;
   showCorrectAnswer: boolean;

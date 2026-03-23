@@ -13,8 +13,10 @@ describe('QuizAnswered', () => {
       <QuizAnswered
         autoAdvanceAfterAnswer={false}
         autoAdvanceCountdownSeconds={3}
+        answerDetails={[]}
         currentQuestionIndex={0}
         questionsLength={3}
+        showAnswerDetails={false}
         onContinue={onContinue}
       />,
     );
@@ -29,8 +31,10 @@ describe('QuizAnswered', () => {
       <QuizAnswered
         autoAdvanceAfterAnswer={false}
         autoAdvanceCountdownSeconds={3}
+        answerDetails={[]}
         currentQuestionIndex={2}
         questionsLength={3}
+        showAnswerDetails={false}
         onContinue={vi.fn()}
       />,
     );
@@ -43,8 +47,10 @@ describe('QuizAnswered', () => {
       <QuizAnswered
         autoAdvanceAfterAnswer
         autoAdvanceCountdownSeconds={3}
+        answerDetails={[]}
         currentQuestionIndex={0}
         questionsLength={3}
+        showAnswerDetails={false}
         onContinue={vi.fn()}
       />,
     );
@@ -57,12 +63,37 @@ describe('QuizAnswered', () => {
       <QuizAnswered
         autoAdvanceAfterAnswer
         autoAdvanceCountdownSeconds={1}
+        answerDetails={[]}
         currentQuestionIndex={2}
         questionsLength={3}
+        showAnswerDetails={false}
         onContinue={vi.fn()}
       />,
     );
 
     expect(screen.getByText('Eredmény megjelenítése 1 másodperc múlva.')).toBeInTheDocument();
+  });
+
+  it('renders answer details when they should be shown', () => {
+    render(
+      <QuizAnswered
+        autoAdvanceAfterAnswer={false}
+        autoAdvanceCountdownSeconds={3}
+        answerDetails={[
+          {
+            key: 'artist',
+            label: 'Alkotó',
+            value: 'Leonardo da Vinci',
+          },
+        ]}
+        currentQuestionIndex={0}
+        questionsLength={3}
+        showAnswerDetails
+        onContinue={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText('Alkotó:')).toBeInTheDocument();
+    expect(screen.getByText(/Leonardo da Vinci/i)).toBeInTheDocument();
   });
 });

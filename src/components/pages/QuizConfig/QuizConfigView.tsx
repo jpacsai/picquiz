@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, Checkbox } from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -15,9 +15,13 @@ import type { UseQuizConfigResult } from '@/types/quiz';
 type QuizConfigViewProps = UseQuizConfigResult;
 
 const QuizConfigView = ({
+  answerDetailFieldKeys,
+  answerDetailFields,
+  answerDetailsEnabled,
   autoAdvanceAfterAnswer,
   effectiveSelectedFieldKeys,
   eligibleFields,
+  handleToggleAnswerDetailField,
   handleReset,
   handleStartQuiz,
   handleQuestionCountBlur,
@@ -28,6 +32,7 @@ const QuizConfigView = ({
   minQuestionCount,
   questionCount,
   selectedFields,
+  setAnswerDetailsEnabled,
   setAutoAdvanceAfterAnswer,
   setShowCorrectAnswer,
   showCorrectAnswer,
@@ -99,8 +104,51 @@ const QuizConfigView = ({
                       }}
                     />
                   }
-                  label="Helyes válasz megmutatása"
+                  label="Helyes válasz megmutatása rossz válasz esetén"
                 />
+
+                <Card variant="outlined" sx={{ width: '100%' }}>
+                  <CardContent>
+                    <Stack spacing={1.5}>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={answerDetailsEnabled}
+                            onChange={(_, checked) => {
+                              setAnswerDetailsEnabled(checked);
+                            }}
+                          />
+                        }
+                        label="Plusz adatok megjelenítése a válasz után"
+                      />
+
+                      {answerDetailsEnabled ? (
+                        <>
+                          <Typography variant="subtitle1">Helyes válasz extra adatai</Typography>
+
+                          {answerDetailFields.map((field) => {
+                            const isChecked = answerDetailFieldKeys.includes(field.key);
+
+                            return (
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={isChecked}
+                                    onChange={(_, checked) => {
+                                      handleToggleAnswerDetailField(field.key, checked);
+                                    }}
+                                  />
+                                }
+                                key={field.key}
+                                label={field.label}
+                              />
+                            );
+                          })}
+                        </>
+                      ) : null}
+                    </Stack>
+                  </CardContent>
+                </Card>
 
                 <Button
                   disabled={!selectedFields.length || !questionCount}

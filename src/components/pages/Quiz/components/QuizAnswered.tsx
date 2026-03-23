@@ -1,22 +1,36 @@
-import { Button, Stack, Typography } from '@mui/material';
+import { Box, Button, Stack, Typography } from '@mui/material';
+import type { QuizAnswerDetail } from '@/types/quiz';
 
 type QuizAnsweredProps = {
   autoAdvanceAfterAnswer: boolean;
   autoAdvanceCountdownSeconds: number;
+  answerDetails: QuizAnswerDetail[];
   currentQuestionIndex: number;
   questionsLength: number;
+  showAnswerDetails: boolean;
   onContinue: () => void;
 };
 
 const QuizAnswered = ({
   autoAdvanceAfterAnswer,
   autoAdvanceCountdownSeconds,
+  answerDetails,
   currentQuestionIndex,
   questionsLength,
+  showAnswerDetails,
   onContinue,
 }: QuizAnsweredProps) => {
   return (
     <Stack spacing={2}>
+      {showAnswerDetails && answerDetails.length ? (
+        <Stack spacing={0.5}>
+          {answerDetails.map((detail) => (
+            <Typography color="text.secondary" key={detail.key}>
+              <Box component="strong">{detail.label}:</Box> {detail.value}
+            </Typography>
+          ))}
+        </Stack>
+      ) : null}
       {autoAdvanceAfterAnswer ? (
         <Typography color="text.secondary">
           {currentQuestionIndex === questionsLength - 1

@@ -5,10 +5,12 @@ import {
   AUTO_ADVANCE_INTERVAL_MS,
   INITIAL_AUTO_ADVANCE_COUNTDOWN_SECONDS,
 } from '@/consts/quiz';
+import type { QuizAnswerDetail } from '@/types/quiz';
 import type { Topic, TopicItem } from '@/types/topics';
 import { buildQuizQuestions, getSelectedQuizFields } from '@/utils/quiz';
 
 type UseQuizParams = {
+  answerDetailFieldKeys: string[];
   answerFieldKeys: string[];
   autoAdvanceAfterAnswer: boolean;
   isDesktop: boolean;
@@ -18,6 +20,7 @@ type UseQuizParams = {
 };
 
 export const useQuiz = ({
+  answerDetailFieldKeys,
   answerFieldKeys,
   autoAdvanceAfterAnswer,
   isDesktop,
@@ -98,9 +101,47 @@ export const useQuiz = ({
     }
   };
 
+  const currentAnswerDetails = (() => {
+    if (!currentQuestion || !answerDetailFieldKeys.length) {
+      return [] as QuizAnswerDetail[];
+    }
+
+    const currentItem = items.find((item) => item.id === currentQuestion.itemId);
+
+    if (!currentItem) {
+      return [] as QuizAnswerDetail[];
+    }
+
+    return topic.fields
+      .filter(
+        (
+          field,
+        ): field is Extract<Topic['fields'][number], { type: 'string' | 'number' | 'select' }> =>
+          (field.type === 'string' || field.type === 'number' || field.type === 'select') &&
+          answerDetailFieldKeys.includes(field.key) &&
+          field.key !== currentQuestion.answerFieldKey,
+      )
+      .flatMap((field) => {
+        const value = currentItem[field.key];
+        const displayValue =
+          typeof value === 'number' ? String(value) : typeof value === 'string' ? value.trim() : '';
+
+        return displayValue
+          ? [
+              {
+                key: field.key,
+                label: field.label,
+                value: displayValue,
+              },
+            ]
+          : [];
+      });
+  })();
+
   return {
     autoAdvanceCountdownSeconds,
     continueToNextQuestion,
+    currentAnswerDetails,
     currentImageUrl,
     currentQuestion,
     currentQuestionIndex,

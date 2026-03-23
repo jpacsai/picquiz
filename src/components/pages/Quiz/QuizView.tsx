@@ -11,11 +11,12 @@ import QuizImage from '@/components/pages/Quiz/components/QuizImage';
 import QuizMissingFields from '@/components/pages/Quiz/components/QuizMissingFields';
 import QuizOptions from '@/components/pages/Quiz/components/QuizOptions.tsx/QuizOptions';
 import ReturnToConfigButton from '@/components/pages/Quiz/components/ReturnToConfigButton';
-import type { QuizQuestion } from '@/types/quiz';
+import type { QuizAnswerDetail, QuizQuestion } from '@/types/quiz';
 
 type QuizViewProps = {
   autoAdvanceAfterAnswer: boolean;
   autoAdvanceCountdownSeconds: number;
+  answerDetails: QuizAnswerDetail[];
   currentImageUrl: string;
   currentQuestion: QuizQuestion | null;
   currentQuestionIndex: number;
@@ -37,6 +38,7 @@ type QuizViewProps = {
 const QuizView = ({
   autoAdvanceAfterAnswer,
   autoAdvanceCountdownSeconds,
+  answerDetails,
   currentImageUrl,
   currentQuestion,
   currentQuestionIndex,
@@ -123,8 +125,10 @@ const QuizView = ({
                   <QuizAnswered
                     autoAdvanceAfterAnswer={autoAdvanceAfterAnswer}
                     autoAdvanceCountdownSeconds={autoAdvanceCountdownSeconds}
+                    answerDetails={answerDetails}
                     currentQuestionIndex={currentQuestionIndex}
                     questionsLength={questions.length}
+                    showAnswerDetails={showCorrectAnswer || Boolean(currentQuestion.options.find((option) => option.id === selectedOptionId)?.isCorrect)}
                     onContinue={onContinueToNextQuestion}
                   />
                 ) : null}

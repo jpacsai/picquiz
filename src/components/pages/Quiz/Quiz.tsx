@@ -6,6 +6,7 @@ import QuizView from './QuizView';
 import { useQuiz } from './useQuiz';
 
 type QuizProps = {
+  answerDetailFieldKeys: string[];
   answerFieldKeys: string[];
   autoAdvanceAfterAnswer: boolean;
   items: ReadonlyArray<TopicItem>;
@@ -15,6 +16,7 @@ type QuizProps = {
 };
 
 const Quiz = ({
+  answerDetailFieldKeys,
   answerFieldKeys,
   autoAdvanceAfterAnswer,
   items,
@@ -27,6 +29,7 @@ const Quiz = ({
   const {
     autoAdvanceCountdownSeconds,
     continueToNextQuestion,
+    currentAnswerDetails,
     currentImageUrl,
     currentQuestion,
     currentQuestionIndex,
@@ -39,6 +42,7 @@ const Quiz = ({
     selectedFields,
     selectedOptionId,
   } = useQuiz({
+    answerDetailFieldKeys,
     answerFieldKeys,
     autoAdvanceAfterAnswer,
     isDesktop,
@@ -51,6 +55,7 @@ const Quiz = ({
     <QuizView
       autoAdvanceAfterAnswer={autoAdvanceAfterAnswer}
       autoAdvanceCountdownSeconds={autoAdvanceCountdownSeconds}
+      answerDetails={currentAnswerDetails}
       currentImageUrl={currentImageUrl}
       currentQuestion={currentQuestion}
       currentQuestionIndex={currentQuestionIndex}

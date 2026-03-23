@@ -8,6 +8,17 @@ const path = '/_app/$topicId/quiz';
 
 const parseSearch = (search: Record<string, unknown>) =>
   ({
+    answerDetailFieldKeys: Array.isArray(search.answerDetailFieldKeys)
+      ? search.answerDetailFieldKeys.filter(
+          (fieldKey): fieldKey is string =>
+            typeof fieldKey === 'string' && fieldKey.trim().length > 0,
+        )
+      : typeof search.answerDetailFieldKeys === 'string'
+        ? search.answerDetailFieldKeys
+            .split(',')
+            .map((fieldKey) => fieldKey.trim())
+            .filter(Boolean)
+        : [],
     answerFieldKeys: Array.isArray(search.answerFieldKeys)
       ? search.answerFieldKeys.filter(
           (fieldKey): fieldKey is string =>
@@ -39,11 +50,18 @@ const parseSearch = (search: Record<string, unknown>) =>
 
 const RouteComponent = () => {
   const { items, topic } = useLoaderData({ from: path });
-  const { answerFieldKeys, autoAdvanceAfterAnswer, questionCount, showCorrectAnswer } =
+  const {
+    answerDetailFieldKeys,
+    answerFieldKeys,
+    autoAdvanceAfterAnswer,
+    questionCount,
+    showCorrectAnswer,
+  } =
     Route.useSearch();
 
   return (
     <Quiz
+      answerDetailFieldKeys={answerDetailFieldKeys}
       answerFieldKeys={answerFieldKeys}
       autoAdvanceAfterAnswer={autoAdvanceAfterAnswer}
       items={items}

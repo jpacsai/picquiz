@@ -49,12 +49,29 @@ const startableFields: QuizEligibleField[] = [
   },
 ];
 
+const answerDetailFields = [
+  {
+    key: 'artist',
+    label: 'Alkotó',
+    type: 'string',
+  },
+  {
+    key: 'year',
+    label: 'Év',
+    type: 'number',
+  },
+] as const;
+
 const createViewModel = (
   overrides: Partial<UseQuizConfigResult> = {},
 ): UseQuizConfigResult => ({
+  answerDetailFieldKeys: [],
+  answerDetailFields: [...answerDetailFields],
+  answerDetailsEnabled: true,
   autoAdvanceAfterAnswer: false,
   effectiveSelectedFieldKeys: ['title'],
   eligibleFields: startableFields,
+  handleToggleAnswerDetailField: vi.fn(),
   handleReset: vi.fn(),
   handleStartQuiz: vi.fn(),
   handleQuestionCountBlur: vi.fn(),
@@ -65,6 +82,7 @@ const createViewModel = (
   minQuestionCount: 4,
   questionCount: 10,
   selectedFields: startableFields,
+  setAnswerDetailsEnabled: vi.fn(),
   setAutoAdvanceAfterAnswer: vi.fn(),
   setShowCorrectAnswer: vi.fn(),
   showCorrectAnswer: true,
@@ -127,6 +145,24 @@ describe('QuizConfigView', () => {
         onQuestionCountSliderChange: viewModel.handleQuestionCountSliderChange,
       }),
     );
+    expect(screen.getByRole('checkbox', { name: 'Alkotó' })).not.toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'Év' })).not.toBeChecked();
+  });
+
+  it('hides answer detail field checkboxes when the feature is turned off', () => {
+    render(
+      <QuizConfigView
+        {...createViewModel({
+          answerDetailsEnabled: false,
+        })}
+      />,
+    );
+
+    expect(
+      screen.getByRole('switch', { name: 'Plusz adatok megjelenítése a válasz után' }),
+    ).not.toBeChecked();
+    expect(screen.queryByRole('checkbox', { name: 'Alkotó' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('checkbox', { name: 'Év' })).not.toBeInTheDocument();
   });
 
   it('disables quiz start when there are no selected fields or question count', () => {
@@ -168,13 +204,16 @@ describe('QuizConfigView', () => {
 
   it('forwards switch changes to the provided setters', async () => {
     const user = userEvent.setup();
+    const setAnswerDetailsEnabled = vi.fn();
     const setShowCorrectAnswer = vi.fn();
     const setAutoAdvanceAfterAnswer = vi.fn();
 
     render(
       <QuizConfigView
         {...createViewModel({
+          answerDetailsEnabled: false,
           autoAdvanceAfterAnswer: false,
+          setAnswerDetailsEnabled,
           setAutoAdvanceAfterAnswer,
           setShowCorrectAnswer,
           showCorrectAnswer: true,
@@ -182,10 +221,31 @@ describe('QuizConfigView', () => {
       />,
     );
 
-    await user.click(screen.getByRole('switch', { name: 'Helyes válasz megmutatása' }));
+    await user.click(
+      screen.getByRole('switch', { name: 'Plusz adatok megjelenítése a válasz után' }),
+    );
+    await user.click(
+      screen.getByRole('switch', { name: 'Helyes válasz megmutatása rossz válasz esetén' }),
+    );
     await user.click(screen.getByRole('switch', { name: 'Automatikus továbblépés 3 mp után' }));
 
+    expect(setAnswerDetailsEnabled).toHaveBeenCalledWith(true);
     expect(setShowCorrectAnswer).toHaveBeenCalledWith(false);
     expect(setAutoAdvanceAfterAnswer).toHaveBeenCalledWith(true);
+  });
+
+  it('forwards answer detail checkbox changes to the provided handler', async () => {
+    const user = userEvent.setup();
+    const viewModel = createViewModel({
+      answerDetailFieldKeys: ['artist'],
+    });
+
+    render(<QuizConfigView {...viewModel} />);
+
+    expect(screen.getByRole('checkbox', { name: 'Alkotó' })).toBeChecked();
+
+    await user.click(screen.getByRole('checkbox', { name: 'Év' }));
+
+    expect(viewModel.handleToggleAnswerDetailField).toHaveBeenCalledWith('year', true);
   });
 });
