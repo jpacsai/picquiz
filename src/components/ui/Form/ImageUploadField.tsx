@@ -8,7 +8,7 @@ import ImageUploadDialog from '@/components/pages/Admin/TopicItemFormPage/TopicI
 import type { PendingImageSelection } from '@/types/topicItemForm';
 import type { TopicField } from '@/types/topics';
 
-import { getResponsiveImageFileNames } from '../../../data/storage';
+import { createImageFileUniqueSuffix, getResponsiveImageFileNames } from '../../../data/storage';
 
 type ImageUploadFieldProps = {
   artistName: string;
@@ -16,7 +16,7 @@ type ImageUploadFieldProps = {
   existingSelection?: PendingImageSelection | null;
   field: Extract<TopicField, { type: 'imageUpload' }>;
   mode?: 'create' | 'edit';
-  onSelectImage: (file: File) => void;
+  onSelectImage: (selection: { file: File; uniqueSuffix: string }) => void;
   title: string;
   uniqueSuffix?: string;
 };
@@ -32,15 +32,17 @@ const ImageUploadField = ({
   uniqueSuffix,
 }: ImageUploadFieldProps) => {
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+  const [draftUniqueSuffix, setDraftUniqueSuffix] = useState(() => createImageFileUniqueSuffix());
   const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
   const [loadedImageUrl, setLoadedImageUrl] = useState<string | null>(null);
   const trimmedArtistName = artistName.trim();
   const trimmedTitle = title.trim();
   const isReadyForUpload = trimmedArtistName.length > 0 && trimmedTitle.length > 0;
+  const activeUniqueSuffix = existingSelection?.uniqueSuffix ?? uniqueSuffix ?? draftUniqueSuffix;
   const generatedFileNames = getResponsiveImageFileNames({
     artistName: trimmedArtistName,
     title: trimmedTitle,
-    uniqueSuffix: existingSelection?.uniqueSuffix ?? uniqueSuffix,
+    uniqueSuffix: activeUniqueSuffix,
   });
   const showExistingImage = Boolean(
     existingImageUrl && !existingSelection && failedImageUrl !== existingImageUrl,
@@ -68,7 +70,13 @@ const ImageUploadField = ({
         <Button
           variant="contained"
           disabled={!isReadyForUpload}
-          onClick={() => setIsImageDialogOpen(true)}
+          onClick={() => {
+            if (!existingSelection) {
+              setDraftUniqueSuffix(createImageFileUniqueSuffix());
+            }
+
+            setIsImageDialogOpen(true);
+          }}
           sx={{ height: '55px' }}
         >
           {field.label}
@@ -189,7 +197,10 @@ const ImageUploadField = ({
         onClose={() => setIsImageDialogOpen(false)}
         generatedFileNames={generatedFileNames}
         onSelect={(file) => {
-          onSelectImage(file);
+          onSelectImage({
+            file,
+            uniqueSuffix: activeUniqueSuffix,
+          });
         }}
       />
     </>

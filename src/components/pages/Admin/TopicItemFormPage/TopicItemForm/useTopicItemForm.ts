@@ -1,5 +1,4 @@
 import {
-  createImageFileUniqueSuffix,
   deleteTopicImageByPath,
 } from '@data/storage';
 import { QUERY_KEYS } from '@queries/queryKeys';
@@ -163,9 +162,11 @@ export const useTopicItemForm = ({
   const handleSelectPendingImage = ({
     field,
     file,
+    uniqueSuffix,
   }: {
     field: Extract<TopicField, { type: 'imageUpload' }>;
     file: File;
+    uniqueSuffix: string;
   }) => {
     if (pendingImageSelection?.previewUrl) {
       URL.revokeObjectURL(pendingImageSelection.previewUrl);
@@ -175,7 +176,7 @@ export const useTopicItemForm = ({
       field,
       file,
       previewUrl: URL.createObjectURL(file),
-      uniqueSuffix: createImageFileUniqueSuffix(),
+      uniqueSuffix,
     });
   };
 

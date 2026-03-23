@@ -49,12 +49,19 @@ vi.mock('@lib/image', () => ({
 }));
 
 vi.mock('@/components/ui/Form/ImageUploadField', () => ({
-  default: ({ onSelectImage }: { onSelectImage: (file: File) => void }) => (
+  default: ({
+    onSelectImage,
+  }: {
+    onSelectImage: (selection: { file: File; uniqueSuffix: string }) => void;
+  }) => (
     <button
       data-testid="mock-image-upload-button"
       type="button"
       onClick={() => {
-        onSelectImage(new File(['image-bytes'], 'monalisa.jpg', { type: 'image/jpeg' }));
+        onSelectImage({
+          file: new File(['image-bytes'], 'monalisa.jpg', { type: 'image/jpeg' }),
+          uniqueSuffix: 'unique1234',
+        });
       }}
     >
       Mock image upload

@@ -10,6 +10,7 @@ vi.mock('../../pages/Admin/TopicPage/TopicItemForm/components/ImageUploadDialog'
 }));
 
 vi.mock('../../../data/storage', () => ({
+  createImageFileUniqueSuffix: () => 'unique1234',
   getResponsiveImageFileNames: () => ({
     desktop: 'desktop.jpg',
     mobile: 'mobile.jpg',

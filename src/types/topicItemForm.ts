@@ -34,6 +34,7 @@ export type PendingImageSelection = {
 export type PendingImageSelectionInput = {
   field: Extract<TopicField, { type: 'imageUpload' }>;
   file: File;
+  uniqueSuffix: string;
 };
 
 export type ImageFileNames = {

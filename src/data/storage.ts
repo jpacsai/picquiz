@@ -64,11 +64,13 @@ const getTitlePart = (title: string) =>
   sanitizeFileNamePart(title.replace(/\s+/g, '')) || 'untitled';
 
 export const createImageFileUniqueSuffix = () => {
+  const timestamp = Date.now().toString(36);
+
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-    return crypto.randomUUID().split('-')[0];
+    return `${timestamp}-${crypto.randomUUID().replace(/-/g, '').slice(0, 8)}`;
   }
 
-  return Math.random().toString(36).slice(2, 10);
+  return `${timestamp}-${Math.random().toString(36).slice(2, 10)}`;
 };
 
 export const getImageVariantFileName = ({

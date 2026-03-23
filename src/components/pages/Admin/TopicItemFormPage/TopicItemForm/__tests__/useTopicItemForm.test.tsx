@@ -267,6 +267,7 @@ describe('useTopicItemForm', () => {
       result.current.handleSelectPendingImage({
         field: imageFields[6] as Extract<TopicField, { type: 'imageUpload' }>,
         file: new File(['image'], 'replacement.jpg', { type: 'image/jpeg' }),
+        uniqueSuffix: 'unique1234',
       });
     });
 

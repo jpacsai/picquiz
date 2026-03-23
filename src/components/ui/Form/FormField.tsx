@@ -167,8 +167,8 @@ const FormField = ({
                     ? pendingImageSelection.uniqueSuffix
                     : undefined
                 }
-                onSelectImage={(file) => {
-                  onSelectPendingImage({ field, file });
+                onSelectImage={({ file, uniqueSuffix }) => {
+                  onSelectPendingImage({ field, file, uniqueSuffix });
                 }}
               />
             );
