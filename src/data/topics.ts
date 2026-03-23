@@ -2,6 +2,7 @@ import { collection, getDocs } from 'firebase/firestore';
 
 import { db } from '../lib/firebase';
 import type { Topic, TopicField } from '../types/topics';
+import { sortSelectOptions } from '../utils/sortSelectOptions';
 
 type LegacyTopicField =
   | Extract<TopicField, { type: 'string' | 'number' | 'imageUpload' }>
@@ -22,10 +23,12 @@ type TopicDocument = Omit<Topic, 'id' | 'fields'> & {
 
 const normalizeOptions = (options: string[] | string | undefined): string[] => {
   if (typeof options === 'string') {
-    return options
-      .split(',')
-      .map((option: string) => option.trim())
-      .filter(Boolean);
+    return sortSelectOptions(
+      options
+        .split(',')
+        .map((option: string) => option.trim())
+        .filter(Boolean),
+    );
   }
 
   if (!options?.length) {
@@ -33,13 +36,15 @@ const normalizeOptions = (options: string[] | string | undefined): string[] => {
   }
 
   if (options.length === 1) {
-    return options[0]
-      .split(',')
-      .map((option: string) => option.trim())
-      .filter(Boolean);
+    return sortSelectOptions(
+      options[0]
+        .split(',')
+        .map((option: string) => option.trim())
+        .filter(Boolean),
+    );
   }
 
-  return options;
+  return sortSelectOptions(options);
 };
 
 const normalizeField = (field: LegacyTopicField): TopicField => {

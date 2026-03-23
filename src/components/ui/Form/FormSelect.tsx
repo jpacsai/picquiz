@@ -1,6 +1,8 @@
 import { Autocomplete, Box, InputLabel, TextField } from '@mui/material';
 import { useId } from 'react';
 
+import { sortSelectOptions } from '@/utils/sortSelectOptions';
+
 type FormSelectProps = {
   id?: string;
   disabled?: boolean;
@@ -28,6 +30,7 @@ const FormSelect = ({
 }: FormSelectProps) => {
   const generatedId = useId();
   const finalId = id ?? `autocomplete-${generatedId}`;
+  const sortedOptions = sortSelectOptions(options);
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -35,7 +38,7 @@ const FormSelect = ({
         {label}
       </InputLabel>
       <Autocomplete
-        options={options}
+        options={sortedOptions}
         value={value}
         onChange={(_, nextValue) => {
           onChange(nextValue ?? '');

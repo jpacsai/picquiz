@@ -15,6 +15,7 @@ import type {
   PersistableFormValues,
 } from '@/types/topicItemForm';
 import type { TopicField, TopicItem } from '@/types/topics';
+import { sortSelectOptions } from '@/utils/sortSelectOptions';
 
 export const fnRegistry = {
   yearToCentury: (year: number) => {
@@ -173,7 +174,7 @@ export const mergeRefreshedSelectFieldOptions = ({
     return refreshedField
       ? {
           ...field,
-          options: refreshedField.options,
+          options: sortSelectOptions(refreshedField.options),
         }
       : field;
   });

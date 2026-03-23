@@ -85,7 +85,7 @@ describe('mergeRefreshedSelectFieldOptions', () => {
         ],
         refreshedFields: [
           { key: 'artist', label: 'Artist', type: 'string', required: true },
-          { key: 'movement', label: 'Movement', type: 'select', options: ['New', 'Newest'] },
+          { key: 'movement', label: 'Movement', type: 'select', options: ['Newest', 'New'] },
         ],
       }),
     ).toEqual([
@@ -149,6 +149,9 @@ describe('AdminTopicItemFormPage', () => {
 
     expect(screen.getByTestId('field-options')).toHaveTextContent('Impressionism');
     expect(screen.getByTestId('field-options')).toHaveTextContent('Cubism');
+    expect(screen.getByTestId('field-options')).toHaveTextContent(
+      '"options":["Cubism","Impressionism"]',
+    );
   });
 
   it('passes autocomplete options only for fields flagged in the db schema', async () => {
