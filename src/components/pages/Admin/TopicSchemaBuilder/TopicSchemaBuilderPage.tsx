@@ -1,7 +1,9 @@
 import { RouterLink } from '@components/ui/RouterLink';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ConstructionIcon from '@mui/icons-material/Construction';
-import { Alert, Box, Button, Card, Stack, TextField, Typography } from '@mui/material';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import { Alert, Box, Button, Card, IconButton, Stack, TextField, Typography } from '@mui/material';
 import { QUERY_KEYS } from '@queries/queryKeys';
 import { createTopic, updateTopic } from '@service/topics';
 import { useQueryClient } from '@tanstack/react-query';
@@ -207,6 +209,55 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
     });
   };
 
+  const handleMoveField = ({
+    fromIndex,
+    toIndex,
+  }: {
+    fromIndex: number;
+    toIndex: number;
+  }) => {
+    setDraft((currentDraft) => {
+      if (
+        fromIndex < 0 ||
+        toIndex < 0 ||
+        fromIndex >= currentDraft.fields.length ||
+        toIndex >= currentDraft.fields.length
+      ) {
+        return currentDraft;
+      }
+
+      const nextFields = [...currentDraft.fields];
+      const [movedField] = nextFields.splice(fromIndex, 1);
+
+      nextFields.splice(toIndex, 0, movedField);
+
+      return {
+        ...currentDraft,
+        fields: nextFields,
+      };
+    });
+
+    setSelectedFieldIndex((currentIndex) => {
+      if (currentIndex === null) {
+        return currentIndex;
+      }
+
+      if (currentIndex === fromIndex) {
+        return toIndex;
+      }
+
+      if (fromIndex < toIndex && currentIndex > fromIndex && currentIndex <= toIndex) {
+        return currentIndex - 1;
+      }
+
+      if (toIndex < fromIndex && currentIndex >= toIndex && currentIndex < fromIndex) {
+        return currentIndex + 1;
+      }
+
+      return currentIndex;
+    });
+  };
+
   const handleSave = async () => {
     if (!canSave) {
       return;
@@ -384,13 +435,48 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
                         {field.label || 'Nev nelkuli field'}
                       </Typography>
                       <Typography color="text.secondary" variant="body2">
-                        key: {field.key || '-'} | type: {field.type || '-'}
+                        #{index + 1} | key: {field.key || '-'} | type: {field.type || '-'}
                       </Typography>
                     </Box>
 
-                    <Typography color="text.secondary" variant="body2">
-                      Kattints a szerkeszteshez
-                    </Typography>
+                    <Stack
+                      direction="row"
+                      spacing={0.5}
+                      alignItems="center"
+                      onClick={(event) => event.stopPropagation()}
+                    >
+                      <Typography color="text.secondary" variant="body2">
+                        Kattints a szerkeszteshez
+                      </Typography>
+
+                      <IconButton
+                        aria-label={`${field.label || field.key || 'field'} mozgatasa felfele`}
+                        size="small"
+                        disabled={index === 0}
+                        onClick={() => {
+                          handleMoveField({
+                            fromIndex: index,
+                            toIndex: index - 1,
+                          });
+                        }}
+                      >
+                        <ArrowUpwardIcon fontSize="small" />
+                      </IconButton>
+
+                      <IconButton
+                        aria-label={`${field.label || field.key || 'field'} mozgatasa lefele`}
+                        size="small"
+                        disabled={index === draft.fields.length - 1}
+                        onClick={() => {
+                          handleMoveField({
+                            fromIndex: index,
+                            toIndex: index + 1,
+                          });
+                        }}
+                      >
+                        <ArrowDownwardIcon fontSize="small" />
+                      </IconButton>
+                    </Stack>
                   </Stack>
                 </Card>
               ))}

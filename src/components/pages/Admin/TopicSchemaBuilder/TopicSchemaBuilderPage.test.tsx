@@ -165,7 +165,7 @@ describe('TopicSchemaBuilderPage', () => {
     await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
 
     expect(screen.getByText('Ev')).toBeInTheDocument();
-    expect(screen.getByText('key: year | type: string')).toBeInTheDocument();
+    expect(screen.getByText('#1 | key: year | type: string')).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
@@ -216,6 +216,51 @@ describe('TopicSchemaBuilderPage', () => {
     expect(within(editDialog).getByRole('checkbox', { name: 'Required' })).toBeChecked();
   });
 
+  it('allows reordering fields from the field list', async () => {
+    const user = userEvent.setup();
+
+    render(<TopicSchemaBuilderPage mode="create" />);
+
+    await user.click(screen.getByRole('button', { name: 'Uj field' }));
+    await user.type(screen.getByLabelText('Field label'), 'Artist');
+    await user.type(screen.getByLabelText('Field key'), 'artist');
+    await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
+    });
+
+    await user.click(within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', { name: 'Kesz' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Uj field' }));
+    await user.type(screen.getByLabelText('Field label'), 'Title');
+    await user.type(screen.getByLabelText('Field key'), 'title');
+    await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
+    });
+
+    await user.click(within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', { name: 'Kesz' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Title mozgatasa felfele' }));
+
+    const fieldOrderCaptions = screen.getAllByText(/key:/).map((node) => node.textContent);
+
+    expect(fieldOrderCaptions).toEqual([
+      '#1 | key: title | type: string',
+      '#2 | key: artist | type: string',
+    ]);
+  });
+
   it('allows deleting the selected field', async () => {
     const user = userEvent.setup();
 
@@ -260,7 +305,7 @@ describe('TopicSchemaBuilderPage', () => {
     fireEvent.change(optionsInput, { target: { value: 'Barokk\nReneszansz' } });
 
     expect(optionsInput).toHaveValue('Barokk\nReneszansz');
-    expect(screen.getByText('key: era | type: select')).toBeInTheDocument();
+    expect(screen.getByText('#1 | key: era | type: select')).toBeInTheDocument();
   });
 
   it('allows enabling quiz and editing the quiz prompt for eligible fields', async () => {
@@ -346,7 +391,7 @@ describe('TopicSchemaBuilderPage', () => {
     const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
     expect(screen.getByText('Borito kep')).toBeInTheDocument();
-    expect(screen.getByText('key: coverImage | type: imageUpload')).toBeInTheDocument();
+    expect(screen.getByText('#2 | key: coverImage | type: imageUpload')).toBeInTheDocument();
     expect(within(editDialog).getByLabelText('File name fields')).toHaveTextContent('Artist');
     expect(within(editDialog).getByLabelText('Desktop target field')).toHaveValue('desktopImage');
     expect(within(editDialog).getByLabelText('Desktop path field')).toHaveValue('desktopPath');
