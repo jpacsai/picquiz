@@ -3,12 +3,38 @@ import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
+import { QUERY_KEYS } from '@/queries/queryKeys';
 import type { Topic } from '@/types/topics';
 
 import TopicSchemaBuilderPage from './TopicSchemaBuilderPage';
 
+const navigateMock = vi.fn();
+const invalidateQueriesMock = vi.fn();
+const createTopicMock = vi.fn();
+const updateTopicMock = vi.fn();
+
 vi.mock('@components/ui/RouterLink', () => ({
   RouterLink: ({ children }: { children: ReactNode }) => <>{children}</>,
+}));
+
+vi.mock('@tanstack/react-router', async () => {
+  const actual = await vi.importActual('@tanstack/react-router');
+
+  return {
+    ...actual,
+    useNavigate: () => navigateMock,
+  };
+});
+
+vi.mock('@tanstack/react-query', () => ({
+  useQueryClient: () => ({
+    invalidateQueries: invalidateQueriesMock,
+  }),
+}));
+
+vi.mock('@service/topics', () => ({
+  createTopic: (...args: unknown[]) => createTopicMock(...args),
+  updateTopic: (...args: unknown[]) => updateTopicMock(...args),
 }));
 
 const topic: Topic = {
@@ -20,11 +46,24 @@ const topic: Topic = {
 };
 
 describe('TopicSchemaBuilderPage', () => {
+  beforeEach(() => {
+    navigateMock.mockReset();
+    invalidateQueriesMock.mockReset();
+    createTopicMock.mockReset();
+    updateTopicMock.mockReset();
+
+    navigateMock.mockResolvedValue(undefined);
+    invalidateQueriesMock.mockResolvedValue(undefined);
+    createTopicMock.mockResolvedValue(undefined);
+    updateTopicMock.mockResolvedValue(undefined);
+  });
+
   it('renders the metadata fields prefilled in edit mode', () => {
     render(<TopicSchemaBuilderPage mode="edit" topic={topic} />);
 
     expect(screen.getByLabelText('Topic ID')).toHaveValue('art');
     expect(screen.getByLabelText('Label')).toHaveValue('Muveszet');
+    expect(screen.getByLabelText('Topic ID')).toBeDisabled();
   });
 
   it('shows metadata validation errors in create mode until required fields are filled', async () => {
@@ -43,6 +82,72 @@ describe('TopicSchemaBuilderPage', () => {
     await user.type(screen.getByLabelText('Storage prefix'), 'art');
 
     expect(screen.getByText('A topic metadata jelenleg ervenyes.')).toBeInTheDocument();
+  });
+
+  it('creates a topic schema and navigates back to admin', async () => {
+    const user = userEvent.setup();
+
+    render(<TopicSchemaBuilderPage mode="create" />);
+
+    await user.type(screen.getByLabelText('Topic ID'), 'art');
+    await user.type(screen.getByLabelText('Label'), 'Muveszet');
+    await user.type(screen.getByLabelText('Slug'), 'art');
+    await user.type(screen.getByLabelText('Storage prefix'), 'art');
+    await user.click(screen.getByRole('button', { name: 'Schema letrehozasa' }));
+
+    await waitFor(() => {
+      expect(createTopicMock).toHaveBeenCalledWith({
+        topicId: 'art',
+        values: {
+          fields: [],
+          label: 'Muveszet',
+          slug: 'art',
+          storage_prefix: 'art',
+        },
+      });
+    });
+
+    expect(invalidateQueriesMock).toHaveBeenCalledWith({
+      queryKey: QUERY_KEYS.TOPICS.list(),
+    });
+    expect(invalidateQueriesMock).toHaveBeenCalledWith({
+      queryKey: QUERY_KEYS.TOPICS.byId('art'),
+    });
+    expect(navigateMock).toHaveBeenCalledWith({
+      to: '/admin',
+    });
+  });
+
+  it('updates an existing topic schema and navigates back to admin', async () => {
+    const user = userEvent.setup();
+
+    render(<TopicSchemaBuilderPage mode="edit" topic={topic} />);
+
+    await user.clear(screen.getByLabelText('Label'));
+    await user.type(screen.getByLabelText('Label'), 'Muveszet 2');
+    await user.click(screen.getByRole('button', { name: 'Valtozasok mentese' }));
+
+    await waitFor(() => {
+      expect(updateTopicMock).toHaveBeenCalledWith({
+        topicId: 'art',
+        values: {
+          fields: [],
+          label: 'Muveszet 2',
+          slug: 'art',
+          storage_prefix: 'art',
+        },
+      });
+    });
+
+    expect(invalidateQueriesMock).toHaveBeenCalledWith({
+      queryKey: QUERY_KEYS.TOPICS.list(),
+    });
+    expect(invalidateQueriesMock).toHaveBeenCalledWith({
+      queryKey: QUERY_KEYS.TOPICS.byId('art'),
+    });
+    expect(navigateMock).toHaveBeenCalledWith({
+      to: '/admin',
+    });
   });
 
   it('adds a new field from the dialog', async () => {

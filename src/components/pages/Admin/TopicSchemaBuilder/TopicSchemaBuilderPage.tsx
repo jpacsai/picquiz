@@ -2,6 +2,10 @@ import { RouterLink } from '@components/ui/RouterLink';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ConstructionIcon from '@mui/icons-material/Construction';
 import { Alert, Box, Button, Card, Stack, TextField, Typography } from '@mui/material';
+import { QUERY_KEYS } from '@queries/queryKeys';
+import { createTopic, updateTopic } from '@service/topics';
+import { useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 
 import type { Topic } from '@/types/topics';
@@ -53,13 +57,25 @@ const getAvailableFileNameFieldOptions = ({
 
 const getSelectOptionsText = (options: string[] | undefined) => (options ?? []).join('\n');
 
+const getPersistedTopicValues = (draft: TopicDraft) => ({
+  fields: draft.fields as Topic['fields'],
+  label: draft.label?.trim() ?? '',
+  slug: draft.slug?.trim() ?? '',
+  storage_prefix: draft.storage_prefix?.trim() ?? '',
+});
+
 const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [draft, setDraft] = useState<TopicDraft>(() => getInitialDraft(topic));
   const [isAddFieldDialogOpen, setIsAddFieldDialogOpen] = useState(false);
   const [isEditFieldDialogOpen, setIsEditFieldDialogOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [newFieldDraft, setNewFieldDraft] = useState<TopicFieldDraft>(() => getEmptyFieldDraft());
   const [selectedFieldIndex, setSelectedFieldIndex] = useState<number | null>(null);
+  const [submitError, setSubmitError] = useState('');
   const validation = useMemo(() => validateTopicDraft(draft), [draft]);
+  const canSave = validation.errors.length === 0 && !isSaving;
   const title = mode === 'create' ? 'Uj topic schema' : `${topic?.label ?? 'Topic'} schema`;
   const description =
     mode === 'create'
@@ -191,6 +207,54 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
     });
   };
 
+  const handleSave = async () => {
+    if (!canSave) {
+      return;
+    }
+
+    setSubmitError('');
+    setIsSaving(true);
+
+    try {
+      const topicId = mode === 'edit' ? topic?.id : draft.id?.trim();
+
+      if (!topicId) {
+        throw new Error('Hianyzik a topic azonosito a menteshez.');
+      }
+
+      const values = getPersistedTopicValues(draft);
+
+      if (mode === 'edit') {
+        await updateTopic({
+          topicId,
+          values,
+        });
+      } else {
+        await createTopic({
+          topicId,
+          values,
+        });
+      }
+
+      await queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.TOPICS.list(),
+      });
+      await queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.TOPICS.byId(topicId),
+      });
+
+      await navigate({
+        to: '/admin',
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Ismeretlen mentesi hiba.';
+      console.error('Sikertelen topic schema mentes', error);
+      setSubmitError(message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <Box sx={{ display: 'grid', gap: 3 }}>
       <Stack direction="row" justifyContent="space-between" alignItems="center" gap={2}>
@@ -199,16 +263,24 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
           <Typography color="text.secondary">{description}</Typography>
         </Box>
 
-        <RouterLink to="/admin" underline="none" preload="intent">
-          <Button component="span" startIcon={<ArrowBackIcon />} variant="outlined">
-            Vissza az adminhoz
+        <Stack direction="row" gap={1.5}>
+          <RouterLink to="/admin" underline="none" preload="intent">
+            <Button component="span" startIcon={<ArrowBackIcon />} variant="outlined">
+              Vissza az adminhoz
+            </Button>
+          </RouterLink>
+
+          <Button variant="contained" onClick={handleSave} disabled={!canSave}>
+            {isSaving ? 'Mentes...' : mode === 'create' ? 'Schema letrehozasa' : 'Valtozasok mentese'}
           </Button>
-        </RouterLink>
+        </Stack>
       </Stack>
 
       <Alert severity="info">
         Ez most az elso skeleton lepes. A page mar navigalhato, de a builder UI meg nincs bekotve.
       </Alert>
+
+      {submitError ? <Alert severity="error">{submitError}</Alert> : null}
 
       <Card variant="outlined" sx={{ p: 3, width: '100%' }}>
         <Stack spacing={2.5}>
@@ -229,6 +301,7 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
                 key={field.key}
                 label={field.label}
                 value={field.value}
+                disabled={mode === 'edit' && field.key === 'id'}
                 error={metadataErrorsByPath.has(field.key)}
                 helperText={metadataErrorsByPath.get(field.key) ?? ' '}
                 onChange={(event) => {
