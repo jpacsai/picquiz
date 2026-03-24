@@ -136,27 +136,47 @@ const shuffleArray = <T>(values: readonly T[]): T[] => {
   }, [...values]);
 };
 
-const resolveMaxNumericValue = (maxValue: number | 'todayYear'): number =>
+const resolveAbsoluteMaxNumericValue = (maxValue: number | 'todayYear'): number =>
   maxValue === 'todayYear' ? new Date().getFullYear() : maxValue;
 
 const resolveMinNumericValue = ({
-  maxValue,
+  correctNumber,
   minOffset,
   minValue,
 }: {
-  maxValue: number | 'todayYear';
+  correctNumber: number;
   minOffset?: number;
   minValue?: number;
 }): number | null => {
+  const offsetMinimum = typeof minOffset === 'number' ? correctNumber - minOffset : null;
+
+  if (typeof minValue === 'number' && typeof offsetMinimum === 'number') {
+    return Math.max(minValue, offsetMinimum);
+  }
+
   if (typeof minValue === 'number') {
     return minValue;
   }
 
-  if (typeof minOffset === 'number') {
-    return resolveMaxNumericValue(maxValue) - minOffset;
+  return offsetMinimum;
+};
+
+const resolveMaxNumericValue = ({
+  correctNumber,
+  maxOffset,
+  maxValue,
+}: {
+  correctNumber: number;
+  maxOffset?: number;
+  maxValue: number | 'todayYear';
+}): number => {
+  const absoluteMaximum = resolveAbsoluteMaxNumericValue(maxValue);
+
+  if (typeof maxOffset === 'number') {
+    return Math.min(absoluteMaximum, correctNumber + maxOffset);
   }
 
-  return null;
+  return absoluteMaximum;
 };
 
 const getDistinctTopicValues = ({
@@ -177,18 +197,20 @@ const getFieldOptions = (field: TopicField): string[] =>
 
 const buildNumericRangeDistractors = ({
   correctValue,
+  maxOffset,
   maxValue,
   minOffset,
   minValue,
 }: {
   correctValue: string;
+  maxOffset?: number;
   maxValue: number | 'todayYear';
   minOffset?: number;
   minValue?: number;
 }): string[] => {
   const correctNumber = Number(correctValue);
-  const resolvedMaxValue = resolveMaxNumericValue(maxValue);
-  const resolvedMinValue = resolveMinNumericValue({ maxValue, minOffset, minValue });
+  const resolvedMaxValue = resolveMaxNumericValue({ correctNumber, maxOffset, maxValue });
+  const resolvedMinValue = resolveMinNumericValue({ correctNumber, minOffset, minValue });
 
   if (Number.isNaN(correctNumber) || resolvedMinValue === null || resolvedMinValue > resolvedMaxValue) {
     return [];
@@ -203,6 +225,7 @@ const buildNumericRangeDistractors = ({
 const buildDerivedRangeDistractors = ({
   correctValue,
   item,
+  maxOffset,
   maxValue,
   minOffset,
   minValue,
@@ -210,17 +233,28 @@ const buildDerivedRangeDistractors = ({
 }: {
   correctValue: string;
   item: TopicItem;
+  maxOffset?: number;
   maxValue: number | 'todayYear';
   minOffset?: number;
   minValue?: number;
   sourceField: string;
 }) => {
   const sourceValue = item[sourceField];
-  const resolvedMaxValue = resolveMaxNumericValue(maxValue);
-  const resolvedMinValue = resolveMinNumericValue({ maxValue, minOffset, minValue });
+  const sourceNumber = Number(sourceValue);
+  const resolvedMaxValue = resolveMaxNumericValue({
+    correctNumber: sourceNumber,
+    maxOffset,
+    maxValue,
+  });
+  const resolvedMinValue = resolveMinNumericValue({
+    correctNumber: sourceNumber,
+    minOffset,
+    minValue,
+  });
 
   if (
     (typeof sourceValue !== 'string' && typeof sourceValue !== 'number') ||
+    Number.isNaN(sourceNumber) ||
     resolvedMinValue === null ||
     resolvedMinValue > resolvedMaxValue
   ) {
@@ -267,6 +301,7 @@ const getWrongAnswerCandidates = ({
   if (distractor.type === 'numericRange') {
     return buildNumericRangeDistractors({
       correctValue: playableItem.value,
+      maxOffset: distractor.maxOffset,
       maxValue: distractor.maxValue,
       minOffset: distractor.minOffset,
       minValue: distractor.minValue,
@@ -276,6 +311,7 @@ const getWrongAnswerCandidates = ({
   return buildDerivedRangeDistractors({
     correctValue: playableItem.value,
     item: playableItem.item,
+    maxOffset: distractor.maxOffset,
     maxValue: distractor.maxValue,
     minOffset: distractor.minOffset,
     minValue: distractor.minValue,

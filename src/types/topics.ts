@@ -11,6 +11,7 @@ export type QuizDistractorConfig =
       type: 'numericRange';
       minValue?: number;
       minOffset?: number;
+      maxOffset?: number;
       maxValue: number | 'todayYear';
     }
   | {
@@ -19,6 +20,7 @@ export type QuizDistractorConfig =
       deriveWith: 'yearToCentury';
       minValue?: number;
       minOffset?: number;
+      maxOffset?: number;
       maxValue: number | 'todayYear';
     };
 
