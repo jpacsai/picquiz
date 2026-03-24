@@ -14,10 +14,6 @@ const TopicPage = ({ topic }: TopicPageProps) => {
   return (
     <Stack spacing={3}>
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-        <Button disabled size="large" variant="outlined">
-          Eredmények
-        </Button>
-
         <Button
           onClick={() => {
             void navigate({
@@ -29,6 +25,10 @@ const TopicPage = ({ topic }: TopicPageProps) => {
           variant="contained"
         >
           Kvíz indítása
+        </Button>
+
+        <Button disabled size="large" variant="outlined">
+          Eredmények
         </Button>
       </Stack>
     </Stack>
