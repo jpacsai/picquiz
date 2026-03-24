@@ -3,13 +3,14 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ConstructionIcon from '@mui/icons-material/Construction';
-import { Alert, Box, Button, Card, IconButton, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Card, IconButton, Stack, Typography } from '@mui/material';
 
 import type { Topic } from '@/types/topics';
 import type { TopicSchemaBuilderMode } from '@/types/topicSchemaBuilder';
 
 import FieldDialog from './components/FieldDialog';
 import FixedImageUploadCard from './components/FixedImageUploadCard';
+import TopicMetadataSection from './components/TopicMetadataSection';
 import type { useTopicSchemaBuilder } from './hook/useTopicSchemaBuilder';
 
 type TopicSchemaBuilderPageViewProps = {
@@ -91,41 +92,17 @@ const TopicSchemaBuilderPageView = ({ builder, mode, topic }: TopicSchemaBuilder
 
       {submitError ? <Alert severity="error">{submitError}</Alert> : null}
 
-      <Card variant="outlined" sx={{ p: 3, width: '100%' }}>
-        <Stack spacing={2.5}>
-          <Typography variant="h6">Topic metadata</Typography>
-
-          <Box
-            sx={{
-              display: 'grid',
-              gap: 2,
-              gridTemplateColumns: {
-                xs: '1fr',
-                md: 'repeat(2, minmax(0, 1fr))',
-              },
-            }}
-          >
-            {metadataFields.map((field) => (
-              <TextField
-                key={field.key}
-                label={field.label}
-                value={field.value}
-                disabled={mode === 'edit' && field.key === 'id'}
-                error={metadataErrorsByPath.has(field.key)}
-                helperText={metadataErrorsByPath.get(field.key) ?? ' '}
-                onChange={(event) => {
-                  const nextValue = event.target.value;
-
-                  setDraft((currentDraft) => ({
-                    ...currentDraft,
-                    [field.key]: nextValue,
-                  }));
-                }}
-              />
-            ))}
-          </Box>
-        </Stack>
-      </Card>
+      <TopicMetadataSection
+        errorsByPath={metadataErrorsByPath}
+        fields={metadataFields}
+        mode={mode}
+        onChange={(key, value) => {
+          setDraft((currentDraft) => ({
+            ...currentDraft,
+            [key]: value,
+          }));
+        }}
+      />
 
       {validation.errors.length ? (
         <Alert severity="error">
