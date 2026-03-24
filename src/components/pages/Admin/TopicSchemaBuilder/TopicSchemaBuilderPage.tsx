@@ -23,8 +23,84 @@ type TopicSchemaBuilderPageProps = {
 
 type SelectedFieldIndex = number | 'fixed-image-upload' | null;
 
+const IMAGE_UPLOAD_TARGET_FIELD_KEYS = {
+  desktopPath: 'image_path_desktop',
+  desktop: 'image_url_desktop',
+  mobilePath: 'image_path_mobile',
+  mobile: 'image_url_mobile',
+} as const;
+
+const IMAGE_UPLOAD_SYSTEM_FIELDS: TopicFieldDraft[] = [
+  {
+    hideInEdit: true,
+    key: IMAGE_UPLOAD_TARGET_FIELD_KEYS.desktopPath,
+    label: 'Kep path - desktop',
+    readonly: true,
+    required: true,
+    type: 'string',
+  },
+  {
+    hideInEdit: true,
+    key: IMAGE_UPLOAD_TARGET_FIELD_KEYS.desktop,
+    label: 'Kep url - desktop',
+    readonly: true,
+    required: true,
+    type: 'string',
+  },
+  {
+    hideInEdit: true,
+    key: IMAGE_UPLOAD_TARGET_FIELD_KEYS.mobilePath,
+    label: 'Kep path - mobile',
+    readonly: true,
+    required: true,
+    type: 'string',
+  },
+  {
+    hideInEdit: true,
+    key: IMAGE_UPLOAD_TARGET_FIELD_KEYS.mobile,
+    label: 'Kep url - mobile',
+    readonly: true,
+    required: true,
+    type: 'string',
+  },
+];
+
+const IMAGE_UPLOAD_SYSTEM_FIELD_KEYS = new Set(
+  IMAGE_UPLOAD_SYSTEM_FIELDS.map((field) => field.key).filter((key): key is string => Boolean(key)),
+);
+
+const isImageUploadSystemField = (field: TopicFieldDraft) =>
+  typeof field.key === 'string' && IMAGE_UPLOAD_SYSTEM_FIELD_KEYS.has(field.key);
+
+const normalizeImageUploadField = (field: TopicFieldDraft): TopicFieldDraft =>
+  field.type === 'imageUpload'
+    ? {
+        ...field,
+        fileNameFields: field.fileNameFields ?? [],
+        targetFields: {
+          ...field.targetFields,
+          desktopPath: IMAGE_UPLOAD_TARGET_FIELD_KEYS.desktopPath,
+          desktop: IMAGE_UPLOAD_TARGET_FIELD_KEYS.desktop,
+          mobilePath: IMAGE_UPLOAD_TARGET_FIELD_KEYS.mobilePath,
+          mobile: IMAGE_UPLOAD_TARGET_FIELD_KEYS.mobile,
+        },
+      }
+    : field;
+
+const getPersistedFields = (fields: TopicFieldDraft[]) => {
+  const normalizedFields = fields
+    .filter((field) => !isImageUploadSystemField(field))
+    .map((field) => normalizeImageUploadField(field));
+  const hasImageUploadField = normalizedFields.some((field) => field.type === 'imageUpload');
+
+  return hasImageUploadField ? [...normalizedFields, ...IMAGE_UPLOAD_SYSTEM_FIELDS] : normalizedFields;
+};
+
 const getInitialDraft = (topic?: Topic): TopicDraft => ({
-  fields: topic?.fields ?? [],
+  fields:
+    topic?.fields
+      ?.filter((field) => !isImageUploadSystemField(field))
+      .map((field) => normalizeImageUploadField(field)) ?? [],
   id: topic?.id ?? '',
   label: topic?.label ?? '',
   slug: topic?.slug ?? '',
@@ -43,7 +119,12 @@ const getFixedImageUploadFieldDraft = (): TopicFieldDraft => ({
   key: 'image_upload',
   label: 'Kepfeltoltes',
   required: true,
-  targetFields: {},
+  targetFields: {
+    desktopPath: IMAGE_UPLOAD_TARGET_FIELD_KEYS.desktopPath,
+    desktop: IMAGE_UPLOAD_TARGET_FIELD_KEYS.desktop,
+    mobilePath: IMAGE_UPLOAD_TARGET_FIELD_KEYS.mobilePath,
+    mobile: IMAGE_UPLOAD_TARGET_FIELD_KEYS.mobile,
+  },
   type: 'imageUpload',
 });
 
@@ -72,12 +153,10 @@ const getSelectOptionsText = (options: string[] | undefined) => (options ?? []).
 
 const isIgnoredCreateImageUploadError = (path: string, fieldIndex: number) =>
   path.startsWith(`fields[${fieldIndex}]`) &&
-  ['.fileNameFields', '.targetFields.desktop', '.targetFields.mobile'].some((suffix) =>
-    path.endsWith(suffix),
-  );
+  ['.fileNameFields'].some((suffix) => path.endsWith(suffix));
 
 const getPersistedTopicValues = (draft: TopicDraft) => ({
-  fields: draft.fields as Topic['fields'],
+  fields: getPersistedFields(draft.fields) as Topic['fields'],
   label: draft.label?.trim() ?? '',
   slug: draft.slug?.trim() ?? '',
   storage_prefix: draft.storage_prefix?.trim() ?? '',
@@ -91,12 +170,21 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
   const [isEditFieldDialogOpen, setIsEditFieldDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [fixedImageUploadFieldDraft, setFixedImageUploadFieldDraft] = useState<TopicFieldDraft>(
-    () => getFixedImageUploadFieldDraft(),
+    () =>
+      draft.fields.find((field) => field.type === 'imageUpload') ??
+      getFixedImageUploadFieldDraft(),
   );
   const [newFieldDraft, setNewFieldDraft] = useState<TopicFieldDraft>(() => getEmptyFieldDraft());
   const [selectedFieldIndex, setSelectedFieldIndex] = useState<SelectedFieldIndex>(null);
   const [submitError, setSubmitError] = useState('');
-  const validation = useMemo(() => validateTopicDraft(draft), [draft]);
+  const validationDraft = useMemo(
+    () => ({
+      ...draft,
+      fields: getPersistedFields(draft.fields),
+    }),
+    [draft],
+  );
+  const validation = useMemo(() => validateTopicDraft(validationDraft), [validationDraft]);
   const canSave = validation.errors.length === 0 && !isSaving;
   const title = mode === 'create' ? 'Uj topic schema' : `${topic?.label ?? 'Topic'} schema`;
   const description =
@@ -134,7 +222,7 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
     () =>
       validateTopicDraft({
         ...draft,
-        fields: [...draft.fields, newFieldDraft],
+        fields: getPersistedFields([...draft.fields, newFieldDraft]),
       }),
     [draft, newFieldDraft],
   );
@@ -189,13 +277,7 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
             ...newFieldDraft,
             options: newFieldDraft.options ?? [],
           }
-        : newFieldDraft.type === 'imageUpload'
-          ? {
-              ...newFieldDraft,
-              fileNameFields: newFieldDraft.fileNameFields ?? [],
-              targetFields: newFieldDraft.targetFields ?? {},
-            }
-          : newFieldDraft;
+        : newFieldDraft;
 
     setDraft((currentDraft) => ({
       ...currentDraft,
@@ -251,7 +333,7 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
     if (selectedFieldIndex === 'fixed-image-upload') {
       setDraft((currentDraft) => ({
         ...currentDraft,
-        fields: [...currentDraft.fields, fixedImageUploadFieldDraft],
+        fields: [...currentDraft.fields, normalizeImageUploadField(fixedImageUploadFieldDraft)],
       }));
       setSelectedFieldIndex(draft.fields.length);
     }

@@ -368,50 +368,6 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole('button', { name: 'Uj field' }));
-    await user.type(screen.getByLabelText('Field label'), 'Kep url - desktop');
-    await user.type(screen.getByLabelText('Field key'), 'desktopImage');
-    await user.click(screen.getByRole('checkbox', { name: 'Required' }));
-    await user.click(screen.getByRole('checkbox', { name: 'Readonly' }));
-    await user.click(screen.getByRole('checkbox', { name: 'Hide in edit' }));
-    await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
-
-    await waitFor(() => {
-      expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
-    });
-
-    await user.click(
-      within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', {
-        name: 'Kesz',
-      }),
-    );
-
-    await waitFor(() => {
-      expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
-    });
-
-    await user.click(screen.getByRole('button', { name: 'Uj field' }));
-    await user.type(screen.getByLabelText('Field label'), 'Kep url - mobile');
-    await user.type(screen.getByLabelText('Field key'), 'mobileImage');
-    await user.click(screen.getByRole('checkbox', { name: 'Required' }));
-    await user.click(screen.getByRole('checkbox', { name: 'Readonly' }));
-    await user.click(screen.getByRole('checkbox', { name: 'Hide in edit' }));
-    await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
-
-    await waitFor(() => {
-      expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
-    });
-
-    await user.click(
-      within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', {
-        name: 'Kesz',
-      }),
-    );
-
-    await waitFor(() => {
-      expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
-    });
-
     await user.click(screen.getByText('Kepfeltoltes'));
 
     const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
@@ -430,10 +386,19 @@ describe('TopicSchemaBuilderPage', () => {
     await user.click(within(editDialog).getByRole('combobox', { name: 'File name fields' }));
     await user.click(screen.getByRole('option', { name: 'Artist' }));
     await user.keyboard('{Escape}');
-    await user.type(within(editDialog).getByLabelText('Desktop target field'), 'desktopImage');
-    await user.type(within(editDialog).getByLabelText('Mobile target field'), 'mobileImage');
-    await user.type(within(editDialog).getByLabelText('Desktop path field'), 'desktopPath');
-    await user.type(within(editDialog).getByLabelText('Mobile path field'), 'mobilePath');
+
+    expect(within(editDialog).getByLabelText('Desktop target field')).toHaveValue(
+      'image_url_desktop',
+    );
+    expect(within(editDialog).getByLabelText('Mobile target field')).toHaveValue(
+      'image_url_mobile',
+    );
+    expect(within(editDialog).getByLabelText('Desktop path field')).toHaveValue(
+      'image_path_desktop',
+    );
+    expect(within(editDialog).getByLabelText('Mobile path field')).toHaveValue(
+      'image_path_mobile',
+    );
 
     await user.click(submitButton);
 
@@ -444,17 +409,17 @@ describe('TopicSchemaBuilderPage', () => {
     const persistedEditDialogTrigger = screen.getByText('Borito kep');
 
     expect(screen.getByText('Borito kep')).toBeInTheDocument();
-    expect(screen.getByText('#4 | key: coverImage | type: imageUpload')).toBeInTheDocument();
+    expect(screen.getByText('#2 | key: coverImage | type: imageUpload')).toBeInTheDocument();
     await user.click(persistedEditDialogTrigger);
 
     const persistedEditDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
     expect(within(persistedEditDialog).getByLabelText('File name fields')).toHaveTextContent('Artist');
     expect(within(persistedEditDialog).getByLabelText('Desktop target field')).toHaveValue(
-      'desktopImage',
+      'image_url_desktop',
     );
     expect(within(persistedEditDialog).getByLabelText('Desktop path field')).toHaveValue(
-      'desktopPath',
+      'image_path_desktop',
     );
   });
 

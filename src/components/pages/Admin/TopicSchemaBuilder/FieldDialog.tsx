@@ -310,19 +310,8 @@ const FieldDialog = ({
             <TextField
               label="Desktop target field"
               value={field.targetFields?.desktop ?? ''}
-              error={errorsByPath.has(`${pathPrefix}.targetFields.desktop`)}
-              helperText={errorsByPath.get(`${pathPrefix}.targetFields.desktop`) ?? ' '}
-              onChange={(event) => {
-                const nextValue = event.target.value;
-
-                onChange((currentField) => ({
-                  ...currentField,
-                  targetFields: {
-                    ...currentField.targetFields,
-                    desktop: nextValue,
-                  },
-                }));
-              }}
+              helperText="Fix rendszermezo, ezt a builder automatikusan kezeli."
+              disabled
               fullWidth
               margin="normal"
             />
@@ -330,19 +319,8 @@ const FieldDialog = ({
             <TextField
               label="Mobile target field"
               value={field.targetFields?.mobile ?? ''}
-              error={errorsByPath.has(`${pathPrefix}.targetFields.mobile`)}
-              helperText={errorsByPath.get(`${pathPrefix}.targetFields.mobile`) ?? ' '}
-              onChange={(event) => {
-                const nextValue = event.target.value;
-
-                onChange((currentField) => ({
-                  ...currentField,
-                  targetFields: {
-                    ...currentField.targetFields,
-                    mobile: nextValue,
-                  },
-                }));
-              }}
+              helperText="Fix rendszermezo, ezt a builder automatikusan kezeli."
+              disabled
               fullWidth
               margin="normal"
             />
@@ -350,17 +328,8 @@ const FieldDialog = ({
             <TextField
               label="Desktop path field"
               value={field.targetFields?.desktopPath ?? ''}
-              onChange={(event) => {
-                const nextValue = event.target.value;
-
-                onChange((currentField) => ({
-                  ...currentField,
-                  targetFields: {
-                    ...currentField.targetFields,
-                    desktopPath: nextValue,
-                  },
-                }));
-              }}
+              helperText="Fix rendszermezo, ezt a builder automatikusan kezeli."
+              disabled
               fullWidth
               margin="normal"
             />
@@ -368,17 +337,8 @@ const FieldDialog = ({
             <TextField
               label="Mobile path field"
               value={field.targetFields?.mobilePath ?? ''}
-              onChange={(event) => {
-                const nextValue = event.target.value;
-
-                onChange((currentField) => ({
-                  ...currentField,
-                  targetFields: {
-                    ...currentField.targetFields,
-                    mobilePath: nextValue,
-                  },
-                }));
-              }}
+              helperText="Fix rendszermezo, ezt a builder automatikusan kezeli."
+              disabled
               fullWidth
               margin="normal"
             />
