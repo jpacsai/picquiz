@@ -14,6 +14,7 @@ import type { Topic } from '@/types/topics';
 import type { TopicDraft, TopicFieldDraft } from '@/types/topicSchema';
 import { validateTopicDraft } from '@/utils/topicSchemaValidation';
 
+import FixedImageUploadCard from './component/FixedImageUploadCard';
 import FieldDialog from './FieldDialog';
 
 type TopicSchemaBuilderPageProps = {
@@ -657,16 +658,8 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
               })}
 
               {!hasImageUploadField ? (
-                <Card
-                  variant="outlined"
-                  data-testid="fixed-image-upload-card"
-                  aria-disabled={!canConfigureFixedImageUpload}
-                  sx={{
-                    p: 2,
-                    cursor: canConfigureFixedImageUpload ? 'pointer' : 'not-allowed',
-                    opacity: 0.72,
-                    backgroundColor: 'action.hover',
-                  }}
+                <FixedImageUploadCard
+                  canConfigure={canConfigureFixedImageUpload}
                   onClick={
                     canConfigureFixedImageUpload
                       ? () => {
@@ -675,29 +668,7 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
                         }
                       : undefined
                   }
-                >
-                  <Stack
-                    direction={{ xs: 'column', sm: 'row' }}
-                    justifyContent="space-between"
-                    alignItems={{ xs: 'flex-start', sm: 'center' }}
-                    gap={1}
-                  >
-                    <Box>
-                      <Typography variant="subtitle1">Kepfeltoltes</Typography>
-                      <Typography color="text.secondary" variant="body2">
-                        Fix image upload field
-                      </Typography>
-                      <Typography color="text.secondary" variant="body2">
-                        Disabled, amig nincs keszre konfiguralva. Vegyel fel hozza legalabb egy
-                        required fieldet.
-                      </Typography>
-                    </Box>
-
-                    <Typography color="text.secondary" variant="body2">
-                      Kattints a szerkeszteshez
-                    </Typography>
-                  </Stack>
-                </Card>
+                />
               ) : null}
             </Stack>
           ) : (
@@ -707,16 +678,9 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
               </Alert>
 
               {!hasImageUploadField ? (
-                <Card
-                  variant="outlined"
-                  data-testid="fixed-image-upload-card"
-                  aria-disabled={!canConfigureFixedImageUpload}
-                  sx={{
-                    p: 2,
-                    cursor: canConfigureFixedImageUpload ? 'pointer' : 'not-allowed',
-                    opacity: 0.72,
-                    backgroundColor: 'action.hover',
-                  }}
+                <FixedImageUploadCard
+                  canConfigure={canConfigureFixedImageUpload}
+                  showClickHint={false}
                   onClick={
                     canConfigureFixedImageUpload
                       ? () => {
@@ -725,25 +689,7 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
                         }
                       : undefined
                   }
-                >
-                  <Stack
-                    direction={{ xs: 'column', sm: 'row' }}
-                    justifyContent="space-between"
-                    alignItems={{ xs: 'flex-start', sm: 'center' }}
-                    gap={1}
-                  >
-                    <Box>
-                      <Typography variant="subtitle1">Kepfeltoltes</Typography>
-                      <Typography color="text.secondary" variant="body2">
-                        Fix image upload field
-                      </Typography>
-                      <Typography color="text.secondary" variant="body2">
-                        Disabled, amig nincs keszre konfiguralva. Vegyel fel hozza legalabb egy
-                        required fieldet.
-                      </Typography>
-                    </Box>
-                  </Stack>
-                </Card>
+                />
               ) : null}
             </Stack>
           )}
