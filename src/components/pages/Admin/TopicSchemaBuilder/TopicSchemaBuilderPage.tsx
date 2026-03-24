@@ -1,27 +1,14 @@
 import { RouterLink } from '@components/ui/RouterLink';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ConstructionIcon from '@mui/icons-material/Construction';
-import {
-  Alert,
-  Box,
-  Button,
-  Card,
-  Checkbox,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControlLabel,
-  MenuItem,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Alert, Box, Button, Card, Stack, TextField, Typography } from '@mui/material';
 import { useMemo, useState } from 'react';
 
 import type { Topic } from '@/types/topics';
 import type { TopicDraft, TopicFieldDraft } from '@/types/topicSchema';
 import { validateTopicDraft } from '@/utils/topicSchemaValidation';
+
+import FieldDialog from './FieldDialog';
 
 type TopicSchemaBuilderPageProps = {
   mode: 'create' | 'edit';
@@ -42,16 +29,12 @@ const getEmptyFieldDraft = (): TopicFieldDraft => ({
   type: 'string',
 });
 
-const FIELD_TYPE_OPTIONS = [
-  { label: 'String', value: 'string' },
-  { label: 'Number', value: 'number' },
-  { label: 'Select', value: 'select' },
-  { label: 'Image upload', value: 'imageUpload' },
-] as const;
+const getSelectOptionsText = (options: string[] | undefined) => (options ?? []).join('\n');
 
 const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) => {
   const [draft, setDraft] = useState<TopicDraft>(() => getInitialDraft(topic));
   const [isAddFieldDialogOpen, setIsAddFieldDialogOpen] = useState(false);
+  const [isEditFieldDialogOpen, setIsEditFieldDialogOpen] = useState(false);
   const [newFieldDraft, setNewFieldDraft] = useState<TopicFieldDraft>(() => getEmptyFieldDraft());
   const [selectedFieldIndex, setSelectedFieldIndex] = useState<number | null>(null);
   const validation = useMemo(() => validateTopicDraft(draft), [draft]);
@@ -100,14 +83,20 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
     [newFieldDraft],
   );
   const newFieldErrorsByPath = new Map(
-    newFieldValidation.errors.map((issue) => [issue.path, issue.message]),
+    newFieldValidation.errors
+      .filter((issue) => issue.path !== 'fields[0].options')
+      .map((issue) => [issue.path, issue.message]),
   );
-  const canAddField = !newFieldValidation.errors.length;
+  const canAddField = !newFieldValidation.errors.some((issue) => issue.path !== 'fields[0].options');
   const selectedField = selectedFieldIndex !== null ? draft.fields[selectedFieldIndex] ?? null : null;
 
   const handleCloseAddFieldDialog = () => {
     setIsAddFieldDialogOpen(false);
     setNewFieldDraft(getEmptyFieldDraft());
+  };
+
+  const handleCloseEditFieldDialog = () => {
+    setIsEditFieldDialogOpen(false);
   };
 
   const handleAddField = () => {
@@ -134,6 +123,7 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
       fields: [...currentDraft.fields, normalizedField],
     }));
     setSelectedFieldIndex(draft.fields.length);
+    setIsEditFieldDialogOpen(true);
     handleCloseAddFieldDialog();
   };
 
@@ -159,6 +149,7 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
       ...currentDraft,
       fields: currentDraft.fields.filter((_, index) => index !== selectedFieldIndex),
     }));
+    setIsEditFieldDialogOpen(false);
     setSelectedFieldIndex((currentIndex) => {
       if (currentIndex === null) {
         return null;
@@ -265,185 +256,44 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
           </Stack>
 
           {draft.fields.length ? (
-            <Box
-              sx={{
-                display: 'grid',
-                gap: 2,
-                gridTemplateColumns: {
-                  xs: '1fr',
-                  lg: 'minmax(0, 1fr) minmax(320px, 420px)',
-                },
-              }}
-            >
-              <Stack spacing={1.5}>
-                {draft.fields.map((field, index) => (
-                  <Card
-                    key={`${field.key ?? 'field'}-${index}`}
-                    variant="outlined"
-                    sx={{
-                      p: 2,
-                      cursor: 'pointer',
-                      borderColor:
-                        index === selectedFieldIndex ? 'primary.main' : undefined,
-                      boxShadow: index === selectedFieldIndex ? 1 : 0,
-                    }}
-                    onClick={() => setSelectedFieldIndex(index)}
+            <Stack spacing={1.5}>
+              {draft.fields.map((field, index) => (
+                <Card
+                  key={`${field.key ?? 'field'}-${index}`}
+                  variant="outlined"
+                  sx={{
+                    p: 2,
+                    cursor: 'pointer',
+                    borderColor: index === selectedFieldIndex ? 'primary.main' : undefined,
+                    boxShadow: index === selectedFieldIndex ? 1 : 0,
+                  }}
+                  onClick={() => {
+                    setSelectedFieldIndex(index);
+                    setIsEditFieldDialogOpen(true);
+                  }}
+                >
+                  <Stack
+                    direction={{ xs: 'column', sm: 'row' }}
+                    justifyContent="space-between"
+                    alignItems={{ xs: 'flex-start', sm: 'center' }}
+                    gap={1}
                   >
-                    <Stack
-                      direction={{ xs: 'column', sm: 'row' }}
-                      justifyContent="space-between"
-                      alignItems={{ xs: 'flex-start', sm: 'center' }}
-                      gap={1}
-                    >
-                      <Box>
-                        <Typography variant="subtitle1">
-                          {field.label || 'Nev nelkuli field'}
-                        </Typography>
-                        <Typography color="text.secondary" variant="body2">
-                          key: {field.key || '-'} | type: {field.type || '-'}
-                        </Typography>
-                      </Box>
-
-                      <Typography color="text.secondary" variant="body2">
-                        {index === selectedFieldIndex ? 'Kivalasztva' : 'Kattints a szerkeszteshez'}
+                    <Box>
+                      <Typography variant="subtitle1">
+                        {field.label || 'Nev nelkuli field'}
                       </Typography>
-                    </Stack>
-                  </Card>
-                ))}
-              </Stack>
-
-              <Card variant="outlined" sx={{ p: 2.5, alignSelf: 'start' }}>
-                {selectedField ? (
-                  <Stack spacing={2}>
-                    <Stack
-                      direction="row"
-                      justifyContent="space-between"
-                      alignItems="center"
-                      gap={2}
-                    >
-                      <Typography variant="h6">Field szerkesztes</Typography>
-
-                      <Button color="error" onClick={handleDeleteSelectedField}>
-                        Torles
-                      </Button>
-                    </Stack>
-
-                    <TextField
-                      label="Field label"
-                      value={selectedField.label ?? ''}
-                      error={fieldErrorsByPath.has(`fields[${selectedFieldIndex}].label`)}
-                      helperText={
-                        fieldErrorsByPath.get(`fields[${selectedFieldIndex}].label`) ?? ' '
-                      }
-                      onChange={(event) => {
-                        const nextValue = event.target.value;
-
-                        updateSelectedField((field) => ({
-                          ...field,
-                          label: nextValue,
-                        }));
-                      }}
-                    />
-
-                    <TextField
-                      label="Field key"
-                      value={selectedField.key ?? ''}
-                      error={fieldErrorsByPath.has(`fields[${selectedFieldIndex}].key`)}
-                      helperText={fieldErrorsByPath.get(`fields[${selectedFieldIndex}].key`) ?? ' '}
-                      onChange={(event) => {
-                        const nextValue = event.target.value;
-
-                        updateSelectedField((field) => ({
-                          ...field,
-                          key: nextValue,
-                        }));
-                      }}
-                    />
-
-                    <TextField
-                      select
-                      label="Field type"
-                      value={selectedField.type ?? 'string'}
-                      error={fieldErrorsByPath.has(`fields[${selectedFieldIndex}].type`)}
-                      helperText={
-                        fieldErrorsByPath.get(`fields[${selectedFieldIndex}].type`) ?? ' '
-                      }
-                      onChange={(event) => {
-                        const nextValue = event.target.value as TopicFieldDraft['type'];
-
-                        updateSelectedField((field) => ({
-                          ...field,
-                          type: nextValue,
-                        }));
-                      }}
-                    >
-                      {FIELD_TYPE_OPTIONS.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={Boolean(selectedField.required)}
-                          onChange={(event) => {
-                            const nextValue = event.target.checked;
-
-                            updateSelectedField((field) => ({
-                              ...field,
-                              required: nextValue,
-                            }));
-                          }}
-                        />
-                      }
-                      label="Required"
-                    />
-
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={Boolean(selectedField.readonly)}
-                          onChange={(event) => {
-                            const nextValue = event.target.checked;
-
-                            updateSelectedField((field) => ({
-                              ...field,
-                              readonly: nextValue,
-                            }));
-                          }}
-                        />
-                      }
-                      label="Readonly"
-                    />
-
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={Boolean(selectedField.hideInEdit)}
-                          onChange={(event) => {
-                            const nextValue = event.target.checked;
-
-                            updateSelectedField((field) => ({
-                              ...field,
-                              hideInEdit: nextValue,
-                            }));
-                          }}
-                        />
-                      }
-                      label="Hide in edit"
-                    />
+                      <Typography color="text.secondary" variant="body2">
+                        key: {field.key || '-'} | type: {field.type || '-'}
+                      </Typography>
+                    </Box>
 
                     <Typography color="text.secondary" variant="body2">
-                      A kovetkezo lepesben ide jonnek a tipus-specifikus field beallitasok.
+                      Kattints a szerkeszteshez
                     </Typography>
                   </Stack>
-                ) : (
-                  <Alert severity="info">Valassz ki egy fieldet a listabol a szerkeszteshez.</Alert>
-                )}
-              </Card>
-            </Box>
+                </Card>
+              ))}
+            </Stack>
           ) : (
             <Alert severity="info">
               Meg nincs field. Az `Uj field` gombbal tudsz uj mezot felvenni.
@@ -475,72 +325,33 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
         </Stack>
       </Card>
 
-      <Dialog open={isAddFieldDialogOpen} onClose={handleCloseAddFieldDialog} fullWidth maxWidth="sm">
-        <DialogTitle>Uj field hozzaadasa</DialogTitle>
+      <FieldDialog
+        canSubmit={canAddField}
+        errorsByPath={newFieldErrorsByPath}
+        field={newFieldDraft}
+        isOpen={isAddFieldDialogOpen}
+        mode="create"
+        onChange={(updater) => setNewFieldDraft((currentField) => updater(currentField))}
+        onClose={handleCloseAddFieldDialog}
+        onSubmit={handleAddField}
+        pathPrefix="fields[0]"
+      />
 
-        <DialogContent>
-          <Box sx={{ display: 'grid', gap: 2, pt: 1 }}>
-            <TextField
-              label="Field label"
-              value={newFieldDraft.label ?? ''}
-              error={newFieldErrorsByPath.has('fields[0].label')}
-              helperText={newFieldErrorsByPath.get('fields[0].label') ?? ' '}
-              onChange={(event) => {
-                const nextValue = event.target.value;
-
-                setNewFieldDraft((currentField) => ({
-                  ...currentField,
-                  label: nextValue,
-                }));
-              }}
-            />
-
-            <TextField
-              label="Field key"
-              value={newFieldDraft.key ?? ''}
-              error={newFieldErrorsByPath.has('fields[0].key')}
-              helperText={newFieldErrorsByPath.get('fields[0].key') ?? ' '}
-              onChange={(event) => {
-                const nextValue = event.target.value;
-
-                setNewFieldDraft((currentField) => ({
-                  ...currentField,
-                  key: nextValue,
-                }));
-              }}
-            />
-
-            <TextField
-              select
-              label="Field type"
-              value={newFieldDraft.type ?? 'string'}
-              error={newFieldErrorsByPath.has('fields[0].type')}
-              helperText={newFieldErrorsByPath.get('fields[0].type') ?? ' '}
-              onChange={(event) => {
-                const nextValue = event.target.value as TopicFieldDraft['type'];
-
-                setNewFieldDraft((currentField) => ({
-                  ...currentField,
-                  type: nextValue,
-                }));
-              }}
-            >
-              {FIELD_TYPE_OPTIONS.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Box>
-        </DialogContent>
-
-        <DialogActions>
-          <Button onClick={handleCloseAddFieldDialog}>Megse</Button>
-          <Button variant="contained" onClick={handleAddField} disabled={!canAddField}>
-            Field hozzaadasa
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {selectedField ? (
+        <FieldDialog
+          canSubmit
+          errorsByPath={fieldErrorsByPath}
+          field={selectedField}
+          isOpen={isEditFieldDialogOpen}
+          mode="edit"
+          onChange={updateSelectedField}
+          onClose={handleCloseEditFieldDialog}
+          onDelete={handleDeleteSelectedField}
+          onSubmit={handleCloseEditFieldDialog}
+          optionsText={getSelectOptionsText(selectedField.options)}
+          pathPrefix={`fields[${selectedFieldIndex}]`}
+        />
+      ) : null}
     </Box>
   );
 };

@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -56,6 +56,7 @@ describe('TopicSchemaBuilderPage', () => {
 
     await user.type(screen.getByLabelText('Field label'), 'Ev');
     await user.type(screen.getByLabelText('Field key'), 'year');
+    await user.click(screen.getByRole('checkbox', { name: 'Required' }));
     await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
 
     expect(screen.getByText('Ev')).toBeInTheDocument();
@@ -63,6 +64,10 @@ describe('TopicSchemaBuilderPage', () => {
     await waitFor(() => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
+    const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+
+    expect(editDialog).toBeInTheDocument();
+    expect(within(editDialog).getByRole('checkbox', { name: 'Required' })).toBeChecked();
   });
 
   it('keeps the add field action disabled until the dialog fields are valid', async () => {
@@ -82,7 +87,7 @@ describe('TopicSchemaBuilderPage', () => {
     expect(submitButton).toBeEnabled();
   });
 
-  it('allows editing the selected field basics from the side panel', async () => {
+  it('allows editing the selected field basics from the edit dialog', async () => {
     const user = userEvent.setup();
 
     render(<TopicSchemaBuilderPage mode="create" />);
@@ -96,12 +101,14 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.clear(screen.getByLabelText('Field label'));
-    await user.type(screen.getByLabelText('Field label'), 'Evszam');
-    await user.click(screen.getByRole('checkbox', { name: 'Required' }));
+    const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+
+    await user.clear(within(editDialog).getByLabelText('Field label'));
+    await user.type(within(editDialog).getByLabelText('Field label'), 'Evszam');
+    await user.click(within(editDialog).getByRole('checkbox', { name: 'Required' }));
 
     expect(screen.getByText('Evszam')).toBeInTheDocument();
-    expect(screen.getByRole('checkbox', { name: 'Required' })).toBeChecked();
+    expect(within(editDialog).getByRole('checkbox', { name: 'Required' })).toBeChecked();
   });
 
   it('allows deleting the selected field', async () => {
@@ -118,9 +125,36 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole('button', { name: 'Torles' }));
+    await user.click(within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', { name: 'Torles' }));
 
     expect(screen.queryByText('Ev')).not.toBeInTheDocument();
     expect(screen.getByText('Meg nincs field. Az `Uj field` gombbal tudsz uj mezot felvenni.')).toBeInTheDocument();
+  });
+
+  it('allows editing select options for a select field', async () => {
+    const user = userEvent.setup();
+
+    render(<TopicSchemaBuilderPage mode="create" />);
+
+    await user.click(screen.getByRole('button', { name: 'Uj field' }));
+    await user.type(screen.getByLabelText('Field label'), 'Korszak');
+    await user.type(screen.getByLabelText('Field key'), 'era');
+    await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
+    });
+
+    const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+
+    await user.click(within(editDialog).getByRole('combobox', { name: 'Field type' }));
+    await user.click(screen.getByRole('option', { name: 'Select' }));
+
+    const optionsInput = within(editDialog).getByLabelText('Select opciok');
+
+    fireEvent.change(optionsInput, { target: { value: 'Barokk\nReneszansz' } });
+
+    expect(optionsInput).toHaveValue('Barokk\nReneszansz');
+    expect(screen.getByText('key: era | type: select')).toBeInTheDocument();
   });
 });
