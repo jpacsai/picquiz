@@ -84,10 +84,6 @@ const TopicSchemaBuilderPageView = ({ builder, mode }: TopicSchemaBuilderPageVie
         </Stack>
       </Stack>
 
-      <Alert severity="info">
-        Ez most az elso skeleton lepes. A page mar navigalhato, de a builder UI meg nincs bekotve.
-      </Alert>
-
       {submitError ? <Alert severity="error">{submitError}</Alert> : null}
 
       <TopicMetadataSection
