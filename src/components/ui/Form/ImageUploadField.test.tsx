@@ -30,12 +30,30 @@ const field: Extract<TopicField, { type: 'imageUpload' }> = {
 };
 
 describe('ImageUploadField', () => {
+  it('shows the fixed helper text while upload is blocked', () => {
+    render(
+      <ImageUploadField
+        field={field}
+        fileNameParts={[]}
+        helperText="Add meg a kötelező mezők értékeit: Artist, Title"
+        isReadyForUpload={false}
+        onSelectImage={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.getByText('Add meg a kötelező mezők értékeit: Artist, Title'),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Upload image' })).toBeDisabled();
+  });
+
   it('shows a loader while the stored image preview is loading', () => {
     render(
       <ImageUploadField
         existingImageUrl="https://example.com/existing.jpg"
         field={field}
         fileNameParts={['Leonardo da Vinci', 'Mona Lisa']}
+        isReadyForUpload
         mode="edit"
         onSelectImage={vi.fn()}
       />,
@@ -49,6 +67,7 @@ describe('ImageUploadField', () => {
       <ImageUploadField
         field={field}
         fileNameParts={['Leonardo da Vinci', 'Mona Lisa']}
+        isReadyForUpload
         mode="edit"
         onSelectImage={vi.fn()}
       />,
@@ -64,6 +83,7 @@ describe('ImageUploadField', () => {
         existingImageUrl="https://example.com/missing.jpg"
         field={field}
         fileNameParts={['Leonardo da Vinci', 'Mona Lisa']}
+        isReadyForUpload
         mode="edit"
         onSelectImage={vi.fn()}
       />,
@@ -81,6 +101,7 @@ describe('ImageUploadField', () => {
         existingImageUrl="https://example.com/existing.jpg"
         field={field}
         fileNameParts={['Leonardo da Vinci', 'Mona Lisa']}
+        isReadyForUpload
         mode="edit"
         onSelectImage={vi.fn()}
       />,

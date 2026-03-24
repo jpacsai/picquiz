@@ -15,6 +15,8 @@ type ImageUploadFieldProps = {
   existingSelection?: PendingImageSelection | null;
   field: Extract<TopicField, { type: 'imageUpload' }>;
   fileNameParts: string[];
+  helperText?: string;
+  isReadyForUpload: boolean;
   mode?: 'create' | 'edit';
   onSelectImage: (selection: { file: File; uniqueSuffix: string }) => void;
   uniqueSuffix?: string;
@@ -25,6 +27,8 @@ const ImageUploadField = ({
   existingSelection,
   field,
   fileNameParts,
+  helperText,
+  isReadyForUpload,
   mode = 'create',
   onSelectImage,
   uniqueSuffix,
@@ -34,7 +38,6 @@ const ImageUploadField = ({
   const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
   const [loadedImageUrl, setLoadedImageUrl] = useState<string | null>(null);
   const normalizedFileNameParts = fileNameParts.map((part) => part.trim()).filter(Boolean);
-  const isReadyForUpload = normalizedFileNameParts.length > 0;
   const activeUniqueSuffix = existingSelection?.uniqueSuffix ?? uniqueSuffix ?? draftUniqueSuffix;
   const generatedFileNames = getResponsiveImageFileNames({
     fileNameParts: normalizedFileNameParts,
@@ -77,7 +80,7 @@ const ImageUploadField = ({
         >
           {field.label}
         </Button>
-        {!isReadyForUpload && field.buttonLabel ? (
+        {!isReadyForUpload && helperText ? (
           <Box
             component="span"
             sx={{
@@ -85,7 +88,7 @@ const ImageUploadField = ({
               fontSize: 12,
             }}
           >
-            {field.buttonLabel}
+            {helperText}
           </Box>
         ) : null}
 

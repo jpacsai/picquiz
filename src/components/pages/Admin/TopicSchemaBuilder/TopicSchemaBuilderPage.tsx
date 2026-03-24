@@ -1,8 +1,8 @@
 import { RouterLink } from '@components/ui/RouterLink';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ConstructionIcon from '@mui/icons-material/Construction';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ConstructionIcon from '@mui/icons-material/Construction';
 import { Alert, Box, Button, Card, IconButton, Stack, TextField, Typography } from '@mui/material';
 import { QUERY_KEYS } from '@queries/queryKeys';
 import { createTopic, updateTopic } from '@service/topics';
@@ -21,6 +21,8 @@ type TopicSchemaBuilderPageProps = {
   topic?: Topic;
 };
 
+type SelectedFieldIndex = number | 'fixed-image-upload' | null;
+
 const getInitialDraft = (topic?: Topic): TopicDraft => ({
   fields: topic?.fields ?? [],
   id: topic?.id ?? '',
@@ -34,6 +36,15 @@ const getEmptyFieldDraft = (): TopicFieldDraft => ({
   key: '',
   label: '',
   type: 'string',
+});
+
+const getFixedImageUploadFieldDraft = (): TopicFieldDraft => ({
+  fileNameFields: [],
+  key: 'image_upload',
+  label: 'Kepfeltoltes',
+  required: true,
+  targetFields: {},
+  type: 'imageUpload',
 });
 
 const getAvailableFileNameFieldOptions = ({
@@ -59,6 +70,12 @@ const getAvailableFileNameFieldOptions = ({
 
 const getSelectOptionsText = (options: string[] | undefined) => (options ?? []).join('\n');
 
+const isIgnoredCreateImageUploadError = (path: string, fieldIndex: number) =>
+  path.startsWith(`fields[${fieldIndex}]`) &&
+  ['.fileNameFields', '.targetFields.desktop', '.targetFields.mobile'].some((suffix) =>
+    path.endsWith(suffix),
+  );
+
 const getPersistedTopicValues = (draft: TopicDraft) => ({
   fields: draft.fields as Topic['fields'],
   label: draft.label?.trim() ?? '',
@@ -73,8 +90,11 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
   const [isAddFieldDialogOpen, setIsAddFieldDialogOpen] = useState(false);
   const [isEditFieldDialogOpen, setIsEditFieldDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [fixedImageUploadFieldDraft, setFixedImageUploadFieldDraft] = useState<TopicFieldDraft>(
+    () => getFixedImageUploadFieldDraft(),
+  );
   const [newFieldDraft, setNewFieldDraft] = useState<TopicFieldDraft>(() => getEmptyFieldDraft());
-  const [selectedFieldIndex, setSelectedFieldIndex] = useState<number | null>(null);
+  const [selectedFieldIndex, setSelectedFieldIndex] = useState<SelectedFieldIndex>(null);
   const [submitError, setSubmitError] = useState('');
   const validation = useMemo(() => validateTopicDraft(draft), [draft]);
   const canSave = validation.errors.length === 0 && !isSaving;
@@ -108,9 +128,7 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
   const metadataErrorsByPath = new Map(
     validation.errors.map((issue) => [issue.path, issue.message]),
   );
-  const fieldErrorsByPath = new Map(
-    validation.errors.map((issue) => [issue.path, issue.message]),
-  );
+  const fieldErrorsByPath = new Map(validation.errors.map((issue) => [issue.path, issue.message]));
   const newFieldIndex = draft.fields.length;
   const newFieldValidation = useMemo(
     () =>
@@ -123,14 +141,29 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
   const newFieldErrorsByPath = new Map(
     newFieldValidation.errors
       .filter((issue) => issue.path.startsWith(`fields[${newFieldIndex}]`))
+      .filter(
+        (issue) =>
+          !(
+            newFieldDraft.type === 'imageUpload' &&
+            isIgnoredCreateImageUploadError(issue.path, newFieldIndex)
+          ),
+      )
       .filter((issue) => issue.path !== `fields[${newFieldIndex}].options`)
       .map((issue) => [issue.path, issue.message]),
   );
   const canAddField = newFieldErrorsByPath.size === 0;
-  const selectedField = selectedFieldIndex !== null ? draft.fields[selectedFieldIndex] ?? null : null;
+  const imageUploadFieldIndex = draft.fields.findIndex((field) => field.type === 'imageUpload');
+  const hasImageUploadField = imageUploadFieldIndex >= 0;
+  const selectedField =
+    selectedFieldIndex === 'fixed-image-upload'
+      ? fixedImageUploadFieldDraft
+      : selectedFieldIndex !== null
+        ? (draft.fields[selectedFieldIndex] ?? null)
+        : null;
   const newFieldFileNameFieldOptions = getAvailableFileNameFieldOptions({
     fields: draft.fields,
   });
+  const canConfigureFixedImageUpload = newFieldFileNameFieldOptions.length > 0;
   const selectedFieldFileNameFieldOptions = getAvailableFileNameFieldOptions({
     currentFieldKey: selectedField?.key,
     fields: draft.fields,
@@ -178,6 +211,11 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
       return;
     }
 
+    if (selectedFieldIndex === 'fixed-image-upload') {
+      setFixedImageUploadFieldDraft((currentField) => updater(currentField));
+      return;
+    }
+
     setDraft((currentDraft) => ({
       ...currentDraft,
       fields: currentDraft.fields.map((field, index) =>
@@ -187,7 +225,7 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
   };
 
   const handleDeleteSelectedField = () => {
-    if (selectedFieldIndex === null) {
+    if (selectedFieldIndex === null || selectedFieldIndex === 'fixed-image-upload') {
       return;
     }
 
@@ -197,8 +235,8 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
     }));
     setIsEditFieldDialogOpen(false);
     setSelectedFieldIndex((currentIndex) => {
-      if (currentIndex === null) {
-        return null;
+      if (currentIndex === null || currentIndex === 'fixed-image-upload') {
+        return currentIndex;
       }
 
       if (draft.fields.length <= 1) {
@@ -209,13 +247,19 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
     });
   };
 
-  const handleMoveField = ({
-    fromIndex,
-    toIndex,
-  }: {
-    fromIndex: number;
-    toIndex: number;
-  }) => {
+  const handleEditFieldSubmit = () => {
+    if (selectedFieldIndex === 'fixed-image-upload') {
+      setDraft((currentDraft) => ({
+        ...currentDraft,
+        fields: [...currentDraft.fields, fixedImageUploadFieldDraft],
+      }));
+      setSelectedFieldIndex(draft.fields.length);
+    }
+
+    setIsEditFieldDialogOpen(false);
+  };
+
+  const handleMoveField = ({ fromIndex, toIndex }: { fromIndex: number; toIndex: number }) => {
     setDraft((currentDraft) => {
       if (
         fromIndex < 0 ||
@@ -238,7 +282,7 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
     });
 
     setSelectedFieldIndex((currentIndex) => {
-      if (currentIndex === null) {
+      if (currentIndex === null || currentIndex === 'fixed-image-upload') {
         return currentIndex;
       }
 
@@ -322,7 +366,11 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
           </RouterLink>
 
           <Button variant="contained" onClick={handleSave} disabled={!canSave}>
-            {isSaving ? 'Mentes...' : mode === 'create' ? 'Schema letrehozasa' : 'Valtozasok mentese'}
+            {isSaving
+              ? 'Mentes...'
+              : mode === 'create'
+                ? 'Schema letrehozasa'
+                : 'Valtozasok mentese'}
           </Button>
         </Stack>
       </Stack>
@@ -409,20 +457,115 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
 
           {draft.fields.length ? (
             <Stack spacing={1.5}>
-              {draft.fields.map((field, index) => (
+              {draft.fields.map((field, index) => {
+                const fieldIssues = validation.errors.filter((issue) =>
+                  issue.path.startsWith(`fields[${index}]`),
+                );
+                const isIncomplete = fieldIssues.length > 0;
+                const fieldHelperText =
+                  field.type === 'imageUpload' && !(field.fileNameFields?.length ?? 0)
+                    ? 'Vegyel fel hozza legalabb egy required fieldet.'
+                    : fieldIssues[0]?.message;
+
+                return (
+                  <Card
+                    key={`${field.key ?? 'field'}-${index}`}
+                    variant="outlined"
+                    sx={{
+                      p: 2,
+                      cursor: 'pointer',
+                      borderColor: index === selectedFieldIndex ? 'primary.main' : undefined,
+                      boxShadow: index === selectedFieldIndex ? 1 : 0,
+                      opacity: isIncomplete ? 0.72 : 1,
+                      backgroundColor: isIncomplete ? 'action.hover' : undefined,
+                    }}
+                    onClick={() => {
+                      setSelectedFieldIndex(index);
+                      setIsEditFieldDialogOpen(true);
+                    }}
+                  >
+                    <Stack
+                      direction={{ xs: 'column', sm: 'row' }}
+                      justifyContent="space-between"
+                      alignItems={{ xs: 'flex-start', sm: 'center' }}
+                      gap={1}
+                    >
+                      <Box>
+                        <Typography variant="subtitle1">
+                          {field.label || 'Nev nelkuli field'}
+                        </Typography>
+                        <Typography color="text.secondary" variant="body2">
+                          #{index + 1} | key: {field.key || '-'} | type: {field.type || '-'}
+                        </Typography>
+                        {isIncomplete ? (
+                          <Typography color="text.secondary" variant="body2">
+                            Disabled, amig nincs keszre konfiguralva. {fieldHelperText}
+                          </Typography>
+                        ) : null}
+                      </Box>
+
+                      <Stack
+                        direction="row"
+                        spacing={0.5}
+                        alignItems="center"
+                        onClick={(event) => event.stopPropagation()}
+                      >
+                        <Typography color="text.secondary" variant="body2">
+                          Kattints a szerkeszteshez
+                        </Typography>
+
+                        <IconButton
+                          aria-label={`${field.label || field.key || 'field'} mozgatasa felfele`}
+                          size="small"
+                          disabled={index === 0}
+                          onClick={() => {
+                            handleMoveField({
+                              fromIndex: index,
+                              toIndex: index - 1,
+                            });
+                          }}
+                        >
+                          <ArrowUpwardIcon fontSize="small" />
+                        </IconButton>
+
+                        <IconButton
+                          aria-label={`${field.label || field.key || 'field'} mozgatasa lefele`}
+                          size="small"
+                          disabled={index === draft.fields.length - 1}
+                          onClick={() => {
+                            handleMoveField({
+                              fromIndex: index,
+                              toIndex: index + 1,
+                            });
+                          }}
+                        >
+                          <ArrowDownwardIcon fontSize="small" />
+                        </IconButton>
+                      </Stack>
+                    </Stack>
+                  </Card>
+                );
+              })}
+
+              {!hasImageUploadField ? (
                 <Card
-                  key={`${field.key ?? 'field'}-${index}`}
                   variant="outlined"
+                  data-testid="fixed-image-upload-card"
+                  aria-disabled={!canConfigureFixedImageUpload}
                   sx={{
                     p: 2,
-                    cursor: 'pointer',
-                    borderColor: index === selectedFieldIndex ? 'primary.main' : undefined,
-                    boxShadow: index === selectedFieldIndex ? 1 : 0,
+                    cursor: canConfigureFixedImageUpload ? 'pointer' : 'not-allowed',
+                    opacity: 0.72,
+                    backgroundColor: 'action.hover',
                   }}
-                  onClick={() => {
-                    setSelectedFieldIndex(index);
-                    setIsEditFieldDialogOpen(true);
-                  }}
+                  onClick={
+                    canConfigureFixedImageUpload
+                      ? () => {
+                          setSelectedFieldIndex('fixed-image-upload');
+                          setIsEditFieldDialogOpen(true);
+                        }
+                      : undefined
+                  }
                 >
                   <Stack
                     direction={{ xs: 'column', sm: 'row' }}
@@ -431,60 +574,69 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
                     gap={1}
                   >
                     <Box>
-                      <Typography variant="subtitle1">
-                        {field.label || 'Nev nelkuli field'}
+                      <Typography variant="subtitle1">Kepfeltoltes</Typography>
+                      <Typography color="text.secondary" variant="body2">
+                        Fix image upload field
                       </Typography>
                       <Typography color="text.secondary" variant="body2">
-                        #{index + 1} | key: {field.key || '-'} | type: {field.type || '-'}
+                        Disabled, amig nincs keszre konfiguralva. Vegyel fel hozza legalabb egy
+                        required fieldet.
                       </Typography>
                     </Box>
 
-                    <Stack
-                      direction="row"
-                      spacing={0.5}
-                      alignItems="center"
-                      onClick={(event) => event.stopPropagation()}
-                    >
-                      <Typography color="text.secondary" variant="body2">
-                        Kattints a szerkeszteshez
-                      </Typography>
-
-                      <IconButton
-                        aria-label={`${field.label || field.key || 'field'} mozgatasa felfele`}
-                        size="small"
-                        disabled={index === 0}
-                        onClick={() => {
-                          handleMoveField({
-                            fromIndex: index,
-                            toIndex: index - 1,
-                          });
-                        }}
-                      >
-                        <ArrowUpwardIcon fontSize="small" />
-                      </IconButton>
-
-                      <IconButton
-                        aria-label={`${field.label || field.key || 'field'} mozgatasa lefele`}
-                        size="small"
-                        disabled={index === draft.fields.length - 1}
-                        onClick={() => {
-                          handleMoveField({
-                            fromIndex: index,
-                            toIndex: index + 1,
-                          });
-                        }}
-                      >
-                        <ArrowDownwardIcon fontSize="small" />
-                      </IconButton>
-                    </Stack>
+                    <Typography color="text.secondary" variant="body2">
+                      Kattints a szerkeszteshez
+                    </Typography>
                   </Stack>
                 </Card>
-              ))}
+              ) : null}
             </Stack>
           ) : (
-            <Alert severity="info">
-              Meg nincs field. Az `Uj field` gombbal tudsz uj mezot felvenni.
-            </Alert>
+            <Stack spacing={1.5}>
+              <Alert severity="info">
+                Meg nincs field. Az `Uj field` gombbal tudsz uj mezot felvenni.
+              </Alert>
+
+              {!hasImageUploadField ? (
+                <Card
+                  variant="outlined"
+                  data-testid="fixed-image-upload-card"
+                  aria-disabled={!canConfigureFixedImageUpload}
+                  sx={{
+                    p: 2,
+                    cursor: canConfigureFixedImageUpload ? 'pointer' : 'not-allowed',
+                    opacity: 0.72,
+                    backgroundColor: 'action.hover',
+                  }}
+                  onClick={
+                    canConfigureFixedImageUpload
+                      ? () => {
+                          setSelectedFieldIndex('fixed-image-upload');
+                          setIsEditFieldDialogOpen(true);
+                        }
+                      : undefined
+                  }
+                >
+                  <Stack
+                    direction={{ xs: 'column', sm: 'row' }}
+                    justifyContent="space-between"
+                    alignItems={{ xs: 'flex-start', sm: 'center' }}
+                    gap={1}
+                  >
+                    <Box>
+                      <Typography variant="subtitle1">Kepfeltoltes</Typography>
+                      <Typography color="text.secondary" variant="body2">
+                        Fix image upload field
+                      </Typography>
+                      <Typography color="text.secondary" variant="body2">
+                        Disabled, amig nincs keszre konfiguralva. Vegyel fel hozza legalabb egy
+                        required fieldet.
+                      </Typography>
+                    </Box>
+                  </Stack>
+                </Card>
+              ) : null}
+            </Stack>
           )}
         </Stack>
       </Card>
@@ -535,10 +687,16 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
           mode="edit"
           onChange={updateSelectedField}
           onClose={handleCloseEditFieldDialog}
-          onDelete={handleDeleteSelectedField}
-          onSubmit={handleCloseEditFieldDialog}
+          onDelete={
+            selectedFieldIndex === 'fixed-image-upload' ? undefined : handleDeleteSelectedField
+          }
+          onSubmit={handleEditFieldSubmit}
           optionsText={getSelectOptionsText(selectedField.options)}
-          pathPrefix={`fields[${selectedFieldIndex}]`}
+          pathPrefix={
+            selectedFieldIndex === 'fixed-image-upload'
+              ? `fields[${draft.fields.length}]`
+              : `fields[${selectedFieldIndex}]`
+          }
         />
       ) : null}
     </Box>

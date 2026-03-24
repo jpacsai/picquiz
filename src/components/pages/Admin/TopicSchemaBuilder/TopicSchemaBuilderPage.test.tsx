@@ -66,6 +66,13 @@ describe('TopicSchemaBuilderPage', () => {
     expect(screen.getByLabelText('Topic ID')).toBeDisabled();
   });
 
+  it('shows the fixed image upload field in the list from the start', () => {
+    render(<TopicSchemaBuilderPage mode="create" />);
+
+    expect(screen.getByText('Kepfeltoltes')).toBeInTheDocument();
+    expect(screen.getByText('Fix image upload field')).toBeInTheDocument();
+  });
+
   it('shows metadata validation errors in create mode until required fields are filled', async () => {
     const user = userEvent.setup();
 
@@ -362,38 +369,105 @@ describe('TopicSchemaBuilderPage', () => {
     });
 
     await user.click(screen.getByRole('button', { name: 'Uj field' }));
-
-    await user.type(screen.getByLabelText('Field label'), 'Borito kep');
-    await user.type(screen.getByLabelText('Field key'), 'coverImage');
-    await user.click(screen.getByRole('combobox', { name: 'Field type' }));
-    await user.click(screen.getByRole('option', { name: 'Image upload' }));
-
-    const submitButton = screen.getByRole('button', { name: 'Field hozzaadasa' });
-
-    expect(submitButton).toBeDisabled();
-
-    await user.click(screen.getByRole('combobox', { name: 'File name fields' }));
-    await user.click(screen.getByRole('option', { name: 'Artist' }));
-    await user.keyboard('{Escape}');
-    await user.type(screen.getByLabelText('Desktop target field'), 'desktopImage');
-    await user.type(screen.getByLabelText('Mobile target field'), 'mobileImage');
-    await user.type(screen.getByLabelText('Desktop path field'), 'desktopPath');
-    await user.type(screen.getByLabelText('Mobile path field'), 'mobilePath');
-
-    expect(submitButton).toBeEnabled();
-
-    await user.click(submitButton);
+    await user.type(screen.getByLabelText('Field label'), 'Kep url - desktop');
+    await user.type(screen.getByLabelText('Field key'), 'desktopImage');
+    await user.click(screen.getByRole('checkbox', { name: 'Required' }));
+    await user.click(screen.getByRole('checkbox', { name: 'Readonly' }));
+    await user.click(screen.getByRole('checkbox', { name: 'Hide in edit' }));
+    await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
 
     await waitFor(() => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
+    await user.click(
+      within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', {
+        name: 'Kesz',
+      }),
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Uj field' }));
+    await user.type(screen.getByLabelText('Field label'), 'Kep url - mobile');
+    await user.type(screen.getByLabelText('Field key'), 'mobileImage');
+    await user.click(screen.getByRole('checkbox', { name: 'Required' }));
+    await user.click(screen.getByRole('checkbox', { name: 'Readonly' }));
+    await user.click(screen.getByRole('checkbox', { name: 'Hide in edit' }));
+    await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
+    });
+
+    await user.click(
+      within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', {
+        name: 'Kesz',
+      }),
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText('Kepfeltoltes'));
+
     const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+    const submitButton = within(editDialog).getByRole('button', { name: 'Kesz' });
+
+    expect(within(editDialog).getByLabelText('Field key')).toHaveValue('image_upload');
+    expect(within(editDialog).getByLabelText('File name fields')).not.toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
+
+    await user.clear(within(editDialog).getByLabelText('Field label'));
+    await user.type(within(editDialog).getByLabelText('Field label'), 'Borito kep');
+    await user.clear(within(editDialog).getByLabelText('Field key'));
+    await user.type(within(editDialog).getByLabelText('Field key'), 'coverImage');
+    await user.click(within(editDialog).getByRole('combobox', { name: 'File name fields' }));
+    await user.click(screen.getByRole('option', { name: 'Artist' }));
+    await user.keyboard('{Escape}');
+    await user.type(within(editDialog).getByLabelText('Desktop target field'), 'desktopImage');
+    await user.type(within(editDialog).getByLabelText('Mobile target field'), 'mobileImage');
+    await user.type(within(editDialog).getByLabelText('Desktop path field'), 'desktopPath');
+    await user.type(within(editDialog).getByLabelText('Mobile path field'), 'mobilePath');
+
+    await user.click(submitButton);
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
+    });
+
+    const persistedEditDialogTrigger = screen.getByText('Borito kep');
 
     expect(screen.getByText('Borito kep')).toBeInTheDocument();
-    expect(screen.getByText('#2 | key: coverImage | type: imageUpload')).toBeInTheDocument();
-    expect(within(editDialog).getByLabelText('File name fields')).toHaveTextContent('Artist');
-    expect(within(editDialog).getByLabelText('Desktop target field')).toHaveValue('desktopImage');
-    expect(within(editDialog).getByLabelText('Desktop path field')).toHaveValue('desktopPath');
+    expect(screen.getByText('#4 | key: coverImage | type: imageUpload')).toBeInTheDocument();
+    await user.click(persistedEditDialogTrigger);
+
+    const persistedEditDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+
+    expect(within(persistedEditDialog).getByLabelText('File name fields')).toHaveTextContent('Artist');
+    expect(within(persistedEditDialog).getByLabelText('Desktop target field')).toHaveValue(
+      'desktopImage',
+    );
+    expect(within(persistedEditDialog).getByLabelText('Desktop path field')).toHaveValue(
+      'desktopPath',
+    );
+  });
+
+  it('keeps the fixed image upload field disabled until it is configured', async () => {
+    render(<TopicSchemaBuilderPage mode="create" />);
+
+    expect(screen.getByTestId('fixed-image-upload-card')).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        'Disabled, amig nincs keszre konfiguralva. Vegyel fel hozza legalabb egy required fieldet.',
+      ),
+    ).toBeInTheDocument();
   });
 });

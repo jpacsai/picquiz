@@ -16,7 +16,6 @@ const FIELD_TYPE_OPTIONS = [
   { label: 'String', value: 'string' },
   { label: 'Number', value: 'number' },
   { label: 'Select', value: 'select' },
-  { label: 'Image upload', value: 'imageUpload' },
 ] as const;
 
 type FieldDialogProps = {
@@ -50,6 +49,11 @@ const FieldDialog = ({
 }: FieldDialogProps) => {
   const title = mode === 'create' ? 'Uj field hozzaadasa' : 'Field szerkesztes';
   const submitLabel = mode === 'create' ? 'Field hozzaadasa' : 'Kesz';
+  const hasAvailableFileNameFieldOptions = availableFileNameFieldOptions.length > 0;
+  const fieldTypeOptions =
+    field.type === 'imageUpload'
+      ? [...FIELD_TYPE_OPTIONS, { label: 'Image upload', value: 'imageUpload' as const }]
+      : FIELD_TYPE_OPTIONS;
 
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth={mode === 'create' ? 'sm' : 'md'}>
@@ -102,7 +106,7 @@ const FieldDialog = ({
             onChange((currentField) => ({
               ...currentField,
               type: nextValue,
-              ...(nextValue === 'imageUpload' ? { quiz: undefined } : {}),
+              ...(nextValue === 'imageUpload' ? { quiz: undefined, required: true } : {}),
               ...(nextValue === 'select'
                 ? { options: currentField.options ?? [] }
                 : { options: undefined }),
@@ -120,7 +124,7 @@ const FieldDialog = ({
           fullWidth
           margin="normal"
         >
-          {FIELD_TYPE_OPTIONS.map((option) => (
+          {fieldTypeOptions.map((option) => (
             <MenuItem key={option.value} value={option.value}>
               {option.label}
             </MenuItem>
@@ -183,7 +187,8 @@ const FieldDialog = ({
         <FormControlLabel
           control={
             <Checkbox
-              checked={Boolean(field.required)}
+              checked={field.type === 'imageUpload' ? true : Boolean(field.required)}
+              disabled={field.type === 'imageUpload'}
               onChange={(event) => {
                 const nextValue = event.target.checked;
 
@@ -260,6 +265,7 @@ const FieldDialog = ({
           <>
             <TextField
               select
+              disabled={!hasAvailableFileNameFieldOptions}
               SelectProps={{
                 multiple: true,
                 renderValue: (selected) =>
@@ -276,7 +282,9 @@ const FieldDialog = ({
               error={errorsByPath.has(`${pathPrefix}.fileNameFields`)}
               helperText={
                 errorsByPath.get(`${pathPrefix}.fileNameFields`) ??
-                'Valaszd ki, melyik kotelezo mezokbol generaljuk a file-nevet. A sorrend a field lista sorrendjet koveti.'
+                (hasAvailableFileNameFieldOptions
+                  ? 'Valaszd ki, melyik kotelezo mezokbol generaljuk a file-nevet. A sorrend a field lista sorrendjet koveti.'
+                  : 'Vegyel fel hozza legalabb egy required fieldet, es utana itt tudod kivalasztani a file-nevhez hasznalt mezoket.')
               }
               onChange={(event) => {
                 const nextValue = event.target.value;

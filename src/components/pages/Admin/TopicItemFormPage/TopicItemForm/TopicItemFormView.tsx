@@ -72,6 +72,7 @@ const TopicItemFormView = ({
           <FormField
             key={field.key}
             autocompleteOptions={autocompleteOptionsByField?.[field.key]}
+            fields={fields}
             field={field}
             form={form}
             derivationIndex={derivationIndex}

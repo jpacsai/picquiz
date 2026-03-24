@@ -24,6 +24,9 @@ const getFieldPath = (index: number, key?: string) =>
 const getFieldKeys = (fields: TopicFieldDraft[]) =>
   fields.map((field) => field.key?.trim()).filter((value): value is string => Boolean(value));
 
+const isImageUploadTargetField = (field: TopicFieldDraft | undefined) =>
+  field?.type === 'string' && field.required && field.readonly && field.hideInEdit;
+
 const validateTopicMetadata = (draft: TopicDraft): TopicSchemaIssue[] => {
   const errors: TopicSchemaIssue[] = [];
 
@@ -181,6 +184,16 @@ const validateField = ({
       );
     }
 
+    if (!field.required) {
+      issues.push(
+        createIssue({
+          message: 'Image upload fields must be required.',
+          path: `${fieldPath}.required`,
+          severity: 'error',
+        }),
+      );
+    }
+
     const fileNameFieldKeys = (field.fileNameFields ?? [])
       .map((fieldKey) => fieldKey.trim())
       .filter(Boolean);
@@ -219,6 +232,21 @@ const validateField = ({
           severity: 'error',
         }),
       );
+    } else {
+      const desktopTargetField = fields.find(
+        (candidateField) => candidateField.key?.trim() === field.targetFields?.desktop?.trim(),
+      );
+
+      if (!isImageUploadTargetField(desktopTargetField)) {
+        issues.push(
+          createIssue({
+            message:
+              'Image upload desktop target must reference a required, readonly, hidden string field.',
+            path: `${fieldPath}.targetFields.desktop`,
+            severity: 'error',
+          }),
+        );
+      }
     }
 
     if (!isNonEmptyString(field.targetFields?.mobile)) {
@@ -229,10 +257,25 @@ const validateField = ({
           severity: 'error',
         }),
       );
+    } else {
+      const mobileTargetField = fields.find(
+        (candidateField) => candidateField.key?.trim() === field.targetFields?.mobile?.trim(),
+      );
+
+      if (!isImageUploadTargetField(mobileTargetField)) {
+        issues.push(
+          createIssue({
+            message:
+              'Image upload mobile target must reference a required, readonly, hidden string field.',
+            path: `${fieldPath}.targetFields.mobile`,
+            severity: 'error',
+          }),
+        );
+      }
     }
   }
 
-  if (field.hideInEdit && field.required) {
+  if (field.hideInEdit && field.required && !field.readonly) {
     issues.push(
       createIssue({
         message: 'Required fields hidden in edit mode may be difficult to maintain.',

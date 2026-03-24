@@ -18,6 +18,7 @@ import FormSelect from './FormSelect';
 import ImageUploadField from './ImageUploadField';
 
 type FormFieldProps = {
+  fields: TopicField[];
   derivationIndex: Record<string, FormDeriveField>;
   field: TopicField;
   form: FormFieldFormApi;
@@ -38,7 +39,22 @@ const renderPendingDerivedField = (key: string) => (
   />
 );
 
+const getNormalizedImageUploadFileNamePart = (value: unknown): string | null => {
+  if (typeof value === 'number') {
+    return String(value);
+  }
+
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const normalizedValue = value.trim();
+
+  return normalizedValue.length > 0 ? normalizedValue : null;
+};
+
 const FormField = ({
+  fields,
   derivationIndex,
   field,
   form,
@@ -142,8 +158,23 @@ const FormField = ({
         <form.Subscribe key={key} selector={(state) => state.values}>
           {(values) => {
             const fileNameParts = field.fileNameFields
-              .map((fieldKey) => values[fieldKey])
-              .filter((value): value is string => typeof value === 'string');
+              .map((fieldKey) => getNormalizedImageUploadFileNamePart(values[fieldKey]))
+              .filter((value): value is string => value !== null);
+            const requiredFileNameFields = field.fileNameFields
+              .map((fieldKey) => fields.find((candidateField) => candidateField.key === fieldKey))
+              .filter((candidateField): candidateField is TopicField => Boolean(candidateField));
+            const requiredFileNameLabels = requiredFileNameFields.map(
+              (requiredField) => requiredField.label,
+            );
+            const isReadyForUpload =
+              requiredFileNameFields.length > 0 &&
+              requiredFileNameFields.every((requiredField) =>
+                getNormalizedImageUploadFileNamePart(values[requiredField.key]) !== null,
+              );
+            const helperText =
+              requiredFileNameLabels.length > 0
+                ? `Add meg a kötelező mezők értékeit: ${requiredFileNameLabels.join(', ')}`
+                : 'Add meg a kötelező mezők értékeit.';
             const desktopImageValue = values[field.targetFields.desktop];
             const mobileImageValue = values[field.targetFields.mobile];
             const existingImageUrl =
@@ -158,6 +189,8 @@ const FormField = ({
                 field={field}
                 existingImageUrl={existingImageUrl}
                 fileNameParts={fileNameParts}
+                helperText={helperText}
+                isReadyForUpload={isReadyForUpload}
                 mode={mode}
                 existingSelection={
                   pendingImageSelection?.field.key === field.key ? pendingImageSelection : null

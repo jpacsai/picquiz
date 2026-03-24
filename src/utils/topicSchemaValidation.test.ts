@@ -19,6 +19,22 @@ const createValidDraft = (): TopicDraft => ({
       type: 'string',
     },
     {
+      hideInEdit: true,
+      key: 'image_desktop',
+      label: 'Kep url - desktop',
+      readonly: true,
+      required: true,
+      type: 'string',
+    },
+    {
+      hideInEdit: true,
+      key: 'image_mobile',
+      label: 'Kep url - mobile',
+      readonly: true,
+      required: true,
+      type: 'string',
+    },
+    {
       key: 'era',
       label: 'Korszak',
       options: ['Reneszansz', 'Barokk'],
@@ -32,6 +48,7 @@ const createValidDraft = (): TopicDraft => ({
       fileNameFields: ['artist', 'title'],
       key: 'image',
       label: 'Kep',
+      required: true,
       targetFields: {
         desktop: 'image_desktop',
         mobile: 'image_mobile',
@@ -84,36 +101,36 @@ describe('validateTopicDraft', () => {
 
   it('requires select fields to define options', () => {
     const draft = createValidDraft();
-    draft.fields[2].options = [];
+    draft.fields[4].options = [];
 
     const result = validateTopicDraft(draft);
 
     expect(result.errors).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ path: 'fields[2] (era).options' }),
+        expect.objectContaining({ path: 'fields[4] (era).options' }),
       ]),
     );
   });
 
   it('requires image upload field references', () => {
     const draft = createValidDraft();
-    draft.fields[3].fileNameFields = [];
-    draft.fields[3].targetFields = {};
+    draft.fields[5].fileNameFields = [];
+    draft.fields[5].targetFields = {};
 
     const result = validateTopicDraft(draft);
 
     expect(result.errors).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ path: 'fields[3] (image).fileNameFields' }),
-        expect.objectContaining({ path: 'fields[3] (image).targetFields.desktop' }),
-        expect.objectContaining({ path: 'fields[3] (image).targetFields.mobile' }),
+        expect.objectContaining({ path: 'fields[5] (image).fileNameFields' }),
+        expect.objectContaining({ path: 'fields[5] (image).targetFields.desktop' }),
+        expect.objectContaining({ path: 'fields[5] (image).targetFields.mobile' }),
       ]),
     );
   });
 
   it('rejects quiz config on image upload fields', () => {
     const draft = createValidDraft();
-    draft.fields[3].quiz = {
+    draft.fields[5].quiz = {
       enabled: true,
       prompt: 'Mi van a kepen?',
     };
@@ -122,14 +139,14 @@ describe('validateTopicDraft', () => {
 
     expect(result.errors).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ path: 'fields[3] (image).quiz' }),
+        expect.objectContaining({ path: 'fields[5] (image).quiz' }),
       ]),
     );
   });
 
   it('rejects derived references to missing fields', () => {
     const draft = createValidDraft();
-    draft.fields[2].fn = {
+    draft.fields[4].fn = {
       name: 'yearToCentury',
       source: 'missing',
     };
@@ -138,7 +155,7 @@ describe('validateTopicDraft', () => {
 
     expect(result.errors).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ path: 'fields[2] (era).fn.source' }),
+        expect.objectContaining({ path: 'fields[4] (era).fn.source' }),
       ]),
     );
   });
@@ -154,6 +171,32 @@ describe('validateTopicDraft', () => {
     expect(result.warnings).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ path: 'fields[0] (artist).hideInEdit' }),
+      ]),
+    );
+  });
+
+  it('requires image upload fields themselves to be required', () => {
+    const draft = createValidDraft();
+    draft.fields[5].required = false;
+
+    const result = validateTopicDraft(draft);
+
+    expect(result.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ path: 'fields[5] (image).required' }),
+      ]),
+    );
+  });
+
+  it('requires image upload target fields to be hidden readonly required strings', () => {
+    const draft = createValidDraft();
+    draft.fields[2].required = false;
+
+    const result = validateTopicDraft(draft);
+
+    expect(result.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ path: 'fields[5] (image).targetFields.desktop' }),
       ]),
     );
   });
