@@ -81,4 +81,46 @@ describe('TopicSchemaBuilderPage', () => {
 
     expect(submitButton).toBeEnabled();
   });
+
+  it('allows editing the selected field basics from the side panel', async () => {
+    const user = userEvent.setup();
+
+    render(<TopicSchemaBuilderPage mode="create" />);
+
+    await user.click(screen.getByRole('button', { name: 'Uj field' }));
+    await user.type(screen.getByLabelText('Field label'), 'Ev');
+    await user.type(screen.getByLabelText('Field key'), 'year');
+    await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
+    });
+
+    await user.clear(screen.getByLabelText('Field label'));
+    await user.type(screen.getByLabelText('Field label'), 'Evszam');
+    await user.click(screen.getByRole('checkbox', { name: 'Required' }));
+
+    expect(screen.getByText('Evszam')).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: 'Required' })).toBeChecked();
+  });
+
+  it('allows deleting the selected field', async () => {
+    const user = userEvent.setup();
+
+    render(<TopicSchemaBuilderPage mode="create" />);
+
+    await user.click(screen.getByRole('button', { name: 'Uj field' }));
+    await user.type(screen.getByLabelText('Field label'), 'Ev');
+    await user.type(screen.getByLabelText('Field key'), 'year');
+    await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Torles' }));
+
+    expect(screen.queryByText('Ev')).not.toBeInTheDocument();
+    expect(screen.getByText('Meg nincs field. Az `Uj field` gombbal tudsz uj mezot felvenni.')).toBeInTheDocument();
+  });
 });

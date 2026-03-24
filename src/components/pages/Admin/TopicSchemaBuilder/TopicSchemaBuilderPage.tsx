@@ -6,10 +6,12 @@ import {
   Box,
   Button,
   Card,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
   MenuItem,
   Stack,
   TextField,
@@ -51,6 +53,7 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
   const [draft, setDraft] = useState<TopicDraft>(() => getInitialDraft(topic));
   const [isAddFieldDialogOpen, setIsAddFieldDialogOpen] = useState(false);
   const [newFieldDraft, setNewFieldDraft] = useState<TopicFieldDraft>(() => getEmptyFieldDraft());
+  const [selectedFieldIndex, setSelectedFieldIndex] = useState<number | null>(null);
   const validation = useMemo(() => validateTopicDraft(draft), [draft]);
   const title = mode === 'create' ? 'Uj topic schema' : `${topic?.label ?? 'Topic'} schema`;
   const description =
@@ -82,6 +85,9 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
   const metadataErrorsByPath = new Map(
     validation.errors.map((issue) => [issue.path, issue.message]),
   );
+  const fieldErrorsByPath = new Map(
+    validation.errors.map((issue) => [issue.path, issue.message]),
+  );
   const newFieldValidation = useMemo(
     () =>
       validateTopicDraft({
@@ -97,6 +103,7 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
     newFieldValidation.errors.map((issue) => [issue.path, issue.message]),
   );
   const canAddField = !newFieldValidation.errors.length;
+  const selectedField = selectedFieldIndex !== null ? draft.fields[selectedFieldIndex] ?? null : null;
 
   const handleCloseAddFieldDialog = () => {
     setIsAddFieldDialogOpen(false);
@@ -126,7 +133,43 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
       ...currentDraft,
       fields: [...currentDraft.fields, normalizedField],
     }));
+    setSelectedFieldIndex(draft.fields.length);
     handleCloseAddFieldDialog();
+  };
+
+  const updateSelectedField = (updater: (field: TopicFieldDraft) => TopicFieldDraft) => {
+    if (selectedFieldIndex === null) {
+      return;
+    }
+
+    setDraft((currentDraft) => ({
+      ...currentDraft,
+      fields: currentDraft.fields.map((field, index) =>
+        index === selectedFieldIndex ? updater(field) : field,
+      ),
+    }));
+  };
+
+  const handleDeleteSelectedField = () => {
+    if (selectedFieldIndex === null) {
+      return;
+    }
+
+    setDraft((currentDraft) => ({
+      ...currentDraft,
+      fields: currentDraft.fields.filter((_, index) => index !== selectedFieldIndex),
+    }));
+    setSelectedFieldIndex((currentIndex) => {
+      if (currentIndex === null) {
+        return null;
+      }
+
+      if (draft.fields.length <= 1) {
+        return null;
+      }
+
+      return Math.max(0, currentIndex - 1);
+    });
   };
 
   return (
@@ -222,29 +265,185 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
           </Stack>
 
           {draft.fields.length ? (
-            <Stack spacing={1.5}>
-              {draft.fields.map((field, index) => (
-                <Card key={`${field.key ?? 'field'}-${index}`} variant="outlined" sx={{ p: 2 }}>
-                  <Stack
-                    direction={{ xs: 'column', sm: 'row' }}
-                    justifyContent="space-between"
-                    alignItems={{ xs: 'flex-start', sm: 'center' }}
-                    gap={1}
+            <Box
+              sx={{
+                display: 'grid',
+                gap: 2,
+                gridTemplateColumns: {
+                  xs: '1fr',
+                  lg: 'minmax(0, 1fr) minmax(320px, 420px)',
+                },
+              }}
+            >
+              <Stack spacing={1.5}>
+                {draft.fields.map((field, index) => (
+                  <Card
+                    key={`${field.key ?? 'field'}-${index}`}
+                    variant="outlined"
+                    sx={{
+                      p: 2,
+                      cursor: 'pointer',
+                      borderColor:
+                        index === selectedFieldIndex ? 'primary.main' : undefined,
+                      boxShadow: index === selectedFieldIndex ? 1 : 0,
+                    }}
+                    onClick={() => setSelectedFieldIndex(index)}
                   >
-                    <Box>
-                      <Typography variant="subtitle1">{field.label || 'Nev nelkuli field'}</Typography>
+                    <Stack
+                      direction={{ xs: 'column', sm: 'row' }}
+                      justifyContent="space-between"
+                      alignItems={{ xs: 'flex-start', sm: 'center' }}
+                      gap={1}
+                    >
+                      <Box>
+                        <Typography variant="subtitle1">
+                          {field.label || 'Nev nelkuli field'}
+                        </Typography>
+                        <Typography color="text.secondary" variant="body2">
+                          key: {field.key || '-'} | type: {field.type || '-'}
+                        </Typography>
+                      </Box>
+
                       <Typography color="text.secondary" variant="body2">
-                        key: {field.key || '-'} | type: {field.type || '-'}
+                        {index === selectedFieldIndex ? 'Kivalasztva' : 'Kattints a szerkeszteshez'}
                       </Typography>
-                    </Box>
+                    </Stack>
+                  </Card>
+                ))}
+              </Stack>
+
+              <Card variant="outlined" sx={{ p: 2.5, alignSelf: 'start' }}>
+                {selectedField ? (
+                  <Stack spacing={2}>
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      gap={2}
+                    >
+                      <Typography variant="h6">Field szerkesztes</Typography>
+
+                      <Button color="error" onClick={handleDeleteSelectedField}>
+                        Torles
+                      </Button>
+                    </Stack>
+
+                    <TextField
+                      label="Field label"
+                      value={selectedField.label ?? ''}
+                      error={fieldErrorsByPath.has(`fields[${selectedFieldIndex}].label`)}
+                      helperText={
+                        fieldErrorsByPath.get(`fields[${selectedFieldIndex}].label`) ?? ' '
+                      }
+                      onChange={(event) => {
+                        const nextValue = event.target.value;
+
+                        updateSelectedField((field) => ({
+                          ...field,
+                          label: nextValue,
+                        }));
+                      }}
+                    />
+
+                    <TextField
+                      label="Field key"
+                      value={selectedField.key ?? ''}
+                      error={fieldErrorsByPath.has(`fields[${selectedFieldIndex}].key`)}
+                      helperText={fieldErrorsByPath.get(`fields[${selectedFieldIndex}].key`) ?? ' '}
+                      onChange={(event) => {
+                        const nextValue = event.target.value;
+
+                        updateSelectedField((field) => ({
+                          ...field,
+                          key: nextValue,
+                        }));
+                      }}
+                    />
+
+                    <TextField
+                      select
+                      label="Field type"
+                      value={selectedField.type ?? 'string'}
+                      error={fieldErrorsByPath.has(`fields[${selectedFieldIndex}].type`)}
+                      helperText={
+                        fieldErrorsByPath.get(`fields[${selectedFieldIndex}].type`) ?? ' '
+                      }
+                      onChange={(event) => {
+                        const nextValue = event.target.value as TopicFieldDraft['type'];
+
+                        updateSelectedField((field) => ({
+                          ...field,
+                          type: nextValue,
+                        }));
+                      }}
+                    >
+                      {FIELD_TYPE_OPTIONS.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={Boolean(selectedField.required)}
+                          onChange={(event) => {
+                            const nextValue = event.target.checked;
+
+                            updateSelectedField((field) => ({
+                              ...field,
+                              required: nextValue,
+                            }));
+                          }}
+                        />
+                      }
+                      label="Required"
+                    />
+
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={Boolean(selectedField.readonly)}
+                          onChange={(event) => {
+                            const nextValue = event.target.checked;
+
+                            updateSelectedField((field) => ({
+                              ...field,
+                              readonly: nextValue,
+                            }));
+                          }}
+                        />
+                      }
+                      label="Readonly"
+                    />
+
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={Boolean(selectedField.hideInEdit)}
+                          onChange={(event) => {
+                            const nextValue = event.target.checked;
+
+                            updateSelectedField((field) => ({
+                              ...field,
+                              hideInEdit: nextValue,
+                            }));
+                          }}
+                        />
+                      }
+                      label="Hide in edit"
+                    />
 
                     <Typography color="text.secondary" variant="body2">
-                      Reszletes field editor a kovetkezo lepesben jon.
+                      A kovetkezo lepesben ide jonnek a tipus-specifikus field beallitasok.
                     </Typography>
                   </Stack>
-                </Card>
-              ))}
-            </Stack>
+                ) : (
+                  <Alert severity="info">Valassz ki egy fieldet a listabol a szerkeszteshez.</Alert>
+                )}
+              </Card>
+            </Box>
           ) : (
             <Alert severity="info">
               Meg nincs field. Az `Uj field` gombbal tudsz uj mezot felvenni.
