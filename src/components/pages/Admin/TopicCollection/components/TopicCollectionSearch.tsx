@@ -1,14 +1,4 @@
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import {
-  Autocomplete,
-  Box,
-  FormControl,
-  IconButton,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from '@mui/material';
+import { Autocomplete, Box, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 
 import type { TopicCollectionSearchField } from '@/types/topics';
 
@@ -19,7 +9,6 @@ type TopicCollectionSearchProps = {
   searchQuery: string;
   onSearchFieldChange: (value: string) => void;
   onSearchQueryChange: (value: string) => void;
-  onResetSearch: () => void;
 };
 
 const TopicCollectionSearch = ({
@@ -29,7 +18,6 @@ const TopicCollectionSearch = ({
   searchQuery,
   onSearchFieldChange,
   onSearchQueryChange,
-  onResetSearch,
 }: TopicCollectionSearchProps) => {
   return (
     <Box
@@ -39,7 +27,7 @@ const TopicCollectionSearch = ({
         flex: 1,
         gap: 2,
         gridTemplateColumns: {
-          md: 'minmax(220px, 280px) minmax(240px, 1fr) auto',
+          md: 'minmax(220px, 280px) minmax(240px, 1fr)',
           xs: '1fr',
         },
       }}
@@ -74,14 +62,6 @@ const TopicCollectionSearch = ({
         }}
         renderInput={(params) => <TextField {...params} label="Keresett érték" size="small" />}
       />
-
-      <IconButton
-        aria-label="Szűrő visszaállítása"
-        onClick={onResetSearch}
-        sx={{ alignSelf: { md: 'center', xs: 'start' } }}
-      >
-        <RestartAltIcon />
-      </IconButton>
     </Box>
   );
 };
