@@ -58,10 +58,12 @@ const validateField = ({
   field,
   fieldIndex,
   imageUploadFieldCount,
+  fields,
   knownFieldKeys,
 }: {
   field: TopicFieldDraft;
   fieldIndex: number;
+  fields: TopicFieldDraft[];
   imageUploadFieldCount: number;
   knownFieldKeys: Set<string>;
 }): TopicSchemaIssue[] => {
@@ -179,25 +181,35 @@ const validateField = ({
       );
     }
 
-    if (!isNonEmptyString(field.fileNameFields?.artist)) {
+    const fileNameFieldKeys = (field.fileNameFields ?? [])
+      .map((fieldKey) => fieldKey.trim())
+      .filter(Boolean);
+
+    if (!fileNameFieldKeys.length) {
       issues.push(
         createIssue({
-          message: 'Image upload fields must reference an artist file name field.',
-          path: `${fieldPath}.fileNameFields.artist`,
+          message: 'Image upload fields must reference at least one file name field.',
+          path: `${fieldPath}.fileNameFields`,
           severity: 'error',
         }),
       );
     }
 
-    if (!isNonEmptyString(field.fileNameFields?.title)) {
-      issues.push(
-        createIssue({
-          message: 'Image upload fields must reference a title file name field.',
-          path: `${fieldPath}.fileNameFields.title`,
-          severity: 'error',
-        }),
+    fileNameFieldKeys.forEach((fileNameFieldKey) => {
+      const referencedField = fields.find(
+        (candidateField) => candidateField.key?.trim() === fileNameFieldKey,
       );
-    }
+
+      if (!referencedField || !referencedField.required || referencedField.type === 'imageUpload') {
+        issues.push(
+          createIssue({
+            message: 'Image upload file name fields must reference required non-image fields.',
+            path: `${fieldPath}.fileNameFields`,
+            severity: 'error',
+          }),
+        );
+      }
+    });
 
     if (!isNonEmptyString(field.targetFields?.desktop)) {
       issues.push(
@@ -259,6 +271,7 @@ export const validateTopicDraft = (draft: TopicDraft): TopicSchemaValidationResu
       ...validateField({
         field,
         fieldIndex,
+        fields: draft.fields,
         imageUploadFieldCount,
         knownFieldKeys,
       }),

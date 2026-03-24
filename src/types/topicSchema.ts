@@ -14,7 +14,7 @@ type TopicFieldDraftBase = {
 };
 
 export type TopicFieldDraft = TopicFieldDraftBase & {
-  fileNameFields?: Partial<Extract<TopicField, { type: 'imageUpload' }>['fileNameFields']>;
+  fileNameFields?: string[];
   options?: string[];
   targetFields?: Partial<Extract<TopicField, { type: 'imageUpload' }>['targetFields']>;
 };

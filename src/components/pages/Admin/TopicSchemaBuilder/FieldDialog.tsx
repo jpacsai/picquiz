@@ -20,6 +20,7 @@ const FIELD_TYPE_OPTIONS = [
 ] as const;
 
 type FieldDialogProps = {
+  availableFileNameFieldOptions: Array<{ key: string; label: string }>;
   canSubmit: boolean;
   errorsByPath: Map<string, string>;
   field: TopicFieldDraft;
@@ -34,6 +35,7 @@ type FieldDialogProps = {
 };
 
 const FieldDialog = ({
+  availableFileNameFieldOptions,
   canSubmit,
   errorsByPath,
   field,
@@ -106,7 +108,7 @@ const FieldDialog = ({
                 : { options: undefined }),
               ...(nextValue === 'imageUpload'
                 ? {
-                    fileNameFields: currentField.fileNameFields ?? {},
+                    fileNameFields: currentField.fileNameFields ?? [],
                     targetFields: currentField.targetFields ?? {},
                   }
                 : {
@@ -257,44 +259,45 @@ const FieldDialog = ({
         {field.type === 'imageUpload' ? (
           <>
             <TextField
-              label="Artist file name field"
-              value={field.fileNameFields?.artist ?? ''}
-              error={errorsByPath.has(`${pathPrefix}.fileNameFields.artist`)}
-              helperText={errorsByPath.get(`${pathPrefix}.fileNameFields.artist`) ?? ' '}
+              select
+              SelectProps={{
+                multiple: true,
+                renderValue: (selected) =>
+                  (selected as string[])
+                    .map(
+                      (selectedKey) =>
+                        availableFileNameFieldOptions.find((option) => option.key === selectedKey)
+                          ?.label ?? selectedKey,
+                    )
+                    .join(', '),
+              }}
+              label="File name fields"
+              value={field.fileNameFields ?? []}
+              error={errorsByPath.has(`${pathPrefix}.fileNameFields`)}
+              helperText={
+                errorsByPath.get(`${pathPrefix}.fileNameFields`) ??
+                'Valaszd ki, melyik kotelezo mezokbol generaljuk a file-nevet. A sorrend a field lista sorrendjet koveti.'
+              }
               onChange={(event) => {
                 const nextValue = event.target.value;
+                const selectedKeys = typeof nextValue === 'string' ? nextValue.split(',') : nextValue;
 
                 onChange((currentField) => ({
                   ...currentField,
-                  fileNameFields: {
-                    ...currentField.fileNameFields,
-                    artist: nextValue,
-                  },
+                  fileNameFields: availableFileNameFieldOptions
+                    .map((option) => option.key)
+                    .filter((optionKey) => selectedKeys.includes(optionKey)),
                 }));
               }}
               fullWidth
               margin="normal"
-            />
-
-            <TextField
-              label="Title file name field"
-              value={field.fileNameFields?.title ?? ''}
-              error={errorsByPath.has(`${pathPrefix}.fileNameFields.title`)}
-              helperText={errorsByPath.get(`${pathPrefix}.fileNameFields.title`) ?? ' '}
-              onChange={(event) => {
-                const nextValue = event.target.value;
-
-                onChange((currentField) => ({
-                  ...currentField,
-                  fileNameFields: {
-                    ...currentField.fileNameFields,
-                    title: nextValue,
-                  },
-                }));
-              }}
-              fullWidth
-              margin="normal"
-            />
+            >
+              {availableFileNameFieldOptions.map((option) => (
+                <MenuItem key={option.key} value={option.key}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
 
             <TextField
               label="Desktop target field"

@@ -196,6 +196,22 @@ describe('TopicSchemaBuilderPage', () => {
     render(<TopicSchemaBuilderPage mode="create" />);
 
     await user.click(screen.getByRole('button', { name: 'Uj field' }));
+    await user.type(screen.getByLabelText('Field label'), 'Artist');
+    await user.type(screen.getByLabelText('Field key'), 'artist');
+    await user.click(screen.getByRole('checkbox', { name: 'Required' }));
+    await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
+    });
+
+    await user.click(within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', { name: 'Kesz' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Uj field' }));
 
     await user.type(screen.getByLabelText('Field label'), 'Borito kep');
     await user.type(screen.getByLabelText('Field key'), 'coverImage');
@@ -206,8 +222,9 @@ describe('TopicSchemaBuilderPage', () => {
 
     expect(submitButton).toBeDisabled();
 
-    await user.type(screen.getByLabelText('Artist file name field'), 'artist');
-    await user.type(screen.getByLabelText('Title file name field'), 'title');
+    await user.click(screen.getByRole('combobox', { name: 'File name fields' }));
+    await user.click(screen.getByRole('option', { name: 'Artist' }));
+    await user.keyboard('{Escape}');
     await user.type(screen.getByLabelText('Desktop target field'), 'desktopImage');
     await user.type(screen.getByLabelText('Mobile target field'), 'mobileImage');
     await user.type(screen.getByLabelText('Desktop path field'), 'desktopPath');
@@ -225,7 +242,7 @@ describe('TopicSchemaBuilderPage', () => {
 
     expect(screen.getByText('Borito kep')).toBeInTheDocument();
     expect(screen.getByText('key: coverImage | type: imageUpload')).toBeInTheDocument();
-    expect(within(editDialog).getByLabelText('Artist file name field')).toHaveValue('artist');
+    expect(within(editDialog).getByLabelText('File name fields')).toHaveTextContent('Artist');
     expect(within(editDialog).getByLabelText('Desktop target field')).toHaveValue('desktopImage');
     expect(within(editDialog).getByLabelText('Desktop path field')).toHaveValue('desktopPath');
   });

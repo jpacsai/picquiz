@@ -9,11 +9,13 @@ const createValidDraft = (): TopicDraft => ({
     {
       key: 'artist',
       label: 'Alkoto',
+      required: true,
       type: 'string',
     },
     {
       key: 'title',
       label: 'Cim',
+      required: true,
       type: 'string',
     },
     {
@@ -27,10 +29,7 @@ const createValidDraft = (): TopicDraft => ({
       type: 'select',
     },
     {
-      fileNameFields: {
-        artist: 'artist',
-        title: 'title',
-      },
+      fileNameFields: ['artist', 'title'],
       key: 'image',
       label: 'Kep',
       targetFields: {
@@ -98,15 +97,14 @@ describe('validateTopicDraft', () => {
 
   it('requires image upload field references', () => {
     const draft = createValidDraft();
-    draft.fields[3].fileNameFields = {};
+    draft.fields[3].fileNameFields = [];
     draft.fields[3].targetFields = {};
 
     const result = validateTopicDraft(draft);
 
     expect(result.errors).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ path: 'fields[3] (image).fileNameFields.artist' }),
-        expect.objectContaining({ path: 'fields[3] (image).fileNameFields.title' }),
+        expect.objectContaining({ path: 'fields[3] (image).fileNameFields' }),
         expect.objectContaining({ path: 'fields[3] (image).targetFields.desktop' }),
         expect.objectContaining({ path: 'fields[3] (image).targetFields.mobile' }),
       ]),

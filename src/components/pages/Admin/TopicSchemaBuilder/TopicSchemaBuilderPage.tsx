@@ -16,7 +16,15 @@ type TopicSchemaBuilderPageProps = {
 };
 
 const getInitialDraft = (topic?: Topic): TopicDraft => ({
-  fields: topic?.fields ?? [],
+  fields:
+    topic?.fields.map((field) =>
+      field.type === 'imageUpload'
+        ? {
+            ...field,
+            fileNameFields: [field.fileNameFields.artist, field.fileNameFields.title].filter(Boolean),
+          }
+        : field,
+    ) ?? [],
   id: topic?.id ?? '',
   label: topic?.label ?? '',
   slug: topic?.slug ?? '',
@@ -24,10 +32,32 @@ const getInitialDraft = (topic?: Topic): TopicDraft => ({
 });
 
 const getEmptyFieldDraft = (): TopicFieldDraft => ({
+  fileNameFields: [],
   key: '',
   label: '',
   type: 'string',
 });
+
+const getAvailableFileNameFieldOptions = ({
+  currentFieldKey,
+  fields,
+}: {
+  currentFieldKey?: string;
+  fields: TopicDraft['fields'];
+}) =>
+  fields
+    .filter(
+      (field) =>
+        field.type !== 'imageUpload' &&
+        field.required &&
+        typeof field.key === 'string' &&
+        field.key.trim().length > 0 &&
+        field.key !== currentFieldKey,
+    )
+    .map((field) => ({
+      key: field.key!.trim(),
+      label: field.label?.trim() || field.key!.trim(),
+    }));
 
 const getSelectOptionsText = (options: string[] | undefined) => (options ?? []).join('\n');
 
@@ -71,24 +101,30 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
   const fieldErrorsByPath = new Map(
     validation.errors.map((issue) => [issue.path, issue.message]),
   );
+  const newFieldIndex = draft.fields.length;
   const newFieldValidation = useMemo(
     () =>
       validateTopicDraft({
-        fields: [newFieldDraft],
-        id: '__field-draft__',
-        label: '__field-draft__',
-        slug: '__field-draft__',
-        storage_prefix: '__field-draft__',
+        ...draft,
+        fields: [...draft.fields, newFieldDraft],
       }),
-    [newFieldDraft],
+    [draft, newFieldDraft],
   );
   const newFieldErrorsByPath = new Map(
     newFieldValidation.errors
-      .filter((issue) => issue.path !== 'fields[0].options')
+      .filter((issue) => issue.path.startsWith(`fields[${newFieldIndex}]`))
+      .filter((issue) => issue.path !== `fields[${newFieldIndex}].options`)
       .map((issue) => [issue.path, issue.message]),
   );
-  const canAddField = !newFieldValidation.errors.some((issue) => issue.path !== 'fields[0].options');
+  const canAddField = newFieldErrorsByPath.size === 0;
   const selectedField = selectedFieldIndex !== null ? draft.fields[selectedFieldIndex] ?? null : null;
+  const newFieldFileNameFieldOptions = getAvailableFileNameFieldOptions({
+    fields: draft.fields,
+  });
+  const selectedFieldFileNameFieldOptions = getAvailableFileNameFieldOptions({
+    currentFieldKey: selectedField?.key,
+    fields: draft.fields,
+  });
 
   const handleCloseAddFieldDialog = () => {
     setIsAddFieldDialogOpen(false);
@@ -113,7 +149,7 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
         : newFieldDraft.type === 'imageUpload'
           ? {
               ...newFieldDraft,
-              fileNameFields: newFieldDraft.fileNameFields ?? {},
+              fileNameFields: newFieldDraft.fileNameFields ?? [],
               targetFields: newFieldDraft.targetFields ?? {},
             }
           : newFieldDraft;
@@ -331,15 +367,17 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
         field={newFieldDraft}
         isOpen={isAddFieldDialogOpen}
         mode="create"
+        availableFileNameFieldOptions={newFieldFileNameFieldOptions}
         onChange={(updater) => setNewFieldDraft((currentField) => updater(currentField))}
         onClose={handleCloseAddFieldDialog}
         onSubmit={handleAddField}
-        pathPrefix="fields[0]"
+        pathPrefix={`fields[${newFieldIndex}]`}
       />
 
       {selectedField ? (
         <FieldDialog
           canSubmit
+          availableFileNameFieldOptions={selectedFieldFileNameFieldOptions}
           errorsByPath={fieldErrorsByPath}
           field={selectedField}
           isOpen={isEditFieldDialogOpen}
