@@ -1,20 +1,16 @@
 import { Alert, Box } from '@mui/material';
 
-import type { TopicSchemaBuilderMode } from '@/types/topicSchemaBuilder';
-
 import FieldDialog from './components/FieldDialog';
 import FieldListSection from './components/FieldListSection';
 import TopicMetadataSection from './components/TopicMetadataSection';
 import TopicSchemaBuilderHeader from './components/TopicSchemaBuilderHeader';
 import ValidationSummary from './components/ValidationSummary';
-import type { useTopicSchemaBuilder } from './hook/useTopicSchemaBuilder';
+import {
+  useTopicSchemaBuilderActions,
+  useTopicSchemaBuilderState,
+} from './context/TopicSchemaBuilderContext';
 
-type TopicSchemaBuilderPageViewProps = {
-  builder: ReturnType<typeof useTopicSchemaBuilder>;
-  mode: TopicSchemaBuilderMode;
-};
-
-const TopicSchemaBuilderPageView = ({ builder, mode }: TopicSchemaBuilderPageViewProps) => {
+const TopicSchemaBuilderPageView = () => {
   const {
     canAddField,
     canConfigureFixedImageUpload,
@@ -22,18 +18,12 @@ const TopicSchemaBuilderPageView = ({ builder, mode }: TopicSchemaBuilderPageVie
     description,
     draft,
     fieldErrorsByPath,
-    handleAddField,
-    handleCloseAddFieldDialog,
-    handleCloseEditFieldDialog,
-    handleDeleteSelectedField,
-    handleEditFieldSubmit,
-    handleMoveField,
-    handleSave,
     hasImageUploadField,
     isAddFieldDialogOpen,
     isEditFieldDialogOpen,
     isSaving,
     metadataErrorsByPath,
+    mode,
     metadataFields,
     newFieldDistractorSourceFieldOptions,
     newFieldDraft,
@@ -44,17 +34,26 @@ const TopicSchemaBuilderPageView = ({ builder, mode }: TopicSchemaBuilderPageVie
     selectedFieldDistractorSourceFieldOptions,
     selectedFieldFileNameFieldOptions,
     selectedFieldIndex,
+    submitError,
+    title,
+    validation,
+  } = useTopicSchemaBuilderState();
+  const {
+    getSelectOptionsText,
+    handleAddField,
+    handleCloseAddFieldDialog,
+    handleCloseEditFieldDialog,
+    handleDeleteSelectedField,
+    handleEditFieldSubmit,
+    handleMoveField,
+    handleSave,
     setDraft,
     setIsAddFieldDialogOpen,
     setIsEditFieldDialogOpen,
     setNewFieldDraft,
     setSelectedFieldIndex,
-    submitError,
-    title,
     updateSelectedField,
-    validation,
-    getSelectOptionsText,
-  } = builder;
+  } = useTopicSchemaBuilderActions();
 
   return (
     <Box sx={{ display: 'grid', gap: 3 }}>

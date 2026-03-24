@@ -2,7 +2,13 @@ import { QUERY_KEYS } from '@queries/queryKeys';
 import { createTopic, updateTopic } from '@service/topics';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-import { useMemo, useState } from 'react';
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  type PropsWithChildren,
+} from 'react';
 
 import type { TopicFieldDraft } from '@/types/topicSchema';
 import type { SelectedFieldIndex, TopicSchemaBuilderPageProps } from '@/types/topicSchemaBuilder';
@@ -19,9 +25,65 @@ import {
   getSelectOptionsText,
   isIgnoredCreateImageUploadError,
   normalizeImageUploadField,
-} from './utils';
+} from '../hook/utils';
 
-export const useTopicSchemaBuilder = ({ mode, topic }: TopicSchemaBuilderPageProps) => {
+type TopicSchemaBuilderStateValue = {
+  canAddField: boolean;
+  canConfigureFixedImageUpload: boolean;
+  canSave: boolean;
+  description: string;
+  draft: ReturnType<typeof getInitialDraft>;
+  fieldErrorsByPath: Map<string, string>;
+  hasImageUploadField: boolean;
+  isAddFieldDialogOpen: boolean;
+  isEditFieldDialogOpen: boolean;
+  isSaving: boolean;
+  metadataErrorsByPath: Map<string, string>;
+  metadataFields: readonly {
+    key: 'id' | 'label' | 'slug' | 'storage_prefix';
+    label: string;
+    value: string;
+  }[];
+  mode: TopicSchemaBuilderPageProps['mode'];
+  newFieldDistractorSourceFieldOptions: Array<{ key: string; label: string }>;
+  newFieldDraft: TopicFieldDraft;
+  newFieldErrorsByPath: Map<string, string>;
+  newFieldFileNameFieldOptions: Array<{ key: string; label: string }>;
+  newFieldIndex: number;
+  selectedField: TopicFieldDraft | null;
+  selectedFieldDistractorSourceFieldOptions: Array<{ key: string; label: string }>;
+  selectedFieldFileNameFieldOptions: Array<{ key: string; label: string }>;
+  selectedFieldIndex: SelectedFieldIndex;
+  submitError: string;
+  title: string;
+  validation: ReturnType<typeof validateTopicDraft>;
+};
+
+type TopicSchemaBuilderActionsValue = {
+  getSelectOptionsText: (options: string[] | undefined) => string;
+  handleAddField: () => void;
+  handleCloseAddFieldDialog: () => void;
+  handleCloseEditFieldDialog: () => void;
+  handleDeleteSelectedField: () => void;
+  handleEditFieldSubmit: () => void;
+  handleMoveField: (params: { fromIndex: number; toIndex: number }) => void;
+  handleSave: () => Promise<void>;
+  setDraft: React.Dispatch<React.SetStateAction<ReturnType<typeof getInitialDraft>>>;
+  setIsAddFieldDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsEditFieldDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setNewFieldDraft: React.Dispatch<React.SetStateAction<TopicFieldDraft>>;
+  setSelectedFieldIndex: React.Dispatch<React.SetStateAction<SelectedFieldIndex>>;
+  updateSelectedField: (updater: (field: TopicFieldDraft) => TopicFieldDraft) => void;
+};
+
+const TopicSchemaBuilderStateContext = createContext<TopicSchemaBuilderStateValue | null>(null);
+const TopicSchemaBuilderActionsContext = createContext<TopicSchemaBuilderActionsValue | null>(null);
+
+export const TopicSchemaBuilderProvider = ({
+  children,
+  mode,
+  topic,
+}: PropsWithChildren<TopicSchemaBuilderPageProps>) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [draft, setDraft] = useState(() => getInitialDraft(topic));
@@ -300,26 +362,20 @@ export const useTopicSchemaBuilder = ({ mode, topic }: TopicSchemaBuilderPagePro
     }
   };
 
-  return {
+  const stateValue: TopicSchemaBuilderStateValue = {
     canAddField,
     canConfigureFixedImageUpload,
     canSave,
     description,
     draft,
     fieldErrorsByPath,
-    handleAddField,
-    handleCloseAddFieldDialog,
-    handleCloseEditFieldDialog,
-    handleDeleteSelectedField,
-    handleEditFieldSubmit,
-    handleMoveField,
-    handleSave,
     hasImageUploadField,
     isAddFieldDialogOpen,
     isEditFieldDialogOpen,
     isSaving,
     metadataErrorsByPath,
     metadataFields,
+    mode,
     newFieldDistractorSourceFieldOptions,
     newFieldDraft,
     newFieldErrorsByPath,
@@ -329,15 +385,55 @@ export const useTopicSchemaBuilder = ({ mode, topic }: TopicSchemaBuilderPagePro
     selectedFieldDistractorSourceFieldOptions,
     selectedFieldFileNameFieldOptions,
     selectedFieldIndex,
+    submitError,
+    title,
+    validation,
+  };
+
+  const actionsValue: TopicSchemaBuilderActionsValue = {
+    getSelectOptionsText,
+    handleAddField,
+    handleCloseAddFieldDialog,
+    handleCloseEditFieldDialog,
+    handleDeleteSelectedField,
+    handleEditFieldSubmit,
+    handleMoveField,
+    handleSave,
     setDraft,
     setIsAddFieldDialogOpen,
     setIsEditFieldDialogOpen,
     setNewFieldDraft,
     setSelectedFieldIndex,
-    submitError,
-    title,
     updateSelectedField,
-    validation,
-    getSelectOptionsText,
   };
+
+  return (
+    <TopicSchemaBuilderStateContext.Provider value={stateValue}>
+      <TopicSchemaBuilderActionsContext.Provider value={actionsValue}>
+        {children}
+      </TopicSchemaBuilderActionsContext.Provider>
+    </TopicSchemaBuilderStateContext.Provider>
+  );
 };
+
+const useTopicSchemaBuilderState = () => {
+  const context = useContext(TopicSchemaBuilderStateContext);
+
+  if (!context) {
+    throw new Error('useTopicSchemaBuilderState must be used within TopicSchemaBuilderProvider.');
+  }
+
+  return context;
+};
+
+const useTopicSchemaBuilderActions = () => {
+  const context = useContext(TopicSchemaBuilderActionsContext);
+
+  if (!context) {
+    throw new Error('useTopicSchemaBuilderActions must be used within TopicSchemaBuilderProvider.');
+  }
+
+  return context;
+};
+
+export { useTopicSchemaBuilderActions, useTopicSchemaBuilderState };

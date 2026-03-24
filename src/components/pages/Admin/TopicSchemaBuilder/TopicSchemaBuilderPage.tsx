@@ -1,12 +1,14 @@
 import type { TopicSchemaBuilderPageProps } from '@/types/topicSchemaBuilder';
 
-import { useTopicSchemaBuilder } from './hook/useTopicSchemaBuilder';
+import { TopicSchemaBuilderProvider } from './context/TopicSchemaBuilderContext';
 import TopicSchemaBuilderPageView from './TopicSchemaBuilderPageView';
 
 const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) => {
-  const builder = useTopicSchemaBuilder({ mode, topic });
-
-  return <TopicSchemaBuilderPageView builder={builder} mode={mode} />;
+  return (
+    <TopicSchemaBuilderProvider mode={mode} topic={topic}>
+      <TopicSchemaBuilderPageView />
+    </TopicSchemaBuilderProvider>
+  );
 };
 
 export default TopicSchemaBuilderPage;
