@@ -100,6 +100,7 @@ const FieldDialog = ({
             onChange((currentField) => ({
               ...currentField,
               type: nextValue,
+              ...(nextValue === 'imageUpload' ? { quiz: undefined } : {}),
               ...(nextValue === 'select'
                 ? { options: currentField.options ?? [] }
                 : { options: undefined }),
@@ -123,6 +124,59 @@ const FieldDialog = ({
             </MenuItem>
           ))}
         </TextField>
+
+        {field.type !== 'imageUpload' ? (
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={Boolean(field.quiz?.enabled)}
+                onChange={(event) => {
+                  const nextValue = event.target.checked;
+
+                  onChange((currentField) => ({
+                    ...currentField,
+                    quiz: nextValue
+                      ? {
+                          enabled: true,
+                          prompt: currentField.quiz?.enabled ? currentField.quiz.prompt : '',
+                        }
+                      : {
+                          enabled: false,
+                        },
+                  }));
+                }}
+              />
+            }
+            label="Quiz enabled"
+          />
+        ) : null}
+
+        {field.type !== 'imageUpload' && field.quiz?.enabled ? (
+          <TextField
+            label="Quiz prompt"
+            value={field.quiz.prompt}
+            error={errorsByPath.has(`${pathPrefix}.quiz.prompt`)}
+            helperText={errorsByPath.get(`${pathPrefix}.quiz.prompt`) ?? ' '}
+            onChange={(event) => {
+              const nextValue = event.target.value;
+
+              onChange((currentField) => ({
+                ...currentField,
+                quiz: currentField.quiz?.enabled
+                  ? {
+                      ...currentField.quiz,
+                      prompt: nextValue,
+                    }
+                  : {
+                      enabled: true,
+                      prompt: nextValue,
+                    },
+              }));
+            }}
+            fullWidth
+            margin="normal"
+          />
+        ) : null}
 
         <FormControlLabel
           control={

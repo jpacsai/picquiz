@@ -157,4 +157,36 @@ describe('TopicSchemaBuilderPage', () => {
     expect(optionsInput).toHaveValue('Barokk\nReneszansz');
     expect(screen.getByText('key: era | type: select')).toBeInTheDocument();
   });
+
+  it('allows enabling quiz and editing the quiz prompt for eligible fields', async () => {
+    const user = userEvent.setup();
+
+    render(<TopicSchemaBuilderPage mode="create" />);
+
+    await user.click(screen.getByRole('button', { name: 'Uj field' }));
+    await user.type(screen.getByLabelText('Field label'), 'Ev');
+    await user.type(screen.getByLabelText('Field key'), 'year');
+    await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
+    });
+
+    let editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+
+    await user.click(within(editDialog).getByRole('checkbox', { name: 'Quiz enabled' }));
+    await user.type(within(editDialog).getByLabelText('Quiz prompt'), 'Melyik ev?');
+    await user.click(within(editDialog).getByRole('button', { name: 'Kesz' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText('Ev'));
+
+    editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+
+    expect(within(editDialog).getByRole('checkbox', { name: 'Quiz enabled' })).toBeChecked();
+    expect(within(editDialog).getByLabelText('Quiz prompt')).toHaveValue('Melyik ev?');
+  });
 });
