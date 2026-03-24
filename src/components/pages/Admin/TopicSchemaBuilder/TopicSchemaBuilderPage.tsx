@@ -108,13 +108,13 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
       newFieldDraft.type === 'select'
         ? {
             ...newFieldDraft,
-            options: [],
+            options: newFieldDraft.options ?? [],
           }
         : newFieldDraft.type === 'imageUpload'
           ? {
               ...newFieldDraft,
-              fileNameFields: {},
-              targetFields: {},
+              fileNameFields: newFieldDraft.fileNameFields ?? {},
+              targetFields: newFieldDraft.targetFields ?? {},
             }
           : newFieldDraft;
 

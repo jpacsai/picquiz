@@ -189,4 +189,44 @@ describe('TopicSchemaBuilderPage', () => {
     expect(within(editDialog).getByRole('checkbox', { name: 'Quiz enabled' })).toBeChecked();
     expect(within(editDialog).getByLabelText('Quiz prompt')).toHaveValue('Melyik ev?');
   });
+
+  it('allows configuring image upload fields from the dialog', async () => {
+    const user = userEvent.setup();
+
+    render(<TopicSchemaBuilderPage mode="create" />);
+
+    await user.click(screen.getByRole('button', { name: 'Uj field' }));
+
+    await user.type(screen.getByLabelText('Field label'), 'Borito kep');
+    await user.type(screen.getByLabelText('Field key'), 'coverImage');
+    await user.click(screen.getByRole('combobox', { name: 'Field type' }));
+    await user.click(screen.getByRole('option', { name: 'Image upload' }));
+
+    const submitButton = screen.getByRole('button', { name: 'Field hozzaadasa' });
+
+    expect(submitButton).toBeDisabled();
+
+    await user.type(screen.getByLabelText('Artist file name field'), 'artist');
+    await user.type(screen.getByLabelText('Title file name field'), 'title');
+    await user.type(screen.getByLabelText('Desktop target field'), 'desktopImage');
+    await user.type(screen.getByLabelText('Mobile target field'), 'mobileImage');
+    await user.type(screen.getByLabelText('Desktop path field'), 'desktopPath');
+    await user.type(screen.getByLabelText('Mobile path field'), 'mobilePath');
+
+    expect(submitButton).toBeEnabled();
+
+    await user.click(submitButton);
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
+    });
+
+    const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+
+    expect(screen.getByText('Borito kep')).toBeInTheDocument();
+    expect(screen.getByText('key: coverImage | type: imageUpload')).toBeInTheDocument();
+    expect(within(editDialog).getByLabelText('Artist file name field')).toHaveValue('artist');
+    expect(within(editDialog).getByLabelText('Desktop target field')).toHaveValue('desktopImage');
+    expect(within(editDialog).getByLabelText('Desktop path field')).toHaveValue('desktopPath');
+  });
 });

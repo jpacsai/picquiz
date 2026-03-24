@@ -253,6 +253,126 @@ const FieldDialog = ({
             margin="normal"
           />
         ) : null}
+
+        {field.type === 'imageUpload' ? (
+          <>
+            <TextField
+              label="Artist file name field"
+              value={field.fileNameFields?.artist ?? ''}
+              error={errorsByPath.has(`${pathPrefix}.fileNameFields.artist`)}
+              helperText={errorsByPath.get(`${pathPrefix}.fileNameFields.artist`) ?? ' '}
+              onChange={(event) => {
+                const nextValue = event.target.value;
+
+                onChange((currentField) => ({
+                  ...currentField,
+                  fileNameFields: {
+                    ...currentField.fileNameFields,
+                    artist: nextValue,
+                  },
+                }));
+              }}
+              fullWidth
+              margin="normal"
+            />
+
+            <TextField
+              label="Title file name field"
+              value={field.fileNameFields?.title ?? ''}
+              error={errorsByPath.has(`${pathPrefix}.fileNameFields.title`)}
+              helperText={errorsByPath.get(`${pathPrefix}.fileNameFields.title`) ?? ' '}
+              onChange={(event) => {
+                const nextValue = event.target.value;
+
+                onChange((currentField) => ({
+                  ...currentField,
+                  fileNameFields: {
+                    ...currentField.fileNameFields,
+                    title: nextValue,
+                  },
+                }));
+              }}
+              fullWidth
+              margin="normal"
+            />
+
+            <TextField
+              label="Desktop target field"
+              value={field.targetFields?.desktop ?? ''}
+              error={errorsByPath.has(`${pathPrefix}.targetFields.desktop`)}
+              helperText={errorsByPath.get(`${pathPrefix}.targetFields.desktop`) ?? ' '}
+              onChange={(event) => {
+                const nextValue = event.target.value;
+
+                onChange((currentField) => ({
+                  ...currentField,
+                  targetFields: {
+                    ...currentField.targetFields,
+                    desktop: nextValue,
+                  },
+                }));
+              }}
+              fullWidth
+              margin="normal"
+            />
+
+            <TextField
+              label="Mobile target field"
+              value={field.targetFields?.mobile ?? ''}
+              error={errorsByPath.has(`${pathPrefix}.targetFields.mobile`)}
+              helperText={errorsByPath.get(`${pathPrefix}.targetFields.mobile`) ?? ' '}
+              onChange={(event) => {
+                const nextValue = event.target.value;
+
+                onChange((currentField) => ({
+                  ...currentField,
+                  targetFields: {
+                    ...currentField.targetFields,
+                    mobile: nextValue,
+                  },
+                }));
+              }}
+              fullWidth
+              margin="normal"
+            />
+
+            <TextField
+              label="Desktop path field"
+              value={field.targetFields?.desktopPath ?? ''}
+              onChange={(event) => {
+                const nextValue = event.target.value;
+
+                onChange((currentField) => ({
+                  ...currentField,
+                  targetFields: {
+                    ...currentField.targetFields,
+                    desktopPath: nextValue,
+                  },
+                }));
+              }}
+              fullWidth
+              margin="normal"
+            />
+
+            <TextField
+              label="Mobile path field"
+              value={field.targetFields?.mobilePath ?? ''}
+              onChange={(event) => {
+                const nextValue = event.target.value;
+
+                onChange((currentField) => ({
+                  ...currentField,
+                  targetFields: {
+                    ...currentField.targetFields,
+                    mobilePath: nextValue,
+                  },
+                }));
+              }}
+              fullWidth
+              margin="normal"
+            />
+          </>
+        ) : null}
       </DialogContent>
 
       <DialogActions>
