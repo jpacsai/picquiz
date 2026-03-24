@@ -195,6 +195,14 @@ describe('TopicSchemaBuilderPage', () => {
 
     await user.type(screen.getByLabelText('Field label'), 'Korszak');
     await user.type(screen.getByLabelText('Field key'), 'era');
+    await user.click(screen.getByRole('combobox', { name: 'Field type' }));
+    await user.click(screen.getByRole('option', { name: 'Select' }));
+
+    expect(submitButton).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText('Select opciok'), {
+      target: { value: 'Barokk, Reneszansz' },
+    });
 
     expect(submitButton).toBeEnabled();
   });
@@ -309,9 +317,9 @@ describe('TopicSchemaBuilderPage', () => {
 
     const optionsInput = within(editDialog).getByLabelText('Select opciok');
 
-    fireEvent.change(optionsInput, { target: { value: 'Barokk\nReneszansz' } });
+    fireEvent.change(optionsInput, { target: { value: 'Barokk, Reneszansz' } });
 
-    expect(optionsInput).toHaveValue('Barokk\nReneszansz');
+    expect(optionsInput).toHaveValue('Barokk, Reneszansz');
     expect(screen.getByText('#1 | key: era | type: select')).toBeInTheDocument();
   });
 

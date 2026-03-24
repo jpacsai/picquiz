@@ -10,6 +10,7 @@ import {
   MenuItem,
   TextField,
 } from '@mui/material';
+import { useEffect, useState } from 'react';
 
 import type { TopicFieldDraft } from '@/types/topicSchema';
 
@@ -63,7 +64,7 @@ const FieldDialog = ({
     field.type === 'imageUpload'
       ? [...FIELD_TYPE_OPTIONS, { label: 'Image upload', value: 'imageUpload' as const }]
       : FIELD_TYPE_OPTIONS;
-  const quizDistractorType = field.quiz?.enabled ? field.quiz.distractor?.type ?? '' : '';
+  const quizDistractorType = field.quiz?.enabled ? (field.quiz.distractor?.type ?? '') : '';
   const availableDistractorOptions =
     field.type === 'select'
       ? [{ label: 'From options', value: 'fromOptions' as const }]
@@ -73,6 +74,13 @@ const FieldDialog = ({
           ? [{ label: 'Derived range', value: 'derivedRange' as const }]
           : [];
   const isDistractorTypeDisabled = availableDistractorOptions.length === 0;
+  const [selectOptionsInputValue, setSelectOptionsInputValue] = useState(optionsText);
+
+  useEffect(() => {
+    if (isOpen) {
+      setSelectOptionsInputValue(optionsText);
+    }
+  }, [isOpen, pathPrefix]);
 
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth={mode === 'create' ? 'sm' : 'md'}>
@@ -276,7 +284,8 @@ const FieldDialog = ({
                   onChange((currentField) => ({
                     ...currentField,
                     quiz:
-                      currentField.quiz?.enabled && currentField.quiz.distractor?.type === 'derivedRange'
+                      currentField.quiz?.enabled &&
+                      currentField.quiz.distractor?.type === 'derivedRange'
                         ? {
                             ...currentField.quiz,
                             distractor: {
@@ -474,21 +483,20 @@ const FieldDialog = ({
           </>
         ) : null}
 
-        {mode === 'edit' && field.type === 'select' ? (
+        {field.type === 'select' ? (
           <TextField
             label="Select opciok"
-            multiline
-            minRows={4}
-            value={optionsText}
+            value={selectOptionsInputValue}
             error={errorsByPath.has(`${pathPrefix}.options`)}
-            helperText={errorsByPath.get(`${pathPrefix}.options`) ?? 'Soronkent egy opcio.'}
+            helperText={errorsByPath.get(`${pathPrefix}.options`) ?? 'Vesszovel elvalasztva add meg az opciokat.'}
             onChange={(event) => {
               const nextValue = event.target.value;
+              setSelectOptionsInputValue(nextValue);
 
               onChange((currentField) => ({
                 ...currentField,
                 options: nextValue
-                  .split('\n')
+                  .split(',')
                   .map((option) => option.trim())
                   .filter(Boolean)
                   .sort((left, right) => left.localeCompare(right, 'hu', { sensitivity: 'base' })),
@@ -526,7 +534,8 @@ const FieldDialog = ({
               }
               onChange={(event) => {
                 const nextValue = event.target.value;
-                const selectedKeys = typeof nextValue === 'string' ? nextValue.split(',') : nextValue;
+                const selectedKeys =
+                  typeof nextValue === 'string' ? nextValue.split(',') : nextValue;
 
                 onChange((currentField) => ({
                   ...currentField,

@@ -169,7 +169,7 @@ const getAvailableDistractorSourceFieldOptions = ({
       label: field.label?.trim() || field.key!.trim(),
     }));
 
-const getSelectOptionsText = (options: string[] | undefined) => (options ?? []).join('\n');
+const getSelectOptionsText = (options: string[] | undefined) => (options ?? []).join(', ');
 
 const isIgnoredCreateImageUploadError = (path: string, fieldIndex: number) =>
   path.startsWith(`fields[${fieldIndex}]`) &&
@@ -256,7 +256,6 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
             isIgnoredCreateImageUploadError(issue.path, newFieldIndex)
           ),
       )
-      .filter((issue) => issue.path !== `fields[${newFieldIndex}].options`)
       .map((issue) => [issue.path, issue.message]),
   );
   const canAddField = newFieldErrorsByPath.size === 0;
@@ -785,6 +784,7 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
         onChange={(updater) => setNewFieldDraft((currentField) => updater(currentField))}
         onClose={handleCloseAddFieldDialog}
         onSubmit={handleAddField}
+        optionsText={getSelectOptionsText(newFieldDraft.options)}
         pathPrefix={`fields[${newFieldIndex}]`}
       />
 

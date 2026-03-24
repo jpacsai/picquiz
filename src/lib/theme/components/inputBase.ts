@@ -3,11 +3,15 @@ import type { Components, Theme } from '@mui/material/styles';
 const inputBase: Components<Theme>['MuiInputBase'] = {
   styleOverrides: {
     root: () => ({
-        height: '55px',
-
       "& .MuiInputBase-input": {
         height: '55px',
-        boxSizing: 'inherit'
+        boxSizing: 'inherit',
+      },
+      '&.MuiInputBase-multiline': {
+        height: 'auto',
+      },
+      '&.MuiInputBase-multiline .MuiInputBase-input': {
+        height: 'auto',
       },
     }),
   },
