@@ -28,6 +28,7 @@ export const useQuiz = ({
   questionCount,
   topic,
 }: UseQuizParams) => {
+  const [quizGeneration, setQuizGeneration] = useState(0);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [autoAdvanceCountdownSeconds, setAutoAdvanceCountdownSeconds] = useState(
     INITIAL_AUTO_ADVANCE_COUNTDOWN_SECONDS,
@@ -36,16 +37,19 @@ export const useQuiz = ({
   const [score, setScore] = useState(0);
 
   const selectedFields = getSelectedQuizFields({ fieldKeys: answerFieldKeys, items, topic });
-  const questions = useMemo(
-    () =>
-      buildQuizQuestions({
+  const { questions } = useMemo(
+    () => ({
+      generation: quizGeneration,
+      questions: buildQuizQuestions({
         answerFieldKeys,
         items,
         questionCount,
         topic,
       }),
-    [answerFieldKeys, items, questionCount, topic],
+    }),
+    [answerFieldKeys, items, questionCount, quizGeneration, topic],
   );
+
   const currentQuestion = questions[currentQuestionIndex] ?? null;
   const isQuizFinished = currentQuestionIndex >= questions.length;
   const selectedOption =
@@ -78,6 +82,7 @@ export const useQuiz = ({
   }, [autoAdvanceAfterAnswer, isAnswered, selectedOptionId]);
 
   const restartQuiz = () => {
+    setQuizGeneration((currentGeneration) => currentGeneration + 1);
     setCurrentQuestionIndex(0);
     setAutoAdvanceCountdownSeconds(INITIAL_AUTO_ADVANCE_COUNTDOWN_SECONDS);
     setSelectedOptionId('');
