@@ -530,16 +530,19 @@ describe('TopicSchemaBuilderPage', () => {
     const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
     const submitButton = within(editDialog).getByRole('button', { name: 'Kesz' });
 
-    expect(within(editDialog).getByLabelText('Field key')).toHaveValue('image_upload');
+    expect(within(editDialog).queryByLabelText('Field label')).not.toBeInTheDocument();
+    expect(within(editDialog).queryByLabelText('Field key')).not.toBeInTheDocument();
+    expect(within(editDialog).getByLabelText('Field type')).toHaveAttribute('aria-disabled', 'true');
+    expect(within(editDialog).queryByRole('checkbox', { name: 'Required' })).not.toBeInTheDocument();
+    expect(within(editDialog).queryByRole('checkbox', { name: 'Readonly' })).not.toBeInTheDocument();
+    expect(
+      within(editDialog).queryByRole('checkbox', { name: 'Hide in edit' }),
+    ).not.toBeInTheDocument();
     expect(within(editDialog).getByLabelText('File name fields')).not.toHaveAttribute(
       'aria-disabled',
       'true',
     );
 
-    await user.clear(within(editDialog).getByLabelText('Field label'));
-    await user.type(within(editDialog).getByLabelText('Field label'), 'Borito kep');
-    await user.clear(within(editDialog).getByLabelText('Field key'));
-    await user.type(within(editDialog).getByLabelText('Field key'), 'coverImage');
     await user.click(within(editDialog).getByRole('combobox', { name: 'File name fields' }));
     await user.click(screen.getByRole('option', { name: 'Artist' }));
     await user.keyboard('{Escape}');
@@ -556,10 +559,10 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
     });
 
-    const persistedEditDialogTrigger = screen.getByText('Borito kep');
+    const persistedEditDialogTrigger = screen.getByText('Kepfeltoltes');
 
-    expect(screen.getByText('Borito kep')).toBeInTheDocument();
-    expect(screen.getByText('#2 | key: coverImage | type: imageUpload')).toBeInTheDocument();
+    expect(screen.getByText('Kepfeltoltes')).toBeInTheDocument();
+    expect(screen.getByText('#2 | key: image_upload | type: imageUpload')).toBeInTheDocument();
     await user.click(persistedEditDialogTrigger);
 
     const persistedEditDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });

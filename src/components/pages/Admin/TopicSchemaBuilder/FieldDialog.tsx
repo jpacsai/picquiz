@@ -79,44 +79,49 @@ const FieldDialog = ({
       <DialogTitle>{title}</DialogTitle>
 
       <DialogContent>
-        <TextField
-          label="Field label"
-          value={field.label ?? ''}
-          error={errorsByPath.has(`${pathPrefix}.label`)}
-          helperText={errorsByPath.get(`${pathPrefix}.label`) ?? ' '}
-          onChange={(event) => {
-            const nextValue = event.target.value;
+        {field.type !== 'imageUpload' ? (
+          <>
+            <TextField
+              label="Field label"
+              value={field.label ?? ''}
+              error={errorsByPath.has(`${pathPrefix}.label`)}
+              helperText={errorsByPath.get(`${pathPrefix}.label`) ?? ' '}
+              onChange={(event) => {
+                const nextValue = event.target.value;
 
-            onChange((currentField) => ({
-              ...currentField,
-              label: nextValue,
-            }));
-          }}
-          fullWidth
-          margin="normal"
-        />
+                onChange((currentField) => ({
+                  ...currentField,
+                  label: nextValue,
+                }));
+              }}
+              fullWidth
+              margin="normal"
+            />
 
-        <TextField
-          label="Field key"
-          value={field.key ?? ''}
-          error={errorsByPath.has(`${pathPrefix}.key`)}
-          helperText={errorsByPath.get(`${pathPrefix}.key`) ?? ' '}
-          onChange={(event) => {
-            const nextValue = event.target.value;
+            <TextField
+              label="Field key"
+              value={field.key ?? ''}
+              error={errorsByPath.has(`${pathPrefix}.key`)}
+              helperText={errorsByPath.get(`${pathPrefix}.key`) ?? ' '}
+              onChange={(event) => {
+                const nextValue = event.target.value;
 
-            onChange((currentField) => ({
-              ...currentField,
-              key: nextValue,
-            }));
-          }}
-          fullWidth
-          margin="normal"
-        />
+                onChange((currentField) => ({
+                  ...currentField,
+                  key: nextValue,
+                }));
+              }}
+              fullWidth
+              margin="normal"
+            />
+          </>
+        ) : null}
 
         <TextField
           select
           label="Field type"
           value={field.type ?? 'string'}
+          disabled={mode === 'edit' && field.type === 'imageUpload'}
           error={errorsByPath.has(`${pathPrefix}.type`)}
           helperText={errorsByPath.get(`${pathPrefix}.type`) ?? ' '}
           onChange={(event) => {
@@ -414,57 +419,60 @@ const FieldDialog = ({
           </>
         ) : null}
 
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={field.type === 'imageUpload' ? true : Boolean(field.required)}
-              disabled={field.type === 'imageUpload'}
-              onChange={(event) => {
-                const nextValue = event.target.checked;
+        {field.type !== 'imageUpload' ? (
+          <>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={Boolean(field.required)}
+                  onChange={(event) => {
+                    const nextValue = event.target.checked;
 
-                onChange((currentField) => ({
-                  ...currentField,
-                  required: nextValue,
-                }));
-              }}
+                    onChange((currentField) => ({
+                      ...currentField,
+                      required: nextValue,
+                    }));
+                  }}
+                />
+              }
+              label="Required"
             />
-          }
-          label="Required"
-        />
 
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={Boolean(field.readonly)}
-              onChange={(event) => {
-                const nextValue = event.target.checked;
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={Boolean(field.readonly)}
+                  onChange={(event) => {
+                    const nextValue = event.target.checked;
 
-                onChange((currentField) => ({
-                  ...currentField,
-                  readonly: nextValue,
-                }));
-              }}
+                    onChange((currentField) => ({
+                      ...currentField,
+                      readonly: nextValue,
+                    }));
+                  }}
+                />
+              }
+              label="Readonly"
             />
-          }
-          label="Readonly"
-        />
 
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={Boolean(field.hideInEdit)}
-              onChange={(event) => {
-                const nextValue = event.target.checked;
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={Boolean(field.hideInEdit)}
+                  onChange={(event) => {
+                    const nextValue = event.target.checked;
 
-                onChange((currentField) => ({
-                  ...currentField,
-                  hideInEdit: nextValue,
-                }));
-              }}
+                    onChange((currentField) => ({
+                      ...currentField,
+                      hideInEdit: nextValue,
+                    }));
+                  }}
+                />
+              }
+              label="Hide in edit"
             />
-          }
-          label="Hide in edit"
-        />
+          </>
+        ) : null}
 
         {mode === 'edit' && field.type === 'select' ? (
           <TextField
