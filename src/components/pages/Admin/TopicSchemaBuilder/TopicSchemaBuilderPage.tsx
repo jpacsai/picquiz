@@ -149,6 +149,26 @@ const getAvailableFileNameFieldOptions = ({
       label: field.label?.trim() || field.key!.trim(),
     }));
 
+const getAvailableDistractorSourceFieldOptions = ({
+  currentFieldKey,
+  fields,
+}: {
+  currentFieldKey?: string;
+  fields: TopicDraft['fields'];
+}) =>
+  fields
+    .filter(
+      (field) =>
+        field.type === 'number' &&
+        typeof field.key === 'string' &&
+        field.key.trim().length > 0 &&
+        field.key !== currentFieldKey,
+    )
+    .map((field) => ({
+      key: field.key!.trim(),
+      label: field.label?.trim() || field.key!.trim(),
+    }));
+
 const getSelectOptionsText = (options: string[] | undefined) => (options ?? []).join('\n');
 
 const isIgnoredCreateImageUploadError = (path: string, fieldIndex: number) =>
@@ -253,6 +273,14 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
   });
   const canConfigureFixedImageUpload = newFieldFileNameFieldOptions.length > 0;
   const selectedFieldFileNameFieldOptions = getAvailableFileNameFieldOptions({
+    currentFieldKey: selectedField?.key,
+    fields: draft.fields,
+  });
+  const newFieldDistractorSourceFieldOptions = getAvailableDistractorSourceFieldOptions({
+    currentFieldKey: newFieldDraft.key,
+    fields: draft.fields,
+  });
+  const selectedFieldDistractorSourceFieldOptions = getAvailableDistractorSourceFieldOptions({
     currentFieldKey: selectedField?.key,
     fields: draft.fields,
   });
@@ -753,6 +781,7 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
         isOpen={isAddFieldDialogOpen}
         mode="create"
         availableFileNameFieldOptions={newFieldFileNameFieldOptions}
+        availableDistractorSourceFieldOptions={newFieldDistractorSourceFieldOptions}
         onChange={(updater) => setNewFieldDraft((currentField) => updater(currentField))}
         onClose={handleCloseAddFieldDialog}
         onSubmit={handleAddField}
@@ -763,6 +792,7 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
         <FieldDialog
           canSubmit
           availableFileNameFieldOptions={selectedFieldFileNameFieldOptions}
+          availableDistractorSourceFieldOptions={selectedFieldDistractorSourceFieldOptions}
           errorsByPath={fieldErrorsByPath}
           field={selectedField}
           isOpen={isEditFieldDialogOpen}

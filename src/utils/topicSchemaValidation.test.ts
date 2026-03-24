@@ -200,4 +200,47 @@ describe('validateTopicDraft', () => {
       ]),
     );
   });
+
+  it('requires derived range distractors to define a source field', () => {
+    const draft = createValidDraft();
+    draft.fields[0].quiz = {
+      enabled: true,
+      prompt: 'Melyik szazad?',
+      distractor: {
+        type: 'derivedRange',
+        deriveWith: 'yearToCentury',
+        sourceField: '',
+        maxValue: 'todayYear',
+      },
+    };
+
+    const result = validateTopicDraft(draft);
+
+    expect(result.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ path: 'fields[0] (artist).quiz.distractor.sourceField' }),
+      ]),
+    );
+  });
+
+  it('requires range distractors to define a valid max value', () => {
+    const draft = createValidDraft();
+    draft.fields[0].type = 'number';
+    draft.fields[0].quiz = {
+      enabled: true,
+      prompt: 'Melyik ev?',
+      distractor: {
+        type: 'numericRange',
+        maxValue: Number.NaN,
+      },
+    };
+
+    const result = validateTopicDraft(draft);
+
+    expect(result.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ path: 'fields[0] (artist).quiz.distractor.maxValue' }),
+      ]),
+    );
+  });
 });

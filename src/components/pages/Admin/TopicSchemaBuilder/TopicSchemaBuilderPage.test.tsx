@@ -347,6 +347,134 @@ describe('TopicSchemaBuilderPage', () => {
     expect(within(editDialog).getByLabelText('Quiz prompt')).toHaveValue('Melyik ev?');
   });
 
+  it('allows configuring numeric range distractors for number quiz fields', async () => {
+    const user = userEvent.setup();
+
+    render(<TopicSchemaBuilderPage mode="create" />);
+
+    await user.click(screen.getByRole('button', { name: 'Uj field' }));
+    await user.type(screen.getByLabelText('Field label'), 'Ev');
+    await user.type(screen.getByLabelText('Field key'), 'year');
+    await user.click(screen.getByRole('combobox', { name: 'Field type' }));
+    await user.click(screen.getByRole('option', { name: 'Number' }));
+    await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
+    });
+
+    let editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+
+    await user.click(within(editDialog).getByRole('checkbox', { name: 'Quiz enabled' }));
+    await user.type(within(editDialog).getByLabelText('Quiz prompt'), 'Melyik ev?');
+    await user.click(within(editDialog).getByRole('combobox', { name: 'Distractor type' }));
+    await user.click(screen.getByRole('option', { name: 'Numeric range' }));
+    await user.type(within(editDialog).getByLabelText('Min offset'), '1');
+    await user.type(within(editDialog).getByLabelText('Max offset'), '3');
+    await user.clear(within(editDialog).getByLabelText('Max value'));
+    await user.type(within(editDialog).getByLabelText('Max value'), '1900');
+    await user.click(within(editDialog).getByRole('button', { name: 'Kesz' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText('Ev'));
+
+    editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+
+    expect(within(editDialog).getByRole('combobox', { name: 'Distractor type' })).toHaveTextContent(
+      'Numeric range',
+    );
+    expect(within(editDialog).getByLabelText('Min offset')).toHaveValue('1');
+    expect(within(editDialog).getByLabelText('Max offset')).toHaveValue('3');
+    expect(within(editDialog).getByLabelText('Max value')).toHaveValue('1900');
+  });
+
+  it('allows configuring derived range distractors for string quiz fields', async () => {
+    const user = userEvent.setup();
+
+    render(<TopicSchemaBuilderPage mode="create" />);
+
+    await user.click(screen.getByRole('button', { name: 'Uj field' }));
+    await user.type(screen.getByLabelText('Field label'), 'Ev');
+    await user.type(screen.getByLabelText('Field key'), 'year');
+    await user.click(screen.getByRole('combobox', { name: 'Field type' }));
+    await user.click(screen.getByRole('option', { name: 'Number' }));
+    await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
+    });
+
+    await user.click(within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', { name: 'Kesz' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Uj field' }));
+    await user.type(screen.getByLabelText('Field label'), 'Szazad');
+    await user.type(screen.getByLabelText('Field key'), 'century');
+    await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
+    });
+
+    let editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+
+    await user.click(within(editDialog).getByRole('checkbox', { name: 'Quiz enabled' }));
+    await user.type(within(editDialog).getByLabelText('Quiz prompt'), 'Melyik szazad?');
+    await user.click(within(editDialog).getByRole('combobox', { name: 'Distractor type' }));
+    await user.click(screen.getByRole('option', { name: 'Derived range' }));
+    await user.click(within(editDialog).getByRole('combobox', { name: 'Distractor source field' }));
+    await user.click(screen.getByRole('option', { name: 'Ev' }));
+    await user.click(within(editDialog).getByRole('button', { name: 'Kesz' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText('Szazad'));
+
+    editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+
+    expect(within(editDialog).getByRole('combobox', { name: 'Distractor type' })).toHaveTextContent(
+      'Derived range',
+    );
+    expect(
+      within(editDialog).getByRole('combobox', { name: 'Distractor source field' }),
+    ).toHaveTextContent('Ev');
+  });
+
+  it('disables distractor config when a string field has no usable source field', async () => {
+    const user = userEvent.setup();
+
+    render(<TopicSchemaBuilderPage mode="create" />);
+
+    await user.click(screen.getByRole('button', { name: 'Uj field' }));
+    await user.type(screen.getByLabelText('Field label'), 'Szazad');
+    await user.type(screen.getByLabelText('Field key'), 'century');
+    await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
+    });
+
+    const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+
+    await user.click(within(editDialog).getByRole('checkbox', { name: 'Quiz enabled' }));
+
+    expect(within(editDialog).getByRole('combobox', { name: 'Distractor type' })).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
+    expect(
+      within(editDialog).getByText('Ehhez a fieldhez most nincs hasznalhato distractor beallitas.'),
+    ).toBeInTheDocument();
+  });
+
   it('allows configuring image upload fields from the dialog', async () => {
     const user = userEvent.setup();
 

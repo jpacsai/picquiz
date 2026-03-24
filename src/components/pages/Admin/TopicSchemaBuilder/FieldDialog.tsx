@@ -21,6 +21,7 @@ const FIELD_TYPE_OPTIONS = [
 
 type FieldDialogProps = {
   availableFileNameFieldOptions: Array<{ key: string; label: string }>;
+  availableDistractorSourceFieldOptions: Array<{ key: string; label: string }>;
   canSubmit: boolean;
   errorsByPath: Map<string, string>;
   field: TopicFieldDraft;
@@ -36,6 +37,7 @@ type FieldDialogProps = {
 
 const FieldDialog = ({
   availableFileNameFieldOptions,
+  availableDistractorSourceFieldOptions,
   canSubmit,
   errorsByPath,
   field,
@@ -55,6 +57,16 @@ const FieldDialog = ({
     field.type === 'imageUpload'
       ? [...FIELD_TYPE_OPTIONS, { label: 'Image upload', value: 'imageUpload' as const }]
       : FIELD_TYPE_OPTIONS;
+  const quizDistractorType = field.quiz?.enabled ? field.quiz.distractor?.type ?? '' : '';
+  const availableDistractorOptions =
+    field.type === 'select'
+      ? [{ label: 'From options', value: 'fromOptions' as const }]
+      : field.type === 'number'
+        ? [{ label: 'Numeric range', value: 'numericRange' as const }]
+        : field.type === 'string' && availableDistractorSourceFieldOptions.length > 0
+          ? [{ label: 'Derived range', value: 'derivedRange' as const }]
+          : [];
+  const isDistractorTypeDisabled = availableDistractorOptions.length === 0;
 
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth={mode === 'create' ? 'sm' : 'md'}>
@@ -159,30 +171,241 @@ const FieldDialog = ({
         ) : null}
 
         {field.type !== 'imageUpload' && field.quiz?.enabled ? (
-          <TextField
-            label="Quiz prompt"
-            value={field.quiz.prompt}
-            error={errorsByPath.has(`${pathPrefix}.quiz.prompt`)}
-            helperText={errorsByPath.get(`${pathPrefix}.quiz.prompt`) ?? ' '}
-            onChange={(event) => {
-              const nextValue = event.target.value;
+          <>
+            <TextField
+              label="Quiz prompt"
+              value={field.quiz.prompt}
+              error={errorsByPath.has(`${pathPrefix}.quiz.prompt`)}
+              helperText={errorsByPath.get(`${pathPrefix}.quiz.prompt`) ?? ' '}
+              onChange={(event) => {
+                const nextValue = event.target.value;
 
-              onChange((currentField) => ({
-                ...currentField,
-                quiz: currentField.quiz?.enabled
-                  ? {
+                onChange((currentField) => ({
+                  ...currentField,
+                  quiz: currentField.quiz?.enabled
+                    ? {
+                        ...currentField.quiz,
+                        prompt: nextValue,
+                      }
+                    : {
+                        enabled: true,
+                        prompt: nextValue,
+                      },
+                }));
+              }}
+              fullWidth
+              margin="normal"
+            />
+
+            <TextField
+              select
+              label="Distractor type"
+              value={quizDistractorType}
+              disabled={isDistractorTypeDisabled}
+              helperText={
+                isDistractorTypeDisabled
+                  ? 'Ehhez a fieldhez most nincs hasznalhato distractor beallitas.'
+                  : ' '
+              }
+              onChange={(event) => {
+                const nextValue = event.target.value;
+
+                onChange((currentField) => {
+                  if (!currentField.quiz?.enabled) {
+                    return currentField;
+                  }
+
+                  const nextDistractor =
+                    nextValue === ''
+                      ? undefined
+                      : nextValue === 'fromOptions'
+                        ? { type: 'fromOptions' as const }
+                        : nextValue === 'numericRange'
+                          ? { type: 'numericRange' as const, maxValue: 'todayYear' as const }
+                          : {
+                              type: 'derivedRange' as const,
+                              deriveWith: 'yearToCentury' as const,
+                              maxValue: 'todayYear' as const,
+                              sourceField: '',
+                            };
+
+                  return {
+                    ...currentField,
+                    quiz: {
                       ...currentField.quiz,
-                      prompt: nextValue,
-                    }
-                  : {
-                      enabled: true,
-                      prompt: nextValue,
+                      distractor: nextDistractor,
                     },
-              }));
-            }}
-            fullWidth
-            margin="normal"
-          />
+                  };
+                });
+              }}
+              fullWidth
+              margin="normal"
+            >
+              <MenuItem value="">Default topic values</MenuItem>
+              {availableDistractorOptions.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+
+            {field.quiz.distractor?.type === 'derivedRange' ? (
+              <TextField
+                select
+                label="Distractor source field"
+                value={field.quiz.distractor.sourceField}
+                error={errorsByPath.has(`${pathPrefix}.quiz.distractor.sourceField`)}
+                helperText={
+                  errorsByPath.get(`${pathPrefix}.quiz.distractor.sourceField`) ??
+                  'Valaszd ki azt a number mezot, amibol a distractorok kepzodnek.'
+                }
+                onChange={(event) => {
+                  const nextValue = event.target.value;
+
+                  onChange((currentField) => ({
+                    ...currentField,
+                    quiz:
+                      currentField.quiz?.enabled && currentField.quiz.distractor?.type === 'derivedRange'
+                        ? {
+                            ...currentField.quiz,
+                            distractor: {
+                              ...currentField.quiz.distractor,
+                              sourceField: nextValue,
+                            },
+                          }
+                        : currentField.quiz,
+                  }));
+                }}
+                fullWidth
+                margin="normal"
+              >
+                {availableDistractorSourceFieldOptions.map((option) => (
+                  <MenuItem key={option.key} value={option.key}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            ) : null}
+
+            {field.quiz.distractor?.type === 'numericRange' ||
+            field.quiz.distractor?.type === 'derivedRange' ? (
+              <>
+                <TextField
+                  label="Min value"
+                  value={field.quiz.distractor.minValue ?? ''}
+                  onChange={(event) => {
+                    const nextValue = event.target.value;
+
+                    onChange((currentField) => ({
+                      ...currentField,
+                      quiz:
+                        currentField.quiz?.enabled &&
+                        currentField.quiz.distractor &&
+                        (currentField.quiz.distractor.type === 'numericRange' ||
+                          currentField.quiz.distractor.type === 'derivedRange')
+                          ? {
+                              ...currentField.quiz,
+                              distractor: {
+                                ...currentField.quiz.distractor,
+                                minValue: nextValue === '' ? undefined : Number(nextValue),
+                              },
+                            }
+                          : currentField.quiz,
+                    }));
+                  }}
+                  fullWidth
+                  margin="normal"
+                />
+
+                <TextField
+                  label="Min offset"
+                  value={field.quiz.distractor.minOffset ?? ''}
+                  onChange={(event) => {
+                    const nextValue = event.target.value;
+
+                    onChange((currentField) => ({
+                      ...currentField,
+                      quiz:
+                        currentField.quiz?.enabled &&
+                        currentField.quiz.distractor &&
+                        (currentField.quiz.distractor.type === 'numericRange' ||
+                          currentField.quiz.distractor.type === 'derivedRange')
+                          ? {
+                              ...currentField.quiz,
+                              distractor: {
+                                ...currentField.quiz.distractor,
+                                minOffset: nextValue === '' ? undefined : Number(nextValue),
+                              },
+                            }
+                          : currentField.quiz,
+                    }));
+                  }}
+                  fullWidth
+                  margin="normal"
+                />
+
+                <TextField
+                  label="Max offset"
+                  value={field.quiz.distractor.maxOffset ?? ''}
+                  onChange={(event) => {
+                    const nextValue = event.target.value;
+
+                    onChange((currentField) => ({
+                      ...currentField,
+                      quiz:
+                        currentField.quiz?.enabled &&
+                        currentField.quiz.distractor &&
+                        (currentField.quiz.distractor.type === 'numericRange' ||
+                          currentField.quiz.distractor.type === 'derivedRange')
+                          ? {
+                              ...currentField.quiz,
+                              distractor: {
+                                ...currentField.quiz.distractor,
+                                maxOffset: nextValue === '' ? undefined : Number(nextValue),
+                              },
+                            }
+                          : currentField.quiz,
+                    }));
+                  }}
+                  fullWidth
+                  margin="normal"
+                />
+
+                <TextField
+                  label="Max value"
+                  value={field.quiz.distractor.maxValue}
+                  error={errorsByPath.has(`${pathPrefix}.quiz.distractor.maxValue`)}
+                  helperText={
+                    errorsByPath.get(`${pathPrefix}.quiz.distractor.maxValue`) ??
+                    'Adj meg egy szamot vagy a `todayYear` erteket.'
+                  }
+                  onChange={(event) => {
+                    const nextValue = event.target.value;
+
+                    onChange((currentField) => ({
+                      ...currentField,
+                      quiz:
+                        currentField.quiz?.enabled &&
+                        currentField.quiz.distractor &&
+                        (currentField.quiz.distractor.type === 'numericRange' ||
+                          currentField.quiz.distractor.type === 'derivedRange')
+                          ? {
+                              ...currentField.quiz,
+                              distractor: {
+                                ...currentField.quiz.distractor,
+                                maxValue:
+                                  nextValue === 'todayYear' ? 'todayYear' : Number(nextValue),
+                              },
+                            }
+                          : currentField.quiz,
+                    }));
+                  }}
+                  fullWidth
+                  margin="normal"
+                />
+              </>
+            ) : null}
+          </>
         ) : null}
 
         <FormControlLabel

@@ -150,12 +150,74 @@ const validateField = ({
   if (
     field.quiz?.enabled &&
     field.quiz.distractor?.type === 'derivedRange' &&
+    !isNonEmptyString(field.quiz.distractor.sourceField)
+  ) {
+    issues.push(
+      createIssue({
+        message: 'Derived range distractor source field is required.',
+        path: `${fieldPath}.quiz.distractor.sourceField`,
+        severity: 'error',
+      }),
+    );
+  }
+
+  if (
+    field.quiz?.enabled &&
+    field.quiz.distractor?.type === 'derivedRange' &&
+    isNonEmptyString(field.quiz.distractor.sourceField) &&
     !knownFieldKeys.has(field.quiz.distractor.sourceField)
   ) {
     issues.push(
       createIssue({
         message: 'Derived range distractor source field must reference an existing field.',
         path: `${fieldPath}.quiz.distractor.sourceField`,
+        severity: 'error',
+      }),
+    );
+  }
+
+  if (
+    field.quiz?.enabled &&
+    field.quiz.distractor &&
+    (field.quiz.distractor.type === 'numericRange' || field.quiz.distractor.type === 'derivedRange') &&
+    (field.quiz.distractor.maxValue === undefined ||
+      (field.quiz.distractor.maxValue !== 'todayYear' &&
+        Number.isNaN(field.quiz.distractor.maxValue)))
+  ) {
+    issues.push(
+      createIssue({
+        message: 'Range distractors must define a valid max value.',
+        path: `${fieldPath}.quiz.distractor.maxValue`,
+        severity: 'error',
+      }),
+    );
+  }
+
+  if (field.quiz?.enabled && field.quiz.distractor?.type === 'fromOptions' && field.type !== 'select') {
+    issues.push(
+      createIssue({
+        message: 'From options distractors are only supported on select fields.',
+        path: `${fieldPath}.quiz.distractor.type`,
+        severity: 'error',
+      }),
+    );
+  }
+
+  if (field.quiz?.enabled && field.quiz.distractor?.type === 'numericRange' && field.type !== 'number') {
+    issues.push(
+      createIssue({
+        message: 'Numeric range distractors are only supported on number fields.',
+        path: `${fieldPath}.quiz.distractor.type`,
+        severity: 'error',
+      }),
+    );
+  }
+
+  if (field.quiz?.enabled && field.quiz.distractor?.type === 'derivedRange' && field.type !== 'string') {
+    issues.push(
+      createIssue({
+        message: 'Derived range distractors are only supported on string fields.',
+        path: `${fieldPath}.quiz.distractor.type`,
         severity: 'error',
       }),
     );
