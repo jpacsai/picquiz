@@ -266,6 +266,18 @@ export const getDerivedValue = (
   return deriveFn(value);
 };
 
+const getNormalizedImageUploadFileNameParts = ({
+  field,
+  values,
+}: {
+  field: Extract<TopicField, { type: 'imageUpload' }>;
+  values: Record<string, string | number>;
+}) =>
+  field.fileNameFields
+    .map((fieldKey) => values[fieldKey])
+    .filter((value): value is string => typeof value === 'string')
+    .map((value) => value.trim())
+    .filter(Boolean);
 
 const getUploadedImageValues = ({
   field,
@@ -340,12 +352,12 @@ export const resolveSubmittedValues = async ({
   }
 
   const { field, file, uniqueSuffix } = pendingImageSelection;
-  const artistValue = previousValues[field.fileNameFields.artist];
-  const titleValue = previousValues[field.fileNameFields.title];
-  const artistName = typeof artistValue === 'string' ? artistValue.trim() : '';
-  const title = typeof titleValue === 'string' ? titleValue.trim() : '';
+  const fileNameParts = getNormalizedImageUploadFileNameParts({
+    field,
+    values: previousValues,
+  });
 
-  if (!artistName || !title) {
+  if (!fileNameParts.length) {
     return {
       imagePathsToDelete: [] as string[],
       submittedValue: previousValues,
@@ -354,8 +366,7 @@ export const resolveSubmittedValues = async ({
 
   const { desktop, mobile } = await generateResponsiveImageVariants(file);
   const uploadedImages = await uploadResponsiveTopicImages({
-    artistName,
-    title,
+    fileNameParts,
     storagePrefix,
     desktopBlob: desktop.blob,
     mobileBlob: mobile.blob,

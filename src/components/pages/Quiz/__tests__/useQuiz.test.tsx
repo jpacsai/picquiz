@@ -35,7 +35,7 @@ const topic: Topic = {
     {
       key: 'image',
       label: 'Kep',
-      fileNameFields: { artist: 'artist', title: 'title' },
+      fileNameFields: ['artist', 'title'],
       targetFields: { desktop: 'image_desktop', mobile: 'image_mobile' },
       type: 'imageUpload',
     },

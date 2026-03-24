@@ -141,8 +141,9 @@ const FormField = ({
       return (
         <form.Subscribe key={key} selector={(state) => state.values}>
           {(values) => {
-            const artistValue = values[field.fileNameFields.artist];
-            const titleValue = values[field.fileNameFields.title];
+            const fileNameParts = field.fileNameFields
+              .map((fieldKey) => values[fieldKey])
+              .filter((value): value is string => typeof value === 'string');
             const desktopImageValue = values[field.targetFields.desktop];
             const mobileImageValue = values[field.targetFields.mobile];
             const existingImageUrl =
@@ -155,10 +156,9 @@ const FormField = ({
             return (
               <ImageUploadField
                 field={field}
-                artistName={typeof artistValue === 'string' ? artistValue : ''}
                 existingImageUrl={existingImageUrl}
+                fileNameParts={fileNameParts}
                 mode={mode}
-                title={typeof titleValue === 'string' ? titleValue : ''}
                 existingSelection={
                   pendingImageSelection?.field.key === field.key ? pendingImageSelection : null
                 }

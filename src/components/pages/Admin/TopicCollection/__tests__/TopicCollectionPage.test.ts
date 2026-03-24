@@ -63,7 +63,7 @@ describe('TopicCollection utils', () => {
         },
         {
           buttonLabel: 'Kép feltöltése',
-          fileNameFields: { artist: 'artist', title: 'title' },
+          fileNameFields: ['artist', 'title'],
           key: 'image',
           label: 'Kép',
           targetFields: { desktop: 'desktop', mobile: 'mobile' },

@@ -59,10 +59,7 @@ export type TopicField =
     })
   | (BaseTopicField & {
       type: 'imageUpload';
-      fileNameFields: {
-        artist: string;
-        title: string;
-      };
+      fileNameFields: string[];
       targetFields: {
         desktop: string;
         mobile: string;

@@ -17,11 +17,10 @@ type UploadedImageVariantResult = {
 };
 
 type UploadResponsiveTopicImagesParams = {
-  artistName: string;
   desktopBlob: Blob;
+  fileNameParts: string[];
   mobileBlob: Blob;
   storagePrefix: string;
-  title: string;
   uniqueSuffix?: string;
 };
 
@@ -38,30 +37,11 @@ const sanitizeFileNamePart = (value: string) =>
     .replace(/^-+|-+$/g, '')
     .toLowerCase();
 
-const getArtistLastNamePart = (artistName: string) => {
-  const tokens = artistName.trim().split(/\s+/).filter(Boolean);
-
-  if (tokens.length === 0) {
-    return 'artist';
-  }
-
-  const trailingLowercaseTokens = tokens.slice(0, -1).reduceRight<string[]>(
-    (acc, token) => {
-      if (acc.length === 0 || token.toLowerCase() === token) {
-        return [token, ...acc];
-      }
-
-      return acc;
-    },
-    [],
-  );
-  const lastNameTokens = [...trailingLowercaseTokens, tokens.at(-1) ?? 'artist'];
-
-  return sanitizeFileNamePart(lastNameTokens.join('')) || 'artist';
-};
-
-const getTitlePart = (title: string) =>
-  sanitizeFileNamePart(title.replace(/\s+/g, '')) || 'untitled';
+const getFileNameBasePart = (parts: string[]) =>
+  parts
+    .map((part) => sanitizeFileNamePart(part))
+    .filter(Boolean)
+    .join('-') || 'image';
 
 export const createImageFileUniqueSuffix = () => {
   const timestamp = Date.now().toString(36);
@@ -74,31 +54,27 @@ export const createImageFileUniqueSuffix = () => {
 };
 
 export const getImageVariantFileName = ({
-  artistName,
-  title,
+  fileNameParts,
   uniqueSuffix,
   variant,
 }: {
-  artistName: string;
-  title: string;
+  fileNameParts: string[];
   uniqueSuffix?: string;
   variant: ImageVariant;
 }) =>
-  `${getArtistLastNamePart(artistName)}-${getTitlePart(title)}${
+  `${getFileNameBasePart(fileNameParts)}${
     uniqueSuffix ? `-${sanitizeFileNamePart(uniqueSuffix)}` : ''
   }-${variant}.jpg`;
 
 export const getResponsiveImageFileNames = ({
-  artistName,
-  title,
+  fileNameParts,
   uniqueSuffix,
 }: {
-  artistName: string;
-  title: string;
+  fileNameParts: string[];
   uniqueSuffix?: string;
 }) => ({
-  desktop: getImageVariantFileName({ artistName, title, uniqueSuffix, variant: 'desktop' }),
-  mobile: getImageVariantFileName({ artistName, title, uniqueSuffix, variant: 'mobile' }),
+  desktop: getImageVariantFileName({ fileNameParts, uniqueSuffix, variant: 'desktop' }),
+  mobile: getImageVariantFileName({ fileNameParts, uniqueSuffix, variant: 'mobile' }),
 });
 
 export const uploadImageVariant = async ({
@@ -122,14 +98,13 @@ export const uploadImageVariant = async ({
 };
 
 export const uploadResponsiveTopicImages = async ({
-  artistName,
   desktopBlob,
+  fileNameParts,
   mobileBlob,
   storagePrefix,
-  title,
   uniqueSuffix,
 }: UploadResponsiveTopicImagesParams): Promise<UploadedResponsiveTopicImagesResult> => {
-  const fileNames = getResponsiveImageFileNames({ artistName, title, uniqueSuffix });
+  const fileNames = getResponsiveImageFileNames({ fileNameParts, uniqueSuffix });
 
   const [desktop, mobile] = await Promise.all([
     uploadImageVariant({

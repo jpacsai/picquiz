@@ -55,7 +55,7 @@ const fields: TopicField[] = [
   { key: 'image_path_mobile', label: 'Mobile path', readonly: true, type: 'string' },
   {
     buttonLabel: 'Upload image',
-    fileNameFields: { artist: 'artist', title: 'title' },
+    fileNameFields: ['artist', 'title'],
     key: 'image_upload',
     label: 'Upload image',
     targetFields: {

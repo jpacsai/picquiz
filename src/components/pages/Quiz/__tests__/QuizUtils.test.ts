@@ -21,7 +21,7 @@ const topicWithMinOffset: Topic = {
     },
     {
       buttonLabel: 'Upload image',
-      fileNameFields: { artist: 'artist', title: 'title' },
+      fileNameFields: ['artist', 'title'],
       key: 'image_upload',
       label: 'Upload image',
       targetFields: {
@@ -56,7 +56,7 @@ const topicWithBoundedNumericOffsets: Topic = {
     },
     {
       buttonLabel: 'Upload image',
-      fileNameFields: { artist: 'artist', title: 'title' },
+      fileNameFields: ['artist', 'title'],
       key: 'image_upload',
       label: 'Upload image',
       targetFields: {
@@ -98,7 +98,7 @@ const topicWithBoundedDerivedOffsets: Topic = {
     },
     {
       buttonLabel: 'Upload image',
-      fileNameFields: { artist: 'artist', title: 'title' },
+      fileNameFields: ['artist', 'title'],
       key: 'image_upload',
       label: 'Upload image',
       targetFields: {

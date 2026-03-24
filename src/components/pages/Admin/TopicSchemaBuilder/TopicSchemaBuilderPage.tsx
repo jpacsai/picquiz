@@ -16,15 +16,7 @@ type TopicSchemaBuilderPageProps = {
 };
 
 const getInitialDraft = (topic?: Topic): TopicDraft => ({
-  fields:
-    topic?.fields.map((field) =>
-      field.type === 'imageUpload'
-        ? {
-            ...field,
-            fileNameFields: [field.fileNameFields.artist, field.fileNameFields.title].filter(Boolean),
-          }
-        : field,
-    ) ?? [],
+  fields: topic?.fields ?? [],
   id: topic?.id ?? '',
   label: topic?.label ?? '',
   slug: topic?.slug ?? '',

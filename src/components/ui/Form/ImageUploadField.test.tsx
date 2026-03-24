@@ -19,7 +19,7 @@ vi.mock('../../../data/storage', () => ({
 
 const field: Extract<TopicField, { type: 'imageUpload' }> = {
   buttonLabel: 'Upload after artist and title',
-  fileNameFields: { artist: 'artist', title: 'title' },
+  fileNameFields: ['artist', 'title'],
   key: 'image_upload',
   label: 'Upload image',
   targetFields: {
@@ -33,12 +33,11 @@ describe('ImageUploadField', () => {
   it('shows a loader while the stored image preview is loading', () => {
     render(
       <ImageUploadField
-        artistName="Leonardo da Vinci"
         existingImageUrl="https://example.com/existing.jpg"
         field={field}
+        fileNameParts={['Leonardo da Vinci', 'Mona Lisa']}
         mode="edit"
         onSelectImage={vi.fn()}
-        title="Mona Lisa"
       />,
     );
 
@@ -48,11 +47,10 @@ describe('ImageUploadField', () => {
   it('shows a placeholder in edit mode when there is no stored image', () => {
     render(
       <ImageUploadField
-        artistName="Leonardo da Vinci"
         field={field}
+        fileNameParts={['Leonardo da Vinci', 'Mona Lisa']}
         mode="edit"
         onSelectImage={vi.fn()}
-        title="Mona Lisa"
       />,
     );
 
@@ -63,16 +61,15 @@ describe('ImageUploadField', () => {
   it('falls back to the placeholder when the stored image fails to load', () => {
     render(
       <ImageUploadField
-        artistName="Leonardo da Vinci"
         existingImageUrl="https://example.com/missing.jpg"
         field={field}
+        fileNameParts={['Leonardo da Vinci', 'Mona Lisa']}
         mode="edit"
         onSelectImage={vi.fn()}
-        title="Mona Lisa"
       />,
     );
 
-    fireEvent.error(screen.getByRole('img', { name: 'Mona Lisa' }));
+    fireEvent.error(screen.getByRole('img', { name: 'Leonardo da Vinci Mona Lisa' }));
 
     expect(screen.getByRole('img', { name: 'Hibas vagy hianyzo kep' })).toBeInTheDocument();
     expect(screen.getAllByText('Hibas vagy hianyzo kep')).toHaveLength(2);
@@ -81,16 +78,15 @@ describe('ImageUploadField', () => {
   it('hides the loader after the stored image preview has loaded', () => {
     render(
       <ImageUploadField
-        artistName="Leonardo da Vinci"
         existingImageUrl="https://example.com/existing.jpg"
         field={field}
+        fileNameParts={['Leonardo da Vinci', 'Mona Lisa']}
         mode="edit"
         onSelectImage={vi.fn()}
-        title="Mona Lisa"
       />,
     );
 
-    fireEvent.load(screen.getByRole('img', { name: 'Mona Lisa' }));
+    fireEvent.load(screen.getByRole('img', { name: 'Leonardo da Vinci Mona Lisa' }));
 
     expect(screen.queryByLabelText('Kep elonezet toltese')).not.toBeInTheDocument();
   });

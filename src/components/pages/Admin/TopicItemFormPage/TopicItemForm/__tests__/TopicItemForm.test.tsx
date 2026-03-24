@@ -168,7 +168,7 @@ describe('TopicItemForm saving', () => {
       { key: 'image_path_mobile', label: 'Mobile path', readonly: true, type: 'string' },
       {
         buttonLabel: 'Upload after artist and title',
-        fileNameFields: { artist: 'artist', title: 'title' },
+        fileNameFields: ['artist', 'title'],
         key: 'image_upload',
         label: 'Upload image',
         targetFields: {
@@ -204,11 +204,10 @@ describe('TopicItemForm saving', () => {
     });
 
     expect(uploadResponsiveTopicImagesMock).toHaveBeenCalledWith({
-      artistName: 'Leonardo da Vinci',
       desktopBlob,
+      fileNameParts: ['Leonardo da Vinci', 'Mona Lisa'],
       mobileBlob,
       storagePrefix: 'art',
-      title: 'Mona Lisa',
       uniqueSuffix: expect.any(String),
     });
 
@@ -236,7 +235,7 @@ describe('TopicItemForm saving', () => {
       { key: 'image_url_mobile', label: 'Mobile URL', readonly: true, type: 'string' },
       {
         buttonLabel: 'Upload after artist and title',
-        fileNameFields: { artist: 'artist', title: 'title' },
+        fileNameFields: ['artist', 'title'],
         key: 'image_upload',
         label: 'Upload image',
         targetFields: { desktop: 'image_url_desktop', mobile: 'image_url_mobile' },
@@ -264,11 +263,10 @@ describe('TopicItemForm saving', () => {
 
     await waitFor(() => {
       expect(uploadResponsiveTopicImagesMock).toHaveBeenCalledWith({
-        artistName: 'Leonardo da Vinci',
         desktopBlob,
+        fileNameParts: ['Leonardo da Vinci', 'Mona Lisa'],
         mobileBlob,
         storagePrefix: 'art',
-        title: 'Mona Lisa',
         uniqueSuffix: expect.any(String),
       });
     });
@@ -283,7 +281,7 @@ describe('TopicItemForm saving', () => {
       { key: 'image_url_mobile', label: 'Mobile URL', readonly: true, type: 'string' },
       {
         buttonLabel: 'Upload after artist and title',
-        fileNameFields: { artist: 'artist', title: 'title' },
+        fileNameFields: ['artist', 'title'],
         key: 'image_upload',
         label: 'Upload image',
         required: true,
@@ -373,7 +371,7 @@ describe('TopicItemForm saving', () => {
       { key: 'image_path_mobile', label: 'Mobile path', readonly: true, type: 'string' },
       {
         buttonLabel: 'Upload after artist and title',
-        fileNameFields: { artist: 'artist', title: 'title' },
+        fileNameFields: ['artist', 'title'],
         key: 'image_upload',
         label: 'Upload image',
         targetFields: {
@@ -455,7 +453,7 @@ describe('TopicItemForm saving', () => {
       { key: 'image_path_mobile', label: 'Mobile path', readonly: true, type: 'string' },
       {
         buttonLabel: 'Upload after artist and title',
-        fileNameFields: { artist: 'artist', title: 'title' },
+        fileNameFields: ['artist', 'title'],
         key: 'image_upload',
         label: 'Upload image',
         targetFields: {
@@ -512,7 +510,7 @@ describe('TopicItemForm saving', () => {
       { key: 'image_url_mobile', label: 'Mobile URL', readonly: true, type: 'string' },
       {
         buttonLabel: 'Upload after artist and title',
-        fileNameFields: { artist: 'artist', title: 'title' },
+        fileNameFields: ['artist', 'title'],
         key: 'image_upload',
         label: 'Upload image',
         targetFields: {

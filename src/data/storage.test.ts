@@ -36,13 +36,12 @@ describe('getResponsiveImageFileNames', () => {
   it('appends the unique suffix when provided', () => {
     expect(
       getResponsiveImageFileNames({
-        artistName: 'Claude Monet',
-        title: 'Water Lilies',
+        fileNameParts: ['Claude Monet', 'Water Lilies'],
         uniqueSuffix: 'abc123',
       }),
     ).toEqual({
-      desktop: 'claudemonet-waterlilies-abc123-desktop.jpg',
-      mobile: 'claudemonet-waterlilies-abc123-mobile.jpg',
+      desktop: 'claude-monet-water-lilies-abc123-desktop.jpg',
+      mobile: 'claude-monet-water-lilies-abc123-mobile.jpg',
     });
   });
 });

@@ -11,37 +11,33 @@ import type { TopicField } from '@/types/topics';
 import { createImageFileUniqueSuffix, getResponsiveImageFileNames } from '../../../data/storage';
 
 type ImageUploadFieldProps = {
-  artistName: string;
   existingImageUrl?: string | null;
   existingSelection?: PendingImageSelection | null;
   field: Extract<TopicField, { type: 'imageUpload' }>;
+  fileNameParts: string[];
   mode?: 'create' | 'edit';
   onSelectImage: (selection: { file: File; uniqueSuffix: string }) => void;
-  title: string;
   uniqueSuffix?: string;
 };
 
 const ImageUploadField = ({
-  artistName,
   existingImageUrl,
   existingSelection,
   field,
+  fileNameParts,
   mode = 'create',
   onSelectImage,
-  title,
   uniqueSuffix,
 }: ImageUploadFieldProps) => {
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const [draftUniqueSuffix, setDraftUniqueSuffix] = useState(() => createImageFileUniqueSuffix());
   const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
   const [loadedImageUrl, setLoadedImageUrl] = useState<string | null>(null);
-  const trimmedArtistName = artistName.trim();
-  const trimmedTitle = title.trim();
-  const isReadyForUpload = trimmedArtistName.length > 0 && trimmedTitle.length > 0;
+  const normalizedFileNameParts = fileNameParts.map((part) => part.trim()).filter(Boolean);
+  const isReadyForUpload = normalizedFileNameParts.length > 0;
   const activeUniqueSuffix = existingSelection?.uniqueSuffix ?? uniqueSuffix ?? draftUniqueSuffix;
   const generatedFileNames = getResponsiveImageFileNames({
-    artistName: trimmedArtistName,
-    title: trimmedTitle,
+    fileNameParts: normalizedFileNameParts,
     uniqueSuffix: activeUniqueSuffix,
   });
   const showExistingImage = Boolean(
@@ -143,7 +139,7 @@ const ImageUploadField = ({
                 <Box
                   component="img"
                   src={existingImageSrc}
-                  alt={title || 'Jelenlegi kép'}
+                  alt={normalizedFileNameParts.join(' ') || 'Jelenlegi kép'}
                   onError={() => {
                     setFailedImageUrl(existingImageUrl ?? null);
                   }}
