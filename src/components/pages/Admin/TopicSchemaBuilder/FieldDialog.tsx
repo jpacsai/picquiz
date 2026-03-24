@@ -10,7 +10,7 @@ import {
   MenuItem,
   TextField,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import type { TopicFieldDraft } from '@/types/topicSchema';
 
@@ -75,12 +75,6 @@ const FieldDialog = ({
           : [];
   const isDistractorTypeDisabled = availableDistractorOptions.length === 0;
   const [selectOptionsInputValue, setSelectOptionsInputValue] = useState(optionsText);
-
-  useEffect(() => {
-    if (isOpen) {
-      setSelectOptionsInputValue(optionsText);
-    }
-  }, [isOpen, pathPrefix]);
 
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth={mode === 'create' ? 'sm' : 'md'}>
@@ -488,7 +482,10 @@ const FieldDialog = ({
             label="Select opciok"
             value={selectOptionsInputValue}
             error={errorsByPath.has(`${pathPrefix}.options`)}
-            helperText={errorsByPath.get(`${pathPrefix}.options`) ?? 'Vesszovel elvalasztva add meg az opciokat.'}
+            helperText={
+              errorsByPath.get(`${pathPrefix}.options`) ??
+              'Vesszovel elvalasztva add meg az opciokat.'
+            }
             onChange={(event) => {
               const nextValue = event.target.value;
               setSelectOptionsInputValue(nextValue);

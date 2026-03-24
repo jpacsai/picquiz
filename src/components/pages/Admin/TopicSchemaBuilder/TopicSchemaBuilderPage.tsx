@@ -774,6 +774,7 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
       </Card>
 
       <FieldDialog
+        key={`create-${isAddFieldDialogOpen ? 'open' : 'closed'}`}
         canSubmit={canAddField}
         errorsByPath={newFieldErrorsByPath}
         field={newFieldDraft}
@@ -790,6 +791,11 @@ const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) =>
 
       {selectedField ? (
         <FieldDialog
+          key={`edit-${isEditFieldDialogOpen ? 'open' : 'closed'}-${
+            selectedFieldIndex === 'fixed-image-upload'
+              ? 'fixed-image-upload'
+              : selectedFieldIndex ?? 'none'
+          }`}
           canSubmit
           availableFileNameFieldOptions={selectedFieldFileNameFieldOptions}
           availableDistractorSourceFieldOptions={selectedFieldDistractorSourceFieldOptions}
