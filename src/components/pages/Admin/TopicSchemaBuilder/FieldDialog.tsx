@@ -35,6 +35,12 @@ type FieldDialogProps = {
   pathPrefix: string;
 };
 
+const getNumericFieldValue = (value: number | undefined) =>
+  typeof value === 'number' && !Number.isNaN(value) ? value : '';
+
+const getRangeMaxValueFieldValue = (value: number | 'todayYear') =>
+  value === 'todayYear' ? value : getNumericFieldValue(value);
+
 const FieldDialog = ({
   availableFileNameFieldOptions,
   availableDistractorSourceFieldOptions,
@@ -292,7 +298,7 @@ const FieldDialog = ({
               <>
                 <TextField
                   label="Min value"
-                  value={field.quiz.distractor.minValue ?? ''}
+                  value={getNumericFieldValue(field.quiz.distractor.minValue)}
                   onChange={(event) => {
                     const nextValue = event.target.value;
 
@@ -319,7 +325,7 @@ const FieldDialog = ({
 
                 <TextField
                   label="Min offset"
-                  value={field.quiz.distractor.minOffset ?? ''}
+                  value={getNumericFieldValue(field.quiz.distractor.minOffset)}
                   onChange={(event) => {
                     const nextValue = event.target.value;
 
@@ -346,7 +352,7 @@ const FieldDialog = ({
 
                 <TextField
                   label="Max offset"
-                  value={field.quiz.distractor.maxOffset ?? ''}
+                  value={getNumericFieldValue(field.quiz.distractor.maxOffset)}
                   onChange={(event) => {
                     const nextValue = event.target.value;
 
@@ -373,7 +379,7 @@ const FieldDialog = ({
 
                 <TextField
                   label="Max value"
-                  value={field.quiz.distractor.maxValue}
+                  value={getRangeMaxValueFieldValue(field.quiz.distractor.maxValue)}
                   error={errorsByPath.has(`${pathPrefix}.quiz.distractor.maxValue`)}
                   helperText={
                     errorsByPath.get(`${pathPrefix}.quiz.distractor.maxValue`) ??

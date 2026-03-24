@@ -475,6 +475,35 @@ describe('TopicSchemaBuilderPage', () => {
     ).toBeInTheDocument();
   });
 
+  it('renders invalid numeric distractor values as empty so they stay editable', async () => {
+    const invalidTopic: Topic = {
+      ...topic,
+      fields: [
+        {
+          key: 'year',
+          label: 'Ev',
+          type: 'number',
+          quiz: {
+            enabled: true,
+            prompt: 'Melyik ev?',
+            distractor: {
+              type: 'numericRange',
+              maxValue: Number.NaN,
+            },
+          },
+        },
+      ],
+    };
+
+    render(<TopicSchemaBuilderPage mode="edit" topic={invalidTopic} />);
+
+    fireEvent.click(screen.getByText('Ev'));
+
+    const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+
+    expect(within(editDialog).getByLabelText('Max value')).toHaveValue('');
+  });
+
   it('allows configuring image upload fields from the dialog', async () => {
     const user = userEvent.setup();
 
