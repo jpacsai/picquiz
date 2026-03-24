@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   Checkbox,
   Dialog,
@@ -307,41 +308,10 @@ const FieldDialog = ({
               ))}
             </TextField>
 
-            <TextField
-              label="Desktop target field"
-              value={field.targetFields?.desktop ?? ''}
-              helperText="Fix rendszermezo, ezt a builder automatikusan kezeli."
-              disabled
-              fullWidth
-              margin="normal"
-            />
-
-            <TextField
-              label="Mobile target field"
-              value={field.targetFields?.mobile ?? ''}
-              helperText="Fix rendszermezo, ezt a builder automatikusan kezeli."
-              disabled
-              fullWidth
-              margin="normal"
-            />
-
-            <TextField
-              label="Desktop path field"
-              value={field.targetFields?.desktopPath ?? ''}
-              helperText="Fix rendszermezo, ezt a builder automatikusan kezeli."
-              disabled
-              fullWidth
-              margin="normal"
-            />
-
-            <TextField
-              label="Mobile path field"
-              value={field.targetFields?.mobilePath ?? ''}
-              helperText="Fix rendszermezo, ezt a builder automatikusan kezeli."
-              disabled
-              fullWidth
-              margin="normal"
-            />
+            <Alert severity="info" sx={{ mt: 2 }}>
+              A builder automatikusan kezeli a kepes rendszermezoket: `image_url_desktop`,
+              `image_url_mobile`, `image_path_desktop`, `image_path_mobile`.
+            </Alert>
           </>
         ) : null}
       </DialogContent>

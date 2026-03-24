@@ -387,18 +387,11 @@ describe('TopicSchemaBuilderPage', () => {
     await user.click(screen.getByRole('option', { name: 'Artist' }));
     await user.keyboard('{Escape}');
 
-    expect(within(editDialog).getByLabelText('Desktop target field')).toHaveValue(
-      'image_url_desktop',
-    );
-    expect(within(editDialog).getByLabelText('Mobile target field')).toHaveValue(
-      'image_url_mobile',
-    );
-    expect(within(editDialog).getByLabelText('Desktop path field')).toHaveValue(
-      'image_path_desktop',
-    );
-    expect(within(editDialog).getByLabelText('Mobile path field')).toHaveValue(
-      'image_path_mobile',
-    );
+    expect(
+      within(editDialog).getByText(
+        'A builder automatikusan kezeli a kepes rendszermezoket: `image_url_desktop`, `image_url_mobile`, `image_path_desktop`, `image_path_mobile`.',
+      ),
+    ).toBeInTheDocument();
 
     await user.click(submitButton);
 
@@ -415,12 +408,11 @@ describe('TopicSchemaBuilderPage', () => {
     const persistedEditDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
     expect(within(persistedEditDialog).getByLabelText('File name fields')).toHaveTextContent('Artist');
-    expect(within(persistedEditDialog).getByLabelText('Desktop target field')).toHaveValue(
-      'image_url_desktop',
-    );
-    expect(within(persistedEditDialog).getByLabelText('Desktop path field')).toHaveValue(
-      'image_path_desktop',
-    );
+    expect(
+      within(persistedEditDialog).getByText(
+        'A builder automatikusan kezeli a kepes rendszermezoket: `image_url_desktop`, `image_url_mobile`, `image_path_desktop`, `image_path_mobile`.',
+      ),
+    ).toBeInTheDocument();
   });
 
   it('keeps the fixed image upload field disabled until it is configured', async () => {
