@@ -1,20 +1,17 @@
-import { RouterLink } from '@components/ui/RouterLink';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Alert, Box, Button, Stack, Typography } from '@mui/material';
+import { Alert, Box } from '@mui/material';
 
-import type { Topic } from '@/types/topics';
 import type { TopicSchemaBuilderMode } from '@/types/topicSchemaBuilder';
 
 import FieldDialog from './components/FieldDialog';
 import FieldListSection from './components/FieldListSection';
 import TopicMetadataSection from './components/TopicMetadataSection';
+import TopicSchemaBuilderHeader from './components/TopicSchemaBuilderHeader';
 import ValidationSummary from './components/ValidationSummary';
 import type { useTopicSchemaBuilder } from './hook/useTopicSchemaBuilder';
 
 type TopicSchemaBuilderPageViewProps = {
   builder: ReturnType<typeof useTopicSchemaBuilder>;
   mode: TopicSchemaBuilderMode;
-  topic?: Topic;
 };
 
 const TopicSchemaBuilderPageView = ({ builder, mode }: TopicSchemaBuilderPageViewProps) => {
@@ -61,28 +58,14 @@ const TopicSchemaBuilderPageView = ({ builder, mode }: TopicSchemaBuilderPageVie
 
   return (
     <Box sx={{ display: 'grid', gap: 3 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" gap={2}>
-        <Box>
-          <Typography variant="h4">{title}</Typography>
-          <Typography color="text.secondary">{description}</Typography>
-        </Box>
-
-        <Stack direction="row" gap={1.5}>
-          <RouterLink to="/admin" underline="none" preload="intent">
-            <Button component="span" startIcon={<ArrowBackIcon />} variant="outlined">
-              Vissza az adminhoz
-            </Button>
-          </RouterLink>
-
-          <Button variant="contained" onClick={handleSave} disabled={!canSave}>
-            {isSaving
-              ? 'Mentes...'
-              : mode === 'create'
-                ? 'Schema letrehozasa'
-                : 'Valtozasok mentese'}
-          </Button>
-        </Stack>
-      </Stack>
+      <TopicSchemaBuilderHeader
+        canSave={canSave}
+        description={description}
+        isSaving={isSaving}
+        mode={mode}
+        onSave={handleSave}
+        title={title}
+      />
 
       {submitError ? <Alert severity="error">{submitError}</Alert> : null}
 

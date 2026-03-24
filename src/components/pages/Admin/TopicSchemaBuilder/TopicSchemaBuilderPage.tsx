@@ -6,7 +6,7 @@ import TopicSchemaBuilderPageView from './TopicSchemaBuilderPageView';
 const TopicSchemaBuilderPage = ({ mode, topic }: TopicSchemaBuilderPageProps) => {
   const builder = useTopicSchemaBuilder({ mode, topic });
 
-  return <TopicSchemaBuilderPageView builder={builder} mode={mode} topic={topic} />;
+  return <TopicSchemaBuilderPageView builder={builder} mode={mode} />;
 };
 
 export default TopicSchemaBuilderPage;
