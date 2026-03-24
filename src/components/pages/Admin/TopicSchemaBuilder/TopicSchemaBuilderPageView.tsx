@@ -13,18 +13,10 @@ import {
 const TopicSchemaBuilderPageView = () => {
   const {
     canAddField,
-    canConfigureFixedImageUpload,
-    canSave,
-    description,
     draft,
     fieldErrorsByPath,
-    hasImageUploadField,
     isAddFieldDialogOpen,
     isEditFieldDialogOpen,
-    isSaving,
-    metadataErrorsByPath,
-    mode,
-    metadataFields,
     newFieldDistractorSourceFieldOptions,
     newFieldDraft,
     newFieldErrorsByPath,
@@ -35,8 +27,6 @@ const TopicSchemaBuilderPageView = () => {
     selectedFieldFileNameFieldOptions,
     selectedFieldIndex,
     submitError,
-    title,
-    validation,
   } = useTopicSchemaBuilderState();
   const {
     getSelectOptionsText,
@@ -45,60 +35,21 @@ const TopicSchemaBuilderPageView = () => {
     handleCloseEditFieldDialog,
     handleDeleteSelectedField,
     handleEditFieldSubmit,
-    handleMoveField,
-    handleSave,
-    setDraft,
-    setIsAddFieldDialogOpen,
-    setIsEditFieldDialogOpen,
     setNewFieldDraft,
-    setSelectedFieldIndex,
     updateSelectedField,
   } = useTopicSchemaBuilderActions();
 
   return (
     <Box sx={{ display: 'grid', gap: 3 }}>
-      <TopicSchemaBuilderHeader
-        canSave={canSave}
-        description={description}
-        isSaving={isSaving}
-        mode={mode}
-        onSave={handleSave}
-        title={title}
-      />
+      <TopicSchemaBuilderHeader />
 
       {submitError ? <Alert severity="error">{submitError}</Alert> : null}
 
-      <TopicMetadataSection
-        errorsByPath={metadataErrorsByPath}
-        fields={metadataFields}
-        mode={mode}
-        onChange={(key, value) => {
-          setDraft((currentDraft) => ({
-            ...currentDraft,
-            [key]: value,
-          }));
-        }}
-      />
+      <TopicMetadataSection />
 
-      <ValidationSummary errors={validation.errors} warnings={validation.warnings} />
+      <ValidationSummary />
 
-      <FieldListSection
-        canConfigureFixedImageUpload={canConfigureFixedImageUpload}
-        fields={draft.fields}
-        hasImageUploadField={hasImageUploadField}
-        onAddField={() => setIsAddFieldDialogOpen(true)}
-        onConfigureFixedImageUpload={() => {
-          setSelectedFieldIndex('fixed-image-upload');
-          setIsEditFieldDialogOpen(true);
-        }}
-        onEditField={(index) => {
-          setSelectedFieldIndex(index);
-          setIsEditFieldDialogOpen(true);
-        }}
-        onMoveField={handleMoveField}
-        selectedFieldIndex={selectedFieldIndex}
-        validationErrors={validation.errors}
-      />
+      <FieldListSection />
 
       <FieldDialog
         key={`create-${isAddFieldDialogOpen ? 'open' : 'closed'}`}
