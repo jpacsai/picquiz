@@ -3,6 +3,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
+import type { ReactNode } from 'react';
 
 import {
   buildYearRangeValue,
@@ -68,6 +69,22 @@ const getNormalizedImageUploadFileNamePart = (value: unknown): string | null => 
   return normalizedValue.length > 0 ? normalizedValue : null;
 };
 
+const wrapFieldContent = (content: ReactNode) => (
+  <Box
+    sx={{
+      alignSelf: 'stretch',
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+      justifyContent: 'flex-end',
+      width: '100%',
+    }}
+    data-testid="form-field-wrapper"
+  >
+    {content}
+  </Box>
+);
+
 const FormField = ({
   fields,
   derivationIndex,
@@ -102,10 +119,10 @@ const FormField = ({
             const isPendingDerivedField = Boolean(fn) && fieldApi.state.value === '';
 
             if (isPendingDerivedField) {
-              return renderPendingDerivedField(fieldKey);
+              return wrapFieldContent(renderPendingDerivedField(fieldKey));
             }
 
-            return (
+            return wrapFieldContent(
               <FormInput
                 type={type === 'number' || type === 'year' ? 'number' : undefined}
                 name={fieldKey}
@@ -160,8 +177,14 @@ const FormField = ({
                   }
                 }}
                 errorMessage={typeof errorMessage === 'string' ? errorMessage : undefined}
-                sx={{ width: '100%', height: '75px' }}
-              />
+                sx={{
+                  width: '100%',
+                  height: '67px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                }}
+              />,
             );
           }}
         </form.Field>
@@ -187,7 +210,7 @@ const FormField = ({
                   ? field.max
                   : undefined;
 
-            return (
+            return wrapFieldContent(
               <Box sx={{ width: '100%' }}>
                 <Typography sx={{ mb: 1 }} variant="body2">
                   {label}
@@ -220,7 +243,7 @@ const FormField = ({
                         );
                       }}
                       helperText=" "
-                      sx={{ width: '100%', height: '75px' }}
+                      sx={{ width: '100%', height: '67px' }}
                     />
                   </Box>
                   <Typography
@@ -252,11 +275,11 @@ const FormField = ({
                         );
                       }}
                       errorMessage={typeof errorMessage === 'string' ? errorMessage : undefined}
-                      sx={{ width: '100%', height: '75px' }}
+                      sx={{ width: '100%', height: '67px' }}
                     />
                   </Box>
                 </Stack>
-              </Box>
+              </Box>,
             );
           }}
         </form.Field>
@@ -274,9 +297,9 @@ const FormField = ({
               ? fieldApi.state.meta.errors[0]
               : undefined;
 
-            return (
+            return wrapFieldContent(
               <Box
-                sx={{ width: '100%', minHeight: '75px', display: 'grid', alignContent: 'center' }}
+                sx={{ width: '100%', minHeight: '67px', display: 'grid', alignContent: 'center' }}
               >
                 <FormControlLabel
                   control={
@@ -299,7 +322,7 @@ const FormField = ({
                     {errorMessage}
                   </Typography>
                 ) : null}
-              </Box>
+              </Box>,
             );
           }}
         </form.Field>
@@ -319,10 +342,10 @@ const FormField = ({
             const isPendingDerivedField = Boolean(field.fn) && fieldApi.state.value === '';
 
             if (isPendingDerivedField) {
-              return renderPendingDerivedField(fieldKey);
+              return wrapFieldContent(renderPendingDerivedField(fieldKey));
             }
 
-            return (
+            return wrapFieldContent(
               <FormSelect
                 options={field.options}
                 value={typeof fieldApi.state.value === 'string' ? fieldApi.state.value : ''}
@@ -342,7 +365,7 @@ const FormField = ({
                 label={label}
                 required={required}
                 errorMessage={typeof errorMessage === 'string' ? errorMessage : undefined}
-              />
+              />,
             );
           }}
         </form.Field>
@@ -379,7 +402,7 @@ const FormField = ({
                   ? mobileImageValue
                   : null;
 
-            return (
+            return wrapFieldContent(
               <ImageUploadField
                 field={field}
                 existingImageUrl={existingImageUrl}
@@ -398,13 +421,13 @@ const FormField = ({
                 onSelectImage={({ file, uniqueSuffix }) => {
                   onSelectPendingImage({ field, file, uniqueSuffix });
                 }}
-              />
+              />,
             );
           }}
         </form.Subscribe>
       );
     default:
-      return <Box key={fieldKey}>{label}</Box>;
+      return wrapFieldContent(<Box key={fieldKey}>{label}</Box>);
   }
 };
 
