@@ -110,3 +110,65 @@ export const getSelectedFieldIndexAfterMove = ({
 
   return selectedFieldIndex;
 };
+
+export type FieldDeletionDependency = {
+  fieldKey: string;
+  fieldLabel: string;
+  reason: string;
+};
+
+const getFieldDisplayName = (field: TopicFieldDraft) => field.label?.trim() || field.key?.trim() || 'Ismeretlen field';
+
+export const getFieldDeletionDependencies = ({
+  fieldKey,
+  fields,
+}: {
+  fieldKey: string;
+  fields: TopicDraft['fields'];
+}): FieldDeletionDependency[] => {
+  const trimmedFieldKey = fieldKey.trim();
+
+  if (!trimmedFieldKey) {
+    return [];
+  }
+
+  return fields.flatMap((field) => {
+    const dependencies: FieldDeletionDependency[] = [];
+    const fieldDisplayName = getFieldDisplayName(field);
+    const normalizedFieldKey = field.key?.trim();
+
+    if (normalizedFieldKey === trimmedFieldKey) {
+      return dependencies;
+    }
+
+    if (field.type === 'imageUpload' && (field.fileNameFields ?? []).includes(trimmedFieldKey)) {
+      dependencies.push({
+        fieldKey: normalizedFieldKey ?? fieldDisplayName,
+        fieldLabel: fieldDisplayName,
+        reason: 'a file-nevhez hasznalja',
+      });
+    }
+
+    if (field.fn?.source?.trim() === trimmedFieldKey) {
+      dependencies.push({
+        fieldKey: normalizedFieldKey ?? fieldDisplayName,
+        fieldLabel: fieldDisplayName,
+        reason: 'derived sourcekent hasznalja',
+      });
+    }
+
+    if (
+      field.quiz?.enabled &&
+      field.quiz.distractor?.type === 'derivedRange' &&
+      field.quiz.distractor.sourceField.trim() === trimmedFieldKey
+    ) {
+      dependencies.push({
+        fieldKey: normalizedFieldKey ?? fieldDisplayName,
+        fieldLabel: fieldDisplayName,
+        reason: 'quiz distractor sourcekent hasznalja',
+      });
+    }
+
+    return dependencies;
+  });
+};

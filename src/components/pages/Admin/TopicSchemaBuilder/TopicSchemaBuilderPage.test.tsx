@@ -483,6 +483,49 @@ describe('TopicSchemaBuilderPage', () => {
     ).toBeInTheDocument();
   });
 
+  it('blocks deleting a field that is used by image upload file name fields', async () => {
+    const user = userEvent.setup();
+
+    render(<TopicSchemaBuilderPage mode="create" />);
+
+    await user.click(screen.getByRole('button', { name: 'Uj field' }));
+    await user.type(screen.getByLabelText('Field label'), 'Name');
+    await user.type(screen.getByLabelText('Field key'), 'name');
+    await user.click(screen.getByRole('checkbox', { name: 'Required' }));
+    await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText('Kepfeltoltes'));
+
+    const imageUploadDialog = await screen.findByRole('dialog', { name: 'Field szerkesztes' });
+
+    await user.click(within(imageUploadDialog).getByRole('combobox', { name: 'File name fields' }));
+    await user.click(screen.getByRole('option', { name: 'Name' }));
+    await user.keyboard('{Escape}');
+    await user.click(within(imageUploadDialog).getByRole('button', { name: 'Kesz' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText('Name'));
+    await user.click(
+      within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', {
+        name: 'Torles',
+      }),
+    );
+
+    expect(screen.getByRole('dialog', { name: 'Field nem torolheto' })).toBeInTheDocument();
+    expect(
+      screen.getByText('A(z) Name field most nem torolheto, mert mas mezok hivatkoznak ra.'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Kepfeltoltes: a file-nevhez hasznalja')).toBeInTheDocument();
+    expect(screen.queryByRole('dialog', { name: 'Field torlese' })).not.toBeInTheDocument();
+  });
+
   it('allows editing select options for a select field', async () => {
     const user = userEvent.setup();
 
