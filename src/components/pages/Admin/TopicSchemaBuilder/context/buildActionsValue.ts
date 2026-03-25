@@ -86,7 +86,6 @@ export const buildTopicSchemaBuilderActionsValue = ({
       fields: [...currentDraft.fields, normalizedField],
     }));
     setSelectedFieldIndex(draft.fields.length);
-    setIsEditFieldDialogOpen(true);
     handleCloseAddFieldDialog();
   };
 
