@@ -573,6 +573,52 @@ describe('TopicItemForm saving', () => {
     expect(screen.getByTestId('form-input-death_year')).toHaveValue(null);
   });
 
+  it('still copies when multiple autocomplete matches have identical copy field values', async () => {
+    const user = userEvent.setup();
+    const fields: TopicField[] = [
+      {
+        autocomplete: true,
+        autocompleteCopyFields: ['birth_year', 'death_year'],
+        key: 'artist',
+        label: 'Artist',
+        required: true,
+        type: 'string',
+      },
+      { key: 'birth_year', label: 'Birth year', type: 'year' },
+      { key: 'death_year', label: 'Death year', type: 'year' },
+    ];
+
+    render(
+      <TopicItemForm
+        autocompleteOptionsByField={{ artist: ['Artemisia Gentileschi'] }}
+        collectionName="art"
+        fields={fields}
+        items={[
+          {
+            artist: 'Artemisia Gentileschi',
+            birth_year: 1593,
+            death_year: 1653,
+            id: 'item-1',
+          },
+          {
+            artist: 'Artemisia Gentileschi',
+            birth_year: 1593,
+            death_year: 1653,
+            id: 'item-2',
+          },
+        ]}
+        storagePrefix="art"
+        topicId="art"
+      />,
+    );
+
+    await user.type(screen.getByTestId('form-input-artist'), 'Artemisia Gentileschi');
+
+    expect(screen.queryByText(/Több meglévő elem is egyezik/)).not.toBeInTheDocument();
+    expect(screen.getByTestId('form-input-birth_year')).toHaveValue(1593);
+    expect(screen.getByTestId('form-input-death_year')).toHaveValue(1653);
+  });
+
   it('prefills edit values, hides image upload system fields, and updates an item', async () => {
     const user = userEvent.setup();
     const desktopBlob = new Blob(['desktop'], { type: 'image/jpeg' });

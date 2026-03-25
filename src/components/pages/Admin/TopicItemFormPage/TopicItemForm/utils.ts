@@ -344,6 +344,50 @@ export const getAutocompleteOptionsByField = ({
 const isEmptyFormValue = (value: unknown) =>
   value === undefined || (typeof value === 'string' && value.trim().length === 0);
 
+const getComparableCopyFieldValue = (value: unknown) => {
+  if (typeof value === 'string') {
+    const trimmedValue = value.trim();
+
+    return trimmedValue.length ? trimmedValue : null;
+  }
+
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return value;
+  }
+
+  return null;
+};
+
+const getUniqueSourceItemForCopy = ({
+  copyFieldKeys,
+  matchingItems,
+}: {
+  copyFieldKeys: string[];
+  matchingItems: ReadonlyArray<TopicItem>;
+}) => {
+  if (matchingItems.length <= 1) {
+    return {
+      hasConflict: false,
+      sourceItem: matchingItems[0],
+    };
+  }
+
+  const firstItem = matchingItems[0];
+  const hasConflict = matchingItems.slice(1).some((candidateItem) =>
+    copyFieldKeys.some((copyFieldKey) => {
+      const firstValue = getComparableCopyFieldValue(firstItem[copyFieldKey]);
+      const candidateValue = getComparableCopyFieldValue(candidateItem[copyFieldKey]);
+
+      return firstValue !== candidateValue;
+    }),
+  );
+
+  return {
+    hasConflict,
+    sourceItem: hasConflict ? undefined : firstItem,
+  };
+};
+
 export const resolveAutocompleteCopyValues = ({
   field,
   items,
@@ -379,18 +423,21 @@ export const resolveAutocompleteCopyValues = ({
     return typeof matchValue === 'string' && matchValue.trim() === normalizedSelectedValue;
   });
 
-  if (matchingItems.length > 1) {
+  const { hasConflict, sourceItem } = getUniqueSourceItemForCopy({
+    copyFieldKeys,
+    matchingItems,
+  });
+
+  if (hasConflict) {
     return {
       updates: {},
       warning: `Több meglévő elem is egyezik a(z) "${normalizedSelectedValue}" értékkel, ezért az automatikus másolás most kimaradt.`,
     };
   }
 
-  if (matchingItems.length !== 1) {
+  if (!sourceItem) {
     return { updates: {} };
   }
-
-  const sourceItem = matchingItems[0];
 
   const updates = copyFieldKeys.reduce<Record<string, string | number | boolean>>(
     (acc, copyFieldKey) => {
@@ -398,18 +445,12 @@ export const resolveAutocompleteCopyValues = ({
         return acc;
       }
 
-      const sourceValue = sourceItem[copyFieldKey];
+      const sourceValue = getComparableCopyFieldValue(sourceItem[copyFieldKey]);
 
       if (typeof sourceValue === 'string') {
-        const trimmedValue = sourceValue.trim();
-
-        if (!trimmedValue) {
-          return acc;
-        }
-
         return {
           ...acc,
-          [copyFieldKey]: trimmedValue,
+          [copyFieldKey]: sourceValue,
         };
       }
 
