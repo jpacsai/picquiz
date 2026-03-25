@@ -1,4 +1,4 @@
-import { Autocomplete, Box, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { Autocomplete, Box, MenuItem, TextField } from '@mui/material';
 
 import type { TopicCollectionSearchField } from '@/types/topics';
 
@@ -19,6 +19,14 @@ const TopicCollectionSearch = ({
   onSearchFieldChange,
   onSearchQueryChange,
 }: TopicCollectionSearchProps) => {
+  const selectFieldSx = {
+    '& .MuiSelect-select': {
+      alignItems: 'center',
+      display: 'flex',
+      minHeight: 'auto',
+    },
+  } as const;
+
   return (
     <Box
       sx={{
@@ -32,21 +40,20 @@ const TopicCollectionSearch = ({
         },
       }}
     >
-      <FormControl size="small">
-        <InputLabel id="admin-topic-search-field-label">Keresés mező szerint</InputLabel>
-        <Select
-          label="Keresés mező szerint"
-          labelId="admin-topic-search-field-label"
-          onChange={(event) => onSearchFieldChange(event.target.value)}
-          value={searchFieldKey}
-        >
-          {searchableFields.map((field) => (
-            <MenuItem key={field.key} value={field.key}>
-              {field.label}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <TextField
+        select
+        label="Keresés mező szerint"
+        size="small"
+        onChange={(event) => onSearchFieldChange(event.target.value)}
+        sx={selectFieldSx}
+        value={searchFieldKey}
+      >
+        {searchableFields.map((field) => (
+          <MenuItem key={field.key} value={field.key}>
+            {field.label}
+          </MenuItem>
+        ))}
+      </TextField>
 
       <Autocomplete
         freeSolo
