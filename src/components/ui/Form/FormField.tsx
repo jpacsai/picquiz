@@ -73,7 +73,7 @@ const FormField = ({
   onSelectPendingImage,
   pendingImageSelection,
 }: FormFieldProps) => {
-  const { key, type, readonly, required, label, fn, hideInEdit } = field;
+  const { key: fieldKey, type, readonly, required, label, fn, hideInEdit } = field;
 
   if (mode === 'edit' && hideInEdit) return null;
 
@@ -82,7 +82,11 @@ const FormField = ({
     case 'number':
     case 'year':
       return (
-        <form.Field key={key} name={key} validators={{ onChange: getFieldValidator(field) }}>
+        <form.Field
+          key={fieldKey}
+          name={fieldKey}
+          validators={{ onChange: getFieldValidator(field) }}
+        >
           {(fieldApi) => {
             const errorMessage = fieldApi.state.meta.isTouched
               ? fieldApi.state.meta.errors[0]
@@ -91,13 +95,13 @@ const FormField = ({
             const isPendingDerivedField = Boolean(fn) && fieldApi.state.value === '';
 
             if (isPendingDerivedField) {
-              return renderPendingDerivedField(key);
+              return renderPendingDerivedField(fieldKey);
             }
 
             return (
               <FormInput
                 type={type === 'number' || type === 'year' ? 'number' : undefined}
-                name={key}
+                name={fieldKey}
                 label={label}
                 required={required}
                 disabled={readonly}
@@ -122,12 +126,14 @@ const FormField = ({
                   const rawValue = event.target.value;
                   const nextValue =
                     type === 'number' || type === 'year'
-                      ? (rawValue === '' ? '' : Number(rawValue))
+                      ? rawValue === ''
+                        ? ''
+                        : Number(rawValue)
                       : rawValue;
 
                   fieldApi.handleChange(nextValue);
 
-                  const derivedField = derivationIndex[key];
+                  const derivedField = derivationIndex[fieldKey];
                   const derivedValue = getDerivedValue(derivedField, nextValue);
 
                   if (derivedField?.fn?.target && derivedValue !== undefined) {
@@ -141,9 +147,15 @@ const FormField = ({
           }}
         </form.Field>
       );
-    case 'yearRange':
+    case 'yearRange': {
+      const rangeFieldKey: string = field.key;
+
       return (
-        <form.Field key={key} name={key} validators={{ onChange: getFieldValidator(field) }}>
+        <form.Field
+          key={rangeFieldKey}
+          name={rangeFieldKey}
+          validators={{ onChange: getFieldValidator(field) }}
+        >
           {(fieldApi) => {
             const errorMessage = fieldApi.state.meta.isTouched
               ? fieldApi.state.meta.errors[0]
@@ -172,7 +184,7 @@ const FormField = ({
                   <Box sx={{ flex: 1, minWidth: 0 }}>
                     <FormInput
                       type="number"
-                      name={`${key}-from`}
+                      name={`${rangeFieldKey}-from`}
                       label="Tol"
                       required={required}
                       disabled={readonly}
@@ -204,7 +216,7 @@ const FormField = ({
                   <Box sx={{ flex: 1, minWidth: 0 }}>
                     <FormInput
                       type="number"
-                      name={`${key}-to`}
+                      name={`${rangeFieldKey}-to`}
                       label="Ig"
                       required={required}
                       disabled={readonly}
@@ -230,16 +242,23 @@ const FormField = ({
           }}
         </form.Field>
       );
+    }
     case 'boolean':
       return (
-        <form.Field key={key} name={key} validators={{ onChange: getFieldValidator(field) }}>
+        <form.Field
+          key={fieldKey}
+          name={fieldKey}
+          validators={{ onChange: getFieldValidator(field) }}
+        >
           {(fieldApi) => {
             const errorMessage = fieldApi.state.meta.isTouched
               ? fieldApi.state.meta.errors[0]
               : undefined;
 
             return (
-              <Box sx={{ width: '100%', minHeight: '75px', display: 'grid', alignContent: 'center' }}>
+              <Box
+                sx={{ width: '100%', minHeight: '75px', display: 'grid', alignContent: 'center' }}
+              >
                 <FormControlLabel
                   control={
                     <Switch
@@ -268,7 +287,11 @@ const FormField = ({
       );
     case 'select':
       return (
-        <form.Field key={key} name={key} validators={{ onChange: getFieldValidator(field) }}>
+        <form.Field
+          key={fieldKey}
+          name={fieldKey}
+          validators={{ onChange: getFieldValidator(field) }}
+        >
           {(fieldApi) => {
             const errorMessage = fieldApi.state.meta.isTouched
               ? fieldApi.state.meta.errors[0]
@@ -277,7 +300,7 @@ const FormField = ({
             const isPendingDerivedField = Boolean(field.fn) && fieldApi.state.value === '';
 
             if (isPendingDerivedField) {
-              return renderPendingDerivedField(key);
+              return renderPendingDerivedField(fieldKey);
             }
 
             return (
@@ -287,7 +310,7 @@ const FormField = ({
                 onChange={(nextValue) => {
                   fieldApi.handleChange(nextValue);
 
-                  const derivedField = derivationIndex[key];
+                  const derivedField = derivationIndex[fieldKey];
                   const derivedValue = getDerivedValue(derivedField, nextValue);
 
                   if (derivedField?.fn?.target && derivedValue !== undefined) {
@@ -296,7 +319,7 @@ const FormField = ({
                 }}
                 onBlur={fieldApi.handleBlur}
                 disabled={readonly}
-                name={key}
+                name={fieldKey}
                 label={label}
                 required={required}
                 errorMessage={typeof errorMessage === 'string' ? errorMessage : undefined}
@@ -307,7 +330,7 @@ const FormField = ({
       );
     case 'imageUpload':
       return (
-        <form.Subscribe key={key} selector={(state) => state.values}>
+        <form.Subscribe key={fieldKey} selector={(state) => state.values}>
           {(values) => {
             const fileNameParts = field.fileNameFields
               .map((fieldKey) => getNormalizedImageUploadFileNamePart(values[fieldKey]))
@@ -320,8 +343,9 @@ const FormField = ({
             );
             const isReadyForUpload =
               requiredFileNameFields.length > 0 &&
-              requiredFileNameFields.every((requiredField) =>
-                getNormalizedImageUploadFileNamePart(values[requiredField.key]) !== null,
+              requiredFileNameFields.every(
+                (requiredField) =>
+                  getNormalizedImageUploadFileNamePart(values[requiredField.key]) !== null,
               );
             const helperText =
               requiredFileNameLabels.length > 0
@@ -361,7 +385,7 @@ const FormField = ({
         </form.Subscribe>
       );
     default:
-      return <Box key={key}>{label}</Box>;
+      return <Box key={fieldKey}>{label}</Box>;
   }
 };
 
