@@ -25,6 +25,8 @@ const FieldDialogBasicsSection = ({
   onChange,
   pathPrefix,
 }: FieldDialogBasicsSectionProps) => {
+  const hasTypeSpecificFields =
+    field.type === 'select' || field.type === 'year' || field.type === 'imageUpload';
   const fieldTypeOptions =
     field.type === 'imageUpload'
       ? [...FIELD_TYPE_OPTIONS, { label: 'Image upload', value: 'imageUpload' as const }]
@@ -102,7 +104,8 @@ const FieldDialogBasicsSection = ({
           }));
         }}
         fullWidth
-        margin="normal"
+        margin={hasTypeSpecificFields ? 'dense' : 'normal'}
+        sx={hasTypeSpecificFields ? { mb: 0.25 } : undefined}
       >
         {fieldTypeOptions.map((option) => (
           <MenuItem key={option.value} value={option.value}>

@@ -57,7 +57,8 @@ const FieldDialogImageUploadSection = ({
           }));
         }}
         fullWidth
-        margin="normal"
+        margin="dense"
+        sx={{ mt: 0, mb: 0.25 }}
       >
         {availableFileNameFieldOptions.map((option) => (
           <MenuItem key={option.key} value={option.key}>
@@ -66,7 +67,7 @@ const FieldDialogImageUploadSection = ({
         ))}
       </TextField>
 
-      <Alert severity="info" sx={{ mt: 2 }}>
+      <Alert severity="info" sx={{ mt: 0.5 }}>
         A builder automatikusan kezeli a kepes rendszermezoket: `image_url_desktop`,
         `image_url_mobile`, `image_path_desktop`, `image_path_mobile`.
       </Alert>

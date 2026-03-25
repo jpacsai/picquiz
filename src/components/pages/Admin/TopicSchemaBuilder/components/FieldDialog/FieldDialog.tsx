@@ -8,6 +8,7 @@ import FieldDialogImageUploadSection from './FieldDialogImageUploadSection';
 import FieldDialogQuizSection from './FieldDialogQuizSection';
 import FieldDialogSelectOptionsSection from './FieldDialogSelectOptionsSection';
 import FieldDialogSettingsSection from './FieldDialogSettingsSection';
+import FieldDialogYearSection from './FieldDialogYearSection';
 
 type FieldDialogProps = {
   availableFileNameFieldOptions: Array<{ key: string; label: string }>;
@@ -66,6 +67,16 @@ const FieldDialog = ({
           selectOptionsInputValue={selectOptionsInputValue}
         />
 
+        <FieldDialogYearSection field={field} onChange={onChange} />
+
+        <FieldDialogImageUploadSection
+          availableFileNameFieldOptions={availableFileNameFieldOptions}
+          errorsByPath={errorsByPath}
+          field={field}
+          onChange={onChange}
+          pathPrefix={pathPrefix}
+        />
+
         <FieldDialogQuizSection
           availableDistractorSourceFieldOptions={availableDistractorSourceFieldOptions}
           errorsByPath={errorsByPath}
@@ -75,14 +86,6 @@ const FieldDialog = ({
         />
 
         <FieldDialogSettingsSection field={field} onChange={onChange} />
-
-        <FieldDialogImageUploadSection
-          availableFileNameFieldOptions={availableFileNameFieldOptions}
-          errorsByPath={errorsByPath}
-          field={field}
-          onChange={onChange}
-          pathPrefix={pathPrefix}
-        />
       </DialogContent>
 
       <DialogActions>

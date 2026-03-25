@@ -45,7 +45,8 @@ const FieldDialogSelectOptionsSection = ({
         }));
       }}
       fullWidth
-      margin="normal"
+      margin="dense"
+      sx={{ mt: 0, mb: 0.25 }}
     />
   );
 };
