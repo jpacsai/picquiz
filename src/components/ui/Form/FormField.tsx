@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 
@@ -160,56 +161,70 @@ const FormField = ({
                 <Typography sx={{ mb: 1 }} variant="body2">
                   {label}
                 </Typography>
-                <Box
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  alignItems="flex-start"
                   sx={{
-                    display: 'grid',
-                    gap: 2,
-                    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+                    width: '100%',
                   }}
                 >
-                  <FormInput
-                    type="number"
-                    name={`${key}-from`}
-                    label="Tol"
-                    required={required}
-                    disabled={readonly}
-                    value={from}
-                    inputProps={{
-                      min: field.min,
-                      max: resolvedMax,
-                      step: 1,
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <FormInput
+                      type="number"
+                      name={`${key}-from`}
+                      label="Tol"
+                      required={required}
+                      disabled={readonly}
+                      value={from}
+                      inputProps={{
+                        min: field.min,
+                        max: resolvedMax,
+                        step: 1,
+                      }}
+                      onBlur={fieldApi.handleBlur}
+                      onChange={(event) => {
+                        fieldApi.handleChange(
+                          buildYearRangeValue({ from: event.target.value, to }),
+                        );
+                      }}
+                      helperText=" "
+                      sx={{ width: '100%', height: '75px' }}
+                    />
+                  </Box>
+                  <Typography
+                    sx={{
+                      pt: '42px',
+                      flexShrink: 0,
                     }}
-                    onBlur={fieldApi.handleBlur}
-                    onChange={(event) => {
-                      fieldApi.handleChange(
-                        buildYearRangeValue({ from: event.target.value, to }),
-                      );
-                    }}
-                    helperText=" "
-                    sx={{ width: '100%', height: '75px' }}
-                  />
-                  <FormInput
-                    type="number"
-                    name={`${key}-to`}
-                    label="Ig"
-                    required={required}
-                    disabled={readonly}
-                    value={to}
-                    inputProps={{
-                      min: field.min,
-                      max: resolvedMax,
-                      step: 1,
-                    }}
-                    onBlur={fieldApi.handleBlur}
-                    onChange={(event) => {
-                      fieldApi.handleChange(
-                        buildYearRangeValue({ from, to: event.target.value }),
-                      );
-                    }}
-                    errorMessage={typeof errorMessage === 'string' ? errorMessage : undefined}
-                    sx={{ width: '100%', height: '75px' }}
-                  />
-                </Box>
+                    variant="h6"
+                  >
+                    -
+                  </Typography>
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <FormInput
+                      type="number"
+                      name={`${key}-to`}
+                      label="Ig"
+                      required={required}
+                      disabled={readonly}
+                      value={to}
+                      inputProps={{
+                        min: field.min,
+                        max: resolvedMax,
+                        step: 1,
+                      }}
+                      onBlur={fieldApi.handleBlur}
+                      onChange={(event) => {
+                        fieldApi.handleChange(
+                          buildYearRangeValue({ from, to: event.target.value }),
+                        );
+                      }}
+                      errorMessage={typeof errorMessage === 'string' ? errorMessage : undefined}
+                      sx={{ width: '100%', height: '75px' }}
+                    />
+                  </Box>
+                </Stack>
               </Box>
             );
           }}
