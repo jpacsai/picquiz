@@ -2,7 +2,7 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import ImageUploadDialog from '@/components/pages/Admin/TopicItemFormPage/TopicItemForm/components/ImageUploadDialog';
 import type { PendingImageSelection } from '@/types/topicItemForm';
@@ -33,6 +33,8 @@ const ImageUploadField = ({
   onSelectImage,
   uniqueSuffix,
 }: ImageUploadFieldProps) => {
+  const directFileInputRef = useRef<HTMLInputElement | null>(null);
+  const directSelectionUniqueSuffixRef = useRef<string | null>(null);
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const [draftUniqueSuffix, setDraftUniqueSuffix] = useState(() => createImageFileUniqueSuffix());
   const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
@@ -54,6 +56,25 @@ const ImageUploadField = ({
     mode === 'edit' &&
     !existingSelection &&
     (!existingImageUrl || failedImageUrl === existingImageUrl);
+  const hasUploadedImage = Boolean(existingSelection || showExistingImage);
+
+  const handleDirectFileChange = (file: File | null) => {
+    if (!file) {
+      directSelectionUniqueSuffixRef.current = null;
+      return;
+    }
+
+    onSelectImage({
+      file,
+      uniqueSuffix: directSelectionUniqueSuffixRef.current ?? activeUniqueSuffix,
+    });
+
+    if (directFileInputRef.current) {
+      directFileInputRef.current.value = '';
+    }
+
+    directSelectionUniqueSuffixRef.current = null;
+  };
 
   return (
     <>
@@ -82,6 +103,19 @@ const ImageUploadField = ({
           variant="contained"
           disabled={!isReadyForUpload}
           onClick={() => {
+            if (!hasUploadedImage) {
+              const nextUniqueSuffix = createImageFileUniqueSuffix();
+              setDraftUniqueSuffix(nextUniqueSuffix);
+              directSelectionUniqueSuffixRef.current = nextUniqueSuffix;
+
+              if (directFileInputRef.current) {
+                directFileInputRef.current.value = '';
+              }
+
+              directFileInputRef.current?.click();
+              return;
+            }
+
             if (!existingSelection) {
               setDraftUniqueSuffix(createImageFileUniqueSuffix());
             }
@@ -189,6 +223,17 @@ const ImageUploadField = ({
             )}
           </Box>
         ) : null}
+
+        <input
+          ref={directFileInputRef}
+          data-testid="direct-image-upload-input"
+          type="file"
+          accept="image/*"
+          hidden
+          onChange={(event) => {
+            handleDirectFileChange(event.target.files?.[0] ?? null);
+          }}
+        />
       </Box>
 
       <ImageUploadDialog

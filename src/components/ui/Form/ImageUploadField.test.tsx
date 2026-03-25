@@ -5,9 +5,14 @@ import type { TopicField } from '@/types/topics';
 
 import ImageUploadField from './ImageUploadField';
 
-vi.mock('../../pages/Admin/TopicPage/TopicItemForm/components/ImageUploadDialog', () => ({
-  default: () => null,
-}));
+const imageUploadDialogMock = vi.fn(() => null);
+
+vi.mock(
+  '@/components/pages/Admin/TopicItemFormPage/TopicItemForm/components/ImageUploadDialog',
+  () => ({
+    default: (props: unknown) => imageUploadDialogMock(props),
+  }),
+);
 
 vi.mock('../../../data/storage', () => ({
   createImageFileUniqueSuffix: () => 'unique1234',
@@ -30,6 +35,77 @@ const field: Extract<TopicField, { type: 'imageUpload' }> = {
 };
 
 describe('ImageUploadField', () => {
+  it('opens the native file chooser directly when there is no image yet', () => {
+    const clickMock = vi.fn();
+    const onSelectImage = vi.fn();
+
+    vi.spyOn(HTMLInputElement.prototype, 'click').mockImplementation(clickMock);
+
+    render(
+      <ImageUploadField
+        field={field}
+        fileNameParts={['Pablo Picasso']}
+        isReadyForUpload
+        onSelectImage={onSelectImage}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Upload image' }));
+
+    expect(clickMock).toHaveBeenCalledTimes(1);
+    expect(imageUploadDialogMock).toHaveBeenLastCalledWith(
+      expect.objectContaining({ open: false }),
+    );
+    expect(onSelectImage).not.toHaveBeenCalled();
+  });
+
+  it('uses the directly selected file without opening the dialog first', () => {
+    const onSelectImage = vi.fn();
+
+    render(
+      <ImageUploadField
+        field={field}
+        fileNameParts={['Pablo Picasso']}
+        isReadyForUpload
+        onSelectImage={onSelectImage}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Upload image' }));
+    fireEvent.change(screen.getByTestId('direct-image-upload-input'), {
+      target: {
+        files: [new File(['image'], 'picasso.jpg', { type: 'image/jpeg' })],
+      },
+    });
+
+    expect(onSelectImage).toHaveBeenCalledWith({
+      file: expect.any(File),
+      uniqueSuffix: 'unique1234',
+    });
+    expect(imageUploadDialogMock).toHaveBeenLastCalledWith(
+      expect.objectContaining({ open: false }),
+    );
+  });
+
+  it('keeps opening the dialog when an image already exists', () => {
+    render(
+      <ImageUploadField
+        existingImageUrl="https://example.com/existing.jpg"
+        field={field}
+        fileNameParts={['Pablo Picasso']}
+        isReadyForUpload
+        mode="edit"
+        onSelectImage={vi.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Upload image' }));
+
+    expect(imageUploadDialogMock).toHaveBeenLastCalledWith(
+      expect.objectContaining({ open: true }),
+    );
+  });
+
   it('shows the fixed helper text while upload is blocked', () => {
     render(
       <ImageUploadField
