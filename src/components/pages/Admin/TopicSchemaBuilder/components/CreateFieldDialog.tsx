@@ -4,7 +4,7 @@ import {
   useTopicSchemaBuilderActions,
   useTopicSchemaBuilderState,
 } from '../context/useTopicSchemaBuilderContext';
-import FieldDialog from './FieldDialog';
+import FieldDialog from './FieldDialog/FieldDialog';
 
 const CreateFieldDialog = () => {
   const {

@@ -1,4 +1,4 @@
-import FieldDialog from './FieldDialog';
+import FieldDialog from './FieldDialog/FieldDialog';
 import {
   useTopicSchemaBuilderActions,
   useTopicSchemaBuilderState,
@@ -31,7 +31,7 @@ const EditFieldDialog = () => {
       key={`edit-${isEditFieldDialogOpen ? 'open' : 'closed'}-${
         selectedFieldIndex === 'fixed-image-upload'
           ? 'fixed-image-upload'
-          : selectedFieldIndex ?? 'none'
+          : (selectedFieldIndex ?? 'none')
       }`}
       canSubmit
       availableFileNameFieldOptions={selectedFieldFileNameFieldOptions}
