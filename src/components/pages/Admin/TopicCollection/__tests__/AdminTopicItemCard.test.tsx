@@ -225,4 +225,51 @@ describe('AdminTopicItemCard UI', () => {
       screen.getByText((_, element) => element?.textContent === 'Önarckép: x'),
     ).toBeInTheDocument();
   });
+
+  it('omits subtitle fallback when no subtitle display field is configured and shows meta directly under the title', () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { gcTime: Infinity, retry: false },
+      },
+    });
+
+    const metaOnlyFields: TopicField[] = [
+      { key: 'title', label: 'Title', required: true, type: 'string', display: 'title' },
+      { key: 'era', label: 'Era', type: 'string', display: 'meta' },
+      { key: 'artist', label: 'Artist', type: 'string' },
+    ];
+
+    const metaOnlyItem: TopicItem = {
+      artist: 'Leonardo da Vinci',
+      era: 'Reneszánsz',
+      id: 'item-1',
+      title: 'Mona Lisa',
+    };
+
+    queryClient.setQueryData(QUERY_KEYS.ITEMS.byTopic('art'), [metaOnlyItem]);
+    queryClient.setQueryData(QUERY_KEYS.ITEMS.detail('art', metaOnlyItem.id), metaOnlyItem);
+
+    const { container } = render(
+      <QueryClientProvider client={queryClient}>
+        <ThemePresetProvider>
+          <CssBaseline />
+          <SnackbarProvider maxSnack={3}>
+            <AdminTopicItemCard
+              collectionName="art"
+              fields={metaOnlyFields}
+              item={metaOnlyItem}
+              topicId="art-topic"
+            />
+          </SnackbarProvider>
+        </ThemePresetProvider>
+      </QueryClientProvider>,
+    );
+
+    expect(screen.getByText('Mona Lisa')).toBeInTheDocument();
+    expect(screen.getByText('Reneszánsz')).toBeInTheDocument();
+    expect(screen.queryByText('Leonardo da Vinci')).not.toBeInTheDocument();
+
+    const body2Elements = container.querySelectorAll('.MuiTypography-body2');
+    expect(body2Elements).toHaveLength(0);
+  });
 });

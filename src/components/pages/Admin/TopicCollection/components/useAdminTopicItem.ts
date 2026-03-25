@@ -101,14 +101,6 @@ const getFallbackTitle = (item: TopicItem) => {
   return fallbackValue?.text ?? item.id;
 };
 
-const getFallbackSubtitle = (item: TopicItem) => {
-  return [item.artist, item.year]
-    .map((value) => getDisplayValue({ key: '', label: '', type: 'string' }, value))
-    .filter((value): value is DisplayValue => value !== null)
-    .map((value) => value.text)
-    .join(' - ');
-};
-
 const getImagePathsToDelete = ({
   fields,
   item,
@@ -148,8 +140,8 @@ export const useAdminTopicItem = ({
   const metaValues = getValuesByDisplay(fields, item, 'meta');
 
   const title = titleValues[0]?.text ?? getFallbackTitle(item);
-  const subtitleText = subtitleValues.length ? joinDisplayValueTexts(subtitleValues) : getFallbackSubtitle(item);
-  const subtitle = subtitleValues.length ? joinDisplayValueNodes(subtitleValues) : subtitleText;
+  const subtitleText = subtitleValues.length ? joinDisplayValueTexts(subtitleValues) : '';
+  const subtitle = subtitleValues.length ? joinDisplayValueNodes(subtitleValues) : undefined;
   const metaText = joinDisplayValueTexts(metaValues);
   const meta = metaValues.length ? joinDisplayValueNodes(metaValues) : undefined;
   const imagePathsToDelete = getImagePathsToDelete({ fields, item });
