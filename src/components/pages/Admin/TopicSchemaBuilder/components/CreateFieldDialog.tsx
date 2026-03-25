@@ -1,8 +1,10 @@
-import FieldDialog from './FieldDialog';
+import type { TopicFieldDraft } from '@/types/topicSchema';
+
 import {
   useTopicSchemaBuilderActions,
   useTopicSchemaBuilderState,
 } from '../context/useTopicSchemaBuilderContext';
+import FieldDialog from './FieldDialog';
 
 const CreateFieldDialog = () => {
   const {
@@ -14,12 +16,8 @@ const CreateFieldDialog = () => {
     newFieldFileNameFieldOptions,
     newFieldIndex,
   } = useTopicSchemaBuilderState();
-  const {
-    getSelectOptionsText,
-    handleAddField,
-    handleCloseAddFieldDialog,
-    setNewFieldDraft,
-  } = useTopicSchemaBuilderActions();
+  const { getSelectOptionsText, handleAddField, handleCloseAddFieldDialog, setNewFieldDraft } =
+    useTopicSchemaBuilderActions();
 
   return (
     <FieldDialog
@@ -31,7 +29,9 @@ const CreateFieldDialog = () => {
       mode="create"
       availableFileNameFieldOptions={newFieldFileNameFieldOptions}
       availableDistractorSourceFieldOptions={newFieldDistractorSourceFieldOptions}
-      onChange={(updater) => setNewFieldDraft((currentField) => updater(currentField))}
+      onChange={(updater) =>
+        setNewFieldDraft((currentField: TopicFieldDraft) => updater(currentField))
+      }
       onClose={handleCloseAddFieldDialog}
       onSubmit={handleAddField}
       optionsText={getSelectOptionsText(newFieldDraft.options)}
