@@ -409,6 +409,47 @@ describe('TopicItemForm saving', () => {
     expect(navigateMock).not.toHaveBeenCalled();
   });
 
+  it('clears create form values and pending image when undo is clicked', async () => {
+    const user = userEvent.setup();
+    const fields: TopicField[] = [
+      { key: 'artist', label: 'Artist', required: true, type: 'string' },
+      { key: 'title', label: 'Title', required: true, type: 'string' },
+      {
+        buttonLabel: 'Upload after artist and title',
+        fileNameFields: ['artist', 'title'],
+        key: 'image_upload',
+        label: 'Upload image',
+        targetFields: {
+          desktop: 'image_url_desktop',
+          mobile: 'image_url_mobile',
+        },
+        type: 'imageUpload',
+      },
+    ];
+
+    render(
+      <TopicItemForm collectionName="art" fields={fields} storagePrefix="art" topicId="art" />,
+    );
+
+    expect(screen.getByRole('button', { name: 'Visszaállítás' })).toBeDisabled();
+
+    await user.type(screen.getByTestId('form-input-artist'), 'Leonardo da Vinci');
+    await user.type(screen.getByTestId('form-input-title'), 'Mona Lisa');
+    await user.click(screen.getByTestId('mock-image-upload-button'));
+
+    expect(screen.getByRole('button', { name: 'Visszaállítás' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Mentés' })).toBeEnabled();
+    expect(screen.getByText('Feltöltésre váró kép')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Visszaállítás' }));
+
+    expect(screen.getByTestId('form-input-artist')).toHaveValue('');
+    expect(screen.getByTestId('form-input-title')).toHaveValue('');
+    expect(screen.queryByText('Feltöltésre váró kép')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Visszaállítás' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Mentés' })).toBeDisabled();
+  });
+
   it('shows hideInEdit fields on create but hides them on edit', () => {
     const fields: TopicField[] = [
       { key: 'artist', label: 'Artist', required: true, type: 'string' },

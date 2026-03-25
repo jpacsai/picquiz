@@ -163,16 +163,14 @@ const TopicItemFormView = ({
                     </IconButton>
                   ) : null}
 
-                  {mode === 'edit' ? (
-                    <Button
-                      type="button"
-                      variant="outlined"
-                      disabled={isSubmitting || !isActionEnabled}
-                      onClick={onUndo}
-                    >
-                      Visszaállítás
-                    </Button>
-                  ) : null}
+                  <Button
+                    type="button"
+                    variant="outlined"
+                    disabled={isSubmitting || !isActionEnabled}
+                    onClick={onUndo}
+                  >
+                    Visszaállítás
+                  </Button>
 
                   <Button
                     type="submit"
