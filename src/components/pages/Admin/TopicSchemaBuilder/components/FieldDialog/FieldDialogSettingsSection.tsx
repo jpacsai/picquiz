@@ -1,4 +1,4 @@
-import { Box, Checkbox, FormControlLabel } from '@mui/material';
+import { Box, Checkbox, FormControlLabel, MenuItem, TextField } from '@mui/material';
 
 import type { TopicFieldDraft } from '@/types/topicSchema';
 
@@ -17,6 +17,28 @@ const FieldDialogSettingsSection = ({
 
   return (
     <Box sx={{ mt: 0.5 }}>
+      <TextField
+        select
+        label="Card display"
+        value={field.display ?? ''}
+        onChange={(event) => {
+          const nextValue = event.target.value as NonNullable<TopicFieldDraft['display']> | '';
+
+          onChange((currentField) => ({
+            ...currentField,
+            display: nextValue === '' ? undefined : nextValue,
+          }));
+        }}
+        fullWidth
+        margin="normal"
+        helperText="Beallitja, hogy ez a mezo hol jelenjen meg az admin lista item kartyan."
+      >
+        <MenuItem value="">No special display</MenuItem>
+        <MenuItem value="title">Title</MenuItem>
+        <MenuItem value="subtitle">Subtitle</MenuItem>
+        <MenuItem value="meta">Meta</MenuItem>
+      </TextField>
+
       <FormControlLabel
         control={
           <Checkbox

@@ -230,6 +230,59 @@ describe('TopicSchemaBuilderPage', () => {
     });
   });
 
+  it('persists card display roles for fields in the schema', async () => {
+    const user = userEvent.setup();
+
+    render(<TopicSchemaBuilderPage mode="create" />);
+
+    await user.type(screen.getByLabelText('Topic ID'), 'portrait');
+    await user.type(screen.getByLabelText('Label'), 'Portrek');
+    await user.type(screen.getByLabelText('Slug'), 'portrait');
+    await user.type(screen.getByLabelText('Storage prefix'), 'portrait');
+
+    await user.click(screen.getByRole('button', { name: 'Uj field' }));
+    await user.type(screen.getByLabelText('Field label'), 'Name');
+    await user.type(screen.getByLabelText('Field key'), 'name');
+    await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText('Name'));
+
+    const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+
+    await user.click(within(editDialog).getByRole('combobox', { name: 'Card display' }));
+    await user.click(screen.getByRole('option', { name: 'Title' }));
+    await user.click(within(editDialog).getByRole('button', { name: 'Kesz' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Schema letrehozasa' }));
+
+    await waitFor(() => {
+      expect(createTopicMock).toHaveBeenCalledWith({
+        topicId: 'portrait',
+        values: {
+          fields: [
+            expect.objectContaining({
+              display: 'title',
+              key: 'name',
+              label: 'Name',
+              type: 'string',
+            }),
+          ],
+          label: 'Portrek',
+          slug: 'portrait',
+          storage_prefix: 'portrait',
+        },
+      });
+    });
+  });
+
   it('shows an error toast when schema save fails', async () => {
     const user = userEvent.setup();
 
