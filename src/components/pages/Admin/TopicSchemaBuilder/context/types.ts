@@ -23,12 +23,16 @@ export type TopicSchemaBuilderStateValue = {
     value: string;
   }[];
   mode: TopicSchemaBuilderPageProps['mode'];
+  newFieldAutocompleteCopyFieldOptions: Array<{ key: string; label: string }>;
+  newFieldAutocompleteMatchFieldOptions: Array<{ key: string; label: string }>;
   newFieldDistractorSourceFieldOptions: Array<{ key: string; label: string }>;
   newFieldDraft: TopicFieldDraft;
   newFieldErrorsByPath: Map<string, string>;
   newFieldFileNameFieldOptions: Array<{ key: string; label: string }>;
   newFieldIndex: number;
   selectedField: TopicFieldDraft | null;
+  selectedFieldAutocompleteCopyFieldOptions: Array<{ key: string; label: string }>;
+  selectedFieldAutocompleteMatchFieldOptions: Array<{ key: string; label: string }>;
   selectedFieldDistractorSourceFieldOptions: Array<{ key: string; label: string }>;
   selectedFieldFileNameFieldOptions: Array<{ key: string; label: string }>;
   selectedFieldIndex: SelectedFieldIndex;

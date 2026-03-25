@@ -341,6 +341,94 @@ export const getAutocompleteOptionsByField = ({
     };
   }, {});
 
+const isEmptyFormValue = (value: unknown) =>
+  value === undefined || (typeof value === 'string' && value.trim().length === 0);
+
+export const resolveAutocompleteCopyValues = ({
+  field,
+  items,
+  mode,
+  values,
+}: {
+  field: Extract<TopicField, { type: 'string' }>;
+  items: ReadonlyArray<TopicItem>;
+  mode: FormMode;
+  values: FormValues;
+}): {
+  updates: Record<string, string | number | boolean>;
+  warning?: string;
+} => {
+  if (mode !== 'create' || !field.autocomplete) {
+    return { updates: {} };
+  }
+
+  const matchFieldKey = field.autocompleteMatchField?.trim();
+  const copyFieldKeys = (field.autocompleteCopyFields ?? [])
+    .map((fieldKey) => fieldKey.trim())
+    .filter(Boolean);
+  const selectedValue = values[field.key];
+  const normalizedSelectedValue =
+    typeof selectedValue === 'string' ? selectedValue.trim() : '';
+
+  if (!matchFieldKey || !copyFieldKeys.length || !normalizedSelectedValue) {
+    return { updates: {} };
+  }
+
+  const matchingItems = items.filter((item) => {
+    const matchValue = item[matchFieldKey];
+
+    return typeof matchValue === 'string' && matchValue.trim() === normalizedSelectedValue;
+  });
+
+  if (matchingItems.length > 1) {
+    return {
+      updates: {},
+      warning: `Több meglévő elem is egyezik a(z) "${normalizedSelectedValue}" értékkel, ezért az automatikus másolás most kimaradt.`,
+    };
+  }
+
+  if (matchingItems.length !== 1) {
+    return { updates: {} };
+  }
+
+  const sourceItem = matchingItems[0];
+
+  const updates = copyFieldKeys.reduce<Record<string, string | number | boolean>>(
+    (acc, copyFieldKey) => {
+      if (!isEmptyFormValue(values[copyFieldKey])) {
+        return acc;
+      }
+
+      const sourceValue = sourceItem[copyFieldKey];
+
+      if (typeof sourceValue === 'string') {
+        const trimmedValue = sourceValue.trim();
+
+        if (!trimmedValue) {
+          return acc;
+        }
+
+        return {
+          ...acc,
+          [copyFieldKey]: trimmedValue,
+        };
+      }
+
+      if (typeof sourceValue === 'number' || typeof sourceValue === 'boolean') {
+        return {
+          ...acc,
+          [copyFieldKey]: sourceValue,
+        };
+      }
+
+      return acc;
+    },
+    {},
+  );
+
+  return { updates };
+};
+
 export const getPersistableValue = ({
   fields,
   values,

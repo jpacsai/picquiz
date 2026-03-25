@@ -51,6 +51,8 @@ type BaseTopicField = {
 
 export type TopicField =
   | (BaseTopicField & {
+      autocompleteCopyFields?: string[];
+      autocompleteMatchField?: string;
       type: 'string';
     })
   | (BaseTopicField & {

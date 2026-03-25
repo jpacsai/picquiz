@@ -65,6 +65,7 @@ const AdminTopicItemFormPage = ({
         initialValues={initialValues}
         isRefreshingSelectOptions={isRefreshingSelectOptions}
         itemId={item?.id}
+        items={items}
         mode={mode}
         onRefreshSelectOptions={handleRefreshSelectOptions}
         storagePrefix={topic.storage_prefix}

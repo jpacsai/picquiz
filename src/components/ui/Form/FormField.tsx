@@ -24,14 +24,19 @@ import FormSelect from './FormSelect';
 import ImageUploadField from './ImageUploadField';
 
 type FormFieldProps = {
-  fields: TopicField[];
   derivationIndex: Record<string, FormDeriveField>;
+  fields: TopicField[];
   field: TopicField;
   form: FormFieldFormApi;
+  formValues: Record<string, string | number | boolean>;
   autocompleteOptions?: string[];
+  mode: FormMode;
+  onAutocompleteCopy: (params: {
+    field: Extract<TopicField, { type: 'string' }>;
+    values: Record<string, string | number | boolean>;
+  }) => void;
   onSelectPendingImage: (selection: PendingImageSelectionInput) => void;
   pendingImageSelection?: PendingImageSelection | null;
-  mode: FormMode;
 };
 
 const renderPendingDerivedField = (key: string) => (
@@ -68,8 +73,10 @@ const FormField = ({
   derivationIndex,
   field,
   form,
+  formValues,
   autocompleteOptions,
   mode,
+  onAutocompleteCopy,
   onSelectPendingImage,
   pendingImageSelection,
 }: FormFieldProps) => {
@@ -135,9 +142,21 @@ const FormField = ({
 
                   const derivedField = derivationIndex[fieldKey];
                   const derivedValue = getDerivedValue(derivedField, nextValue);
+                  const nextFormValues = {
+                    ...formValues,
+                    [fieldKey]: nextValue,
+                  };
 
                   if (derivedField?.fn?.target && derivedValue !== undefined) {
                     form.setFieldValue(derivedField.fn.target, derivedValue);
+                    nextFormValues[derivedField.fn.target] = derivedValue;
+                  }
+
+                  if (type === 'string' && field.autocomplete) {
+                    onAutocompleteCopy({
+                      field,
+                      values: nextFormValues,
+                    });
                   }
                 }}
                 errorMessage={typeof errorMessage === 'string' ? errorMessage : undefined}

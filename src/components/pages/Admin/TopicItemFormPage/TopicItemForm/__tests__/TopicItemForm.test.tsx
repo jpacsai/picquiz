@@ -464,6 +464,118 @@ describe('TopicItemForm saving', () => {
     expect(screen.getByRole('textbox', { name: 'Title' })).toBe(screen.getByTestId('form-input-title'));
   });
 
+  it('copies configured fields from a unique autocomplete match into empty target fields', async () => {
+    const user = userEvent.setup();
+    const fields: TopicField[] = [
+      {
+        autocomplete: true,
+        autocompleteCopyFields: ['birth_year', 'death_year'],
+        autocompleteMatchField: 'artist',
+        key: 'artist',
+        label: 'Artist',
+        required: true,
+        type: 'string',
+      },
+      { key: 'birth_year', label: 'Birth year', type: 'year' },
+      { key: 'death_year', label: 'Death year', type: 'year' },
+    ];
+
+    render(
+      <TopicItemForm
+        autocompleteOptionsByField={{ artist: ['Pablo Picasso'] }}
+        collectionName="art"
+        fields={fields}
+        items={[
+          { artist: 'Pablo Picasso', birth_year: 1881, death_year: 1973, id: 'item-1' },
+        ]}
+        storagePrefix="art"
+        topicId="art"
+      />,
+    );
+
+    await user.type(screen.getByTestId('form-input-artist'), 'Pablo Picasso');
+
+    expect(screen.getByTestId('form-input-birth_year')).toHaveValue(1881);
+    expect(screen.getByTestId('form-input-death_year')).toHaveValue(1973);
+  });
+
+  it('does not overwrite manually filled fields during autocomplete copy', async () => {
+    const user = userEvent.setup();
+    const fields: TopicField[] = [
+      {
+        autocomplete: true,
+        autocompleteCopyFields: ['birth_year', 'death_year'],
+        autocompleteMatchField: 'artist',
+        key: 'artist',
+        label: 'Artist',
+        required: true,
+        type: 'string',
+      },
+      { key: 'birth_year', label: 'Birth year', type: 'year' },
+      { key: 'death_year', label: 'Death year', type: 'year' },
+    ];
+
+    render(
+      <TopicItemForm
+        autocompleteOptionsByField={{ artist: ['Pablo Picasso'] }}
+        collectionName="art"
+        fields={fields}
+        items={[
+          { artist: 'Pablo Picasso', birth_year: 1881, death_year: 1973, id: 'item-1' },
+        ]}
+        storagePrefix="art"
+        topicId="art"
+      />,
+    );
+
+    await user.type(screen.getByTestId('form-input-birth_year'), '1900');
+    await user.type(screen.getByTestId('form-input-artist'), 'Pablo Picasso');
+
+    expect(screen.getByTestId('form-input-birth_year')).toHaveValue(1900);
+    expect(screen.getByTestId('form-input-death_year')).toHaveValue(1973);
+  });
+
+  it('shows a warning instead of copying when autocomplete match is ambiguous', async () => {
+    const user = userEvent.setup();
+    const fields: TopicField[] = [
+      {
+        autocomplete: true,
+        autocompleteCopyFields: ['birth_year', 'death_year'],
+        autocompleteMatchField: 'artist',
+        key: 'artist',
+        label: 'Artist',
+        required: true,
+        type: 'string',
+      },
+      { key: 'birth_year', label: 'Birth year', type: 'year' },
+      { key: 'death_year', label: 'Death year', type: 'year' },
+    ];
+
+    render(
+      <TopicItemForm
+        autocompleteOptionsByField={{ artist: ['Pablo Picasso'] }}
+        collectionName="art"
+        fields={fields}
+        items={[
+          { artist: 'Pablo Picasso', birth_year: 1881, death_year: 1973, id: 'item-1' },
+          { artist: 'Pablo Picasso', birth_year: 1901, death_year: 1981, id: 'item-2' },
+        ]}
+        storagePrefix="art"
+        topicId="art"
+      />,
+    );
+
+    await user.type(screen.getByTestId('form-input-artist'), 'Pablo Picasso');
+
+    expect(
+      await screen.findByText(
+        'Több meglévő elem is egyezik a(z) "Pablo Picasso" értékkel, ezért az automatikus másolás most kimaradt.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId('form-input-birth_year')).toHaveValue(null);
+    expect(screen.getByTestId('form-input-death_year')).toHaveValue(null);
+  });
+
   it('prefills edit values, hides image upload system fields, and updates an item', async () => {
     const user = userEvent.setup();
     const desktopBlob = new Blob(['desktop'], { type: 'image/jpeg' });

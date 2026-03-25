@@ -106,6 +106,44 @@ export const getAvailableDistractorSourceFieldOptions = ({
       label: field.label?.trim() || field.key!.trim(),
     }));
 
+export const getAvailableAutocompleteMatchFieldOptions = ({
+  fields,
+}: {
+  fields: TopicDraft['fields'];
+}) =>
+  fields
+    .filter(
+      (field) =>
+        field.type === 'string' &&
+        field.required &&
+        typeof field.key === 'string' &&
+        field.key.trim().length > 0,
+    )
+    .map((field) => ({
+      key: field.key!.trim(),
+      label: field.label?.trim() || field.key!.trim(),
+    }));
+
+export const getAvailableAutocompleteCopyFieldOptions = ({
+  currentFieldKey,
+  fields,
+}: {
+  currentFieldKey?: string;
+  fields: TopicDraft['fields'];
+}) =>
+  fields
+    .filter(
+      (field) =>
+        field.type !== 'imageUpload' &&
+        typeof field.key === 'string' &&
+        field.key.trim().length > 0 &&
+        field.key !== currentFieldKey,
+    )
+    .map((field) => ({
+      key: field.key!.trim(),
+      label: field.label?.trim() || field.key!.trim(),
+    }));
+
 export const getSelectOptionsText = (options: string[] | undefined) => (options ?? []).join(', ');
 
 export const isIgnoredCreateImageUploadError = (path: string, fieldIndex: number) =>

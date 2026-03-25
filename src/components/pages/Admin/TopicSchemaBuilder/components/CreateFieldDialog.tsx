@@ -10,6 +10,8 @@ const CreateFieldDialog = () => {
   const {
     canAddField,
     isAddFieldDialogOpen,
+    newFieldAutocompleteCopyFieldOptions,
+    newFieldAutocompleteMatchFieldOptions,
     newFieldDistractorSourceFieldOptions,
     newFieldDraft,
     newFieldErrorsByPath,
@@ -27,6 +29,8 @@ const CreateFieldDialog = () => {
       field={newFieldDraft}
       isOpen={isAddFieldDialogOpen}
       mode="create"
+      availableAutocompleteCopyFieldOptions={newFieldAutocompleteCopyFieldOptions}
+      availableAutocompleteMatchFieldOptions={newFieldAutocompleteMatchFieldOptions}
       availableFileNameFieldOptions={newFieldFileNameFieldOptions}
       availableDistractorSourceFieldOptions={newFieldDistractorSourceFieldOptions}
       onChange={(updater) =>

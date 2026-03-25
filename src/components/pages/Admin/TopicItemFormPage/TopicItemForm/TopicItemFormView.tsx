@@ -11,6 +11,7 @@ import type { FormMode, UseTopicItemFormResult } from '@/types/topicItemForm';
 import type { TopicField } from '@/types/topics';
 
 type TopicItemFormViewProps = {
+  autocompleteCopyWarning: string;
   autocompleteOptionsByField?: Record<string, string[]>;
   derivationIndex: UseTopicItemFormResult['derivationIndex'];
   fields: TopicField[];
@@ -18,6 +19,7 @@ type TopicItemFormViewProps = {
   isRefreshingSelectOptions?: boolean;
   isSubmitting: boolean;
   mode: FormMode;
+  onAutocompleteCopy: UseTopicItemFormResult['handleAutocompleteCopy'];
   onRefreshSelectOptions?: () => void;
   onSelectPendingImage: UseTopicItemFormResult['handleSelectPendingImage'];
   onUndo: UseTopicItemFormResult['handleUndo'];
@@ -26,6 +28,7 @@ type TopicItemFormViewProps = {
 };
 
 const TopicItemFormView = ({
+  autocompleteCopyWarning,
   autocompleteOptionsByField,
   derivationIndex,
   fields,
@@ -33,6 +36,7 @@ const TopicItemFormView = ({
   isRefreshingSelectOptions = false,
   isSubmitting,
   mode,
+  onAutocompleteCopy,
   onSelectPendingImage,
   onRefreshSelectOptions,
   onUndo,
@@ -66,30 +70,36 @@ const TopicItemFormView = ({
         void form.handleSubmit();
       }}
     >
-      <Box
-        sx={{
-          alignItems: 'end',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: '20px',
-          marginBottom: '30px',
-        }}
-        data-testid="topic-item-form-fields-container"
-      >
-        {visibleFields.map((field) => (
-          <FormField
-            key={field.key}
-            autocompleteOptions={autocompleteOptionsByField?.[field.key]}
-            fields={fields}
-            field={field}
-            form={form}
-            derivationIndex={derivationIndex}
-            mode={mode}
-            pendingImageSelection={pendingImageSelection}
-            onSelectPendingImage={onSelectPendingImage}
-          />
-        ))}
-      </Box>
+      <form.Subscribe selector={(state: { values: Record<string, string | number | boolean> }) => state.values}>
+        {(formValues: Record<string, string | number | boolean>) => (
+          <Box
+            sx={{
+              alignItems: 'end',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '20px',
+              marginBottom: '30px',
+            }}
+            data-testid="topic-item-form-fields-container"
+          >
+            {visibleFields.map((field) => (
+              <FormField
+                key={field.key}
+                autocompleteOptions={autocompleteOptionsByField?.[field.key]}
+                fields={fields}
+                field={field}
+                form={form}
+                formValues={formValues}
+                derivationIndex={derivationIndex}
+                mode={mode}
+                onAutocompleteCopy={onAutocompleteCopy}
+                pendingImageSelection={pendingImageSelection}
+                onSelectPendingImage={onSelectPendingImage}
+              />
+            ))}
+          </Box>
+        )}
+      </form.Subscribe>
 
       {pendingImageSelection ? (
         <Box
@@ -120,6 +130,12 @@ const TopicItemFormView = ({
             {pendingImageSelection.file.name}
           </Typography>
         </Box>
+      ) : null}
+
+      {autocompleteCopyWarning ? (
+        <Alert severity="warning" sx={{ marginBottom: '16px' }}>
+          {autocompleteCopyWarning}
+        </Alert>
       ) : null}
 
       {submitError ? (

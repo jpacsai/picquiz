@@ -62,9 +62,14 @@ export type FormFieldFormApi = {
 };
 
 export type UseTopicItemFormResult = {
+  autocompleteCopyWarning: string;
   derivationIndex: Record<string, FormDeriveField>;
   form: FormFieldFormApi;
   handleSelectPendingImage: (selection: PendingImageSelectionInput) => void;
+  handleAutocompleteCopy: (params: {
+    field: Extract<TopicField, { type: 'string' }>;
+    values: FormValues;
+  }) => void;
   handleUndo: () => void;
   isSubmitting: boolean;
   mode: FormMode;

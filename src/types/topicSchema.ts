@@ -2,6 +2,8 @@ import type { QuizFieldConfig, TopicField, TopicFieldFn } from '@/types/topics';
 
 type TopicFieldDraftBase = {
   autocomplete?: boolean;
+  autocompleteCopyFields?: string[];
+  autocompleteMatchField?: string;
   display?: TopicField['display'];
   hideInEdit?: boolean;
   key?: string;

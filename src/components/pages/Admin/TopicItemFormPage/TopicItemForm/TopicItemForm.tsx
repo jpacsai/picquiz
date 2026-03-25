@@ -1,5 +1,5 @@
 import type { FormMode } from '@/types/topicItemForm';
-import type { TopicField } from '@/types/topics';
+import type { TopicField, TopicItem } from '@/types/topics';
 
 import TopicItemFormView from './TopicItemFormView';
 import { useTopicItemForm } from './useTopicItemForm';
@@ -11,6 +11,7 @@ type TopicItemFormProps = {
   initialValues?: Record<string, unknown>;
   isRefreshingSelectOptions?: boolean;
   itemId?: string;
+  items?: ReadonlyArray<TopicItem>;
   mode?: FormMode;
   onRefreshSelectOptions?: () => void;
   storagePrefix: string;
@@ -24,14 +25,17 @@ const TopicItemForm = ({
   initialValues,
   isRefreshingSelectOptions = false,
   itemId,
+  items = [],
   mode = 'create',
   onRefreshSelectOptions,
   storagePrefix,
   topicId,
 }: TopicItemFormProps) => {
   const {
+    autocompleteCopyWarning,
     derivationIndex,
     form,
+    handleAutocompleteCopy,
     handleSelectPendingImage,
     handleUndo,
     isSubmitting,
@@ -42,6 +46,7 @@ const TopicItemForm = ({
     fields,
     initialValues,
     itemId,
+    items,
     mode,
     storagePrefix,
     topicId,
@@ -49,6 +54,7 @@ const TopicItemForm = ({
 
   return (
     <TopicItemFormView
+      autocompleteCopyWarning={autocompleteCopyWarning}
       autocompleteOptionsByField={autocompleteOptionsByField}
       derivationIndex={derivationIndex}
       fields={fields}
@@ -56,6 +62,7 @@ const TopicItemForm = ({
       isSubmitting={isSubmitting}
       isRefreshingSelectOptions={isRefreshingSelectOptions}
       mode={mode}
+      onAutocompleteCopy={handleAutocompleteCopy}
       onSelectPendingImage={handleSelectPendingImage}
       onRefreshSelectOptions={onRefreshSelectOptions}
       onUndo={handleUndo}

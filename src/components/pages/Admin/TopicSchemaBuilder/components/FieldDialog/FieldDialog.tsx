@@ -11,6 +11,8 @@ import FieldDialogSettingsSection from './FieldDialogSettingsSection';
 import FieldDialogYearSection from './FieldDialogYearSection';
 
 type FieldDialogProps = {
+  availableAutocompleteCopyFieldOptions: Array<{ key: string; label: string }>;
+  availableAutocompleteMatchFieldOptions: Array<{ key: string; label: string }>;
   availableFileNameFieldOptions: Array<{ key: string; label: string }>;
   availableDistractorSourceFieldOptions: Array<{ key: string; label: string }>;
   canSubmit: boolean;
@@ -27,6 +29,8 @@ type FieldDialogProps = {
 };
 
 const FieldDialog = ({
+  availableAutocompleteCopyFieldOptions,
+  availableAutocompleteMatchFieldOptions,
   availableFileNameFieldOptions,
   availableDistractorSourceFieldOptions,
   canSubmit,
@@ -85,7 +89,12 @@ const FieldDialog = ({
           pathPrefix={pathPrefix}
         />
 
-        <FieldDialogSettingsSection field={field} onChange={onChange} />
+        <FieldDialogSettingsSection
+          availableAutocompleteCopyFieldOptions={availableAutocompleteCopyFieldOptions}
+          availableAutocompleteMatchFieldOptions={availableAutocompleteMatchFieldOptions}
+          field={field}
+          onChange={onChange}
+        />
       </DialogContent>
 
       <DialogActions>

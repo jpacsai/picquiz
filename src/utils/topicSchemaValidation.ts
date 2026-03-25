@@ -250,6 +250,80 @@ const validateField = ({
     }
   }
 
+  if (field.type === 'string') {
+    const autocompleteCopyFields = (field.autocompleteCopyFields ?? [])
+      .map((fieldKey) => fieldKey.trim())
+      .filter(Boolean);
+    const autocompleteMatchField = field.autocompleteMatchField?.trim();
+
+    if ((autocompleteMatchField || autocompleteCopyFields.length) && !field.autocomplete) {
+      issues.push(
+        createIssue({
+          message: 'Autocomplete copy settings require autocomplete to be enabled.',
+          path: `${fieldPath}.autocomplete`,
+          severity: 'error',
+        }),
+      );
+    }
+
+    if (field.autocomplete && autocompleteCopyFields.length && !autocompleteMatchField) {
+      issues.push(
+        createIssue({
+          message: 'Autocomplete copy fields require a match field.',
+          path: `${fieldPath}.autocompleteMatchField`,
+          severity: 'error',
+        }),
+      );
+    }
+
+    if (autocompleteMatchField) {
+      const referencedMatchField = fields.find(
+        (candidateField) => candidateField.key?.trim() === autocompleteMatchField,
+      );
+
+      if (
+        !referencedMatchField ||
+        referencedMatchField.type !== 'string' ||
+        !referencedMatchField.required
+      ) {
+        issues.push(
+          createIssue({
+            message: 'Autocomplete match field must reference an existing required string field.',
+            path: `${fieldPath}.autocompleteMatchField`,
+            severity: 'error',
+          }),
+        );
+      }
+    }
+
+    autocompleteCopyFields.forEach((copyFieldKey) => {
+      if (field.key?.trim() === copyFieldKey) {
+        issues.push(
+          createIssue({
+            message: 'Autocomplete copy fields cannot include the source field itself.',
+            path: `${fieldPath}.autocompleteCopyFields`,
+            severity: 'error',
+          }),
+        );
+        return;
+      }
+
+      const referencedCopyField = fields.find(
+        (candidateField) => candidateField.key?.trim() === copyFieldKey,
+      );
+
+      if (!referencedCopyField || referencedCopyField.type === 'imageUpload') {
+        issues.push(
+          createIssue({
+            message: 'Autocomplete copy fields must reference existing non-image fields.',
+            path: `${fieldPath}.autocompleteCopyFields`,
+            severity: 'error',
+          }),
+        );
+      }
+    });
+  }
+
   if (field.type === 'year' || field.type === 'yearRange') {
     if (field.min !== undefined && Number.isNaN(field.min)) {
       issues.push(

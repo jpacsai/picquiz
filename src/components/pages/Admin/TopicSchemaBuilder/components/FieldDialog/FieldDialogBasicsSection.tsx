@@ -105,6 +105,13 @@ const FieldDialogBasicsSection = ({
                   fileNameFields: undefined,
                   targetFields: undefined,
                 }),
+            ...(nextValue === 'string'
+              ? {}
+              : {
+                  autocomplete: undefined,
+                  autocompleteCopyFields: undefined,
+                  autocompleteMatchField: undefined,
+                }),
           }));
         }}
         fullWidth

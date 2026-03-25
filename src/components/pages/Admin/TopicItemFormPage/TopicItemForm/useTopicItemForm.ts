@@ -10,16 +10,18 @@ import { useEffect, useState } from 'react';
 
 import type {
   FormFieldFormApi,
+  FormValues,
   FormMode,
   PendingImageSelection,
   UseTopicItemFormResult,
 } from '@/types/topicItemForm';
-import type { TopicField, TopicItemValues } from '@/types/topics';
+import type { TopicField, TopicItem, TopicItemValues } from '@/types/topics';
 
 import {
   getDerivationIndex,
   getInitialValues,
   getPersistableValue,
+  resolveAutocompleteCopyValues,
   resolveSubmittedValues,
   syncUpdatedItemCache,
   validateImageUploads,
@@ -30,6 +32,7 @@ type UseTopicItemFormParams = {
   fields: TopicField[];
   initialValues?: Record<string, unknown>;
   itemId?: string;
+  items: ReadonlyArray<TopicItem>;
   mode?: FormMode;
   storagePrefix: string;
   topicId: string;
@@ -74,6 +77,7 @@ export const useTopicItemForm = ({
   fields,
   initialValues,
   itemId,
+  items,
   mode = 'create',
   storagePrefix,
   topicId,
@@ -83,6 +87,7 @@ export const useTopicItemForm = ({
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [submitError, setSubmitError] = useState('');
+  const [autocompleteCopyWarning, setAutocompleteCopyWarning] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pendingImageSelection, setPendingImageSelection] = useState<PendingImageSelection | null>(
     null,
@@ -212,19 +217,43 @@ export const useTopicItemForm = ({
     });
   };
 
+  const handleAutocompleteCopy = ({
+    field,
+    values,
+  }: {
+    field: Extract<TopicField, { type: 'string' }>;
+    values: FormValues;
+  }) => {
+    const { updates, warning } = resolveAutocompleteCopyValues({
+      field,
+      items,
+      mode,
+      values,
+    });
+
+    setAutocompleteCopyWarning(warning ?? '');
+
+    Object.entries(updates).forEach(([targetField, targetValue]) => {
+      form.setFieldValue(targetField, targetValue);
+    });
+  };
+
   const handleUndo = () => {
     if (pendingImageSelection?.previewUrl) {
       URL.revokeObjectURL(pendingImageSelection.previewUrl);
     }
 
+    setAutocompleteCopyWarning('');
     setPendingImageSelection(null);
     setSubmitError('');
     form.reset();
   };
 
   return {
+    autocompleteCopyWarning,
     derivationIndex,
     form: form as FormFieldFormApi,
+    handleAutocompleteCopy,
     handleSelectPendingImage,
     handleUndo,
     isSubmitting,
