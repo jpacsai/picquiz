@@ -448,6 +448,36 @@ describe('TopicSchemaBuilderPage', () => {
     expect(screen.getByText('#1 | key: era | type: select')).toBeInTheDocument();
   });
 
+  it('hides distractor type for select quiz fields', async () => {
+    const user = userEvent.setup();
+
+    render(<TopicSchemaBuilderPage mode="create" />);
+
+    await user.click(screen.getByRole('button', { name: 'Uj field' }));
+    await user.type(screen.getByLabelText('Field label'), 'Korszak');
+    await user.type(screen.getByLabelText('Field key'), 'era');
+    await user.click(screen.getByRole('combobox', { name: 'Field type' }));
+    await user.click(screen.getByRole('option', { name: 'Select' }));
+
+    fireEvent.change(screen.getByLabelText('Select opciok'), {
+      target: { value: 'Barokk, Reneszansz' },
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText('Korszak'));
+
+    const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+
+    await user.click(within(editDialog).getByRole('checkbox', { name: 'Quiz enabled' }));
+
+    expect(within(editDialog).queryByRole('combobox', { name: 'Distractor type' })).not.toBeInTheDocument();
+  });
+
   it('allows enabling quiz and editing the quiz prompt for eligible fields', async () => {
     const user = userEvent.setup();
 

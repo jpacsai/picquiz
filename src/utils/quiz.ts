@@ -304,6 +304,10 @@ const getWrongAnswerCandidates = ({
     return getFieldOptions(answerField).filter((value) => value !== playableItem.value);
   }
 
+  if (answerField.type === 'select') {
+    return getFieldOptions(answerField).filter((value) => value !== playableItem.value);
+  }
+
   if (!distractor) {
     return getDistinctTopicValues({ answerFieldKey, items, topic }).filter(
       (value) => value !== playableItem.value,

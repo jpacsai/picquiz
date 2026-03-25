@@ -24,11 +24,10 @@ const FieldDialogQuizSection = ({
   pathPrefix,
 }: FieldDialogQuizSectionProps) => {
   const isBooleanField = field.type === 'boolean';
+  const isSelectField = field.type === 'select';
   const quizDistractorType = field.quiz?.enabled ? (field.quiz.distractor?.type ?? '') : '';
   const availableDistractorOptions =
-    field.type === 'select'
-      ? [{ label: 'From options', value: 'fromOptions' as const }]
-      : field.type === 'number'
+    field.type === 'number'
         ? [{ label: 'Numeric range', value: 'numericRange' as const }]
         : field.type === 'string' && availableDistractorSourceFieldOptions.length > 0
           ? [{ label: 'Derived range', value: 'derivedRange' as const }]
@@ -54,6 +53,13 @@ const FieldDialogQuizSection = ({
                   ? {
                       enabled: true,
                       prompt: currentField.quiz?.enabled ? currentField.quiz.prompt : '',
+                      ...(currentField.type === 'select'
+                        ? {
+                            distractor: {
+                              type: 'fromOptions' as const,
+                            },
+                          }
+                        : {}),
                     }
                   : {
                       enabled: false,
@@ -92,7 +98,7 @@ const FieldDialogQuizSection = ({
             margin="normal"
           />
 
-          {!isBooleanField ? (
+          {!isBooleanField && !isSelectField ? (
             <TextField
               select
               label="Distractor type"
