@@ -12,8 +12,16 @@ import {
   getEmptyFieldDraft,
   getPersistedTopicValues,
   getSelectOptionsText,
-  normalizeImageUploadField,
 } from '../hook/utils';
+import {
+  appendFieldToDraft,
+  getSelectedFieldIndexAfterDelete,
+  getSelectedFieldIndexAfterMove,
+  insertNormalizedFixedImageUploadField,
+  moveDraftField,
+  removeDraftFieldAtIndex,
+  updateDraftFieldAtIndex,
+} from './fieldActions';
 import type { TopicSchemaBuilderActionsValue, TopicSchemaBuilderStateValue } from './types';
 
 type BuildActionsValueParams = {
@@ -73,18 +81,7 @@ export const buildTopicSchemaBuilderActionsValue = ({
       return;
     }
 
-    const normalizedField: TopicFieldDraft =
-      newFieldDraft.type === 'select'
-        ? {
-            ...newFieldDraft,
-            options: newFieldDraft.options ?? [],
-          }
-        : newFieldDraft;
-
-    setDraft((currentDraft) => ({
-      ...currentDraft,
-      fields: [...currentDraft.fields, normalizedField],
-    }));
+    setDraft((currentDraft) => appendFieldToDraft(currentDraft, newFieldDraft));
     setSelectedFieldIndex(draft.fields.length);
     handleCloseAddFieldDialog();
   };
@@ -99,12 +96,7 @@ export const buildTopicSchemaBuilderActionsValue = ({
       return;
     }
 
-    setDraft((currentDraft) => ({
-      ...currentDraft,
-      fields: currentDraft.fields.map((field, index) =>
-        index === selectedFieldIndex ? updater(field) : field,
-      ),
-    }));
+    setDraft((currentDraft) => updateDraftFieldAtIndex(currentDraft, selectedFieldIndex, updater));
   };
 
   const handleDeleteSelectedField = () => {
@@ -112,30 +104,21 @@ export const buildTopicSchemaBuilderActionsValue = ({
       return;
     }
 
-    setDraft((currentDraft) => ({
-      ...currentDraft,
-      fields: currentDraft.fields.filter((_, index) => index !== selectedFieldIndex),
-    }));
+    setDraft((currentDraft) => removeDraftFieldAtIndex(currentDraft, selectedFieldIndex));
     setIsEditFieldDialogOpen(false);
-    setSelectedFieldIndex((currentIndex) => {
-      if (currentIndex === null || currentIndex === 'fixed-image-upload') {
-        return currentIndex;
-      }
-
-      if (draft.fields.length <= 1) {
-        return null;
-      }
-
-      return Math.max(0, currentIndex - 1);
-    });
+    setSelectedFieldIndex((currentIndex) =>
+      getSelectedFieldIndexAfterDelete({
+        fieldCount: draft.fields.length,
+        selectedFieldIndex: currentIndex,
+      }),
+    );
   };
 
   const handleEditFieldSubmit = () => {
     if (selectedFieldIndex === 'fixed-image-upload') {
-      setDraft((currentDraft) => ({
-        ...currentDraft,
-        fields: [...currentDraft.fields, normalizeImageUploadField(fixedImageUploadFieldDraft)],
-      }));
+      setDraft((currentDraft) =>
+        insertNormalizedFixedImageUploadField(currentDraft, fixedImageUploadFieldDraft),
+      );
       setSelectedFieldIndex(draft.fields.length);
     }
 
@@ -143,46 +126,15 @@ export const buildTopicSchemaBuilderActionsValue = ({
   };
 
   const handleMoveField = ({ fromIndex, toIndex }: { fromIndex: number; toIndex: number }) => {
-    setDraft((currentDraft) => {
-      if (
-        fromIndex < 0 ||
-        toIndex < 0 ||
-        fromIndex >= currentDraft.fields.length ||
-        toIndex >= currentDraft.fields.length
-      ) {
-        return currentDraft;
-      }
+    setDraft((currentDraft) => moveDraftField(currentDraft, { fromIndex, toIndex }));
 
-      const nextFields = [...currentDraft.fields];
-      const [movedField] = nextFields.splice(fromIndex, 1);
-
-      nextFields.splice(toIndex, 0, movedField);
-
-      return {
-        ...currentDraft,
-        fields: nextFields,
-      };
-    });
-
-    setSelectedFieldIndex((currentIndex) => {
-      if (currentIndex === null || currentIndex === 'fixed-image-upload') {
-        return currentIndex;
-      }
-
-      if (currentIndex === fromIndex) {
-        return toIndex;
-      }
-
-      if (fromIndex < toIndex && currentIndex > fromIndex && currentIndex <= toIndex) {
-        return currentIndex - 1;
-      }
-
-      if (toIndex < fromIndex && currentIndex >= toIndex && currentIndex < fromIndex) {
-        return currentIndex + 1;
-      }
-
-      return currentIndex;
-    });
+    setSelectedFieldIndex((currentIndex) =>
+      getSelectedFieldIndexAfterMove({
+        fromIndex,
+        selectedFieldIndex: currentIndex,
+        toIndex,
+      }),
+    );
   };
 
   const handleSave = async () => {
