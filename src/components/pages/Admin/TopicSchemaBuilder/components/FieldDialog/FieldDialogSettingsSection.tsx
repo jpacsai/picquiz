@@ -56,6 +56,25 @@ const FieldDialogSettingsSection = ({
         label="Required"
       />
 
+      {field.type === 'string' ? (
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={Boolean(field.autocomplete)}
+              onChange={(event) => {
+                const nextValue = event.target.checked;
+
+                onChange((currentField) => ({
+                  ...currentField,
+                  autocomplete: nextValue,
+                }));
+              }}
+            />
+          }
+          label="Autocomplete"
+        />
+      ) : null}
+
       <FormControlLabel
         control={
           <Checkbox

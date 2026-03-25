@@ -283,6 +283,58 @@ describe('TopicSchemaBuilderPage', () => {
     });
   });
 
+  it('persists autocomplete setting for string fields in the schema', async () => {
+    const user = userEvent.setup();
+
+    render(<TopicSchemaBuilderPage mode="create" />);
+
+    await user.type(screen.getByLabelText('Topic ID'), 'art');
+    await user.type(screen.getByLabelText('Label'), 'Muveszet');
+    await user.type(screen.getByLabelText('Slug'), 'art');
+    await user.type(screen.getByLabelText('Storage prefix'), 'art');
+
+    await user.click(screen.getByRole('button', { name: 'Uj field' }));
+    await user.type(screen.getByLabelText('Field label'), 'Artist');
+    await user.type(screen.getByLabelText('Field key'), 'artist');
+    await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText('Artist'));
+
+    const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+
+    await user.click(within(editDialog).getByRole('checkbox', { name: 'Autocomplete' }));
+    await user.click(within(editDialog).getByRole('button', { name: 'Kesz' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Schema letrehozasa' }));
+
+    await waitFor(() => {
+      expect(createTopicMock).toHaveBeenCalledWith({
+        topicId: 'art',
+        values: {
+          fields: [
+            expect.objectContaining({
+              autocomplete: true,
+              key: 'artist',
+              label: 'Artist',
+              type: 'string',
+            }),
+          ],
+          label: 'Muveszet',
+          slug: 'art',
+          storage_prefix: 'art',
+        },
+      });
+    });
+  });
+
   it('shows an error toast when schema save fails', async () => {
     const user = userEvent.setup();
 
