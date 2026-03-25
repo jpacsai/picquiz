@@ -2,6 +2,7 @@ import { QUERY_KEYS } from '@queries/queryKeys';
 import { createTopic, updateTopic } from '@service/topics';
 import type { QueryClient } from '@tanstack/react-query';
 import type { NavigateFn } from '@tanstack/react-router';
+import type { OptionsObject, SnackbarKey, SnackbarMessage } from 'notistack';
 
 import type { TopicFieldDraft } from '@/types/topicSchema';
 import type { Topic } from '@/types/topics';
@@ -23,6 +24,7 @@ type BuildActionsValueParams = {
   mode: TopicSchemaBuilderPageProps['mode'];
   navigate: NavigateFn;
   newFieldDraft: TopicSchemaBuilderStateValue['newFieldDraft'];
+  enqueueSnackbar: (message: SnackbarMessage, options?: OptionsObject) => SnackbarKey;
   queryClient: QueryClient;
   selectedFieldIndex: SelectedFieldIndex;
   setDraft: TopicSchemaBuilderActionsValue['setDraft'];
@@ -44,6 +46,7 @@ export const buildTopicSchemaBuilderActionsValue = ({
   mode,
   navigate,
   newFieldDraft,
+  enqueueSnackbar,
   queryClient,
   selectedFieldIndex,
   setDraft,
@@ -241,6 +244,15 @@ export const buildTopicSchemaBuilderActionsValue = ({
         queryKey: QUERY_KEYS.TOPICS.byId(topicId),
       });
 
+      enqueueSnackbar(
+        mode === 'edit' ? 'A topic schema modositasai elmentve.' : 'Az uj topic schema elmentve.',
+        {
+          key: mode === 'edit' ? 'topic-schema-updated' : 'topic-schema-created',
+          preventDuplicate: true,
+          variant: 'success',
+        },
+      );
+
       await navigate({
         to: '/admin',
       });
@@ -248,6 +260,11 @@ export const buildTopicSchemaBuilderActionsValue = ({
       const message = error instanceof Error ? error.message : 'Ismeretlen mentesi hiba.';
       console.error('Sikertelen topic schema mentes', error);
       setSubmitError(message);
+      enqueueSnackbar(message, {
+        key: 'topic-schema-save-error',
+        preventDuplicate: true,
+        variant: 'error',
+      });
     } finally {
       setIsSaving(false);
     }

@@ -1,5 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
+import { useSnackbar } from 'notistack';
 import { type PropsWithChildren, useState } from 'react';
 
 import type { SelectedFieldIndex, TopicSchemaBuilderPageProps } from '@/types/topicSchemaBuilder';
@@ -19,6 +20,7 @@ export const TopicSchemaBuilderProvider = ({
 }: PropsWithChildren<TopicSchemaBuilderPageProps>) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
   const [draft, setDraft] = useState(() => getInitialDraft(topic));
   const [isAddFieldDialogOpen, setIsAddFieldDialogOpen] = useState(false);
   const [isEditFieldDialogOpen, setIsEditFieldDialogOpen] = useState(false);
@@ -52,6 +54,7 @@ export const TopicSchemaBuilderProvider = ({
     mode,
     navigate,
     newFieldDraft,
+    enqueueSnackbar,
     queryClient,
     selectedFieldIndex,
     setDraft,

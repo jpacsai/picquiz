@@ -11,6 +11,7 @@ import TopicSchemaBuilderPage from './TopicSchemaBuilderPage';
 const navigateMock = vi.fn();
 const invalidateQueriesMock = vi.fn();
 const setQueryDataMock = vi.fn();
+const enqueueSnackbarMock = vi.fn();
 const createTopicMock = vi.fn();
 const updateTopicMock = vi.fn();
 
@@ -39,6 +40,17 @@ vi.mock('@service/topics', () => ({
   updateTopic: (...args: unknown[]) => updateTopicMock(...args),
 }));
 
+vi.mock('notistack', async () => {
+  const actual = await vi.importActual('notistack');
+
+  return {
+    ...actual,
+    useSnackbar: () => ({
+      enqueueSnackbar: enqueueSnackbarMock,
+    }),
+  };
+});
+
 const topic: Topic = {
   fields: [],
   id: 'art',
@@ -52,6 +64,7 @@ describe('TopicSchemaBuilderPage', () => {
     navigateMock.mockReset();
     invalidateQueriesMock.mockReset();
     setQueryDataMock.mockReset();
+    enqueueSnackbarMock.mockReset();
     createTopicMock.mockReset();
     updateTopicMock.mockReset();
 
@@ -167,6 +180,11 @@ describe('TopicSchemaBuilderPage', () => {
     expect(navigateMock).toHaveBeenCalledWith({
       to: '/admin',
     });
+    expect(enqueueSnackbarMock).toHaveBeenCalledWith('Az uj topic schema elmentve.', {
+      key: 'topic-schema-created',
+      preventDuplicate: true,
+      variant: 'success',
+    });
   });
 
   it('updates an existing topic schema and navigates back to admin', async () => {
@@ -199,6 +217,35 @@ describe('TopicSchemaBuilderPage', () => {
     expect(navigateMock).toHaveBeenCalledWith({
       to: '/admin',
     });
+    expect(enqueueSnackbarMock).toHaveBeenCalledWith('A topic schema modositasai elmentve.', {
+      key: 'topic-schema-updated',
+      preventDuplicate: true,
+      variant: 'success',
+    });
+  });
+
+  it('shows an error toast when schema save fails', async () => {
+    const user = userEvent.setup();
+
+    createTopicMock.mockRejectedValueOnce(new Error('Boom'));
+
+    render(<TopicSchemaBuilderPage mode="create" />);
+
+    await user.type(screen.getByLabelText('Topic ID'), 'art');
+    await user.type(screen.getByLabelText('Label'), 'Muveszet');
+    await user.type(screen.getByLabelText('Slug'), 'art');
+    await user.type(screen.getByLabelText('Storage prefix'), 'art');
+    await user.click(screen.getByRole('button', { name: 'Schema letrehozasa' }));
+
+    await waitFor(() => {
+      expect(enqueueSnackbarMock).toHaveBeenCalledWith('Boom', {
+        key: 'topic-schema-save-error',
+        preventDuplicate: true,
+        variant: 'error',
+      });
+    });
+
+    expect(navigateMock).not.toHaveBeenCalled();
   });
 
   it('adds a new field from the dialog', async () => {
