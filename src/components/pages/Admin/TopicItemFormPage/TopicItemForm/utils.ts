@@ -130,38 +130,34 @@ export const getFieldValidator = (field: TopicField) => {
         return field.required ? 'Required' : undefined;
       }
 
-      if (!hasFrom || !hasTo) {
-        return 'Both years are required';
-      }
+      const fromNumber = hasFrom ? Number(from) : undefined;
+      const toNumber = hasTo ? Number(to) : undefined;
 
-      const fromNumber = Number(from);
-      const toNumber = Number(to);
-
-      if (Number.isNaN(fromNumber) || !Number.isInteger(fromNumber)) {
+      if (hasFrom && (fromNumber === undefined || Number.isNaN(fromNumber) || !Number.isInteger(fromNumber))) {
         return 'From year must be a whole year';
       }
 
-      if (Number.isNaN(toNumber) || !Number.isInteger(toNumber)) {
+      if (hasTo && (toNumber === undefined || Number.isNaN(toNumber) || !Number.isInteger(toNumber))) {
         return 'To year must be a whole year';
       }
 
-      if (yearRangeMinimum !== undefined && fromNumber < yearRangeMinimum) {
+      if (yearRangeMinimum !== undefined && typeof fromNumber === 'number' && fromNumber < yearRangeMinimum) {
         return `From year must be at least ${yearRangeMinimum}`;
       }
 
-      if (yearRangeMinimum !== undefined && toNumber < yearRangeMinimum) {
+      if (yearRangeMinimum !== undefined && typeof toNumber === 'number' && toNumber < yearRangeMinimum) {
         return `To year must be at least ${yearRangeMinimum}`;
       }
 
-      if (yearRangeMaximum !== undefined && fromNumber > yearRangeMaximum) {
+      if (yearRangeMaximum !== undefined && typeof fromNumber === 'number' && fromNumber > yearRangeMaximum) {
         return `From year must be at most ${yearRangeMaximum}`;
       }
 
-      if (yearRangeMaximum !== undefined && toNumber > yearRangeMaximum) {
+      if (yearRangeMaximum !== undefined && typeof toNumber === 'number' && toNumber > yearRangeMaximum) {
         return `To year must be at most ${yearRangeMaximum}`;
       }
 
-      if (fromNumber > toNumber) {
+      if (typeof fromNumber === 'number' && typeof toNumber === 'number' && fromNumber > toNumber) {
         return 'From year cannot be greater than to year';
       }
 

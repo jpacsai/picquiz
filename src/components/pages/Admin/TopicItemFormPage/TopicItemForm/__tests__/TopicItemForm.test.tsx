@@ -203,6 +203,32 @@ describe('TopicItemForm saving', () => {
     });
   });
 
+  it('allows saving a year range when only one side is filled', async () => {
+    const user = userEvent.setup();
+    const fields: TopicField[] = [
+      { key: 'artist', label: 'Artist', required: true, type: 'string' },
+      { key: 'lifespan', label: 'Szuletes-halal', type: 'yearRange', min: 1500, max: 2000 },
+    ];
+
+    render(
+      <TopicItemForm collectionName="art" fields={fields} storagePrefix="art" topicId="art" />,
+    );
+
+    await user.type(screen.getByTestId('form-input-artist'), 'Frida Kahlo');
+    await user.type(screen.getByTestId('form-input-lifespan-from'), '1907');
+    await user.click(screen.getByRole('button', { name: 'Mentés' }));
+
+    await waitFor(() => {
+      expect(createTopicItemMock).toHaveBeenCalledWith({
+        collectionName: 'art',
+        values: {
+          artist: 'Frida Kahlo',
+          lifespan: '1907 -',
+        },
+      });
+    });
+  });
+
   it('trims all string inputs before create submit', async () => {
     const user = userEvent.setup();
     const fields: TopicField[] = [
