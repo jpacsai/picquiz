@@ -10,7 +10,7 @@ type DashboardProps = {
 
 const Dashboard = ({ topics }: DashboardProps) => {
   return (
-    <Box>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       {topics.map((topic) => {
         return (
           <Card key={topic.id}>
