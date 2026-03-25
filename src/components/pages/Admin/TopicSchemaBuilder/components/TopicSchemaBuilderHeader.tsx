@@ -5,7 +5,7 @@ import { Box, Button, Stack, Typography } from '@mui/material';
 import {
   useTopicSchemaBuilderActions,
   useTopicSchemaBuilderState,
-} from '../context/TopicSchemaBuilderContext';
+} from '../context/useTopicSchemaBuilderContext';
 
 const TopicSchemaBuilderHeader = () => {
   const { canSave, description, isSaving, mode, title } = useTopicSchemaBuilderState();

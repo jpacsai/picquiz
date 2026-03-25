@@ -6,7 +6,7 @@ import FieldListSection from './components/FieldListSection';
 import TopicMetadataSection from './components/TopicMetadataSection';
 import TopicSchemaBuilderHeader from './components/TopicSchemaBuilderHeader';
 import ValidationSummary from './components/ValidationSummary';
-import { useTopicSchemaBuilderState } from './context/TopicSchemaBuilderContext';
+import { useTopicSchemaBuilderState } from './context/useTopicSchemaBuilderContext';
 
 const TopicSchemaBuilderPageView = () => {
   const { submitError } = useTopicSchemaBuilderState();

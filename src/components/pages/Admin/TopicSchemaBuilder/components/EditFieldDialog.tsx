@@ -2,7 +2,7 @@ import FieldDialog from './FieldDialog';
 import {
   useTopicSchemaBuilderActions,
   useTopicSchemaBuilderState,
-} from '../context/TopicSchemaBuilderContext';
+} from '../context/useTopicSchemaBuilderContext';
 
 const EditFieldDialog = () => {
   const {

@@ -1,6 +1,6 @@
 import { Box, Card, Stack, TextField, Typography } from '@mui/material';
 
-import { useTopicSchemaBuilderActions, useTopicSchemaBuilderState } from '../context/TopicSchemaBuilderContext';
+import { useTopicSchemaBuilderActions, useTopicSchemaBuilderState } from '../context/useTopicSchemaBuilderContext';
 
 const TopicMetadataSection = () => {
   const { metadataErrorsByPath, metadataFields, mode } = useTopicSchemaBuilderState();

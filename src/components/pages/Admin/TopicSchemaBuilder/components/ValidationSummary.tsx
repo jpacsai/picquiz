@@ -1,6 +1,6 @@
 import { Alert, Stack, Typography } from '@mui/material';
 
-import { useTopicSchemaBuilderState } from '../context/TopicSchemaBuilderContext';
+import { useTopicSchemaBuilderState } from '../context/useTopicSchemaBuilderContext';
 
 const ValidationSummary = () => {
   const {

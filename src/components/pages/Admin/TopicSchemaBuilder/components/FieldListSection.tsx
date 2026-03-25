@@ -5,7 +5,7 @@ import { Alert, Box, Button, Card, IconButton, Stack, Typography } from '@mui/ma
 import {
   useTopicSchemaBuilderActions,
   useTopicSchemaBuilderState,
-} from '../context/TopicSchemaBuilderContext';
+} from '../context/useTopicSchemaBuilderContext';
 import FixedImageUploadCard from './FixedImageUploadCard';
 
 const FieldListSection = () => {
