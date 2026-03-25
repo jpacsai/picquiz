@@ -18,6 +18,22 @@ export type TopicDocument = Omit<Topic, 'id' | 'fields'> & {
   fields: LegacyTopicField[];
 };
 
+const removeUndefinedDeep = <T>(value: T): T => {
+  if (Array.isArray(value)) {
+    return value.map((item) => removeUndefinedDeep(item)) as T;
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value)
+        .filter(([, entryValue]) => entryValue !== undefined)
+        .map(([entryKey, entryValue]) => [entryKey, removeUndefinedDeep(entryValue)]),
+    ) as T;
+  }
+
+  return value;
+};
+
 const normalizeOptions = (options: string[] | string | undefined): string[] => {
   if (typeof options === 'string') {
     return sortSelectOptions(
@@ -78,11 +94,13 @@ export const serializeTopicDocument = (
   slug: topic.slug,
   storage_prefix: topic.storage_prefix,
   fields: topic.fields.map((field) =>
-    field.type === 'select'
-      ? {
-          ...field,
-          options: sortSelectOptions(field.options),
-        }
-      : field,
+    removeUndefinedDeep(
+      field.type === 'select'
+        ? {
+            ...field,
+            options: sortSelectOptions(field.options),
+          }
+        : field,
+    ),
   ),
 });

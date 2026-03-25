@@ -88,4 +88,65 @@ describe('serializeTopicDocument', () => {
       storage_prefix: 'art',
     });
   });
+
+  it('removes undefined field values before persisting the topic', () => {
+    expect(
+      serializeTopicDocument({
+        fields: [
+          {
+            key: 'published',
+            label: 'Publikalt',
+            quiz: {
+              enabled: true,
+              prompt: 'Publikalt?',
+              distractor: undefined,
+            },
+            readonly: undefined,
+            type: 'boolean',
+          },
+          {
+            fileNameFields: ['artist'],
+            key: 'image_upload',
+            label: 'Kepfeltoltes',
+            targetFields: {
+              desktop: 'image_url_desktop',
+              desktopPath: undefined,
+              mobile: 'image_url_mobile',
+              mobilePath: 'image_path_mobile',
+            },
+            type: 'imageUpload',
+          },
+        ],
+        label: 'Muveszet',
+        slug: 'art',
+        storage_prefix: 'art',
+      }),
+    ).toEqual({
+      fields: [
+        {
+          key: 'published',
+          label: 'Publikalt',
+          quiz: {
+            enabled: true,
+            prompt: 'Publikalt?',
+          },
+          type: 'boolean',
+        },
+        {
+          fileNameFields: ['artist'],
+          key: 'image_upload',
+          label: 'Kepfeltoltes',
+          targetFields: {
+            desktop: 'image_url_desktop',
+            mobile: 'image_url_mobile',
+            mobilePath: 'image_path_mobile',
+          },
+          type: 'imageUpload',
+        },
+      ],
+      label: 'Muveszet',
+      slug: 'art',
+      storage_prefix: 'art',
+    });
+  });
 });
