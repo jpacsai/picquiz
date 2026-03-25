@@ -3,6 +3,7 @@ import { Alert, Box } from '@mui/material';
 import CreateFieldDialog from './components/CreateFieldDialog';
 import EditFieldDialog from './components/EditFieldDialog';
 import FieldListSection from './components/FieldListSection';
+import SchemaPreviewSection from './components/SchemaPreviewSection';
 import TopicMetadataSection from './components/TopicMetadataSection';
 import TopicSchemaBuilderHeader from './components/TopicSchemaBuilderHeader';
 import ValidationSummary from './components/ValidationSummary';
@@ -22,6 +23,8 @@ const TopicSchemaBuilderPageView = () => {
       <ValidationSummary />
 
       <FieldListSection />
+
+      <SchemaPreviewSection />
 
       <CreateFieldDialog />
 

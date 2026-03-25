@@ -73,6 +73,47 @@ describe('TopicSchemaBuilderPage', () => {
     expect(screen.getByText('Fix image upload field')).toBeInTheDocument();
   });
 
+  it('shows a live schema preview for form, quiz and system fields', async () => {
+    const user = userEvent.setup();
+
+    render(<TopicSchemaBuilderPage mode="create" />);
+
+    expect(screen.getByText('Meg nincs user altal szerkesztheto mezod.')).toBeInTheDocument();
+    expect(screen.getByText('Meg nincs quizre hasznalt mezod.')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Uj field' }));
+    await user.type(screen.getByLabelText('Field label'), 'Artist');
+    await user.type(screen.getByLabelText('Field key'), 'artist');
+    await user.click(screen.getByRole('checkbox', { name: 'Required' }));
+    await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
+
+    const editDialog = await screen.findByRole('dialog', { name: 'Field szerkesztes' });
+
+    await user.click(within(editDialog).getByRole('checkbox', { name: 'Quiz enabled' }));
+    await user.type(within(editDialog).getByLabelText('Quiz prompt'), 'Ki az alkoto?');
+    await user.click(within(editDialog).getByRole('button', { name: 'Kesz' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
+    });
+
+    expect(screen.getByText('Artist (string)')).toBeInTheDocument();
+    expect(screen.getByText('Artist | Ki az alkoto?')).toBeInTheDocument();
+
+    await user.click(screen.getByText('Kepfeltoltes'));
+
+    const imageUploadDialog = await screen.findByRole('dialog', { name: 'Field szerkesztes' });
+    await user.click(within(imageUploadDialog).getByRole('button', { name: 'Kesz' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
+    });
+
+    expect(screen.getByText('Kepfeltoltes (imageUpload)')).toBeInTheDocument();
+    expect(screen.getByText('image_url_desktop')).toBeInTheDocument();
+    expect(screen.getByText('image_path_mobile')).toBeInTheDocument();
+  });
+
   it('shows metadata validation errors in create mode until required fields are filled', async () => {
     const user = userEvent.setup();
 
@@ -245,7 +286,11 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', { name: 'Kesz' }));
+    await user.click(
+      within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', {
+        name: 'Kesz',
+      }),
+    );
 
     await waitFor(() => {
       expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
@@ -260,7 +305,11 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', { name: 'Kesz' }));
+    await user.click(
+      within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', {
+        name: 'Kesz',
+      }),
+    );
 
     await waitFor(() => {
       expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
@@ -290,10 +339,16 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', { name: 'Torles' }));
+    await user.click(
+      within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', {
+        name: 'Torles',
+      }),
+    );
 
     expect(screen.queryByText('Ev')).not.toBeInTheDocument();
-    expect(screen.getByText('Meg nincs field. Az `Uj field` gombbal tudsz uj mezot felvenni.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Meg nincs field. Az `Uj field` gombbal tudsz uj mezot felvenni.'),
+    ).toBeInTheDocument();
   });
 
   it('allows editing select options for a select field', async () => {
@@ -337,7 +392,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    let editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+    const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
     await user.click(within(editDialog).getByRole('checkbox', { name: 'Quiz enabled' }));
     await user.type(within(editDialog).getByLabelText('Quiz prompt'), 'Melyik ev?');
@@ -349,10 +404,10 @@ describe('TopicSchemaBuilderPage', () => {
 
     await user.click(screen.getByText('Ev'));
 
-    editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+    const reopenedEditDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
-    expect(within(editDialog).getByRole('checkbox', { name: 'Quiz enabled' })).toBeChecked();
-    expect(within(editDialog).getByLabelText('Quiz prompt')).toHaveValue('Melyik ev?');
+    expect(within(reopenedEditDialog).getByRole('checkbox', { name: 'Quiz enabled' })).toBeChecked();
+    expect(within(reopenedEditDialog).getByLabelText('Quiz prompt')).toHaveValue('Melyik ev?');
   });
 
   it('allows configuring numeric range distractors for number quiz fields', async () => {
@@ -371,7 +426,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    let editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+    const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
     await user.click(within(editDialog).getByRole('checkbox', { name: 'Quiz enabled' }));
     await user.type(within(editDialog).getByLabelText('Quiz prompt'), 'Melyik ev?');
@@ -389,14 +444,14 @@ describe('TopicSchemaBuilderPage', () => {
 
     await user.click(screen.getByText('Ev'));
 
-    editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+    const reopenedEditDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
-    expect(within(editDialog).getByRole('combobox', { name: 'Distractor type' })).toHaveTextContent(
+    expect(within(reopenedEditDialog).getByRole('combobox', { name: 'Distractor type' })).toHaveTextContent(
       'Numeric range',
     );
-    expect(within(editDialog).getByLabelText('Min offset')).toHaveValue('1');
-    expect(within(editDialog).getByLabelText('Max offset')).toHaveValue('3');
-    expect(within(editDialog).getByLabelText('Max value')).toHaveValue('1900');
+    expect(within(reopenedEditDialog).getByLabelText('Min offset')).toHaveValue('1');
+    expect(within(reopenedEditDialog).getByLabelText('Max offset')).toHaveValue('3');
+    expect(within(reopenedEditDialog).getByLabelText('Max value')).toHaveValue('1900');
   });
 
   it('allows configuring derived range distractors for string quiz fields', async () => {
@@ -415,7 +470,11 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', { name: 'Kesz' }));
+    await user.click(
+      within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', {
+        name: 'Kesz',
+      }),
+    );
 
     await waitFor(() => {
       expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
@@ -430,7 +489,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    let editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+    const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
     await user.click(within(editDialog).getByRole('checkbox', { name: 'Quiz enabled' }));
     await user.type(within(editDialog).getByLabelText('Quiz prompt'), 'Melyik szazad?');
@@ -446,13 +505,13 @@ describe('TopicSchemaBuilderPage', () => {
 
     await user.click(screen.getByText('Szazad'));
 
-    editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+    const reopenedEditDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
-    expect(within(editDialog).getByRole('combobox', { name: 'Distractor type' })).toHaveTextContent(
+    expect(within(reopenedEditDialog).getByRole('combobox', { name: 'Distractor type' })).toHaveTextContent(
       'Derived range',
     );
     expect(
-      within(editDialog).getByRole('combobox', { name: 'Distractor source field' }),
+      within(reopenedEditDialog).getByRole('combobox', { name: 'Distractor source field' }),
     ).toHaveTextContent('Ev');
   });
 
@@ -527,7 +586,11 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', { name: 'Kesz' }));
+    await user.click(
+      within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', {
+        name: 'Kesz',
+      }),
+    );
 
     await waitFor(() => {
       expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
@@ -540,9 +603,16 @@ describe('TopicSchemaBuilderPage', () => {
 
     expect(within(editDialog).queryByLabelText('Field label')).not.toBeInTheDocument();
     expect(within(editDialog).queryByLabelText('Field key')).not.toBeInTheDocument();
-    expect(within(editDialog).getByLabelText('Field type')).toHaveAttribute('aria-disabled', 'true');
-    expect(within(editDialog).queryByRole('checkbox', { name: 'Required' })).not.toBeInTheDocument();
-    expect(within(editDialog).queryByRole('checkbox', { name: 'Readonly' })).not.toBeInTheDocument();
+    expect(within(editDialog).getByLabelText('Field type')).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
+    expect(
+      within(editDialog).queryByRole('checkbox', { name: 'Required' }),
+    ).not.toBeInTheDocument();
+    expect(
+      within(editDialog).queryByRole('checkbox', { name: 'Readonly' }),
+    ).not.toBeInTheDocument();
     expect(
       within(editDialog).queryByRole('checkbox', { name: 'Hide in edit' }),
     ).not.toBeInTheDocument();
@@ -575,7 +645,9 @@ describe('TopicSchemaBuilderPage', () => {
 
     const persistedEditDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
-    expect(within(persistedEditDialog).getByLabelText('File name fields')).toHaveTextContent('Artist');
+    expect(within(persistedEditDialog).getByLabelText('File name fields')).toHaveTextContent(
+      'Artist',
+    );
     expect(
       within(persistedEditDialog).getByText(
         'A builder automatikusan kezeli a kepes rendszermezoket: `image_url_desktop`, `image_url_mobile`, `image_path_desktop`, `image_path_mobile`.',

@@ -1,12 +1,13 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useState } from 'react';
 
-import FieldDialogBasicsSection from '@/components/pages/Admin/TopicSchemaBuilder/components/fieldDialog/FieldDialogBasicsSection';
-import FieldDialogImageUploadSection from '@/components/pages/Admin/TopicSchemaBuilder/components/fieldDialog/FieldDialogImageUploadSection';
-import FieldDialogQuizSection from '@/components/pages/Admin/TopicSchemaBuilder/components/fieldDialog/FieldDialogQuizSection';
-import FieldDialogSelectOptionsSection from '@/components/pages/Admin/TopicSchemaBuilder/components/fieldDialog/FieldDialogSelectOptionsSection';
-import FieldDialogSettingsSection from '@/components/pages/Admin/TopicSchemaBuilder/components/fieldDialog/FieldDialogSettingsSection';
 import type { TopicFieldDraft } from '@/types/topicSchema';
+
+import FieldDialogBasicsSection from './FieldDialogBasicsSection';
+import FieldDialogImageUploadSection from './FieldDialogImageUploadSection';
+import FieldDialogQuizSection from './FieldDialogQuizSection';
+import FieldDialogSelectOptionsSection from './FieldDialogSelectOptionsSection';
+import FieldDialogSettingsSection from './FieldDialogSettingsSection';
 
 type FieldDialogProps = {
   availableFileNameFieldOptions: Array<{ key: string; label: string }>;
