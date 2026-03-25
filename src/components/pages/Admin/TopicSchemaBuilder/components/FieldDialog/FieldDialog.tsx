@@ -57,6 +57,15 @@ const FieldDialog = ({
           pathPrefix={pathPrefix}
         />
 
+        <FieldDialogSelectOptionsSection
+          errorsByPath={errorsByPath}
+          field={field}
+          onChange={onChange}
+          onOptionsInputChange={setSelectOptionsInputValue}
+          pathPrefix={pathPrefix}
+          selectOptionsInputValue={selectOptionsInputValue}
+        />
+
         <FieldDialogQuizSection
           availableDistractorSourceFieldOptions={availableDistractorSourceFieldOptions}
           errorsByPath={errorsByPath}
@@ -66,15 +75,6 @@ const FieldDialog = ({
         />
 
         <FieldDialogSettingsSection field={field} onChange={onChange} />
-
-        <FieldDialogSelectOptionsSection
-          errorsByPath={errorsByPath}
-          field={field}
-          onChange={onChange}
-          onOptionsInputChange={setSelectOptionsInputValue}
-          pathPrefix={pathPrefix}
-          selectOptionsInputValue={selectOptionsInputValue}
-        />
 
         <FieldDialogImageUploadSection
           availableFileNameFieldOptions={availableFileNameFieldOptions}
