@@ -4,8 +4,10 @@ import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 
 import {
+  buildYearRangeValue,
   getDerivedValue,
   getFieldValidator,
+  parseYearRangeValue,
 } from '@/components/pages/Admin/TopicItemFormPage/TopicItemForm/utils';
 import type {
   FormDeriveField,
@@ -134,6 +136,81 @@ const FormField = ({
                 errorMessage={typeof errorMessage === 'string' ? errorMessage : undefined}
                 sx={{ width: '100%', height: '75px' }}
               />
+            );
+          }}
+        </form.Field>
+      );
+    case 'yearRange':
+      return (
+        <form.Field key={key} name={key} validators={{ onChange: getFieldValidator(field) }}>
+          {(fieldApi) => {
+            const errorMessage = fieldApi.state.meta.isTouched
+              ? fieldApi.state.meta.errors[0]
+              : undefined;
+            const { from, to } = parseYearRangeValue(fieldApi.state.value);
+            const resolvedMax =
+              field.max === 'todayYear'
+                ? new Date().getFullYear()
+                : typeof field.max === 'number'
+                  ? field.max
+                  : undefined;
+
+            return (
+              <Box sx={{ width: '100%' }}>
+                <Typography sx={{ mb: 1 }} variant="body2">
+                  {label}
+                </Typography>
+                <Box
+                  sx={{
+                    display: 'grid',
+                    gap: 2,
+                    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+                  }}
+                >
+                  <FormInput
+                    type="number"
+                    name={`${key}-from`}
+                    label="Tol"
+                    required={required}
+                    disabled={readonly}
+                    value={from}
+                    inputProps={{
+                      min: field.min,
+                      max: resolvedMax,
+                      step: 1,
+                    }}
+                    onBlur={fieldApi.handleBlur}
+                    onChange={(event) => {
+                      fieldApi.handleChange(
+                        buildYearRangeValue({ from: event.target.value, to }),
+                      );
+                    }}
+                    helperText=" "
+                    sx={{ width: '100%', height: '75px' }}
+                  />
+                  <FormInput
+                    type="number"
+                    name={`${key}-to`}
+                    label="Ig"
+                    required={required}
+                    disabled={readonly}
+                    value={to}
+                    inputProps={{
+                      min: field.min,
+                      max: resolvedMax,
+                      step: 1,
+                    }}
+                    onBlur={fieldApi.handleBlur}
+                    onChange={(event) => {
+                      fieldApi.handleChange(
+                        buildYearRangeValue({ from, to: event.target.value }),
+                      );
+                    }}
+                    errorMessage={typeof errorMessage === 'string' ? errorMessage : undefined}
+                    sx={{ width: '100%', height: '75px' }}
+                  />
+                </Box>
+              </Box>
             );
           }}
         </form.Field>

@@ -250,7 +250,7 @@ const validateField = ({
     }
   }
 
-  if (field.type === 'year') {
+  if (field.type === 'year' || field.type === 'yearRange') {
     if (field.min !== undefined && Number.isNaN(field.min)) {
       issues.push(
         createIssue({

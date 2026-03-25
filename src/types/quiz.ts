@@ -4,7 +4,7 @@ import type { TopicField, TopicItem } from '@/types/topics';
 
 export type QuizValueField = Extract<
   TopicField,
-  { type: 'string' | 'number' | 'year' | 'select' | 'boolean' }
+  { type: 'string' | 'number' | 'year' | 'yearRange' | 'select' | 'boolean' }
 >;
 
 export type QuizEligibleField = {

@@ -62,7 +62,7 @@ export const getStoredStringArray = (storageKey: string): string[] => {
 
 const isQuizAnswerField = (
   field: TopicField,
-): field is Extract<TopicField, { type: 'string' | 'number' | 'year' | 'select' | 'boolean' }> =>
+): field is Extract<TopicField, { type: 'string' | 'number' | 'year' | 'yearRange' | 'select' | 'boolean' }> =>
   field.type !== 'imageUpload' && field.quiz?.enabled === true;
 
 const getQuizPrompt = (field: TopicField): string =>
@@ -204,7 +204,7 @@ const getFieldOptions = (field: TopicField): string[] =>
       : [];
 
 const getRequiredWrongAnswerCount = (
-  answerField: Extract<TopicField, { type: 'string' | 'number' | 'year' | 'select' | 'boolean' }>,
+  answerField: Extract<TopicField, { type: 'string' | 'number' | 'year' | 'yearRange' | 'select' | 'boolean' }>,
 ) => (answerField.type === 'boolean' ? 1 : DISTRACTOR_COUNT);
 
 const buildNumericRangeDistractors = ({
@@ -292,7 +292,10 @@ const getWrongAnswerCandidates = ({
   playableItem,
   topic,
 }: {
-  answerField: Extract<TopicField, { type: 'string' | 'number' | 'year' | 'select' | 'boolean' }>;
+  answerField: Extract<
+    TopicField,
+    { type: 'string' | 'number' | 'year' | 'yearRange' | 'select' | 'boolean' }
+  >;
   answerFieldKey: string;
   items: ReadonlyArray<TopicItem>;
   playableItem: QuizPlayableItem;
@@ -350,7 +353,10 @@ const canBuildQuestionForItem = ({
   playableItem,
   topic,
 }: {
-  answerField: Extract<TopicField, { type: 'string' | 'number' | 'year' | 'select' | 'boolean' }>;
+  answerField: Extract<
+    TopicField,
+    { type: 'string' | 'number' | 'year' | 'yearRange' | 'select' | 'boolean' }
+  >;
   answerFieldKey: string;
   items: ReadonlyArray<TopicItem>;
   playableItem: QuizPlayableItem;

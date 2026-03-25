@@ -48,6 +48,7 @@ export const getSearchableTopicFields = (fields: ReadonlyArray<TopicField>) =>
       (field.type === 'string' ||
         field.type === 'number' ||
         field.type === 'year' ||
+        field.type === 'yearRange' ||
         field.type === 'select' ||
         field.type === 'boolean') &&
       field.quiz?.enabled === true &&

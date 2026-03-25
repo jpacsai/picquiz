@@ -62,6 +62,11 @@ export type TopicField =
       max?: number | 'todayYear';
     })
   | (BaseTopicField & {
+      type: 'yearRange';
+      min?: number;
+      max?: number | 'todayYear';
+    })
+  | (BaseTopicField & {
       type: 'boolean';
     })
   | (BaseTopicField & {
@@ -83,7 +88,7 @@ export type TopicField =
 
 export type TopicCollectionSearchField = Extract<
   TopicField,
-  { type: 'string' | 'number' | 'year' | 'select' | 'boolean' }
+  { type: 'string' | 'number' | 'year' | 'yearRange' | 'select' | 'boolean' }
 > & {
   hideInEdit?: false;
   quiz: Extract<QuizFieldConfig, { enabled: true }>;

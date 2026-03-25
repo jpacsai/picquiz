@@ -24,6 +24,44 @@ export const fnRegistry = {
   },
 };
 
+const YEAR_RANGE_SEPARATOR = ' - ';
+
+export const parseYearRangeValue = (value: unknown): { from: string; to: string } => {
+  if (typeof value !== 'string') {
+    return { from: '', to: '' };
+  }
+
+  if (!value.trim()) {
+    return { from: '', to: '' };
+  }
+
+  const [from = '', to = ''] = value.includes(YEAR_RANGE_SEPARATOR)
+    ? value.split(YEAR_RANGE_SEPARATOR)
+    : [value, ''];
+
+  return {
+    from: from.trim(),
+    to: to.trim(),
+  };
+};
+
+export const buildYearRangeValue = ({
+  from,
+  to,
+}: {
+  from: string;
+  to: string;
+}): string => {
+  const normalizedFrom = from.trim();
+  const normalizedTo = to.trim();
+
+  if (!normalizedFrom && !normalizedTo) {
+    return '';
+  }
+
+  return `${normalizedFrom}${YEAR_RANGE_SEPARATOR}${normalizedTo}`;
+};
+
 export const getInitialValues = (
   fields: TopicField[],
   values?: Record<string, unknown>,
@@ -50,7 +88,7 @@ const buildDerivation = (fields: readonly TopicField[]): FormDeriveFieldIndex[] 
   }));
 };
 
-const resolveYearMaximum = (max: Extract<TopicField, { type: 'year' }>['max']) =>
+const resolveYearMaximum = (max: Extract<TopicField, { type: 'year' | 'yearRange' }>['max']) =>
   max === 'todayYear' ? new Date().getFullYear() : max;
 
 export const getDerivationIndex = (fields: TopicField[]) =>
@@ -79,6 +117,57 @@ export const getDerivationIndex = (fields: TopicField[]) =>
 export const getFieldValidator = (field: TopicField) => {
   const yearMinimum = field.type === 'year' ? field.min : undefined;
   const yearMaximum = field.type === 'year' ? resolveYearMaximum(field.max) : undefined;
+  const yearRangeMinimum = field.type === 'yearRange' ? field.min : undefined;
+  const yearRangeMaximum = field.type === 'yearRange' ? resolveYearMaximum(field.max) : undefined;
+
+  if (field.type === 'yearRange') {
+    return ({ value }: { value: string | number | boolean }) => {
+      const { from, to } = parseYearRangeValue(value);
+      const hasFrom = from.length > 0;
+      const hasTo = to.length > 0;
+
+      if (!hasFrom && !hasTo) {
+        return field.required ? 'Required' : undefined;
+      }
+
+      if (!hasFrom || !hasTo) {
+        return 'Both years are required';
+      }
+
+      const fromNumber = Number(from);
+      const toNumber = Number(to);
+
+      if (Number.isNaN(fromNumber) || !Number.isInteger(fromNumber)) {
+        return 'From year must be a whole year';
+      }
+
+      if (Number.isNaN(toNumber) || !Number.isInteger(toNumber)) {
+        return 'To year must be a whole year';
+      }
+
+      if (yearRangeMinimum !== undefined && fromNumber < yearRangeMinimum) {
+        return `From year must be at least ${yearRangeMinimum}`;
+      }
+
+      if (yearRangeMinimum !== undefined && toNumber < yearRangeMinimum) {
+        return `To year must be at least ${yearRangeMinimum}`;
+      }
+
+      if (yearRangeMaximum !== undefined && fromNumber > yearRangeMaximum) {
+        return `From year must be at most ${yearRangeMaximum}`;
+      }
+
+      if (yearRangeMaximum !== undefined && toNumber > yearRangeMaximum) {
+        return `To year must be at most ${yearRangeMaximum}`;
+      }
+
+      if (fromNumber > toNumber) {
+        return 'From year cannot be greater than to year';
+      }
+
+      return undefined;
+    };
+  }
 
   const schema =
     field.type === 'boolean'
@@ -275,7 +364,9 @@ export const getPersistableValue = ({
     }
 
     const normalizedValue =
-      field.type === 'string' && typeof nextValue === 'string' ? nextValue.trim() : nextValue;
+      (field.type === 'string' || field.type === 'yearRange') && typeof nextValue === 'string'
+        ? nextValue.trim()
+        : nextValue;
     const isEmptyValue = normalizedValue === '';
 
     if (!field.required && isEmptyValue) {

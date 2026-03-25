@@ -6,6 +6,7 @@ const FIELD_TYPE_OPTIONS = [
   { label: 'String', value: 'string' },
   { label: 'Number', value: 'number' },
   { label: 'Year', value: 'year' },
+  { label: 'Year range', value: 'yearRange' },
   { label: 'Boolean', value: 'boolean' },
   { label: 'Select', value: 'select' },
 ] as const;
@@ -26,7 +27,10 @@ const FieldDialogBasicsSection = ({
   pathPrefix,
 }: FieldDialogBasicsSectionProps) => {
   const hasTypeSpecificFields =
-    field.type === 'select' || field.type === 'year' || field.type === 'imageUpload';
+    field.type === 'select' ||
+    field.type === 'year' ||
+    field.type === 'yearRange' ||
+    field.type === 'imageUpload';
   const fieldTypeOptions =
     field.type === 'imageUpload'
       ? [...FIELD_TYPE_OPTIONS, { label: 'Image upload', value: 'imageUpload' as const }]
@@ -89,7 +93,7 @@ const FieldDialogBasicsSection = ({
             ...(nextValue === 'select'
               ? { options: currentField.options ?? [] }
               : { options: undefined }),
-            ...(nextValue === 'year'
+            ...(nextValue === 'year' || nextValue === 'yearRange'
               ? { max: currentField.max ?? 'todayYear', min: currentField.min }
               : { max: undefined, min: undefined }),
             ...(nextValue === 'imageUpload'

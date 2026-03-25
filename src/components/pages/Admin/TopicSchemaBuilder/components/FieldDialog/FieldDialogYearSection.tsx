@@ -8,7 +8,7 @@ type FieldDialogYearSectionProps = {
 };
 
 const FieldDialogYearSection = ({ field, onChange }: FieldDialogYearSectionProps) => {
-  if (field.type !== 'year') {
+  if (field.type !== 'year' && field.type !== 'yearRange') {
     return null;
   }
 

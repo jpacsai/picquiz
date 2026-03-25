@@ -171,6 +171,38 @@ describe('TopicItemForm saving', () => {
     expect(await screen.findByText('Must be at most 1600')).toBeInTheDocument();
   });
 
+  it('renders year range fields as from-to inputs and persists the derived string value', async () => {
+    const user = userEvent.setup();
+    const fields: TopicField[] = [
+      { key: 'artist', label: 'Artist', required: true, type: 'string' },
+      { key: 'lifespan', label: 'Szuletes-halal', type: 'yearRange', min: 1500, max: 2000 },
+    ];
+
+    render(
+      <TopicItemForm collectionName="art" fields={fields} storagePrefix="art" topicId="art" />,
+    );
+
+    await user.type(screen.getByTestId('form-input-artist'), 'Leonardo da Vinci');
+    await user.type(screen.getByTestId('form-input-lifespan-from'), '1452');
+    await user.type(screen.getByTestId('form-input-lifespan-to'), '1519');
+
+    expect(await screen.findByText('From year must be at least 1500')).toBeInTheDocument();
+
+    await user.clear(screen.getByTestId('form-input-lifespan-from'));
+    await user.type(screen.getByTestId('form-input-lifespan-from'), '1500');
+    await user.click(screen.getByRole('button', { name: 'Mentés' }));
+
+    await waitFor(() => {
+      expect(createTopicItemMock).toHaveBeenCalledWith({
+        collectionName: 'art',
+        values: {
+          artist: 'Leonardo da Vinci',
+          lifespan: '1500 - 1519',
+        },
+      });
+    });
+  });
+
   it('trims all string inputs before create submit', async () => {
     const user = userEvent.setup();
     const fields: TopicField[] = [

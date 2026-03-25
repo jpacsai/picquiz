@@ -15,8 +15,8 @@ type TopicFieldDraftBase = {
 
 export type TopicFieldDraft = TopicFieldDraftBase & {
   fileNameFields?: string[];
-  max?: Extract<TopicField, { type: 'year' }>['max'];
-  min?: Extract<TopicField, { type: 'year' }>['min'];
+  max?: Extract<TopicField, { type: 'year' | 'yearRange' }>['max'];
+  min?: Extract<TopicField, { type: 'year' | 'yearRange' }>['min'];
   options?: string[];
   targetFields?: Partial<Extract<TopicField, { type: 'imageUpload' }>['targetFields']>;
 };
