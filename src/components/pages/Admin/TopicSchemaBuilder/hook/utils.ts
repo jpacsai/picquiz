@@ -106,24 +106,6 @@ export const getAvailableDistractorSourceFieldOptions = ({
       label: field.label?.trim() || field.key!.trim(),
     }));
 
-export const getAvailableAutocompleteMatchFieldOptions = ({
-  fields,
-}: {
-  fields: TopicDraft['fields'];
-}) =>
-  fields
-    .filter(
-      (field) =>
-        field.type === 'string' &&
-        field.required &&
-        typeof field.key === 'string' &&
-        field.key.trim().length > 0,
-    )
-    .map((field) => ({
-      key: field.key!.trim(),
-      label: field.label?.trim() || field.key!.trim(),
-    }));
-
 export const getAvailableAutocompleteCopyFieldOptions = ({
   currentFieldKey,
   fields,

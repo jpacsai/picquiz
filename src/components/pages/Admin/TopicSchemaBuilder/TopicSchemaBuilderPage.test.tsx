@@ -383,10 +383,6 @@ describe('TopicSchemaBuilderPage', () => {
 
     await user.click(within(editDialog).getByRole('checkbox', { name: 'Autocomplete' }));
     await user.click(
-      within(editDialog).getByRole('combobox', { name: 'Autocomplete match field' }),
-    );
-    await user.click(screen.getByRole('option', { name: 'Artist' }));
-    await user.click(
       within(editDialog).getByRole('combobox', { name: 'Autocomplete copy fields' }),
     );
     await user.click(screen.getByRole('option', { name: 'Birth year' }));
@@ -408,7 +404,6 @@ describe('TopicSchemaBuilderPage', () => {
             expect.objectContaining({
               autocomplete: true,
               autocompleteCopyFields: ['birth_year', 'death_year'],
-              autocompleteMatchField: 'artist',
               key: 'artist',
               label: 'Artist',
               required: true,

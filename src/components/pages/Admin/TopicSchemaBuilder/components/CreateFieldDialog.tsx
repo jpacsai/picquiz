@@ -11,7 +11,6 @@ const CreateFieldDialog = () => {
     canAddField,
     isAddFieldDialogOpen,
     newFieldAutocompleteCopyFieldOptions,
-    newFieldAutocompleteMatchFieldOptions,
     newFieldDistractorSourceFieldOptions,
     newFieldDraft,
     newFieldErrorsByPath,
@@ -30,7 +29,6 @@ const CreateFieldDialog = () => {
       isOpen={isAddFieldDialogOpen}
       mode="create"
       availableAutocompleteCopyFieldOptions={newFieldAutocompleteCopyFieldOptions}
-      availableAutocompleteMatchFieldOptions={newFieldAutocompleteMatchFieldOptions}
       availableFileNameFieldOptions={newFieldFileNameFieldOptions}
       availableDistractorSourceFieldOptions={newFieldDistractorSourceFieldOptions}
       onChange={(updater) =>

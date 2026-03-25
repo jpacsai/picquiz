@@ -4,14 +4,12 @@ import type { TopicFieldDraft } from '@/types/topicSchema';
 
 type FieldDialogSettingsSectionProps = {
   availableAutocompleteCopyFieldOptions: Array<{ key: string; label: string }>;
-  availableAutocompleteMatchFieldOptions: Array<{ key: string; label: string }>;
   field: TopicFieldDraft;
   onChange: (updater: (field: TopicFieldDraft) => TopicFieldDraft) => void;
 };
 
 const FieldDialogSettingsSection = ({
   availableAutocompleteCopyFieldOptions,
-  availableAutocompleteMatchFieldOptions,
   field,
   onChange,
 }: FieldDialogSettingsSectionProps) => {
@@ -75,9 +73,7 @@ const FieldDialogSettingsSection = ({
                     autocompleteCopyFields: nextValue
                       ? currentField.autocompleteCopyFields
                       : undefined,
-                    autocompleteMatchField: nextValue
-                      ? currentField.autocompleteMatchField
-                      : undefined,
+                    autocompleteMatchField: undefined,
                   }));
                 }}
               />
@@ -87,30 +83,6 @@ const FieldDialogSettingsSection = ({
 
           {field.autocomplete ? (
             <>
-              <TextField
-                select
-                label="Autocomplete match field"
-                value={field.autocompleteMatchField ?? ''}
-                onChange={(event) => {
-                  const nextValue = event.target.value;
-
-                  onChange((currentField) => ({
-                    ...currentField,
-                    autocompleteMatchField: nextValue || undefined,
-                  }));
-                }}
-                fullWidth
-                margin="normal"
-                helperText="A kiválasztott autocomplete érték alapján ebben a kötelező string mezőben keresünk egyező itemet."
-              >
-                <MenuItem value="">No match field</MenuItem>
-                {availableAutocompleteMatchFieldOptions.map((option) => (
-                  <MenuItem key={option.key} value={option.key}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </TextField>
-
               <TextField
                 select
                 label="Autocomplete copy fields"
@@ -141,7 +113,7 @@ const FieldDialogSettingsSection = ({
                       })
                       .join(', '),
                 }}
-                helperText="Az egyező itemből ezek a mezők töltődnek ki automatikusan, de csak ha még üresek."
+                helperText="Az azonos értékű meglévő itemből ezek a mezők töltődnek ki automatikusan, de csak ha még üresek."
               >
                 {availableAutocompleteCopyFieldOptions.map((option) => (
                   <MenuItem key={option.key} value={option.key}>

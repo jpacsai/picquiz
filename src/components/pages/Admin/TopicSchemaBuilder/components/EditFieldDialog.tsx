@@ -15,7 +15,6 @@ const EditFieldDialog = () => {
     isEditFieldDialogOpen,
     selectedField,
     selectedFieldAutocompleteCopyFieldOptions,
-    selectedFieldAutocompleteMatchFieldOptions,
     selectedFieldDistractorSourceFieldOptions,
     selectedFieldFileNameFieldOptions,
     selectedFieldIndex,
@@ -52,7 +51,6 @@ const EditFieldDialog = () => {
         }`}
         canSubmit
         availableAutocompleteCopyFieldOptions={selectedFieldAutocompleteCopyFieldOptions}
-        availableAutocompleteMatchFieldOptions={selectedFieldAutocompleteMatchFieldOptions}
         availableFileNameFieldOptions={selectedFieldFileNameFieldOptions}
         availableDistractorSourceFieldOptions={selectedFieldDistractorSourceFieldOptions}
         errorsByPath={fieldErrorsByPath}

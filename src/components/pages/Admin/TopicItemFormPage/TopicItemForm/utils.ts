@@ -362,7 +362,6 @@ export const resolveAutocompleteCopyValues = ({
     return { updates: {} };
   }
 
-  const matchFieldKey = field.autocompleteMatchField?.trim();
   const copyFieldKeys = (field.autocompleteCopyFields ?? [])
     .map((fieldKey) => fieldKey.trim())
     .filter(Boolean);
@@ -370,12 +369,12 @@ export const resolveAutocompleteCopyValues = ({
   const normalizedSelectedValue =
     typeof selectedValue === 'string' ? selectedValue.trim() : '';
 
-  if (!matchFieldKey || !copyFieldKeys.length || !normalizedSelectedValue) {
+  if (!copyFieldKeys.length || !normalizedSelectedValue) {
     return { updates: {} };
   }
 
   const matchingItems = items.filter((item) => {
-    const matchValue = item[matchFieldKey];
+    const matchValue = item[field.key];
 
     return typeof matchValue === 'string' && matchValue.trim() === normalizedSelectedValue;
   });

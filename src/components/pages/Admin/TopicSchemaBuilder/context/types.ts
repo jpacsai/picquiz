@@ -24,7 +24,6 @@ export type TopicSchemaBuilderStateValue = {
   }[];
   mode: TopicSchemaBuilderPageProps['mode'];
   newFieldAutocompleteCopyFieldOptions: Array<{ key: string; label: string }>;
-  newFieldAutocompleteMatchFieldOptions: Array<{ key: string; label: string }>;
   newFieldDistractorSourceFieldOptions: Array<{ key: string; label: string }>;
   newFieldDraft: TopicFieldDraft;
   newFieldErrorsByPath: Map<string, string>;
@@ -32,7 +31,6 @@ export type TopicSchemaBuilderStateValue = {
   newFieldIndex: number;
   selectedField: TopicFieldDraft | null;
   selectedFieldAutocompleteCopyFieldOptions: Array<{ key: string; label: string }>;
-  selectedFieldAutocompleteMatchFieldOptions: Array<{ key: string; label: string }>;
   selectedFieldDistractorSourceFieldOptions: Array<{ key: string; label: string }>;
   selectedFieldFileNameFieldOptions: Array<{ key: string; label: string }>;
   selectedFieldIndex: SelectedFieldIndex;

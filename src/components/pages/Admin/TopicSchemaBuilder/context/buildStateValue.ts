@@ -5,7 +5,6 @@ import { validateTopicDraft } from '@/utils/topicSchemaValidation';
 
 import {
   getAvailableAutocompleteCopyFieldOptions,
-  getAvailableAutocompleteMatchFieldOptions,
   getAvailableDistractorSourceFieldOptions,
   getAvailableFileNameFieldOptions,
   getPersistedFields,
@@ -122,18 +121,12 @@ export const useTopicSchemaBuilderStateValue = ({
     currentFieldKey: newFieldDraft.key,
     fields: draft.fields,
   });
-  const newFieldAutocompleteMatchFieldOptions = getAvailableAutocompleteMatchFieldOptions({
-    fields: draft.fields,
-  });
   const newFieldAutocompleteCopyFieldOptions = getAvailableAutocompleteCopyFieldOptions({
     currentFieldKey: newFieldDraft.key,
     fields: draft.fields,
   });
   const selectedFieldDistractorSourceFieldOptions = getAvailableDistractorSourceFieldOptions({
     currentFieldKey: selectedField?.key,
-    fields: draft.fields,
-  });
-  const selectedFieldAutocompleteMatchFieldOptions = getAvailableAutocompleteMatchFieldOptions({
     fields: draft.fields,
   });
   const selectedFieldAutocompleteCopyFieldOptions = getAvailableAutocompleteCopyFieldOptions({
@@ -157,7 +150,6 @@ export const useTopicSchemaBuilderStateValue = ({
     metadataFields,
     mode,
     newFieldAutocompleteCopyFieldOptions,
-    newFieldAutocompleteMatchFieldOptions,
     newFieldDistractorSourceFieldOptions,
     newFieldDraft,
     newFieldErrorsByPath,
@@ -165,7 +157,6 @@ export const useTopicSchemaBuilderStateValue = ({
     newFieldIndex,
     selectedField,
     selectedFieldAutocompleteCopyFieldOptions,
-    selectedFieldAutocompleteMatchFieldOptions,
     selectedFieldDistractorSourceFieldOptions,
     selectedFieldFileNameFieldOptions,
     selectedFieldIndex,

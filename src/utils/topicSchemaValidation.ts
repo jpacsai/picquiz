@@ -254,9 +254,8 @@ const validateField = ({
     const autocompleteCopyFields = (field.autocompleteCopyFields ?? [])
       .map((fieldKey) => fieldKey.trim())
       .filter(Boolean);
-    const autocompleteMatchField = field.autocompleteMatchField?.trim();
 
-    if ((autocompleteMatchField || autocompleteCopyFields.length) && !field.autocomplete) {
+    if (autocompleteCopyFields.length && !field.autocomplete) {
       issues.push(
         createIssue({
           message: 'Autocomplete copy settings require autocomplete to be enabled.',
@@ -264,36 +263,6 @@ const validateField = ({
           severity: 'error',
         }),
       );
-    }
-
-    if (field.autocomplete && autocompleteCopyFields.length && !autocompleteMatchField) {
-      issues.push(
-        createIssue({
-          message: 'Autocomplete copy fields require a match field.',
-          path: `${fieldPath}.autocompleteMatchField`,
-          severity: 'error',
-        }),
-      );
-    }
-
-    if (autocompleteMatchField) {
-      const referencedMatchField = fields.find(
-        (candidateField) => candidateField.key?.trim() === autocompleteMatchField,
-      );
-
-      if (
-        !referencedMatchField ||
-        referencedMatchField.type !== 'string' ||
-        !referencedMatchField.required
-      ) {
-        issues.push(
-          createIssue({
-            message: 'Autocomplete match field must reference an existing required string field.',
-            path: `${fieldPath}.autocompleteMatchField`,
-            severity: 'error',
-          }),
-        );
-      }
     }
 
     autocompleteCopyFields.forEach((copyFieldKey) => {

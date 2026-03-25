@@ -470,7 +470,6 @@ describe('TopicItemForm saving', () => {
       {
         autocomplete: true,
         autocompleteCopyFields: ['birth_year', 'death_year'],
-        autocompleteMatchField: 'artist',
         key: 'artist',
         label: 'Artist',
         required: true,
@@ -505,7 +504,6 @@ describe('TopicItemForm saving', () => {
       {
         autocomplete: true,
         autocompleteCopyFields: ['birth_year', 'death_year'],
-        autocompleteMatchField: 'artist',
         key: 'artist',
         label: 'Artist',
         required: true,
@@ -541,7 +539,6 @@ describe('TopicItemForm saving', () => {
       {
         autocomplete: true,
         autocompleteCopyFields: ['birth_year', 'death_year'],
-        autocompleteMatchField: 'artist',
         key: 'artist',
         label: 'Artist',
         required: true,
