@@ -148,6 +148,52 @@ describe('useTopicItemForm', () => {
     expect(invalidateQueriesMock).not.toHaveBeenCalled();
   });
 
+  it('maps storage unauthorized upload errors to a helpful admin message', async () => {
+    uploadResponsiveTopicImagesMock.mockRejectedValue(
+      Object.assign(
+        new Error(
+          "Firebase Storage: User does not have permission to access 'portrait/mobile/1774473303827-pablo-picasso-mobile.jpg'. (storage/unauthorized)",
+        ),
+        { code: 'storage/unauthorized' },
+      ),
+    );
+
+    const { result } = renderHook(() =>
+      useTopicItemForm({
+        collectionName: 'portrait',
+        fields: imageFields,
+        mode: 'create',
+        storagePrefix: 'portrait',
+        topicId: 'portrait',
+      }),
+    );
+
+    await setFormValues(result.current.form, {
+      artist: 'Pablo Picasso',
+      title: 'Guernica',
+    });
+
+    await act(async () => {
+      result.current.handleSelectPendingImage({
+        field: imageFields[imageFields.length - 1] as Extract<TopicField, { type: 'imageUpload' }>,
+        file: new File(['image'], 'guernica.jpg', { type: 'image/jpeg' }),
+        uniqueSuffix: 'unique1234',
+      });
+    });
+
+    await act(async () => {
+      await result.current.form.handleSubmit();
+    });
+
+    await waitFor(() => {
+      expect(result.current.submitError).toBe(
+        'Nincs feltöltési jogosultság a(z) "portrait" storage prefixhez. Valószínűleg a Firebase Storage szabályok még nem engedik ezt az útvonalat.',
+      );
+    });
+
+    expect(createTopicItemMock).not.toHaveBeenCalled();
+  });
+
   it('updates item caches and invalidates topic and detail queries after a successful edit', async () => {
     const { result } = renderHook(() =>
       useTopicItemForm({

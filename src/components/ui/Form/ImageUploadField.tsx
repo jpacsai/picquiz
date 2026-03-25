@@ -66,20 +66,6 @@ const ImageUploadField = ({
           marginTop: '22px',
         }}
       >
-        <Button
-          variant="contained"
-          disabled={!isReadyForUpload}
-          onClick={() => {
-            if (!existingSelection) {
-              setDraftUniqueSuffix(createImageFileUniqueSuffix());
-            }
-
-            setIsImageDialogOpen(true);
-          }}
-          sx={{ height: '55px' }}
-        >
-          {field.label}
-        </Button>
         {!isReadyForUpload && helperText ? (
           <Box
             component="span"
@@ -91,6 +77,21 @@ const ImageUploadField = ({
             {helperText}
           </Box>
         ) : null}
+
+        <Button
+          variant="contained"
+          disabled={!isReadyForUpload}
+          onClick={() => {
+            if (!existingSelection) {
+              setDraftUniqueSuffix(createImageFileUniqueSuffix());
+            }
+
+            setIsImageDialogOpen(true);
+          }}
+          sx={{ height: '67px' }}
+        >
+          {field.label}
+        </Button>
 
         {showExistingImage || showMissingImagePlaceholder ? (
           <Box

@@ -35,6 +35,39 @@ type UseTopicItemFormParams = {
   topicId: string;
 };
 
+const getStoragePathPrefixFromMessage = (message: string) => {
+  const matchedPath = message.match(/access '([^']+)'/);
+  const fullPath = matchedPath?.[1];
+
+  if (!fullPath) {
+    return null;
+  }
+
+  const [prefix] = fullPath.split('/');
+
+  return prefix?.trim() ? prefix : null;
+};
+
+const getSubmitErrorMessage = (error: unknown) => {
+  const message = error instanceof Error ? error.message : 'Ismeretlen mentési hiba.';
+  const code =
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    typeof error.code === 'string'
+      ? error.code
+      : null;
+
+  if (code === 'storage/unauthorized' || message.includes('(storage/unauthorized)')) {
+    const storagePrefix = getStoragePathPrefixFromMessage(message);
+
+    return storagePrefix
+      ? `Nincs feltöltési jogosultság a(z) "${storagePrefix}" storage prefixhez. Valószínűleg a Firebase Storage szabályok még nem engedik ezt az útvonalat.`
+      : 'Nincs feltöltési jogosultság ehhez a képútvonalhoz. Valószínűleg a Firebase Storage szabályok még nem engedik ezt a storage prefixet.';
+  }
+
+  return message;
+};
 
 export const useTopicItemForm = ({
   collectionName,
@@ -150,9 +183,8 @@ export const useTopicItemForm = ({
               },
         );
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'Ismeretlen mentési hiba.';
         console.error('Sikertelen mentés', error);
-        setSubmitError(message);
+        setSubmitError(getSubmitErrorMessage(error));
       } finally {
         setIsSubmitting(false);
       }

@@ -48,7 +48,10 @@ const TopicItemFormView = ({
             field.targetFields.mobile,
             field.targetFields.desktopPath,
             field.targetFields.mobilePath,
-          ].filter((targetKey): targetKey is string => typeof targetKey === 'string' && targetKey.length > 0)
+          ].filter(
+            (targetKey): targetKey is string =>
+              typeof targetKey === 'string' && targetKey.length > 0,
+          )
         : [],
     ),
   );
@@ -65,11 +68,13 @@ const TopicItemFormView = ({
     >
       <Box
         sx={{
+          alignItems: 'end',
           display: 'grid',
           gridTemplateColumns: 'repeat(2, 1fr)',
           gap: '20px',
           marginBottom: '30px',
         }}
+        data-testid="topic-item-form-fields-container"
       >
         {visibleFields.map((field) => (
           <FormField
