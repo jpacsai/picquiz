@@ -33,6 +33,18 @@ const topic: Topic = {
       type: 'string',
     },
     {
+      key: 'artist',
+      label: 'Alkoto',
+      quiz: { enabled: true, prompt: 'Ki alkotta?' },
+      type: 'string',
+    },
+    {
+      key: 'lifespan',
+      label: 'Eletevek',
+      quiz: { enabled: true, prompt: 'Mikor elt?' },
+      type: 'yearRange',
+    },
+    {
       key: 'image',
       label: 'Kep',
       fileNameFields: ['artist', 'title'],
@@ -45,8 +57,10 @@ const topic: Topic = {
 const items: ReadonlyArray<TopicItem> = [
   {
     id: '1',
+    artist: 'Leonardo da Vinci',
     image_desktop: '/image-1-desktop.jpg',
     image_mobile: '/image-1-mobile.jpg',
+    lifespan: '1452 - 1519',
     title: 'One',
   },
 ];
@@ -73,9 +87,10 @@ describe('useQuiz', () => {
   it('rebuilds questions when restarting the quiz', () => {
     buildQuizQuestionsMock.mockReset();
     getSelectedQuizFieldsMock.mockClear();
+    let questionBuildCount = 0;
 
     buildQuizQuestionsMock.mockImplementation(() => {
-      const questionBuildCount = buildQuizQuestionsMock.mock.calls.length + 1;
+      questionBuildCount += 1;
 
       return questionBuildCount === 1
         ? [buildQuestion('first', 'Elso')]
@@ -106,5 +121,36 @@ describe('useQuiz', () => {
     expect(result.current.currentQuestionIndex).toBe(0);
     expect(result.current.score).toBe(0);
     expect(result.current.selectedOptionId).toBe('');
+  });
+
+  it('returns multiple selected answer details including year ranges', () => {
+    buildQuizQuestionsMock.mockReset();
+    getSelectedQuizFieldsMock.mockClear();
+    buildQuizQuestionsMock.mockReturnValue([buildQuestion('1', 'One')]);
+
+    const { result } = renderHook(() =>
+      useQuiz({
+        answerDetailFieldKeys: ['artist', 'lifespan'],
+        answerFieldKeys: ['title'],
+        autoAdvanceAfterAnswer: false,
+        isDesktop: true,
+        items,
+        questionCount: 1,
+        topic,
+      }),
+    );
+
+    expect(result.current.currentAnswerDetails).toEqual([
+      {
+        key: 'artist',
+        label: 'Alkoto',
+        value: 'Leonardo da Vinci',
+      },
+      {
+        key: 'lifespan',
+        label: 'Eletevek',
+        value: '1452 - 1519',
+      },
+    ]);
   });
 });

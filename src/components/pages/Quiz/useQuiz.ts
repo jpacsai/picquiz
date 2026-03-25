@@ -123,6 +123,7 @@ export const useQuiz = ({
           (field.type === 'string' ||
             field.type === 'number' ||
             field.type === 'year' ||
+            field.type === 'yearRange' ||
             field.type === 'select' ||
             field.type === 'boolean') &&
           answerDetailFieldKeys.includes(field.key) &&
