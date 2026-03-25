@@ -11,7 +11,7 @@ export const IMAGE_UPLOAD_SYSTEM_FIELDS: TopicFieldDraft[] = [
   {
     hideInEdit: true,
     key: IMAGE_UPLOAD_TARGET_FIELD_KEYS.desktopPath,
-    label: 'Kep path - desktop',
+    label: 'Image path - desktop',
     readonly: true,
     required: true,
     type: 'string',
@@ -19,7 +19,7 @@ export const IMAGE_UPLOAD_SYSTEM_FIELDS: TopicFieldDraft[] = [
   {
     hideInEdit: true,
     key: IMAGE_UPLOAD_TARGET_FIELD_KEYS.desktop,
-    label: 'Kep url - desktop',
+    label: 'Image url - desktop',
     readonly: true,
     required: true,
     type: 'string',
@@ -27,7 +27,7 @@ export const IMAGE_UPLOAD_SYSTEM_FIELDS: TopicFieldDraft[] = [
   {
     hideInEdit: true,
     key: IMAGE_UPLOAD_TARGET_FIELD_KEYS.mobilePath,
-    label: 'Kep path - mobile',
+    label: 'Image path - mobile',
     readonly: true,
     required: true,
     type: 'string',
@@ -35,7 +35,7 @@ export const IMAGE_UPLOAD_SYSTEM_FIELDS: TopicFieldDraft[] = [
   {
     hideInEdit: true,
     key: IMAGE_UPLOAD_TARGET_FIELD_KEYS.mobile,
-    label: 'Kep url - mobile',
+    label: 'Image url - mobile',
     readonly: true,
     required: true,
     type: 'string',

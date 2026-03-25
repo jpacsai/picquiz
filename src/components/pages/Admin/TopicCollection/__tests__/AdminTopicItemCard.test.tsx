@@ -51,8 +51,8 @@ const fields: TopicField[] = [
     display: 'subtitle',
   },
   { key: 'title', label: 'Title', required: true, type: 'string', display: 'title' },
-  { key: 'image_path_desktop', label: 'Desktop path', readonly: true, type: 'string' },
-  { key: 'image_path_mobile', label: 'Mobile path', readonly: true, type: 'string' },
+  { key: 'image_path_desktop', label: 'Image path - desktop', readonly: true, type: 'string' },
+  { key: 'image_path_mobile', label: 'Image path - mobile', readonly: true, type: 'string' },
   {
     buttonLabel: 'Upload image',
     fileNameFields: ['artist', 'title'],

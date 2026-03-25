@@ -188,10 +188,10 @@ describe('TopicItemForm saving', () => {
     const fields: TopicField[] = [
       { key: 'artist', label: 'Artist', required: true, type: 'string' },
       { key: 'title', label: 'Title', required: true, type: 'string' },
-      { key: 'image_url_desktop', label: 'Desktop URL', readonly: true, type: 'string' },
-      { key: 'image_url_mobile', label: 'Mobile URL', readonly: true, type: 'string' },
-      { key: 'image_path_desktop', label: 'Desktop path', readonly: true, type: 'string' },
-      { key: 'image_path_mobile', label: 'Mobile path', readonly: true, type: 'string' },
+      { key: 'image_url_desktop', label: 'Image url - desktop', readonly: true, type: 'string' },
+      { key: 'image_url_mobile', label: 'Image url - mobile', readonly: true, type: 'string' },
+      { key: 'image_path_desktop', label: 'Image path - desktop', readonly: true, type: 'string' },
+      { key: 'image_path_mobile', label: 'Image path - mobile', readonly: true, type: 'string' },
       {
         buttonLabel: 'Upload after artist and title',
         fileNameFields: ['artist', 'title'],
@@ -257,8 +257,8 @@ describe('TopicItemForm saving', () => {
     const fields: TopicField[] = [
       { key: 'artist', label: 'Artist', required: true, type: 'string' },
       { key: 'title', label: 'Title', required: true, type: 'string' },
-      { key: 'image_url_desktop', label: 'Desktop URL', readonly: true, type: 'string' },
-      { key: 'image_url_mobile', label: 'Mobile URL', readonly: true, type: 'string' },
+      { key: 'image_url_desktop', label: 'Image url - desktop', readonly: true, type: 'string' },
+      { key: 'image_url_mobile', label: 'Image url - mobile', readonly: true, type: 'string' },
       {
         buttonLabel: 'Upload after artist and title',
         fileNameFields: ['artist', 'title'],
@@ -303,8 +303,8 @@ describe('TopicItemForm saving', () => {
     const fields: TopicField[] = [
       { key: 'artist', label: 'Artist', required: true, type: 'string' },
       { key: 'title', label: 'Title', required: true, type: 'string' },
-      { key: 'image_url_desktop', label: 'Desktop URL', readonly: true, type: 'string' },
-      { key: 'image_url_mobile', label: 'Mobile URL', readonly: true, type: 'string' },
+      { key: 'image_url_desktop', label: 'Image url - desktop', readonly: true, type: 'string' },
+      { key: 'image_url_mobile', label: 'Image url - mobile', readonly: true, type: 'string' },
       {
         buttonLabel: 'Upload after artist and title',
         fileNameFields: ['artist', 'title'],
@@ -384,17 +384,17 @@ describe('TopicItemForm saving', () => {
     expect(screen.getByRole('textbox', { name: 'Title' })).toBe(screen.getByTestId('form-input-title'));
   });
 
-  it('prefills edit values, keeps readonly path fields visible, and updates an item', async () => {
+  it('prefills edit values, hides image upload system fields, and updates an item', async () => {
     const user = userEvent.setup();
     const desktopBlob = new Blob(['desktop'], { type: 'image/jpeg' });
     const mobileBlob = new Blob(['mobile'], { type: 'image/jpeg' });
     const fields: TopicField[] = [
       { key: 'artist', label: 'Artist', required: true, type: 'string' },
       { key: 'title', label: 'Title', required: true, type: 'string' },
-      { key: 'image_url_desktop', label: 'Desktop URL', readonly: true, type: 'string' },
-      { key: 'image_url_mobile', label: 'Mobile URL', readonly: true, type: 'string' },
-      { key: 'image_path_desktop', label: 'Desktop path', readonly: true, type: 'string' },
-      { key: 'image_path_mobile', label: 'Mobile path', readonly: true, type: 'string' },
+      { key: 'image_url_desktop', label: 'Image url - desktop', readonly: true, type: 'string' },
+      { key: 'image_url_mobile', label: 'Image url - mobile', readonly: true, type: 'string' },
+      { key: 'image_path_desktop', label: 'Image path - desktop', readonly: true, type: 'string' },
+      { key: 'image_path_mobile', label: 'Image path - mobile', readonly: true, type: 'string' },
       {
         buttonLabel: 'Upload after artist and title',
         fileNameFields: ['artist', 'title'],
@@ -438,8 +438,8 @@ describe('TopicItemForm saving', () => {
       />,
     );
 
-    expect(screen.getByDisplayValue('art/desktop/old.jpg')).toBeDisabled();
-    expect(screen.getByDisplayValue('art/mobile/old.jpg')).toBeDisabled();
+    expect(screen.queryByDisplayValue('art/desktop/old.jpg')).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue('art/mobile/old.jpg')).not.toBeInTheDocument();
 
     await user.clear(screen.getByTestId('form-input-title'));
     await user.type(screen.getByTestId('form-input-title'), 'Mona Lisa Restored');
@@ -475,8 +475,8 @@ describe('TopicItemForm saving', () => {
     const fields: TopicField[] = [
       { key: 'artist', label: 'Artist', required: true, type: 'string' },
       { key: 'title', label: 'Title', required: true, type: 'string' },
-      { key: 'image_path_desktop', label: 'Desktop path', readonly: true, type: 'string' },
-      { key: 'image_path_mobile', label: 'Mobile path', readonly: true, type: 'string' },
+      { key: 'image_path_desktop', label: 'Image path - desktop', readonly: true, type: 'string' },
+      { key: 'image_path_mobile', label: 'Image path - mobile', readonly: true, type: 'string' },
       {
         buttonLabel: 'Upload after artist and title',
         fileNameFields: ['artist', 'title'],
@@ -520,8 +520,8 @@ describe('TopicItemForm saving', () => {
     await user.click(screen.getByRole('button', { name: 'Visszaállítás' }));
 
     expect(screen.getByTestId('form-input-title')).toHaveValue('Mona Lisa');
-    expect(screen.getByDisplayValue('art/desktop/original.jpg')).toBeDisabled();
-    expect(screen.getByDisplayValue('art/mobile/original.jpg')).toBeDisabled();
+    expect(screen.queryByDisplayValue('art/desktop/original.jpg')).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue('art/mobile/original.jpg')).not.toBeInTheDocument();
     expect(screen.queryByText('Feltöltésre váró kép')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Visszaállítás' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Mentés' })).toBeDisabled();
@@ -532,8 +532,8 @@ describe('TopicItemForm saving', () => {
     const fields: TopicField[] = [
       { key: 'artist', label: 'Artist', required: true, type: 'string' },
       { key: 'title', label: 'Title', required: true, type: 'string' },
-      { key: 'image_url_desktop', label: 'Desktop URL', readonly: true, type: 'string' },
-      { key: 'image_url_mobile', label: 'Mobile URL', readonly: true, type: 'string' },
+      { key: 'image_url_desktop', label: 'Image url - desktop', readonly: true, type: 'string' },
+      { key: 'image_url_mobile', label: 'Image url - mobile', readonly: true, type: 'string' },
       {
         buttonLabel: 'Upload after artist and title',
         fileNameFields: ['artist', 'title'],

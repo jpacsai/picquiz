@@ -50,10 +50,10 @@ const baseFields: TopicField[] = [
 
 const imageFields: TopicField[] = [
   ...baseFields,
-  { key: 'image_url_desktop', label: 'Desktop URL', readonly: true, type: 'string' },
-  { key: 'image_url_mobile', label: 'Mobile URL', readonly: true, type: 'string' },
-  { key: 'image_path_desktop', label: 'Desktop path', readonly: true, type: 'string' },
-  { key: 'image_path_mobile', label: 'Mobile path', readonly: true, type: 'string' },
+  { key: 'image_url_desktop', label: 'Image url - desktop', readonly: true, type: 'string' },
+  { key: 'image_url_mobile', label: 'Image url - mobile', readonly: true, type: 'string' },
+  { key: 'image_path_desktop', label: 'Image path - desktop', readonly: true, type: 'string' },
+  { key: 'image_path_mobile', label: 'Image path - mobile', readonly: true, type: 'string' },
   {
     buttonLabel: 'Upload after artist and title',
     fileNameFields: ['artist', 'title'],

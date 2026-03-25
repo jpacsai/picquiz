@@ -43,9 +43,12 @@ const TopicItemFormView = ({
   const hiddenFieldKeys = new Set(
     fields.flatMap((field) =>
       field.type === 'imageUpload'
-        ? [field.targetFields.desktop, field.targetFields.mobile].filter((targetKey) =>
-            /url/i.test(targetKey),
-          )
+        ? [
+            field.targetFields.desktop,
+            field.targetFields.mobile,
+            field.targetFields.desktopPath,
+            field.targetFields.mobilePath,
+          ].filter((targetKey): targetKey is string => typeof targetKey === 'string' && targetKey.length > 0)
         : [],
     ),
   );

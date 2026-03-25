@@ -21,7 +21,7 @@ const createValidDraft = (): TopicDraft => ({
     {
       hideInEdit: true,
       key: 'image_desktop',
-      label: 'Kep url - desktop',
+      label: 'Image url - desktop',
       readonly: true,
       required: true,
       type: 'string',
@@ -29,7 +29,7 @@ const createValidDraft = (): TopicDraft => ({
     {
       hideInEdit: true,
       key: 'image_mobile',
-      label: 'Kep url - mobile',
+      label: 'Image url - mobile',
       readonly: true,
       required: true,
       type: 'string',
