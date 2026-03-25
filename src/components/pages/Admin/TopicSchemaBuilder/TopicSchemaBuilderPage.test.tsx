@@ -10,6 +10,7 @@ import TopicSchemaBuilderPage from './TopicSchemaBuilderPage';
 
 const navigateMock = vi.fn();
 const invalidateQueriesMock = vi.fn();
+const setQueryDataMock = vi.fn();
 const createTopicMock = vi.fn();
 const updateTopicMock = vi.fn();
 
@@ -29,6 +30,7 @@ vi.mock('@tanstack/react-router', async () => {
 vi.mock('@tanstack/react-query', () => ({
   useQueryClient: () => ({
     invalidateQueries: invalidateQueriesMock,
+    setQueryData: setQueryDataMock,
   }),
 }));
 
@@ -49,6 +51,7 @@ describe('TopicSchemaBuilderPage', () => {
   beforeEach(() => {
     navigateMock.mockReset();
     invalidateQueriesMock.mockReset();
+    setQueryDataMock.mockReset();
     createTopicMock.mockReset();
     updateTopicMock.mockReset();
 

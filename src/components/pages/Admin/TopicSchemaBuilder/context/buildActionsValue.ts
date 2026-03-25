@@ -4,6 +4,7 @@ import type { QueryClient } from '@tanstack/react-query';
 import type { NavigateFn } from '@tanstack/react-router';
 
 import type { TopicFieldDraft } from '@/types/topicSchema';
+import type { Topic } from '@/types/topics';
 import type { SelectedFieldIndex, TopicSchemaBuilderPageProps } from '@/types/topicSchemaBuilder';
 
 import {
@@ -210,6 +211,28 @@ export const buildTopicSchemaBuilderActionsValue = ({
           values,
         });
       }
+
+      const nextTopic: Topic = {
+        id: topicId,
+        ...values,
+      };
+
+      queryClient.setQueryData(QUERY_KEYS.TOPICS.byId(topicId), nextTopic);
+      queryClient.setQueryData<ReadonlyArray<Topic>>(QUERY_KEYS.TOPICS.list(), (previousTopics) => {
+        if (!previousTopics) {
+          return [nextTopic];
+        }
+
+        const hasExistingTopic = previousTopics.some((previousTopic) => previousTopic.id === topicId);
+
+        if (!hasExistingTopic) {
+          return [...previousTopics, nextTopic];
+        }
+
+        return previousTopics.map((previousTopic) =>
+          previousTopic.id === topicId ? nextTopic : previousTopic,
+        );
+      });
 
       await queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.TOPICS.list(),
