@@ -10,7 +10,7 @@ const RouteComponent = () => {
 export const Route = createFileRoute('/')({
   beforeLoad: async () => {
     const snap = await authStore.onceReady();
-    if (snap.user) throw redirect({ to: '/' });
+    if (snap.user) throw redirect({ to: '/home' });
   },
   component: RouteComponent,
 });
