@@ -77,6 +77,7 @@ const FormField = ({
   switch (type) {
     case 'string':
     case 'number':
+    case 'year':
       return (
         <form.Field key={key} name={key} validators={{ onChange: getFieldValidator(field) }}>
           {(fieldApi) => {
@@ -92,18 +93,34 @@ const FormField = ({
 
             return (
               <FormInput
-                type={type === 'number' ? 'number' : undefined}
+                type={type === 'number' || type === 'year' ? 'number' : undefined}
                 name={key}
                 label={label}
                 required={required}
                 disabled={readonly}
                 value={fieldApi.state.value}
+                inputProps={
+                  type === 'year'
+                    ? {
+                        max:
+                          field.max === 'todayYear'
+                            ? new Date().getFullYear()
+                            : typeof field.max === 'number'
+                              ? field.max
+                              : undefined,
+                        min: field.min,
+                        step: 1,
+                      }
+                    : undefined
+                }
                 options={type === 'string' && field.autocomplete ? autocompleteOptions : undefined}
                 onBlur={fieldApi.handleBlur}
                 onChange={(event) => {
                   const rawValue = event.target.value;
                   const nextValue =
-                    type === 'number' ? (rawValue === '' ? '' : Number(rawValue)) : rawValue;
+                    type === 'number' || type === 'year'
+                      ? (rawValue === '' ? '' : Number(rawValue))
+                      : rawValue;
 
                   fieldApi.handleChange(nextValue);
 

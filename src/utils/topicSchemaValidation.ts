@@ -203,10 +203,15 @@ const validateField = ({
     );
   }
 
-  if (field.quiz?.enabled && field.quiz.distractor?.type === 'numericRange' && field.type !== 'number') {
+  if (
+    field.quiz?.enabled &&
+    field.quiz.distractor?.type === 'numericRange' &&
+    field.type !== 'number' &&
+    field.type !== 'year'
+  ) {
     issues.push(
       createIssue({
-        message: 'Numeric range distractors are only supported on number fields.',
+        message: 'Numeric range distractors are only supported on number and year fields.',
         path: `${fieldPath}.quiz.distractor.type`,
         severity: 'error',
       }),
@@ -239,6 +244,45 @@ const validateField = ({
         createIssue({
           message: 'Select fields must have at least one option.',
           path: `${fieldPath}.options`,
+          severity: 'error',
+        }),
+      );
+    }
+  }
+
+  if (field.type === 'year') {
+    if (field.min !== undefined && Number.isNaN(field.min)) {
+      issues.push(
+        createIssue({
+          message: 'Year minimum must be a valid number.',
+          path: `${fieldPath}.min`,
+          severity: 'error',
+        }),
+      );
+    }
+
+    if (field.max !== undefined && field.max !== 'todayYear' && Number.isNaN(field.max)) {
+      issues.push(
+        createIssue({
+          message: 'Year maximum must be a valid number or `todayYear`.',
+          path: `${fieldPath}.max`,
+          severity: 'error',
+        }),
+      );
+    }
+
+    if (
+      typeof field.min === 'number' &&
+      !Number.isNaN(field.min) &&
+      field.max !== undefined &&
+      field.max !== 'todayYear' &&
+      !Number.isNaN(field.max) &&
+      field.min > field.max
+    ) {
+      issues.push(
+        createIssue({
+          message: 'Year minimum cannot be greater than year maximum.',
+          path: `${fieldPath}.max`,
           severity: 'error',
         }),
       );

@@ -5,6 +5,7 @@ import type { TopicFieldDraft } from '@/types/topicSchema';
 const FIELD_TYPE_OPTIONS = [
   { label: 'String', value: 'string' },
   { label: 'Number', value: 'number' },
+  { label: 'Year', value: 'year' },
   { label: 'Boolean', value: 'boolean' },
   { label: 'Select', value: 'select' },
 ] as const;
@@ -86,6 +87,9 @@ const FieldDialogBasicsSection = ({
             ...(nextValue === 'select'
               ? { options: currentField.options ?? [] }
               : { options: undefined }),
+            ...(nextValue === 'year'
+              ? { max: currentField.max ?? 'todayYear', min: currentField.min }
+              : { max: undefined, min: undefined }),
             ...(nextValue === 'imageUpload'
               ? {
                   fileNameFields: currentField.fileNameFields ?? [],

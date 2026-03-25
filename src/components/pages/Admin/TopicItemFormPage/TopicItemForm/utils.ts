@@ -50,6 +50,9 @@ const buildDerivation = (fields: readonly TopicField[]): FormDeriveFieldIndex[] 
   }));
 };
 
+const resolveYearMaximum = (max: Extract<TopicField, { type: 'year' }>['max']) =>
+  max === 'todayYear' ? new Date().getFullYear() : max;
+
 export const getDerivationIndex = (fields: TopicField[]) =>
   buildDerivation(fields).reduce((acc, derivField): Record<string, FormDeriveField> => {
     if (derivField.fn) {
@@ -74,6 +77,9 @@ export const getDerivationIndex = (fields: TopicField[]) =>
   }, {});
 
 export const getFieldValidator = (field: TopicField) => {
+  const yearMinimum = field.type === 'year' ? field.min : undefined;
+  const yearMaximum = field.type === 'year' ? resolveYearMaximum(field.max) : undefined;
+
   const schema =
     field.type === 'boolean'
       ? field.required
@@ -83,6 +89,34 @@ export const getFieldValidator = (field: TopicField) => {
       ? field.required
         ? yup.string().required('Required')
         : yup.string().notRequired()
+      : field.type === 'year'
+        ? (() => {
+            const baseSchema = (field.required
+              ? yup
+                  .number()
+                  .transform((value, originalValue) => (originalValue === '' ? undefined : value))
+                  .typeError('Must be a year')
+                  .integer('Must be a whole year')
+                  .required('Required')
+              : yup
+                  .number()
+                  .transform((value, originalValue) => (originalValue === '' ? undefined : value))
+                  .typeError('Must be a year')
+                  .integer('Must be a whole year')
+                  .notRequired()) as yup.NumberSchema<number | undefined>;
+
+            return baseSchema
+              .test(
+                'year-min',
+                `Must be at least ${yearMinimum}`,
+                (value) => value === undefined || yearMinimum === undefined || value >= yearMinimum,
+              )
+              .test(
+                'year-max',
+                `Must be at most ${yearMaximum}`,
+                (value) => value === undefined || yearMaximum === undefined || value <= yearMaximum,
+              );
+          })()
       : field.required
         ? yup
             .number()

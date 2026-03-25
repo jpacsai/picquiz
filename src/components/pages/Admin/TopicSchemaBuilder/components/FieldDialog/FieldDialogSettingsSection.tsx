@@ -1,4 +1,4 @@
-import { Checkbox, FormControlLabel } from '@mui/material';
+import { Checkbox, FormControlLabel, TextField } from '@mui/material';
 
 import type { TopicFieldDraft } from '@/types/topicSchema';
 
@@ -67,6 +67,47 @@ const FieldDialogSettingsSection = ({
         }
         label="Hide in edit"
       />
+
+      {field.type === 'year' ? (
+        <>
+          <TextField
+            label="Minimum year"
+            type="number"
+            value={typeof field.min === 'number' && !Number.isNaN(field.min) ? field.min : ''}
+            onChange={(event) => {
+              const nextValue = event.target.value;
+
+              onChange((currentField) => ({
+                ...currentField,
+                min: nextValue === '' ? undefined : Number(nextValue),
+              }));
+            }}
+            fullWidth
+            margin="normal"
+          />
+
+          <TextField
+            label="Maximum year"
+            value={field.max === 'todayYear' ? 'todayYear' : typeof field.max === 'number' && !Number.isNaN(field.max) ? field.max : ''}
+            helperText="Adj meg egy evszamot vagy a `todayYear` erteket."
+            onChange={(event) => {
+              const nextValue = event.target.value;
+
+              onChange((currentField) => ({
+                ...currentField,
+                max:
+                  nextValue === ''
+                    ? undefined
+                    : nextValue === 'todayYear'
+                      ? 'todayYear'
+                      : Number(nextValue),
+              }));
+            }}
+            fullWidth
+            margin="normal"
+          />
+        </>
+      ) : null}
     </>
   );
 };

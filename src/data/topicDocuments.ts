@@ -2,7 +2,7 @@ import type { Topic, TopicField } from '@/types/topics';
 import { sortSelectOptions } from '@/utils/sortSelectOptions';
 
 export type LegacyTopicField =
-  | Extract<TopicField, { type: 'string' | 'number' | 'boolean' | 'imageUpload' }>
+  | Extract<TopicField, { type: 'string' | 'number' | 'year' | 'boolean' | 'imageUpload' }>
   | {
       key: string;
       label: string;
@@ -10,7 +10,7 @@ export type LegacyTopicField =
       readonly?: boolean;
       fn?: TopicField['fn'];
       hideInEdit?: boolean;
-      type: 'string' | 'number' | 'boolean' | 'select';
+      type: 'string' | 'number' | 'year' | 'boolean' | 'select';
       options?: string[] | string;
     };
 

@@ -334,6 +334,34 @@ describe('TopicSchemaBuilderPage', () => {
     expect(within(editDialog).getByRole('checkbox', { name: 'Required' })).toBeChecked();
   });
 
+  it('allows configuring year field limits with a default todayYear maximum', async () => {
+    const user = userEvent.setup();
+
+    render(<TopicSchemaBuilderPage mode="create" />);
+
+    await user.click(screen.getByRole('button', { name: 'Uj field' }));
+    await user.type(screen.getByLabelText('Field label'), 'Ev');
+    await user.type(screen.getByLabelText('Field key'), 'year');
+    await user.click(screen.getByRole('combobox', { name: 'Field type' }));
+    await user.click(screen.getByRole('option', { name: 'Year' }));
+
+    expect(screen.getByLabelText('Maximum year')).toHaveValue('todayYear');
+
+    await user.type(screen.getByLabelText('Minimum year'), '1500');
+    await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText('Ev'));
+
+    const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+
+    expect(within(editDialog).getByLabelText('Minimum year')).toHaveValue(1500);
+    expect(within(editDialog).getByLabelText('Maximum year')).toHaveValue('todayYear');
+  });
+
   it('allows reordering fields from the field list', async () => {
     const user = userEvent.setup();
 

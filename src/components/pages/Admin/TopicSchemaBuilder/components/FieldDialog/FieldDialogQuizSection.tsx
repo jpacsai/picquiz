@@ -27,7 +27,7 @@ const FieldDialogQuizSection = ({
   const isSelectField = field.type === 'select';
   const quizDistractorType = field.quiz?.enabled ? (field.quiz.distractor?.type ?? '') : '';
   const availableDistractorOptions =
-    field.type === 'number'
+    field.type === 'number' || field.type === 'year'
         ? [{ label: 'Numeric range', value: 'numericRange' as const }]
         : field.type === 'string' && availableDistractorSourceFieldOptions.length > 0
           ? [{ label: 'Derived range', value: 'derivedRange' as const }]

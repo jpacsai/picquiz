@@ -96,7 +96,7 @@ export const getAvailableDistractorSourceFieldOptions = ({
   fields
     .filter(
       (field) =>
-        field.type === 'number' &&
+        (field.type === 'number' || field.type === 'year') &&
         typeof field.key === 'string' &&
         field.key.trim().length > 0 &&
         field.key !== currentFieldKey,

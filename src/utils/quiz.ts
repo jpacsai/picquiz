@@ -62,7 +62,7 @@ export const getStoredStringArray = (storageKey: string): string[] => {
 
 const isQuizAnswerField = (
   field: TopicField,
-): field is Extract<TopicField, { type: 'string' | 'number' | 'select' | 'boolean' }> =>
+): field is Extract<TopicField, { type: 'string' | 'number' | 'year' | 'select' | 'boolean' }> =>
   field.type !== 'imageUpload' && field.quiz?.enabled === true;
 
 const getQuizPrompt = (field: TopicField): string =>
@@ -204,7 +204,7 @@ const getFieldOptions = (field: TopicField): string[] =>
       : [];
 
 const getRequiredWrongAnswerCount = (
-  answerField: Extract<TopicField, { type: 'string' | 'number' | 'select' | 'boolean' }>,
+  answerField: Extract<TopicField, { type: 'string' | 'number' | 'year' | 'select' | 'boolean' }>,
 ) => (answerField.type === 'boolean' ? 1 : DISTRACTOR_COUNT);
 
 const buildNumericRangeDistractors = ({
@@ -292,7 +292,7 @@ const getWrongAnswerCandidates = ({
   playableItem,
   topic,
 }: {
-  answerField: Extract<TopicField, { type: 'string' | 'number' | 'select' | 'boolean' }>;
+  answerField: Extract<TopicField, { type: 'string' | 'number' | 'year' | 'select' | 'boolean' }>;
   answerFieldKey: string;
   items: ReadonlyArray<TopicItem>;
   playableItem: QuizPlayableItem;
@@ -350,7 +350,7 @@ const canBuildQuestionForItem = ({
   playableItem,
   topic,
 }: {
-  answerField: Extract<TopicField, { type: 'string' | 'number' | 'select' | 'boolean' }>;
+  answerField: Extract<TopicField, { type: 'string' | 'number' | 'year' | 'select' | 'boolean' }>;
   answerFieldKey: string;
   items: ReadonlyArray<TopicItem>;
   playableItem: QuizPlayableItem;
@@ -369,9 +369,9 @@ const canBuildQuestionForItem = ({
 export const getQuizAnswerField = (
   topic: Topic,
   answerFieldKey: string,
-): Extract<TopicField, { type: 'string' | 'number' | 'select' | 'boolean' }> | null =>
+): Extract<TopicField, { type: 'string' | 'number' | 'year' | 'select' | 'boolean' }> | null =>
   topic.fields.find(
-    (field): field is Extract<TopicField, { type: 'string' | 'number' | 'select' | 'boolean' }> =>
+    (field): field is Extract<TopicField, { type: 'string' | 'number' | 'year' | 'select' | 'boolean' }> =>
       field.key === answerFieldKey && isQuizAnswerField(field),
   ) ?? null;
 

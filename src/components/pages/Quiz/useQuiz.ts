@@ -122,6 +122,7 @@ export const useQuiz = ({
         (field): field is QuizValueField =>
           (field.type === 'string' ||
             field.type === 'number' ||
+            field.type === 'year' ||
             field.type === 'select' ||
             field.type === 'boolean') &&
           answerDetailFieldKeys.includes(field.key) &&

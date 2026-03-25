@@ -243,4 +243,19 @@ describe('validateTopicDraft', () => {
       ]),
     );
   });
+
+  it('validates year field minimum and maximum values', () => {
+    const draft = createValidDraft();
+    draft.fields[0].type = 'year';
+    draft.fields[0].min = 1700;
+    draft.fields[0].max = 1600;
+
+    const result = validateTopicDraft(draft);
+
+    expect(result.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ path: 'fields[0] (artist).max' }),
+      ]),
+    );
+  });
 });

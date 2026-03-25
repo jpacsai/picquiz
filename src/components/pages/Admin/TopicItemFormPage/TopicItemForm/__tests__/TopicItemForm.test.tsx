@@ -149,6 +149,28 @@ describe('TopicItemForm saving', () => {
     });
   });
 
+  it('validates year fields against configured minimum and maximum values', async () => {
+    const user = userEvent.setup();
+    const fields: TopicField[] = [
+      { key: 'artist', label: 'Artist', required: true, type: 'string' },
+      { key: 'year', label: 'Year', type: 'year', min: 1500, max: 1600 },
+    ];
+
+    render(
+      <TopicItemForm collectionName="art" fields={fields} storagePrefix="art" topicId="art" />,
+    );
+
+    await user.type(screen.getByTestId('form-input-artist'), 'Leonardo da Vinci');
+    await user.type(screen.getByTestId('form-input-year'), '1490');
+
+    expect(await screen.findByText('Must be at least 1500')).toBeInTheDocument();
+
+    await user.clear(screen.getByTestId('form-input-year'));
+    await user.type(screen.getByTestId('form-input-year'), '1605');
+
+    expect(await screen.findByText('Must be at most 1600')).toBeInTheDocument();
+  });
+
   it('trims all string inputs before create submit', async () => {
     const user = userEvent.setup();
     const fields: TopicField[] = [
