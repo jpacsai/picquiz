@@ -1,12 +1,14 @@
+import type { ReactNode } from 'react';
+
 export type UseAdminTopicItemResult = {
   description?: string;
   isDeleteDialogOpen: boolean;
   isDeleting: boolean;
-  meta?: string;
+  meta?: ReactNode;
   onCloseDeleteDialog: () => void;
   onConfirmDelete: () => void;
   onEdit: () => void;
   onOpenDeleteDialog: () => void;
-  subtitle?: string;
+  subtitle?: ReactNode;
   title: string;
 };

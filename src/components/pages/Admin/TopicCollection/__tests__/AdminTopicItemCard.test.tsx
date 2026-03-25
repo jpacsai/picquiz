@@ -182,4 +182,47 @@ describe('AdminTopicItemCard UI', () => {
       { id: 'item-2', title: 'The Last Supper' },
     ]);
   });
+
+  it('renders boolean subtitle fields with the field label and x marker for false', () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { gcTime: Infinity, retry: false },
+      },
+    });
+
+    const booleanSubtitleFields: TopicField[] = [
+      { key: 'title', label: 'Title', required: true, type: 'string', display: 'title' },
+      { key: 'self_portrait', label: 'Önarckép', type: 'boolean', display: 'subtitle' },
+    ];
+
+    const booleanSubtitleItem: TopicItem = {
+      id: 'item-1',
+      self_portrait: false,
+      title: 'Mona Lisa',
+    };
+
+    queryClient.setQueryData(QUERY_KEYS.ITEMS.byTopic('art'), [booleanSubtitleItem]);
+    queryClient.setQueryData(QUERY_KEYS.ITEMS.detail('art', booleanSubtitleItem.id), booleanSubtitleItem);
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <ThemePresetProvider>
+          <CssBaseline />
+          <SnackbarProvider maxSnack={3}>
+            <AdminTopicItemCard
+              collectionName="art"
+              fields={booleanSubtitleFields}
+              item={booleanSubtitleItem}
+              topicId="art-topic"
+            />
+          </SnackbarProvider>
+        </ThemePresetProvider>
+      </QueryClientProvider>,
+    );
+
+    expect(screen.getByText('Mona Lisa')).toBeInTheDocument();
+    expect(
+      screen.getByText((_, element) => element?.textContent === 'Önarckép: x'),
+    ).toBeInTheDocument();
+  });
 });

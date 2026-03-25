@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 import { Button, Card, CardActions, CardContent, Typography } from '@mui/material';
 
 import DeleteItemDialog from '@/components/pages/Admin/TopicCollection/components/DeleteItemDialog';
@@ -6,12 +8,12 @@ type AdminTopicItemCardViewProps = {
   description?: string;
   isDeleteDialogOpen: boolean;
   isDeleting: boolean;
-  meta?: string;
+  meta?: ReactNode;
   onCloseDeleteDialog: () => void;
   onConfirmDelete: () => void;
   onEdit: () => void;
   onOpenDeleteDialog: () => void;
-  subtitle?: string;
+  subtitle?: ReactNode;
   title: string;
 };
 

@@ -1,10 +1,11 @@
+import Box from '@mui/material/Box';
 import { deleteTopicImageByPath } from '@data/storage';
 import { QUERY_KEYS } from '@queries/queryKeys';
 import { deleteTopicItem } from '@service/items';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { useSnackbar } from 'notistack';
-import { useState } from 'react';
+import { Fragment, createElement, useState, type ReactNode } from 'react';
 
 import type { TopicField, TopicItem } from '@/types/topics';
 
@@ -15,15 +16,55 @@ type UseAdminTopicItemParams = {
   topicId: string;
 };
 
-const getDisplayValue = (value: unknown) => {
+type DisplayValue = {
+  node: ReactNode;
+  text: string;
+};
+
+const getDisplayValue = (field: TopicField, value: unknown): DisplayValue | null => {
   if (typeof value === 'string') {
     const trimmedValue = value.trim();
 
-    return trimmedValue.length ? trimmedValue : null;
+    return trimmedValue.length
+      ? {
+          node: trimmedValue,
+          text: trimmedValue,
+        }
+      : null;
   }
 
   if (typeof value === 'number') {
-    return String(value);
+    const text = String(value);
+
+    return {
+      node: text,
+      text,
+    };
+  }
+
+  if (typeof value === 'boolean') {
+    const marker = value ? '✓' : 'x';
+    const text = `${field.label}: ${marker}`;
+
+    return {
+      node: createElement(
+        Fragment,
+        null,
+        `${field.label}: `,
+        createElement(
+          Box,
+          {
+            component: 'span',
+            sx: {
+              color: value ? 'success.main' : 'error.main',
+              fontWeight: 700,
+            },
+          },
+          marker,
+        ),
+      ),
+      text,
+    };
   }
 
   return null;
@@ -36,22 +77,35 @@ const getValuesByDisplay = (
 ) => {
   return fields
     .filter((field) => field.display === display)
-    .map((field) => getDisplayValue(item[field.key]))
-    .filter((value): value is string => value !== null);
+    .map((field) => getDisplayValue(field, item[field.key]))
+    .filter((value): value is DisplayValue => value !== null);
 };
+
+const joinDisplayValueTexts = (values: DisplayValue[]) => values.map((value) => value.text).join(' - ');
+
+const joinDisplayValueNodes = (values: DisplayValue[]) =>
+  values.map((value, index) =>
+    createElement(
+      Fragment,
+      { key: `${value.text}-${index}` },
+      index > 0 ? ' - ' : null,
+      value.node,
+    ),
+  );
 
 const getFallbackTitle = (item: TopicItem) => {
   const fallbackValue = [item.title, item.artist]
-    .map(getDisplayValue)
-    .find((value): value is string => value !== null);
+    .map((value) => getDisplayValue({ key: '', label: '', type: 'string' }, value))
+    .find((value): value is DisplayValue => value !== null);
 
-  return fallbackValue ?? item.id;
+  return fallbackValue?.text ?? item.id;
 };
 
 const getFallbackSubtitle = (item: TopicItem) => {
   return [item.artist, item.year]
-    .map(getDisplayValue)
-    .filter((value): value is string => value !== null)
+    .map((value) => getDisplayValue({ key: '', label: '', type: 'string' }, value))
+    .filter((value): value is DisplayValue => value !== null)
+    .map((value) => value.text)
     .join(' - ');
 };
 
@@ -93,9 +147,11 @@ export const useAdminTopicItem = ({
   const subtitleValues = getValuesByDisplay(fields, item, 'subtitle');
   const metaValues = getValuesByDisplay(fields, item, 'meta');
 
-  const title = titleValues[0] ?? getFallbackTitle(item);
-  const subtitle = subtitleValues.length ? subtitleValues.join(' - ') : getFallbackSubtitle(item);
-  const meta = metaValues.join(' - ');
+  const title = titleValues[0]?.text ?? getFallbackTitle(item);
+  const subtitleText = subtitleValues.length ? joinDisplayValueTexts(subtitleValues) : getFallbackSubtitle(item);
+  const subtitle = subtitleValues.length ? joinDisplayValueNodes(subtitleValues) : subtitleText;
+  const metaText = joinDisplayValueTexts(metaValues);
+  const meta = metaValues.length ? joinDisplayValueNodes(metaValues) : undefined;
   const imagePathsToDelete = getImagePathsToDelete({ fields, item });
 
   const handleDelete = async () => {
@@ -142,10 +198,10 @@ export const useAdminTopicItem = ({
   };
 
   return {
-    description: subtitle || meta || undefined,
+    description: subtitleText || metaText || undefined,
     isDeleteDialogOpen,
     isDeleting,
-    meta: meta || undefined,
+    meta,
     onCloseDeleteDialog: () => setIsDeleteDialogOpen(false),
     onConfirmDelete: () => void handleDelete(),
     onEdit: () => {
