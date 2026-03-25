@@ -120,14 +120,25 @@ export const useQuiz = ({
     return topic.fields
       .filter(
         (field): field is QuizValueField =>
-          (field.type === 'string' || field.type === 'number' || field.type === 'select') &&
+          (field.type === 'string' ||
+            field.type === 'number' ||
+            field.type === 'select' ||
+            field.type === 'boolean') &&
           answerDetailFieldKeys.includes(field.key) &&
           field.key !== currentQuestion.answerFieldKey,
       )
       .flatMap((field) => {
         const value = currentItem[field.key];
         const displayValue =
-          typeof value === 'number' ? String(value) : typeof value === 'string' ? value.trim() : '';
+          typeof value === 'boolean'
+            ? value
+              ? 'Igaz'
+              : 'Hamis'
+            : typeof value === 'number'
+              ? String(value)
+              : typeof value === 'string'
+                ? value.trim()
+                : '';
 
         return displayValue
           ? [

@@ -2,7 +2,7 @@ import type { Dispatch, SetStateAction } from 'react';
 
 import type { TopicField, TopicItem } from '@/types/topics';
 
-export type QuizValueField = Extract<TopicField, { type: 'string' | 'number' | 'select' }>;
+export type QuizValueField = Extract<TopicField, { type: 'string' | 'number' | 'select' | 'boolean' }>;
 
 export type QuizEligibleField = {
   field: QuizValueField;

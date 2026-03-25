@@ -1,4 +1,7 @@
 import Box from '@mui/material/Box';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import Typography from '@mui/material/Typography';
 
 import {
   getDerivedValue,
@@ -40,6 +43,10 @@ const renderPendingDerivedField = (key: string) => (
 );
 
 const getNormalizedImageUploadFileNamePart = (value: unknown): string | null => {
+  if (typeof value === 'boolean') {
+    return value ? 'Igaz' : 'Hamis';
+  }
+
   if (typeof value === 'number') {
     return String(value);
   }
@@ -110,6 +117,42 @@ const FormField = ({
                 errorMessage={typeof errorMessage === 'string' ? errorMessage : undefined}
                 sx={{ width: '100%', height: '75px' }}
               />
+            );
+          }}
+        </form.Field>
+      );
+    case 'boolean':
+      return (
+        <form.Field key={key} name={key} validators={{ onChange: getFieldValidator(field) }}>
+          {(fieldApi) => {
+            const errorMessage = fieldApi.state.meta.isTouched
+              ? fieldApi.state.meta.errors[0]
+              : undefined;
+
+            return (
+              <Box sx={{ width: '100%', minHeight: '75px', display: 'grid', alignContent: 'center' }}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={fieldApi.state.value === true}
+                      disabled={readonly}
+                      onBlur={fieldApi.handleBlur}
+                      onChange={(event) => {
+                        fieldApi.handleChange(event.target.checked);
+                      }}
+                    />
+                  }
+                  label={label}
+                />
+                <Typography color="text.secondary" variant="body2">
+                  {fieldApi.state.value === true ? 'Igaz' : 'Hamis'}
+                </Typography>
+                {typeof errorMessage === 'string' ? (
+                  <Typography color="error" variant="caption">
+                    {errorMessage}
+                  </Typography>
+                ) : null}
+              </Box>
             );
           }}
         </form.Field>

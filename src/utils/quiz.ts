@@ -62,7 +62,7 @@ export const getStoredStringArray = (storageKey: string): string[] => {
 
 const isQuizAnswerField = (
   field: TopicField,
-): field is Extract<TopicField, { type: 'string' | 'number' | 'select' }> =>
+): field is Extract<TopicField, { type: 'string' | 'number' | 'select' | 'boolean' }> =>
   field.type !== 'imageUpload' && field.quiz?.enabled === true;
 
 const getQuizPrompt = (field: TopicField): string =>
@@ -112,6 +112,10 @@ const getItemImageUrls = (
 
 const getItemFieldValue = (item: TopicItem, fieldKey: string): string => {
   const value = item[fieldKey];
+
+  if (typeof value === 'boolean') {
+    return value ? 'Igaz' : 'Hamis';
+  }
 
   if (typeof value === 'number') {
     return String(value);
@@ -193,7 +197,15 @@ const getDistinctTopicValues = ({
   );
 
 const getFieldOptions = (field: TopicField): string[] =>
-  field.type === 'select' ? field.options : [];
+  field.type === 'select'
+    ? field.options
+    : field.type === 'boolean'
+      ? ['Igaz', 'Hamis']
+      : [];
+
+const getRequiredWrongAnswerCount = (
+  answerField: Extract<TopicField, { type: 'string' | 'number' | 'select' | 'boolean' }>,
+) => (answerField.type === 'boolean' ? 1 : DISTRACTOR_COUNT);
 
 const buildNumericRangeDistractors = ({
   correctValue,
@@ -280,13 +292,17 @@ const getWrongAnswerCandidates = ({
   playableItem,
   topic,
 }: {
-  answerField: Extract<TopicField, { type: 'string' | 'number' | 'select' }>;
+  answerField: Extract<TopicField, { type: 'string' | 'number' | 'select' | 'boolean' }>;
   answerFieldKey: string;
   items: ReadonlyArray<TopicItem>;
   playableItem: QuizPlayableItem;
   topic: Topic;
 }): string[] => {
   const distractor = answerField.quiz?.enabled ? answerField.quiz.distractor : undefined;
+
+  if (answerField.type === 'boolean') {
+    return getFieldOptions(answerField).filter((value) => value !== playableItem.value);
+  }
 
   if (!distractor) {
     return getDistinctTopicValues({ answerFieldKey, items, topic }).filter(
@@ -295,6 +311,10 @@ const getWrongAnswerCandidates = ({
   }
 
   if (distractor.type === 'fromOptions') {
+    return getFieldOptions(answerField).filter((value) => value !== playableItem.value);
+  }
+
+  if (distractor.type === 'booleanPair') {
     return getFieldOptions(answerField).filter((value) => value !== playableItem.value);
   }
 
@@ -326,7 +346,7 @@ const canBuildQuestionForItem = ({
   playableItem,
   topic,
 }: {
-  answerField: Extract<TopicField, { type: 'string' | 'number' | 'select' }>;
+  answerField: Extract<TopicField, { type: 'string' | 'number' | 'select' | 'boolean' }>;
   answerFieldKey: string;
   items: ReadonlyArray<TopicItem>;
   playableItem: QuizPlayableItem;
@@ -340,14 +360,14 @@ const canBuildQuestionForItem = ({
       playableItem,
       topic,
     }),
-  ).size >= DISTRACTOR_COUNT;
+  ).size >= getRequiredWrongAnswerCount(answerField);
 
 export const getQuizAnswerField = (
   topic: Topic,
   answerFieldKey: string,
-): Extract<TopicField, { type: 'string' | 'number' | 'select' }> | null =>
+): Extract<TopicField, { type: 'string' | 'number' | 'select' | 'boolean' }> | null =>
   topic.fields.find(
-    (field): field is Extract<TopicField, { type: 'string' | 'number' | 'select' }> =>
+    (field): field is Extract<TopicField, { type: 'string' | 'number' | 'select' | 'boolean' }> =>
       field.key === answerFieldKey && isQuizAnswerField(field),
   ) ?? null;
 
@@ -494,9 +514,9 @@ const buildQuizQuestionsForField = ({
             }),
           ),
         ),
-      ).slice(0, DISTRACTOR_COUNT);
+      ).slice(0, getRequiredWrongAnswerCount(answerField));
 
-      if (wrongAnswers.length < DISTRACTOR_COUNT) {
+      if (wrongAnswers.length < getRequiredWrongAnswerCount(answerField)) {
         return [];
       }
 

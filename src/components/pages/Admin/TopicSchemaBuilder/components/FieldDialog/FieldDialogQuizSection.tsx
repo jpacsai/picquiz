@@ -23,6 +23,7 @@ const FieldDialogQuizSection = ({
   onChange,
   pathPrefix,
 }: FieldDialogQuizSectionProps) => {
+  const isBooleanField = field.type === 'boolean';
   const quizDistractorType = field.quiz?.enabled ? (field.quiz.distractor?.type ?? '') : '';
   const availableDistractorOptions =
     field.type === 'select'
@@ -91,57 +92,59 @@ const FieldDialogQuizSection = ({
             margin="normal"
           />
 
-          <TextField
-            select
-            label="Distractor type"
-            value={quizDistractorType}
-            disabled={isDistractorTypeDisabled}
-            helperText={
-              isDistractorTypeDisabled
-                ? 'Ehhez a fieldhez most nincs hasznalhato distractor beallitas.'
-                : ' '
-            }
-            onChange={(event) => {
-              const nextValue = event.target.value;
+          {!isBooleanField ? (
+            <TextField
+              select
+              label="Distractor type"
+              value={quizDistractorType}
+              disabled={isDistractorTypeDisabled}
+              helperText={
+                isDistractorTypeDisabled
+                  ? 'Ehhez a fieldhez most nincs hasznalhato distractor beallitas.'
+                  : ' '
+              }
+              onChange={(event) => {
+                const nextValue = event.target.value;
 
-              onChange((currentField) => {
-                if (!currentField.quiz?.enabled) {
-                  return currentField;
-                }
+                onChange((currentField) => {
+                  if (!currentField.quiz?.enabled) {
+                    return currentField;
+                  }
 
-                const nextDistractor =
-                  nextValue === ''
-                    ? undefined
-                    : nextValue === 'fromOptions'
-                      ? { type: 'fromOptions' as const }
-                      : nextValue === 'numericRange'
-                        ? { type: 'numericRange' as const, maxValue: 'todayYear' as const }
-                        : {
-                            type: 'derivedRange' as const,
-                            deriveWith: 'yearToCentury' as const,
-                            maxValue: 'todayYear' as const,
-                            sourceField: '',
-                          };
+                  const nextDistractor =
+                    nextValue === ''
+                      ? undefined
+                      : nextValue === 'fromOptions'
+                        ? { type: 'fromOptions' as const }
+                        : nextValue === 'numericRange'
+                          ? { type: 'numericRange' as const, maxValue: 'todayYear' as const }
+                          : {
+                              type: 'derivedRange' as const,
+                              deriveWith: 'yearToCentury' as const,
+                              maxValue: 'todayYear' as const,
+                              sourceField: '',
+                            };
 
-                return {
-                  ...currentField,
-                  quiz: {
-                    ...currentField.quiz,
-                    distractor: nextDistractor,
-                  },
-                };
-              });
-            }}
-            fullWidth
-            margin="normal"
-          >
-            <MenuItem value="">Default topic values</MenuItem>
-            {availableDistractorOptions.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
+                  return {
+                    ...currentField,
+                    quiz: {
+                      ...currentField.quiz,
+                      distractor: nextDistractor,
+                    },
+                  };
+                });
+              }}
+              fullWidth
+              margin="normal"
+            >
+              <MenuItem value="">Default topic values</MenuItem>
+              {availableDistractorOptions.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+          ) : null}
 
           {field.quiz.distractor?.type === 'derivedRange' ? (
             <TextField

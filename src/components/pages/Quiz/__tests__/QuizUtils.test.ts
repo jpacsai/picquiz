@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { Topic, TopicItem } from '@/types/topics';
-import { getEligibleQuizFields } from '@/utils/quiz';
+import { buildQuizQuestions, getEligibleQuizFields } from '@/utils/quiz';
 
 const topicWithMinOffset: Topic = {
   fields: [
@@ -114,6 +114,38 @@ const topicWithBoundedDerivedOffsets: Topic = {
   storage_prefix: 'art',
 };
 
+const booleanTopic: Topic = {
+  fields: [
+    {
+      key: 'is_original',
+      label: 'Eredeti mu?',
+      quiz: {
+        enabled: true,
+        prompt: 'Eredeti mu?',
+        distractor: {
+          type: 'booleanPair',
+        },
+      },
+      type: 'boolean',
+    },
+    {
+      buttonLabel: 'Upload image',
+      fileNameFields: ['artist', 'title'],
+      key: 'image_upload',
+      label: 'Upload image',
+      targetFields: {
+        desktop: 'image_url_desktop',
+        mobile: 'image_url_mobile',
+      },
+      type: 'imageUpload',
+    },
+  ],
+  id: 'art',
+  label: 'Muveszet',
+  slug: 'art',
+  storage_prefix: 'art',
+};
+
 const items: ReadonlyArray<TopicItem> = [
   {
     id: 'item-1',
@@ -154,6 +186,21 @@ const boundedDerivedItems: ReadonlyArray<TopicItem> = [
   },
 ];
 
+const booleanItems: ReadonlyArray<TopicItem> = [
+  {
+    id: 'item-1',
+    image_url_desktop: 'https://example.com/1-desktop.jpg',
+    image_url_mobile: 'https://example.com/1-mobile.jpg',
+    is_original: true,
+  },
+  {
+    id: 'item-2',
+    image_url_desktop: 'https://example.com/2-desktop.jpg',
+    image_url_mobile: 'https://example.com/2-mobile.jpg',
+    is_original: false,
+  },
+];
+
 describe('quiz utils', () => {
   it('treats numericRange minOffset as a valid distractor config', () => {
     const eligibleFields = getEligibleQuizFields({ items, topic: topicWithMinOffset });
@@ -183,5 +230,18 @@ describe('quiz utils', () => {
     expect(eligibleFields).toHaveLength(1);
     expect(eligibleFields[0]?.field.key).toBe('century');
     expect(eligibleFields[0]?.maxQuestionCount).toBeGreaterThan(0);
+  });
+
+  it('builds boolean quiz questions with fixed Igaz / Hamis answers', () => {
+    const questions = buildQuizQuestions({
+      answerFieldKeys: ['is_original'],
+      items: booleanItems,
+      questionCount: 1,
+      topic: booleanTopic,
+    });
+
+    expect(questions).toHaveLength(1);
+    expect(questions[0]?.options).toHaveLength(2);
+    expect(questions[0]?.options.map((option) => option.label).sort()).toEqual(['Hamis', 'Igaz']);
   });
 });

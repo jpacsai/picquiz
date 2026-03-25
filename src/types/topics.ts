@@ -8,6 +8,9 @@ export type QuizDistractorConfig =
       type: 'fromOptions';
     }
   | {
+      type: 'booleanPair';
+    }
+  | {
       type: 'numericRange';
       minValue?: number;
       minOffset?: number;
@@ -54,6 +57,9 @@ export type TopicField =
       type: 'number';
     })
   | (BaseTopicField & {
+      type: 'boolean';
+    })
+  | (BaseTopicField & {
       type: 'select';
       options: string[];
     })
@@ -70,7 +76,10 @@ export type TopicField =
       buttonLabel?: string;
     });
 
-export type TopicCollectionSearchField = Extract<TopicField, { type: 'string' | 'number' | 'select' }> & {
+export type TopicCollectionSearchField = Extract<
+  TopicField,
+  { type: 'string' | 'number' | 'select' | 'boolean' }
+> & {
   hideInEdit?: false;
   quiz: Extract<QuizFieldConfig, { enabled: true }>;
 };
@@ -83,7 +92,7 @@ export type Topic = {
   fields: TopicField[];
 };
 
-export type TopicItemValues = Record<string, string | number>;
+export type TopicItemValues = Record<string, string | number | boolean>;
 
 export type TopicItem = {
   id: string;

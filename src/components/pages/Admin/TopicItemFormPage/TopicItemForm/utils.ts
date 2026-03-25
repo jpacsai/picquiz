@@ -30,11 +30,16 @@ export const getInitialValues = (
 ): FormValues =>
   fields.reduce((acc, field) => {
     const nextValue = values?.[field.key];
+    const defaultValue = field.type === 'boolean' ? false : '';
 
     return {
       ...acc,
       [field.key]:
-        typeof nextValue === 'string' || typeof nextValue === 'number' ? nextValue : '',
+        typeof nextValue === 'string' ||
+        typeof nextValue === 'number' ||
+        typeof nextValue === 'boolean'
+          ? nextValue
+          : defaultValue,
     };
   }, {} as FormValues);
 
@@ -70,7 +75,11 @@ export const getDerivationIndex = (fields: TopicField[]) =>
 
 export const getFieldValidator = (field: TopicField) => {
   const schema =
-    field.type === 'string' || field.type === 'select' || field.type === 'imageUpload'
+    field.type === 'boolean'
+      ? field.required
+        ? yup.boolean().required('Required')
+        : yup.boolean().notRequired()
+      : field.type === 'string' || field.type === 'select' || field.type === 'imageUpload'
       ? field.required
         ? yup.string().required('Required')
         : yup.string().notRequired()
@@ -86,7 +95,7 @@ export const getFieldValidator = (field: TopicField) => {
             .typeError('Must be a number')
             .notRequired();
 
-  return ({ value }: { value: string | number }) => {
+  return ({ value }: { value: string | number | boolean }) => {
     try {
       schema.validateSync(value);
       return undefined;
@@ -271,12 +280,12 @@ const getNormalizedImageUploadFileNameParts = ({
   values,
 }: {
   field: Extract<TopicField, { type: 'imageUpload' }>;
-  values: Record<string, string | number>;
+  values: Record<string, string | number | boolean>;
 }) =>
   field.fileNameFields
     .map((fieldKey) => values[fieldKey])
-    .filter((value): value is string => typeof value === 'string')
-    .map((value) => value.trim())
+    .filter((value): value is string | boolean => typeof value === 'string' || typeof value === 'boolean')
+    .map((value) => (typeof value === 'boolean' ? (value ? 'Igaz' : 'Hamis') : value.trim()))
     .filter(Boolean);
 
 const getUploadedImageValues = ({
@@ -309,7 +318,7 @@ const getPathsToDelete = ({
 }: {
   field: Extract<TopicField, { type: 'imageUpload' }>;
   nextValues: Record<string, string>;
-  previousValues: Record<string, string | number>;
+  previousValues: Record<string, string | number | boolean>;
 }) => {
   const pathKeys = [field.targetFields.desktopPath, field.targetFields.mobilePath].filter(
     (value): value is string => Boolean(value),
@@ -337,11 +346,11 @@ export const resolveSubmittedValues = async ({
   mode,
 }: {
   form: {
-    setFieldValue: (field: string, value: string | number) => void;
+    setFieldValue: (field: string, value: string | number | boolean) => void;
   };
   mode: FormMode;
   pendingImageSelection: PendingImageSelection | null;
-  previousValues: Record<string, string | number>;
+  previousValues: Record<string, string | number | boolean>;
   storagePrefix: string;
 }) => {
   if (!pendingImageSelection) {
@@ -407,7 +416,7 @@ export const syncUpdatedItemCache = ({
   collectionName: string;
   itemId: string;
   queryClient: ReturnType<typeof useQueryClient>;
-  values: Record<string, string | number>;
+  values: Record<string, string | number | boolean>;
 }) => {
   const nextItem: TopicItem = {
     id: itemId,

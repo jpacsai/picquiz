@@ -5,6 +5,7 @@ import type { TopicFieldDraft } from '@/types/topicSchema';
 const FIELD_TYPE_OPTIONS = [
   { label: 'String', value: 'string' },
   { label: 'Number', value: 'number' },
+  { label: 'Boolean', value: 'boolean' },
   { label: 'Select', value: 'select' },
 ] as const;
 

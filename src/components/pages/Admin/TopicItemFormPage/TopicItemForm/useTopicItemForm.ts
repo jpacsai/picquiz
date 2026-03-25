@@ -14,7 +14,7 @@ import type {
   PendingImageSelection,
   UseTopicItemFormResult,
 } from '@/types/topicItemForm';
-import type { TopicField } from '@/types/topics';
+import type { TopicField, TopicItemValues } from '@/types/topics';
 
 import {
   getDerivationIndex,
@@ -70,7 +70,7 @@ export const useTopicItemForm = ({
       setIsSubmitting(true);
 
       try {
-        const previousValue = { ...value };
+        const previousValue: TopicItemValues = { ...value };
         const requiredImageUploadError = validateImageUploads({
           fields,
           pendingImageSelection,

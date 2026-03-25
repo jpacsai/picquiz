@@ -20,9 +20,9 @@ export type FormDeriveField = Omit<TopicField, 'fn'> & {
   };
 };
 
-export type FormValues = Record<string, string | number>;
+export type FormValues = Record<string, string | number | boolean>;
 
-export type PersistableFormValues = Record<string, string | number>;
+export type PersistableFormValues = Record<string, string | number | boolean>;
 
 export type PendingImageSelection = {
   field: Extract<TopicField, { type: 'imageUpload' }>;
@@ -48,7 +48,7 @@ export type FormFieldFormApi = {
     key?: Key;
     name: string;
     validators?: {
-      onChange?: (props: { value: string | number }) => string | undefined;
+      onChange?: (props: { value: string | number | boolean }) => string | undefined;
     };
   }>;
   Subscribe: ComponentType<{
@@ -56,7 +56,7 @@ export type FormFieldFormApi = {
     key?: Key;
     selector: (state: any) => any;
   }>;
-  setFieldValue: (field: string, value: string | number) => void;
+  setFieldValue: (field: string, value: string | number | boolean) => void;
   handleSubmit: () => Promise<void>;
   reset: () => void;
 };

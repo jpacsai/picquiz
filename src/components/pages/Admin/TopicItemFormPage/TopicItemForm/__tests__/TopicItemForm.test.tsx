@@ -123,6 +123,32 @@ describe('TopicItemForm saving', () => {
     });
   });
 
+  it('renders boolean fields as toggles and persists their boolean value', async () => {
+    const user = userEvent.setup();
+    const fields: TopicField[] = [
+      { key: 'artist', label: 'Artist', required: true, type: 'string' },
+      { key: 'published', label: 'Published', type: 'boolean' },
+    ];
+
+    render(
+      <TopicItemForm collectionName="art" fields={fields} storagePrefix="art" topicId="art" />,
+    );
+
+    await user.type(screen.getByTestId('form-input-artist'), 'Leonardo da Vinci');
+    await user.click(screen.getByRole('switch', { name: 'Published' }));
+    await user.click(screen.getByRole('button', { name: 'Mentés' }));
+
+    await waitFor(() => {
+      expect(createTopicItemMock).toHaveBeenCalledWith({
+        collectionName: 'art',
+        values: {
+          artist: 'Leonardo da Vinci',
+          published: true,
+        },
+      });
+    });
+  });
+
   it('trims all string inputs before create submit', async () => {
     const user = userEvent.setup();
     const fields: TopicField[] = [

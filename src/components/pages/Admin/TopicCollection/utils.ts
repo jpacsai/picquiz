@@ -30,6 +30,10 @@ const getSearchValue = (value: unknown) => {
     return String(value).toLocaleLowerCase();
   }
 
+  if (typeof value === 'boolean') {
+    return (value ? 'igaz' : 'hamis').toLocaleLowerCase();
+  }
+
   return '';
 };
 
@@ -41,7 +45,10 @@ export const sortTopicItemsByNewestCreated = (items: ReadonlyArray<TopicItem>) =
 export const getSearchableTopicFields = (fields: ReadonlyArray<TopicField>) =>
   fields.filter(
     (field): field is TopicCollectionSearchField =>
-      (field.type === 'string' || field.type === 'number' || field.type === 'select') &&
+      (field.type === 'string' ||
+        field.type === 'number' ||
+        field.type === 'select' ||
+        field.type === 'boolean') &&
       field.quiz?.enabled === true &&
       field.hideInEdit !== true,
   );

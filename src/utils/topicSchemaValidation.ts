@@ -223,6 +223,16 @@ const validateField = ({
     );
   }
 
+  if (field.quiz?.enabled && field.quiz.distractor?.type === 'booleanPair' && field.type !== 'boolean') {
+    issues.push(
+      createIssue({
+        message: 'Boolean pair distractors are only supported on boolean fields.',
+        path: `${fieldPath}.quiz.distractor.type`,
+        severity: 'error',
+      }),
+    );
+  }
+
   if (field.type === 'select') {
     if (!field.options?.some(isNonEmptyString)) {
       issues.push(

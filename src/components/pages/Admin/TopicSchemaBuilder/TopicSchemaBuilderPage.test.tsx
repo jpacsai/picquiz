@@ -571,6 +571,29 @@ describe('TopicSchemaBuilderPage', () => {
     expect(within(editDialog).getByLabelText('Max value')).toHaveValue('');
   });
 
+  it('hides distractor type for boolean quiz fields', async () => {
+    const user = userEvent.setup();
+
+    render(<TopicSchemaBuilderPage mode="create" />);
+
+    await user.click(screen.getByRole('button', { name: 'Uj field' }));
+    await user.type(screen.getByLabelText('Field label'), 'Publikalt');
+    await user.type(screen.getByLabelText('Field key'), 'published');
+    await user.click(screen.getByRole('combobox', { name: 'Field type' }));
+    await user.click(screen.getByRole('option', { name: 'Boolean' }));
+    await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
+    });
+
+    const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
+
+    await user.click(within(editDialog).getByRole('checkbox', { name: 'Quiz enabled' }));
+
+    expect(within(editDialog).queryByRole('combobox', { name: 'Distractor type' })).not.toBeInTheDocument();
+  });
+
   it('allows configuring image upload fields from the dialog', async () => {
     const user = userEvent.setup();
 
