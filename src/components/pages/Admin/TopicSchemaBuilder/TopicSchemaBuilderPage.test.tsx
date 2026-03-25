@@ -469,6 +469,14 @@ describe('TopicSchemaBuilderPage', () => {
       }),
     );
 
+    expect(screen.getByRole('dialog', { name: 'Field torlese' })).toBeInTheDocument();
+
+    await user.click(
+      within(screen.getByRole('dialog', { name: 'Field torlese' })).getByRole('button', {
+        name: 'Torles',
+      }),
+    );
+
     expect(screen.queryByText('Ev')).not.toBeInTheDocument();
     expect(
       screen.getByText('Meg nincs field. Az `Uj field` gombbal tudsz uj mezot felvenni.'),

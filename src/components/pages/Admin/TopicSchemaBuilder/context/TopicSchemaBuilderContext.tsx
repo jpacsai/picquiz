@@ -23,6 +23,7 @@ export const TopicSchemaBuilderProvider = ({
   const { enqueueSnackbar } = useSnackbar();
   const [draft, setDraft] = useState(() => getInitialDraft(topic));
   const [isAddFieldDialogOpen, setIsAddFieldDialogOpen] = useState(false);
+  const [isDeleteFieldDialogOpen, setIsDeleteFieldDialogOpen] = useState(false);
   const [isEditFieldDialogOpen, setIsEditFieldDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [fixedImageUploadFieldDraft, setFixedImageUploadFieldDraft] = useState(
@@ -37,6 +38,7 @@ export const TopicSchemaBuilderProvider = ({
     draft,
     fixedImageUploadFieldDraft,
     isAddFieldDialogOpen,
+    isDeleteFieldDialogOpen,
     isEditFieldDialogOpen,
     isSaving,
     mode,
@@ -60,6 +62,7 @@ export const TopicSchemaBuilderProvider = ({
     setDraft,
     setFixedImageUploadFieldDraft,
     setIsAddFieldDialogOpen,
+    setIsDeleteFieldDialogOpen,
     setIsEditFieldDialogOpen,
     setIsSaving,
     setNewFieldDraft,

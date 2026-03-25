@@ -13,6 +13,7 @@ export type TopicSchemaBuilderStateValue = {
   fieldErrorsByPath: Map<string, string>;
   hasImageUploadField: boolean;
   isAddFieldDialogOpen: boolean;
+  isDeleteFieldDialogOpen: boolean;
   isEditFieldDialogOpen: boolean;
   isSaving: boolean;
   metadataErrorsByPath: Map<string, string>;
@@ -40,10 +41,12 @@ export type TopicSchemaBuilderActionsValue = {
   getSelectOptionsText: (options: string[] | undefined) => string;
   handleAddField: () => void;
   handleCloseAddFieldDialog: () => void;
+  handleCloseDeleteFieldDialog: () => void;
   handleCloseEditFieldDialog: () => void;
-  handleDeleteSelectedField: () => void;
+  handleConfirmDeleteSelectedField: () => void;
   handleEditFieldSubmit: () => void;
   handleMoveField: (params: { fromIndex: number; toIndex: number }) => void;
+  handleOpenDeleteFieldDialog: () => void;
   handleSave: () => Promise<void>;
   setDraft: React.Dispatch<React.SetStateAction<ReturnType<typeof getInitialDraft>>>;
   setIsAddFieldDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;

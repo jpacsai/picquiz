@@ -1,6 +1,7 @@
 import { Alert, Box } from '@mui/material';
 
 import CreateFieldDialog from './components/CreateFieldDialog';
+import DeleteFieldConfirmDialog from './components/DeleteFieldConfirmDialog';
 import EditFieldDialog from './components/EditFieldDialog';
 import FieldListSection from './components/FieldListSection';
 import SchemaPreviewSection from './components/SchemaPreviewSection';
@@ -29,6 +30,8 @@ const TopicSchemaBuilderPageView = () => {
       <CreateFieldDialog />
 
       <EditFieldDialog />
+
+      <DeleteFieldConfirmDialog />
     </Box>
   );
 };

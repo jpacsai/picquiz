@@ -17,8 +17,8 @@ const EditFieldDialog = () => {
   const {
     getSelectOptionsText,
     handleCloseEditFieldDialog,
-    handleDeleteSelectedField,
     handleEditFieldSubmit,
+    handleOpenDeleteFieldDialog,
     updateSelectedField,
   } = useTopicSchemaBuilderActions();
 
@@ -42,7 +42,7 @@ const EditFieldDialog = () => {
       mode="edit"
       onChange={updateSelectedField}
       onClose={handleCloseEditFieldDialog}
-      onDelete={selectedFieldIndex === 'fixed-image-upload' ? undefined : handleDeleteSelectedField}
+      onDelete={selectedFieldIndex === 'fixed-image-upload' ? undefined : handleOpenDeleteFieldDialog}
       onSubmit={handleEditFieldSubmit}
       optionsText={getSelectOptionsText(selectedField.options)}
       pathPrefix={

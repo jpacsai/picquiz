@@ -38,6 +38,7 @@ type BuildActionsValueParams = {
   setDraft: TopicSchemaBuilderActionsValue['setDraft'];
   setFixedImageUploadFieldDraft: React.Dispatch<React.SetStateAction<TopicFieldDraft>>;
   setIsAddFieldDialogOpen: TopicSchemaBuilderActionsValue['setIsAddFieldDialogOpen'];
+  setIsDeleteFieldDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setIsEditFieldDialogOpen: TopicSchemaBuilderActionsValue['setIsEditFieldDialogOpen'];
   setIsSaving: React.Dispatch<React.SetStateAction<boolean>>;
   setNewFieldDraft: TopicSchemaBuilderActionsValue['setNewFieldDraft'];
@@ -60,6 +61,7 @@ export const buildTopicSchemaBuilderActionsValue = ({
   setDraft,
   setFixedImageUploadFieldDraft,
   setIsAddFieldDialogOpen,
+  setIsDeleteFieldDialogOpen,
   setIsEditFieldDialogOpen,
   setIsSaving,
   setNewFieldDraft,
@@ -74,6 +76,14 @@ export const buildTopicSchemaBuilderActionsValue = ({
 
   const handleCloseEditFieldDialog = () => {
     setIsEditFieldDialogOpen(false);
+  };
+
+  const handleOpenDeleteFieldDialog = () => {
+    setIsDeleteFieldDialogOpen(true);
+  };
+
+  const handleCloseDeleteFieldDialog = () => {
+    setIsDeleteFieldDialogOpen(false);
   };
 
   const handleAddField = () => {
@@ -99,12 +109,13 @@ export const buildTopicSchemaBuilderActionsValue = ({
     setDraft((currentDraft) => updateDraftFieldAtIndex(currentDraft, selectedFieldIndex, updater));
   };
 
-  const handleDeleteSelectedField = () => {
+  const handleConfirmDeleteSelectedField = () => {
     if (selectedFieldIndex === null || selectedFieldIndex === 'fixed-image-upload') {
       return;
     }
 
     setDraft((currentDraft) => removeDraftFieldAtIndex(currentDraft, selectedFieldIndex));
+    setIsDeleteFieldDialogOpen(false);
     setIsEditFieldDialogOpen(false);
     setSelectedFieldIndex((currentIndex) =>
       getSelectedFieldIndexAfterDelete({
@@ -225,10 +236,12 @@ export const buildTopicSchemaBuilderActionsValue = ({
     getSelectOptionsText,
     handleAddField,
     handleCloseAddFieldDialog,
+    handleCloseDeleteFieldDialog,
     handleCloseEditFieldDialog,
-    handleDeleteSelectedField,
+    handleConfirmDeleteSelectedField,
     handleEditFieldSubmit,
     handleMoveField,
+    handleOpenDeleteFieldDialog,
     handleSave,
     setDraft,
     setIsAddFieldDialogOpen,

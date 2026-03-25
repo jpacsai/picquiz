@@ -15,6 +15,7 @@ type BuildStateValueParams = {
   draft: TopicSchemaBuilderStateValue['draft'];
   fixedImageUploadFieldDraft: NonNullable<TopicSchemaBuilderStateValue['selectedField']>;
   isAddFieldDialogOpen: boolean;
+  isDeleteFieldDialogOpen: boolean;
   isEditFieldDialogOpen: boolean;
   isSaving: boolean;
   mode: TopicSchemaBuilderPageProps['mode'];
@@ -28,6 +29,7 @@ export const useTopicSchemaBuilderStateValue = ({
   draft,
   fixedImageUploadFieldDraft,
   isAddFieldDialogOpen,
+  isDeleteFieldDialogOpen,
   isEditFieldDialogOpen,
   isSaving,
   mode,
@@ -132,6 +134,7 @@ export const useTopicSchemaBuilderStateValue = ({
     fieldErrorsByPath,
     hasImageUploadField,
     isAddFieldDialogOpen,
+    isDeleteFieldDialogOpen,
     isEditFieldDialogOpen,
     isSaving,
     metadataErrorsByPath,
