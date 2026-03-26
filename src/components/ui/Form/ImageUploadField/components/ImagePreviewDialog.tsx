@@ -2,7 +2,6 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
-import Typography from '@mui/material/Typography';
 
 type ImagePreviewDialogProps = {
   imageAlt: string;
@@ -70,9 +69,6 @@ const ImagePreviewDialog = ({
             }}
           />
         </Box>
-        <Typography color="text.secondary" sx={{ mt: 1, textAlign: 'center' }} variant="body2">
-          {isMobileScreen ? 'Mobil preview' : 'Desktop preview'}
-        </Typography>
       </DialogContent>
     </Dialog>
   );
