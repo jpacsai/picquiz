@@ -186,7 +186,7 @@ const FieldListSection = () => {
             {hasImageUploadField ? (
               <FixedImageUploadCard
                 canConfigure
-                helperText="Fix image upload field. Mindig a lista legaljan marad."
+                helperText="Fix képfeltöltés mező. Mindig a lista legaljan marad."
                 onClick={() => {
                   setSelectedFieldIndex(
                     imageUploadFieldIndex >= 0 ? imageUploadFieldIndex : 'fixed-image-upload',

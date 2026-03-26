@@ -15,9 +15,6 @@ const AdminTopicPage = ({ itemCount, topic }: AdminTopicPageProps) => {
     <Box sx={{ display: 'grid', gap: 3, maxWidth: 900 }}>
       <Box sx={{ display: 'grid', gap: 1 }}>
         <Typography variant="h4">{topic.label}</Typography>
-        <Typography color="text.secondary">
-          Válaszd ki, hogy az itemeket kezelnéd, vagy a topic sémáját szerkesztenéd.
-        </Typography>
       </Box>
 
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>

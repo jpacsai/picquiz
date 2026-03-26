@@ -34,9 +34,6 @@ const FixedImageUploadCard = ({
       <Box>
         <Typography variant="subtitle1">Kepfeltoltes</Typography>
         <Typography color="text.secondary" variant="body2">
-          Fix image upload field
-        </Typography>
-        <Typography color="text.secondary" variant="body2">
           {helperText}
         </Typography>
       </Box>

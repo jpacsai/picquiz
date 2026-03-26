@@ -104,7 +104,6 @@ describe('TopicSchemaBuilderPage', () => {
     render(<TopicSchemaBuilderPage mode="create" />);
 
     expect(screen.getByRole('heading', { name: 'Kepfeltoltes' })).toBeInTheDocument();
-    expect(screen.getByText('Fix image upload field')).toBeInTheDocument();
   });
 
   it('shows a live schema preview for form, quiz and system fields', async () => {
@@ -727,9 +726,12 @@ describe('TopicSchemaBuilderPage', () => {
       setData: vi.fn(),
     };
 
-    fireEvent.dragStart(screen.getByRole('button', { name: 'Title athelyezese drag and droppal' }), {
-      dataTransfer,
-    });
+    fireEvent.dragStart(
+      screen.getByRole('button', { name: 'Title athelyezese drag and droppal' }),
+      {
+        dataTransfer,
+      },
+    );
     fireEvent.dragOver(screen.getByTestId('field-card-artist'));
     fireEvent.drop(screen.getByTestId('field-card-artist'), {
       dataTransfer,
@@ -1224,9 +1226,7 @@ describe('TopicSchemaBuilderPage', () => {
     const persistedEditDialogTrigger = screen.getByRole('heading', { name: 'Kepfeltoltes' });
 
     expect(screen.getByRole('heading', { name: 'Kepfeltoltes' })).toBeInTheDocument();
-    expect(screen.getByTestId('fixed-image-upload-card')).toHaveTextContent(
-      'Fix image upload field. Mindig a lista legaljan marad.',
-    );
+
     await user.click(persistedEditDialogTrigger);
 
     const persistedEditDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });

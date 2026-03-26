@@ -27,13 +27,7 @@ const getDependencySummaryLabel = ({
   fieldLabelsByKey: Map<string, string>;
 }) => fieldLabelsByKey.get(dependencyKey) || dependencyKey;
 
-const PreviewTable = ({
-  headers,
-  rows,
-}: {
-  headers: string[];
-  rows: string[][];
-}) => (
+const PreviewTable = ({ headers, rows }: { headers: string[]; rows: string[][] }) => (
   <TableContainer>
     <Table size="small">
       <TableHead>
@@ -88,10 +82,6 @@ const SchemaPreviewSection = () => {
       <Stack spacing={2.5}>
         <Stack spacing={0.5}>
           <Typography variant="h6">Schema preview</Typography>
-          <Typography color="text.secondary" variant="body2">
-            Gyors osszefoglalo arrol, hogy a builder pillanatnyilag milyen item formot es quiz
-            mezoket fog menteni.
-          </Typography>
         </Stack>
 
         <Stack direction="row" flexWrap="wrap" gap={1}>
@@ -121,7 +111,9 @@ const SchemaPreviewSection = () => {
           <Stack spacing={1}>
             <Typography variant="subtitle2">Rendszermezok</Typography>
             <Alert severity="info">
-              {hiddenSystemFields.map((field) => field.key || field.label || 'Rendszermezo').join(', ')}
+              {hiddenSystemFields
+                .map((field) => field.key || field.label || 'Rendszermezo')
+                .join(', ')}
             </Alert>
           </Stack>
         ) : null}
