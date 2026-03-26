@@ -67,7 +67,17 @@ const TopicCollectionSearch = ({
             onSearchQueryChange(nextValue);
           }
         }}
-        renderInput={(params) => <TextField {...params} label="Keresett érték" size="small" />}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            inputProps={{
+              ...params.inputProps,
+              'aria-label': 'Keresett érték',
+            }}
+            placeholder="Keresett érték"
+            size="small"
+          />
+        )}
       />
     </Box>
   );
