@@ -24,19 +24,15 @@ const ImagePreviewDialog = ({
 }: ImagePreviewDialogProps) => {
   return (
     <Dialog fullWidth maxWidth={isMobileScreen ? 'xs' : 'md'} onClose={onClose} open={open}>
-      <DialogContent>
+      <DialogContent sx={{ p: 0 }}>
         <Box
           sx={{
             alignItems: 'center',
-            backgroundColor: 'background.paper',
             display: 'flex',
-            height: isMobileScreen ? 400 : 600,
             justifyContent: 'center',
-            mx: 'auto',
             overflow: 'hidden',
             position: 'relative',
-            width: '100%',
-            maxWidth: isMobileScreen ? 330 : 800,
+            p: 0,
           }}
         >
           {isLoading ? (
