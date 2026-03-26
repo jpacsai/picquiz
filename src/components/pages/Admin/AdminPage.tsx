@@ -1,30 +1,53 @@
-import { RouterLink } from '@components/ui/RouterLink';
 import LaunchIcon from '@mui/icons-material/Launch';
 import SchemaIcon from '@mui/icons-material/Schema';
 import { Box, Button, Card, Stack, Typography } from '@mui/material';
+import { useNavigate } from '@tanstack/react-router';
 
+import CreateSchemaDialog from '@/components/pages/Admin/CreateSchemaDialog';
 import type { Topic } from '../../../types/topics';
+import { RouterLink } from '@components/ui/RouterLink';
 
 type AdminPageProps = {
+  defaultSchemaCreationMode: 'create' | 'duplicate';
+  duplicateSourceTopicId?: string;
+  isCreateSchemaDialogOpen: boolean;
   topics: ReadonlyArray<Topic>;
 };
 
-const AdminPage = ({ topics }: AdminPageProps) => {
+const AdminPage = ({
+  defaultSchemaCreationMode,
+  duplicateSourceTopicId,
+  isCreateSchemaDialogOpen,
+  topics,
+}: AdminPageProps) => {
+  const navigate = useNavigate();
+
   return (
     <Box sx={{ display: 'grid', gap: '20px' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
         <Box sx={{ display: 'grid', gap: 0.5 }}>
           <Typography variant="h5">Topic admin</Typography>
           <Typography color="text.secondary" variant="body2">
-            Válassz topikot, vagy menj a külön sémalistára.
+            Válassz topikot, vagy hozz létre új sémát innen.
           </Typography>
         </Box>
 
-        <RouterLink to="/admin/schemas" underline="none" preload="intent">
-          <Button component="span" startIcon={<SchemaIcon />} variant="contained">
-            Sémák kezelése
-          </Button>
-        </RouterLink>
+        <Button
+          startIcon={<SchemaIcon />}
+          variant="contained"
+          onClick={() =>
+            navigate({
+              search: {
+                schemaDialog: 'new',
+                schemaMode: 'create',
+                sourceTopicId: undefined,
+              },
+              to: '/admin',
+            })
+          }
+        >
+          Új séma
+        </Button>
       </Box>
 
       {topics.map((topic) => (
@@ -50,6 +73,23 @@ const AdminPage = ({ topics }: AdminPageProps) => {
           </Stack>
         </Card>
       ))}
+
+      <CreateSchemaDialog
+        duplicateSourceTopicId={duplicateSourceTopicId}
+        initialMode={defaultSchemaCreationMode}
+        open={isCreateSchemaDialogOpen}
+        onClose={() =>
+          navigate({
+            search: {
+              schemaDialog: undefined,
+              schemaMode: undefined,
+              sourceTopicId: undefined,
+            },
+            to: '/admin',
+          })
+        }
+        topics={topics}
+      />
     </Box>
   );
 };

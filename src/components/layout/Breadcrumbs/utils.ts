@@ -2,7 +2,6 @@ import type { useMatches } from '@tanstack/react-router';
 
 import {
   ADMIN_BREADCRUMB_ITEM,
-  ADMIN_SCHEMAS_BREADCRUMB_ITEM,
   HOME_BREADCRUMB_ITEM,
 } from '@/consts/breadcrumbs';
 import type {
@@ -91,18 +90,13 @@ const getAdminSchemasItems = (
 ): BreadcrumbItem[] => {
   if (!includeTopicLabel || !context.topicId || !context.topicLabel) {
     return currentLabel
-      ? [ADMIN_BREADCRUMB_ITEM, ADMIN_SCHEMAS_BREADCRUMB_ITEM, { label: currentLabel }]
-      : [ADMIN_BREADCRUMB_ITEM, { label: ADMIN_SCHEMAS_BREADCRUMB_ITEM.label }];
+      ? [ADMIN_BREADCRUMB_ITEM, { label: currentLabel }]
+      : [ADMIN_BREADCRUMB_ITEM];
   }
 
   return currentLabel
-    ? [
-        ADMIN_BREADCRUMB_ITEM,
-        ADMIN_SCHEMAS_BREADCRUMB_ITEM,
-        { label: context.topicLabel },
-        { label: currentLabel },
-      ]
-    : [ADMIN_BREADCRUMB_ITEM, ADMIN_SCHEMAS_BREADCRUMB_ITEM, { label: context.topicLabel }];
+    ? [ADMIN_BREADCRUMB_ITEM, { label: context.topicLabel }, { label: currentLabel }]
+    : [ADMIN_BREADCRUMB_ITEM, { label: context.topicLabel }];
 };
 
 const getTopicItem = ({ topicId, topicLabel }: BreadcrumbRouteContext): BreadcrumbItem | null => {
@@ -146,7 +140,7 @@ export const getItems = (matches: ReturnType<typeof useMatches>): BreadcrumbItem
     case '/_app/admin/':
       return [{ label: 'Admin' }];
     case '/_app/admin/schemas/':
-      return [ADMIN_BREADCRUMB_ITEM, { label: 'Sémák' }];
+      return [ADMIN_BREADCRUMB_ITEM];
     case '/_app/admin/schemas/new':
       return getAdminSchemasItems(context, 'Új séma');
     case '/_app/admin/schemas/$topicId/duplicate':

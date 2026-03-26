@@ -279,7 +279,7 @@ describe('TopicSchemaBuilderPage', () => {
       queryKey: QUERY_KEYS.TOPICS.byId('art'),
     });
     expect(navigateMock).toHaveBeenCalledWith({
-      to: '/admin/schemas',
+      to: '/admin',
     });
     expect(enqueueSnackbarMock).toHaveBeenCalledWith('Az uj topic schema elmentve.', {
       key: 'topic-schema-created',

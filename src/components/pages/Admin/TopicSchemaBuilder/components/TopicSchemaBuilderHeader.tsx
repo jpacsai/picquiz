@@ -26,9 +26,18 @@ const TopicSchemaBuilderHeader = () => {
             </Button>
           </RouterLink>
         ) : (
-          <RouterLink to="/admin/schemas" underline="none" preload="intent">
+          <RouterLink
+            to="/admin"
+            search={{
+              schemaDialog: undefined,
+              schemaMode: undefined,
+              sourceTopicId: undefined,
+            }}
+            underline="none"
+            preload="intent"
+          >
             <Button component="span" startIcon={<ArrowBackIcon />} variant="outlined">
-              Vissza a sémákhoz
+              Vissza az adminhoz
             </Button>
           </RouterLink>
         )}

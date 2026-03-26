@@ -221,7 +221,7 @@ export const buildTopicSchemaBuilderActionsValue = ({
               params: { topicId: topic.id },
             }
           : {
-              to: '/admin/schemas',
+              to: '/admin',
             },
       );
     } catch (error) {
