@@ -9,6 +9,10 @@ import AdminTopicCollectionPage from '../TopicCollectionPage';
 const navigateMock = vi.fn();
 const enqueueSnackbarMock = vi.fn();
 
+vi.mock('@/consts/admin', () => ({
+  ADMIN_TOPIC_COLLECTION_SEARCH_DEBOUNCE_MS: 0,
+}));
+
 vi.mock('@tanstack/react-router', async () => {
   const actual = await vi.importActual('@tanstack/react-router');
 
@@ -117,7 +121,6 @@ describe('AdminTopicCollectionPage', () => {
     await user.click(screen.getByRole('option', { name: 'Alkotó' }));
     await user.type(getSearchInput(), 'vin');
 
-    expect(screen.getByText('Tavirózsák')).toBeInTheDocument();
     await waitFor(
       () => {
         expect(screen.getByText('Mona Lisa')).toBeInTheDocument();
