@@ -1,7 +1,7 @@
 import type { TopicDraft, TopicFieldDraft } from '@/types/topicSchema';
 import type { SelectedFieldIndex } from '@/types/topicSchemaBuilder';
 
-import { normalizeImageUploadField } from '../hook/utils';
+import { normalizeImageUploadField, orderDraftFieldsWithFixedImageUploadLast } from '../hook/utils';
 
 export const getFieldToAdd = (field: TopicFieldDraft): TopicFieldDraft => {
   if (field.type === 'select') {
@@ -16,7 +16,7 @@ export const getFieldToAdd = (field: TopicFieldDraft): TopicFieldDraft => {
 
 export const appendFieldToDraft = (draft: TopicDraft, field: TopicFieldDraft): TopicDraft => ({
   ...draft,
-  fields: [...draft.fields, getFieldToAdd(field)],
+  fields: orderDraftFieldsWithFixedImageUploadLast([...draft.fields, getFieldToAdd(field)]),
 });
 
 export const updateDraftFieldAtIndex = (
@@ -38,7 +38,10 @@ export const insertNormalizedFixedImageUploadField = (
   field: TopicFieldDraft,
 ): TopicDraft => ({
   ...draft,
-  fields: [...draft.fields, normalizeImageUploadField(field)],
+  fields: orderDraftFieldsWithFixedImageUploadLast([
+    ...draft.fields,
+    normalizeImageUploadField(field),
+  ]),
 });
 
 export const moveDraftField = (
@@ -61,7 +64,7 @@ export const moveDraftField = (
 
   return {
     ...draft,
-    fields: nextFields,
+    fields: orderDraftFieldsWithFixedImageUploadLast(nextFields),
   };
 };
 
@@ -84,10 +87,12 @@ export const getSelectedFieldIndexAfterDelete = ({
 };
 
 export const getSelectedFieldIndexAfterMove = ({
+  fields,
   fromIndex,
   selectedFieldIndex,
   toIndex,
 }: {
+  fields: TopicDraft['fields'];
   fromIndex: number;
   selectedFieldIndex: SelectedFieldIndex;
   toIndex: number;
@@ -96,19 +101,20 @@ export const getSelectedFieldIndexAfterMove = ({
     return selectedFieldIndex;
   }
 
-  if (selectedFieldIndex === fromIndex) {
-    return toIndex;
+  const selectedField = fields[selectedFieldIndex];
+
+  if (!selectedField) {
+    return null;
   }
 
-  if (fromIndex < toIndex && selectedFieldIndex > fromIndex && selectedFieldIndex <= toIndex) {
-    return selectedFieldIndex - 1;
-  }
+  const nextDraft = moveDraftField(
+    {
+      fields,
+    },
+    { fromIndex, toIndex },
+  );
 
-  if (toIndex < fromIndex && selectedFieldIndex >= toIndex && selectedFieldIndex < fromIndex) {
-    return selectedFieldIndex + 1;
-  }
-
-  return selectedFieldIndex;
+  return nextDraft.fields.findIndex((field) => field === selectedField);
 };
 
 export type FieldDeletionDependency = {

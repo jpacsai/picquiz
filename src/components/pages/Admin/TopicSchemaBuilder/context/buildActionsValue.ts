@@ -137,6 +137,7 @@ export const buildTopicSchemaBuilderActionsValue = ({
 
     setSelectedFieldIndex((currentIndex) =>
       getSelectedFieldIndexAfterMove({
+        fields: draft.fields,
         fromIndex,
         selectedFieldIndex: currentIndex,
         toIndex,

@@ -1,6 +1,8 @@
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { Alert, Box, Button, Card, IconButton, Stack, Typography } from '@mui/material';
+import { useState } from 'react';
 
 import {
   useTopicSchemaBuilderActions,
@@ -9,6 +11,8 @@ import {
 import FixedImageUploadCard from './FixedImageUploadCard';
 
 const FieldListSection = () => {
+  const [draggedFieldIndex, setDraggedFieldIndex] = useState<number | null>(null);
+  const [dragOverFieldIndex, setDragOverFieldIndex] = useState<number | null>(null);
   const {
     canConfigureFixedImageUpload,
     draft,
@@ -16,9 +20,17 @@ const FieldListSection = () => {
     selectedFieldIndex,
     validation,
   } = useTopicSchemaBuilderState();
-  const { handleMoveField, setIsAddFieldDialogOpen, setIsEditFieldDialogOpen, setSelectedFieldIndex } =
-    useTopicSchemaBuilderActions();
+  const {
+    handleMoveField,
+    setIsAddFieldDialogOpen,
+    setIsEditFieldDialogOpen,
+    setSelectedFieldIndex,
+  } = useTopicSchemaBuilderActions();
   const fields = draft.fields;
+  const draggableFields = fields
+    .map((field, index) => ({ field, index }))
+    .filter(({ field }) => field.type !== 'imageUpload');
+  const imageUploadFieldIndex = fields.findIndex((field) => field.type === 'imageUpload');
   const validationErrors = validation.errors;
 
   return (
@@ -34,7 +46,7 @@ const FieldListSection = () => {
 
         {fields.length ? (
           <Stack spacing={1.5}>
-            {fields.map((field, index) => {
+            {draggableFields.map(({ field, index }, visibleIndex) => {
               const fieldIssues = validationErrors.filter((issue) =>
                 issue.path.startsWith(`fields[${index}]`),
               );
@@ -48,6 +60,7 @@ const FieldListSection = () => {
                 <Card
                   key={`${field.key ?? 'field'}-${index}`}
                   variant="outlined"
+                  data-testid={`field-card-${field.key ?? index}`}
                   sx={{
                     p: 2,
                     cursor: 'pointer',
@@ -55,6 +68,39 @@ const FieldListSection = () => {
                     boxShadow: index === selectedFieldIndex ? 1 : 0,
                     opacity: isIncomplete ? 0.72 : 1,
                     backgroundColor: isIncomplete ? 'action.hover' : undefined,
+                    outline:
+                      dragOverFieldIndex === index && draggedFieldIndex !== index
+                        ? '2px dashed'
+                        : undefined,
+                    outlineColor:
+                      dragOverFieldIndex === index && draggedFieldIndex !== index
+                        ? 'primary.main'
+                        : undefined,
+                  }}
+                  onDragOver={(event) => {
+                    event.preventDefault();
+
+                    if (draggedFieldIndex !== null && draggedFieldIndex !== index) {
+                      setDragOverFieldIndex(index);
+                    }
+                  }}
+                  onDragLeave={() => {
+                    if (dragOverFieldIndex === index) {
+                      setDragOverFieldIndex(null);
+                    }
+                  }}
+                  onDrop={(event) => {
+                    event.preventDefault();
+
+                    if (draggedFieldIndex !== null && draggedFieldIndex !== index) {
+                      handleMoveField({
+                        fromIndex: draggedFieldIndex,
+                        toIndex: index,
+                      });
+                    }
+
+                    setDraggedFieldIndex(null);
+                    setDragOverFieldIndex(null);
                   }}
                   onClick={() => {
                     setSelectedFieldIndex(index);
@@ -68,7 +114,9 @@ const FieldListSection = () => {
                     gap={1}
                   >
                     <Box>
-                      <Typography variant="subtitle1">{field.label || 'Nev nelkuli field'}</Typography>
+                      <Typography variant="subtitle1">
+                        {field.label || 'Nev nelkuli field'}
+                      </Typography>
                       <Typography color="text.secondary" variant="body2">
                         #{index + 1} | key: {field.key || '-'} | type: {field.type || '-'}
                       </Typography>
@@ -85,14 +133,10 @@ const FieldListSection = () => {
                       alignItems="center"
                       onClick={(event) => event.stopPropagation()}
                     >
-                      <Typography color="text.secondary" variant="body2">
-                        Kattints a szerkeszteshez
-                      </Typography>
-
                       <IconButton
                         aria-label={`${field.label || field.key || 'field'} mozgatasa felfele`}
                         size="small"
-                        disabled={index === 0}
+                        disabled={visibleIndex === 0}
                         onClick={() => {
                           handleMoveField({
                             fromIndex: index,
@@ -106,7 +150,7 @@ const FieldListSection = () => {
                       <IconButton
                         aria-label={`${field.label || field.key || 'field'} mozgatasa lefele`}
                         size="small"
-                        disabled={index === fields.length - 1}
+                        disabled={visibleIndex === draggableFields.length - 1}
                         onClick={() => {
                           handleMoveField({
                             fromIndex: index,
@@ -116,11 +160,41 @@ const FieldListSection = () => {
                       >
                         <ArrowDownwardIcon fontSize="small" />
                       </IconButton>
+
+                      <IconButton
+                        aria-label={`${field.label || field.key || 'field'} athelyezese drag and droppal`}
+                        size="small"
+                        draggable
+                        onDragStart={(event) => {
+                          event.dataTransfer.effectAllowed = 'move';
+                          event.dataTransfer.setData('text/plain', String(index));
+                          setDraggedFieldIndex(index);
+                        }}
+                        onDragEnd={() => {
+                          setDraggedFieldIndex(null);
+                          setDragOverFieldIndex(null);
+                        }}
+                      >
+                        <DragIndicatorIcon fontSize="small" />
+                      </IconButton>
                     </Stack>
                   </Stack>
                 </Card>
               );
             })}
+
+            {hasImageUploadField ? (
+              <FixedImageUploadCard
+                canConfigure
+                helperText="Fix image upload field. Mindig a lista legaljan marad."
+                onClick={() => {
+                  setSelectedFieldIndex(
+                    imageUploadFieldIndex >= 0 ? imageUploadFieldIndex : 'fixed-image-upload',
+                  );
+                  setIsEditFieldDialogOpen(true);
+                }}
+              />
+            ) : null}
 
             {!hasImageUploadField ? (
               <FixedImageUploadCard

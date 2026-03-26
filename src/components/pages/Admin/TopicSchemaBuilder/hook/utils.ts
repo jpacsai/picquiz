@@ -24,20 +24,30 @@ export const normalizeImageUploadField = (field: TopicFieldDraft): TopicFieldDra
       }
     : field;
 
+export const orderDraftFieldsWithFixedImageUploadLast = (fields: TopicFieldDraft[]) => {
+  const nonImageFields = fields.filter((field) => field.type !== 'imageUpload');
+  const imageUploadField = fields.find((field) => field.type === 'imageUpload');
+
+  return imageUploadField ? [...nonImageFields, imageUploadField] : nonImageFields;
+};
+
 export const getPersistedFields = (fields: TopicFieldDraft[]) => {
   const normalizedFields = fields
     .filter((field) => !isImageUploadSystemField(field))
     .map((field) => normalizeImageUploadField(field));
-  const hasImageUploadField = normalizedFields.some((field) => field.type === 'imageUpload');
+  const orderedFields = orderDraftFieldsWithFixedImageUploadLast(normalizedFields);
+  const hasImageUploadField = orderedFields.some((field) => field.type === 'imageUpload');
 
-  return hasImageUploadField ? [...normalizedFields, ...IMAGE_UPLOAD_SYSTEM_FIELDS] : normalizedFields;
+  return hasImageUploadField ? [...orderedFields, ...IMAGE_UPLOAD_SYSTEM_FIELDS] : orderedFields;
 };
 
 export const getInitialDraft = (topic?: Topic): TopicDraft => ({
   fields:
-    topic?.fields
+    orderDraftFieldsWithFixedImageUploadLast(
+      topic?.fields
       ?.filter((field) => !isImageUploadSystemField(field))
       .map((field) => normalizeImageUploadField(field)) ?? [],
+    ),
   id: topic?.id ?? '',
   label: topic?.label ?? '',
   slug: topic?.slug ?? '',
@@ -46,9 +56,11 @@ export const getInitialDraft = (topic?: Topic): TopicDraft => ({
 
 export const getDuplicateDraft = (topic: Topic): TopicDraft => ({
   fields:
-    topic.fields
+    orderDraftFieldsWithFixedImageUploadLast(
+      topic.fields
       .filter((field) => !isImageUploadSystemField(field))
       .map((field) => normalizeImageUploadField(field)) ?? [],
+    ),
   id: '',
   label: `${topic.label} masolat`,
   slug: '',

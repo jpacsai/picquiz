@@ -2,12 +2,14 @@ import { Box, Card, Stack, Typography } from '@mui/material';
 
 type FixedImageUploadCardProps = {
   canConfigure: boolean;
+  helperText?: string;
   onClick?: () => void;
   showClickHint?: boolean;
 };
 
 const FixedImageUploadCard = ({
   canConfigure,
+  helperText = 'Disabled, amig nincs keszre konfiguralva. Vegyel fel hozza legalabb egy required fieldet.',
   onClick,
   showClickHint = true,
 }: FixedImageUploadCardProps) => (
@@ -35,7 +37,7 @@ const FixedImageUploadCard = ({
           Fix image upload field
         </Typography>
         <Typography color="text.secondary" variant="body2">
-          Disabled, amig nincs keszre konfiguralva. Vegyel fel hozza legalabb egy required fieldet.
+          {helperText}
         </Typography>
       </Box>
 

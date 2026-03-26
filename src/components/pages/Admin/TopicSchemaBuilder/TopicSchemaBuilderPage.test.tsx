@@ -675,7 +675,7 @@ describe('TopicSchemaBuilderPage', () => {
     expect(within(editDialog).getByLabelText('Maximum year')).toHaveValue('todayYear');
   });
 
-  it('allows reordering fields from the field list', async () => {
+  it('allows reordering fields from the field list with drag and drop', async () => {
     const user = userEvent.setup();
 
     render(<TopicSchemaBuilderPage mode="create" />);
@@ -722,7 +722,18 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole('button', { name: 'Title mozgatasa felfele' }));
+    const dataTransfer = {
+      effectAllowed: '',
+      setData: vi.fn(),
+    };
+
+    fireEvent.dragStart(screen.getByRole('button', { name: 'Title athelyezese drag and droppal' }), {
+      dataTransfer,
+    });
+    fireEvent.dragOver(screen.getByTestId('field-card-artist'));
+    fireEvent.drop(screen.getByTestId('field-card-artist'), {
+      dataTransfer,
+    });
 
     const fieldOrderCaptions = screen.getAllByText(/key:/).map((node) => node.textContent);
 
@@ -730,6 +741,44 @@ describe('TopicSchemaBuilderPage', () => {
       '#1 | key: title | type: string',
       '#2 | key: artist | type: string',
     ]);
+  });
+
+  it('keeps the fixed image upload field at the bottom of the list', () => {
+    const topicWithMisorderedImageUpload: Topic = {
+      fields: [
+        { key: 'artist', label: 'Artist', required: true, type: 'string' },
+        {
+          fileNameFields: ['artist'],
+          key: 'image_upload',
+          label: 'Kepfeltoltes',
+          required: true,
+          targetFields: {
+            desktop: 'image_url_desktop',
+            desktopPath: 'image_path_desktop',
+            mobile: 'image_url_mobile',
+            mobilePath: 'image_path_mobile',
+          },
+          type: 'imageUpload',
+        },
+        { key: 'title', label: 'Title', type: 'string' },
+      ],
+      id: 'art',
+      label: 'Muveszet',
+      slug: 'art',
+      storage_prefix: 'art',
+    };
+
+    render(<TopicSchemaBuilderPage mode="edit" topic={topicWithMisorderedImageUpload} />);
+
+    const fieldOrderCaptions = screen.getAllByText(/key:/).map((node) => node.textContent);
+
+    expect(fieldOrderCaptions).toEqual([
+      '#1 | key: artist | type: string',
+      '#2 | key: title | type: string',
+    ]);
+    expect(screen.getByTestId('fixed-image-upload-card')).toHaveTextContent(
+      'Mindig a lista legaljan marad.',
+    );
   });
 
   it('allows deleting the selected field', async () => {
@@ -1175,7 +1224,9 @@ describe('TopicSchemaBuilderPage', () => {
     const persistedEditDialogTrigger = screen.getByRole('heading', { name: 'Kepfeltoltes' });
 
     expect(screen.getByRole('heading', { name: 'Kepfeltoltes' })).toBeInTheDocument();
-    expect(screen.getByText('#2 | key: image_upload | type: imageUpload')).toBeInTheDocument();
+    expect(screen.getByTestId('fixed-image-upload-card')).toHaveTextContent(
+      'Fix image upload field. Mindig a lista legaljan marad.',
+    );
     await user.click(persistedEditDialogTrigger);
 
     const persistedEditDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
