@@ -119,6 +119,41 @@ export type FieldDeletionDependency = {
 
 const getFieldDisplayName = (field: TopicFieldDraft) => field.label?.trim() || field.key?.trim() || 'Ismeretlen field';
 
+const getTrimmedFieldKeys = (keys: Array<string | undefined> | undefined) =>
+  (keys ?? []).map((key) => key?.trim()).filter((key): key is string => Boolean(key));
+
+export const getFieldDependencyKeys = (field: TopicFieldDraft) => {
+  const dependencies = new Set<string>();
+
+  if (field.type === 'imageUpload') {
+    getTrimmedFieldKeys(field.fileNameFields).forEach((fieldKey) => {
+      dependencies.add(fieldKey);
+    });
+  }
+
+  const fnSource = field.fn?.source?.trim();
+
+  if (fnSource) {
+    dependencies.add(fnSource);
+  }
+
+  if (field.type === 'string') {
+    getTrimmedFieldKeys(field.autocompleteCopyFields).forEach((fieldKey) => {
+      dependencies.add(fieldKey);
+    });
+  }
+
+  if (field.quiz?.enabled && field.quiz.distractor?.type === 'derivedRange') {
+    const distractorSource = field.quiz.distractor.sourceField.trim();
+
+    if (distractorSource) {
+      dependencies.add(distractorSource);
+    }
+  }
+
+  return [...dependencies];
+};
+
 export const getFieldDeletionDependencies = ({
   fieldKey,
   fields,
@@ -141,7 +176,9 @@ export const getFieldDeletionDependencies = ({
       return dependencies;
     }
 
-    if (field.type === 'imageUpload' && (field.fileNameFields ?? []).includes(trimmedFieldKey)) {
+    const fieldDependencyKeys = new Set(getFieldDependencyKeys(field));
+
+    if (field.type === 'imageUpload' && fieldDependencyKeys.has(trimmedFieldKey)) {
       dependencies.push({
         fieldKey: normalizedFieldKey ?? fieldDisplayName,
         fieldLabel: fieldDisplayName,

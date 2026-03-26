@@ -143,6 +143,7 @@ describe('TopicSchemaBuilderPage', () => {
     expect(screen.getByText('Kulcs')).toBeInTheDocument();
     expect(screen.getByText('Tipus')).toBeInTheDocument();
     expect(screen.getByText('Kotelezo')).toBeInTheDocument();
+    expect(screen.getByText('Dependency field-ek')).toBeInTheDocument();
     expect(screen.getByText('Kviz')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Artist' })).toBeInTheDocument();
     expect(screen.getByText('artist')).toBeInTheDocument();
@@ -164,6 +165,71 @@ describe('TopicSchemaBuilderPage', () => {
     expect(screen.getByText('imageUpload')).toBeInTheDocument();
     expect(screen.getByText('Rendszermezok')).toBeInTheDocument();
     expect(screen.getByText(/image_url_desktop/)).toBeInTheDocument();
+  });
+
+  it('lists dependency fields in the schema preview table', () => {
+    const topicWithDependencies: Topic = {
+      fields: [
+        { key: 'artist', label: 'Artist', type: 'string', required: true },
+        { key: 'birth_year', label: 'Birth year', type: 'year' },
+        {
+          autocomplete: true,
+          autocompleteCopyFields: ['birth_year'],
+          key: 'artist_name',
+          label: 'Artist name',
+          type: 'string',
+        },
+        {
+          fileNameFields: ['artist'],
+          key: 'image_upload',
+          label: 'Kepfeltoltes',
+          required: true,
+          targetFields: {
+            desktop: 'image_url_desktop',
+            desktopPath: 'image_path_desktop',
+            mobile: 'image_url_mobile',
+            mobilePath: 'image_path_mobile',
+          },
+          type: 'imageUpload',
+        },
+        {
+          key: 'century',
+          label: 'Century',
+          quiz: {
+            distractor: {
+              deriveWith: 'yearToCentury',
+              maxValue: 'todayYear',
+              sourceField: 'birth_year',
+              type: 'derivedRange',
+            },
+            enabled: true,
+            prompt: 'Melyik szazad?',
+          },
+          type: 'yearRange',
+        },
+      ],
+      id: 'art',
+      label: 'Muveszet',
+      slug: 'art',
+      storage_prefix: 'art',
+    };
+
+    render(<TopicSchemaBuilderPage mode="edit" topic={topicWithDependencies} />);
+
+    expect(screen.getByText('Dependency field-ek')).toBeInTheDocument();
+
+    const dependencyTable = screen.getByRole('table');
+    const tableRows = within(dependencyTable).getAllByRole('row');
+    const artistNameRow = tableRows.find((row) => within(row).queryByText('Artist name'));
+    const imageUploadRow = tableRows.find((row) => within(row).queryByText('Kepfeltoltes'));
+    const centuryRow = tableRows.find((row) => within(row).queryByText('Century'));
+
+    expect(artistNameRow).toBeDefined();
+    expect(imageUploadRow).toBeDefined();
+    expect(centuryRow).toBeDefined();
+    expect(within(artistNameRow!).getByText('Birth year')).toBeInTheDocument();
+    expect(within(imageUploadRow!).getByText('Artist')).toBeInTheDocument();
+    expect(within(centuryRow!).getByText('Birth year')).toBeInTheDocument();
   });
 
   it('shows metadata validation errors in create mode until required fields are filled', async () => {
