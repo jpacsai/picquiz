@@ -1,8 +1,7 @@
 import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
-import { Button } from '@mui/material';
 
 import TopicPageCard from '@/components/pages/Admin/TopicPage/components/TopicPageCard';
-import { RouterLink } from '@/components/ui/RouterLink';
+import TopicPageCardAction from '@/components/pages/Admin/TopicPage/components/TopicPageCardAction';
 
 type ItemTopicPageCardProps = {
   itemCount: number;
@@ -16,17 +15,13 @@ const ItemTopicPageCard = ({ itemCount, topicId }: ItemTopicPageCardProps) => {
       title="Itemek"
       subtitle={`${itemCount} elem`}
     >
-      <RouterLink
+      <TopicPageCardAction
+        label="Itemek kezelése"
         params={{ topicId }}
         search={{ saved: undefined }}
         to="/admin/$topicId/items"
-        underline="none"
-        preload="intent"
-      >
-        <Button component="span" fullWidth variant="contained">
-          Itemek kezelése
-        </Button>
-      </RouterLink>
+        variant="contained"
+      />
     </TopicPageCard>
   );
 };
