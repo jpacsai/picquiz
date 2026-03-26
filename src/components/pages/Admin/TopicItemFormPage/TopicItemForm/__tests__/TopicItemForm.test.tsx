@@ -119,7 +119,7 @@ describe('TopicItemForm saving', () => {
 
     expect(navigateMock).toHaveBeenCalledWith({
       params: { topicId: 'art' },
-      to: '/admin/$topicId/success',
+      to: '/admin/$topicId/items/success',
     });
   });
 
@@ -502,7 +502,9 @@ describe('TopicItemForm saving', () => {
 
     expect(await screen.findByText('Leonardo da Vinci')).toBeInTheDocument();
     expect(screen.getByText('Michelangelo')).toBeInTheDocument();
-    expect(screen.getByRole('textbox', { name: 'Title' })).toBe(screen.getByTestId('form-input-title'));
+    expect(screen.getByRole('textbox', { name: 'Title' })).toBe(
+      screen.getByTestId('form-input-title'),
+    );
   });
 
   it('copies configured fields from a unique autocomplete match into empty target fields', async () => {
@@ -525,9 +527,7 @@ describe('TopicItemForm saving', () => {
         autocompleteOptionsByField={{ artist: ['Pablo Picasso'] }}
         collectionName="art"
         fields={fields}
-        items={[
-          { artist: 'Pablo Picasso', birth_year: 1881, death_year: 1973, id: 'item-1' },
-        ]}
+        items={[{ artist: 'Pablo Picasso', birth_year: 1881, death_year: 1973, id: 'item-1' }]}
         storagePrefix="art"
         topicId="art"
       />,
@@ -559,9 +559,7 @@ describe('TopicItemForm saving', () => {
         autocompleteOptionsByField={{ artist: ['Pablo Picasso'] }}
         collectionName="art"
         fields={fields}
-        items={[
-          { artist: 'Pablo Picasso', birth_year: 1881, death_year: 1973, id: 'item-1' },
-        ]}
+        items={[{ artist: 'Pablo Picasso', birth_year: 1881, death_year: 1973, id: 'item-1' }]}
         storagePrefix="art"
         topicId="art"
       />,
@@ -742,7 +740,7 @@ describe('TopicItemForm saving', () => {
     expect(navigateMock).toHaveBeenCalledWith({
       params: { topicId: 'art' },
       search: { saved: 'edited' },
-      to: '/admin/$topicId',
+      to: '/admin/$topicId/items',
     });
   });
 

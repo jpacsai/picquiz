@@ -8,11 +8,7 @@ import type { TopicFieldDraft } from '@/types/topicSchema';
 import type { Topic } from '@/types/topics';
 import type { SelectedFieldIndex, TopicSchemaBuilderPageProps } from '@/types/topicSchemaBuilder';
 
-import {
-  getEmptyFieldDraft,
-  getPersistedTopicValues,
-  getSelectOptionsText,
-} from '../hook/utils';
+import { getEmptyFieldDraft, getPersistedTopicValues, getSelectOptionsText } from '../hook/utils';
 import {
   appendFieldToDraft,
   getSelectedFieldIndexAfterDelete,
@@ -188,7 +184,9 @@ export const buildTopicSchemaBuilderActionsValue = ({
           return [nextTopic];
         }
 
-        const hasExistingTopic = previousTopics.some((previousTopic) => previousTopic.id === topicId);
+        const hasExistingTopic = previousTopics.some(
+          (previousTopic) => previousTopic.id === topicId,
+        );
 
         if (!hasExistingTopic) {
           return [...previousTopics, nextTopic];
@@ -215,9 +213,16 @@ export const buildTopicSchemaBuilderActionsValue = ({
         },
       );
 
-      await navigate({
-        to: '/admin',
-      });
+      await navigate(
+        mode === 'edit' && topic
+          ? {
+              to: '/admin/$topicId',
+              params: { topicId: topic.id },
+            }
+          : {
+              to: '/admin/schemas',
+            },
+      );
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Ismeretlen mentesi hiba.';
       console.error('Sikertelen topic schema mentes', error);

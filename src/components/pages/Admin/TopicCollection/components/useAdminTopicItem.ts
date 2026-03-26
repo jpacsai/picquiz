@@ -79,7 +79,8 @@ const getValuesByDisplay = (
     .filter((value): value is DisplayValue => value !== null);
 };
 
-const joinDisplayValueTexts = (values: DisplayValue[]) => values.map((value) => value.text).join(' - ');
+const joinDisplayValueTexts = (values: DisplayValue[]) =>
+  values.map((value) => value.text).join(' - ');
 
 const joinDisplayValueNodes = (values: DisplayValue[]) =>
   values.map((value, index) =>
@@ -196,7 +197,7 @@ export const useAdminTopicItem = ({
     onConfirmDelete: () => void handleDelete(),
     onEdit: () => {
       void navigate({
-        to: '/admin/$topicId/$itemId/edit',
+        to: '/admin/$topicId/items/$itemId/edit',
         params: { itemId: item.id, topicId },
       });
     },

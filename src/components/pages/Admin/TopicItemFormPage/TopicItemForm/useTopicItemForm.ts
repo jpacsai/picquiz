@@ -1,6 +1,4 @@
-import {
-  deleteTopicImageByPath,
-} from '@data/storage';
+import { deleteTopicImageByPath } from '@data/storage';
 import { QUERY_KEYS } from '@queries/queryKeys';
 import { createTopicItem, updateTopicItem } from '@service/items';
 import { useForm } from '@tanstack/react-form';
@@ -54,10 +52,7 @@ const getStoragePathPrefixFromMessage = (message: string) => {
 const getSubmitErrorMessage = (error: unknown) => {
   const message = error instanceof Error ? error.message : 'Ismeretlen mentési hiba.';
   const code =
-    typeof error === 'object' &&
-    error !== null &&
-    'code' in error &&
-    typeof error.code === 'string'
+    typeof error === 'object' && error !== null && 'code' in error && typeof error.code === 'string'
       ? error.code
       : null;
 
@@ -179,11 +174,11 @@ export const useTopicItemForm = ({
           mode === 'edit'
             ? {
                 search: { saved: 'edited' },
-                to: '/admin/$topicId',
+                to: '/admin/$topicId/items',
                 params: { topicId },
               }
             : {
-                to: '/admin/$topicId/success',
+                to: '/admin/$topicId/items/success',
                 params: { topicId },
               },
         );

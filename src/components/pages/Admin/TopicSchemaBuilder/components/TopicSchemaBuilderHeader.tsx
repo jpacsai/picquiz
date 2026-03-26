@@ -8,7 +8,7 @@ import {
 } from '../context/useTopicSchemaBuilderContext';
 
 const TopicSchemaBuilderHeader = () => {
-  const { canSave, description, isSaving, mode, title } = useTopicSchemaBuilderState();
+  const { canSave, description, isSaving, mode, title, topic } = useTopicSchemaBuilderState();
   const { handleSave } = useTopicSchemaBuilderActions();
 
   return (
@@ -19,18 +19,27 @@ const TopicSchemaBuilderHeader = () => {
       </Box>
 
       <Stack direction="row" gap={1.5}>
-        <RouterLink to="/admin" underline="none" preload="intent">
-          <Button component="span" startIcon={<ArrowBackIcon />} variant="outlined">
-            Vissza az adminhoz
-          </Button>
-        </RouterLink>
+        {mode === 'edit' && topic ? (
+          <RouterLink
+            params={{ topicId: topic.id }}
+            to="/admin/$topicId"
+            underline="none"
+            preload="intent"
+          >
+            <Button component="span" startIcon={<ArrowBackIcon />} variant="outlined">
+              Vissza a topichoz
+            </Button>
+          </RouterLink>
+        ) : (
+          <RouterLink to="/admin/schemas" underline="none" preload="intent">
+            <Button component="span" startIcon={<ArrowBackIcon />} variant="outlined">
+              Vissza a sémákhoz
+            </Button>
+          </RouterLink>
+        )}
 
         <Button variant="contained" onClick={handleSave} disabled={!canSave}>
-          {isSaving
-            ? 'Mentes...'
-            : mode === 'create'
-              ? 'Schema letrehozasa'
-              : 'Valtozasok mentese'}
+          {isSaving ? 'Mentes...' : mode === 'create' ? 'Schema letrehozasa' : 'Valtozasok mentese'}
         </Button>
       </Stack>
     </Stack>

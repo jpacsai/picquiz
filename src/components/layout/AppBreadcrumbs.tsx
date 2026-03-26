@@ -36,6 +36,7 @@ type RouteContext = {
 
 const HOME_ITEM: BreadcrumbItem = { label: 'Kezdőlap', to: '/home' };
 const ADMIN_ITEM: BreadcrumbItem = { label: 'Admin', to: '/admin' };
+const ADMIN_SCHEMAS_ITEM: BreadcrumbItem = { label: 'Sémák', to: '/admin/schemas' };
 
 const getTopicLabel = (matches: ReturnType<typeof useMatches>) => {
   const matchWithTopic = [...matches].reverse().find((match) => {
@@ -65,6 +66,40 @@ const getAdminItems = (context: RouteContext, currentLabel?: string): Breadcrumb
   return currentLabel
     ? [ADMIN_ITEM, topicItem, { label: currentLabel }]
     : [ADMIN_ITEM, { label: topicItem.label }];
+};
+
+const getAdminTopicSectionItems = (
+  context: RouteContext,
+  sectionLabel: string,
+  currentLabel?: string,
+): BreadcrumbItem[] => {
+  const topicItem = getAdminTopicItem(context);
+
+  if (!topicItem) {
+    return currentLabel
+      ? [ADMIN_ITEM, { label: sectionLabel }, { label: currentLabel }]
+      : [ADMIN_ITEM, { label: sectionLabel }];
+  }
+
+  return currentLabel
+    ? [ADMIN_ITEM, topicItem, { label: sectionLabel }, { label: currentLabel }]
+    : [ADMIN_ITEM, topicItem, { label: sectionLabel }];
+};
+
+const getAdminSchemasItems = (
+  context: RouteContext,
+  currentLabel?: string,
+  includeTopicLabel = false,
+): BreadcrumbItem[] => {
+  if (!includeTopicLabel || !context.topicId || !context.topicLabel) {
+    return currentLabel
+      ? [ADMIN_ITEM, ADMIN_SCHEMAS_ITEM, { label: currentLabel }]
+      : [ADMIN_ITEM, { label: ADMIN_SCHEMAS_ITEM.label }];
+  }
+
+  return currentLabel
+    ? [ADMIN_ITEM, ADMIN_SCHEMAS_ITEM, { label: context.topicLabel }, { label: currentLabel }]
+    : [ADMIN_ITEM, ADMIN_SCHEMAS_ITEM, { label: context.topicLabel }];
 };
 
 const getTopicItem = ({ topicId, topicLabel }: RouteContext): BreadcrumbItem | null => {
@@ -107,14 +142,24 @@ const getItems = (matches: ReturnType<typeof useMatches>): BreadcrumbItem[] => {
       return [{ label: 'Kezdőlap' }];
     case '/_app/admin/':
       return [{ label: 'Admin' }];
+    case '/_app/admin/schemas/':
+      return [ADMIN_ITEM, { label: 'Sémák' }];
+    case '/_app/admin/schemas/new':
+      return getAdminSchemasItems(context, 'Új séma');
+    case '/_app/admin/schemas/$topicId/duplicate':
+      return getAdminSchemasItems(context, 'Duplikálás', true);
     case '/_app/admin/$topicId/':
       return getAdminItems(context);
-    case '/_app/admin/$topicId/new':
-      return getAdminItems(context, 'Új elem');
-    case '/_app/admin/$topicId/$itemId/edit':
-      return getAdminItems(context, 'Szerkesztés');
-    case '/_app/admin/$topicId/success':
-      return getAdminItems(context, 'Sikeres mentés');
+    case '/_app/admin/$topicId/schema':
+      return getAdminTopicSectionItems(context, 'Séma szerkesztése');
+    case '/_app/admin/$topicId/items/':
+      return getAdminTopicSectionItems(context, 'Itemek');
+    case '/_app/admin/$topicId/items/new':
+      return getAdminTopicSectionItems(context, 'Itemek', 'Új elem');
+    case '/_app/admin/$topicId/items/$itemId/edit':
+      return getAdminTopicSectionItems(context, 'Itemek', 'Szerkesztés');
+    case '/_app/admin/$topicId/items/success':
+      return getAdminTopicSectionItems(context, 'Itemek', 'Sikeres mentés');
     case '/_app/$topicId/':
       return getTopicItems(context);
     case '/_app/$topicId/quiz-config':

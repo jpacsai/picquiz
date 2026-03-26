@@ -19,11 +19,7 @@ type UseTopicCollectionPageParams = {
   topic: Topic;
 };
 
-export const useTopicCollectionPage = ({
-  items,
-  saved,
-  topic,
-}: UseTopicCollectionPageParams) => {
+export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollectionPageParams) => {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const { data: liveItems = items } = useQuery({
@@ -90,7 +86,7 @@ export const useTopicCollectionPage = ({
     void navigate({
       replace: true,
       search: { saved: undefined },
-      to: '/admin/$topicId',
+      to: '/admin/$topicId/items',
       params: { topicId: topic.id },
     });
   }, [enqueueSnackbar, navigate, saved, topic.id]);
@@ -101,7 +97,7 @@ export const useTopicCollectionPage = ({
       liveItems.length > 0 && sortedItems.length === 0 ? debouncedSearchQuery.trim() : undefined,
     onCreateNewItem: () => {
       void navigate({
-        to: '/admin/$topicId/new',
+        to: '/admin/$topicId/items/new',
         params: { topicId: topic.id },
       });
     },

@@ -2,18 +2,14 @@ import { topicItemsOptions } from '@queries/items';
 import { topicOptions } from '@queries/topics';
 import { createFileRoute, useLoaderData } from '@tanstack/react-router';
 
-import AdminTopicCollectionPage from '@/components/pages/Admin/TopicCollection/TopicCollectionPage';
+import AdminTopicPage from '@/components/pages/Admin/AdminTopicPage';
 
 const path = '/_app/admin/$topicId/';
 
-const parseSearch = (search: Record<string, unknown>) =>
-  ({ saved: search.saved === 'edited' ? 'edited' : undefined }) as const;
-
 const RouteComponent = () => {
-  const { items, topic } = useLoaderData({ from: path });
-  const { saved } = Route.useSearch();
+  const { itemCount, topic } = useLoaderData({ from: path });
 
-  return <AdminTopicCollectionPage items={items} saved={saved} topic={topic} />;
+  return <AdminTopicPage itemCount={itemCount} topic={topic} />;
 };
 
 export const Route = createFileRoute('/_app/admin/$topicId/')({
@@ -23,12 +19,11 @@ export const Route = createFileRoute('/_app/admin/$topicId/')({
     const items = await queryClient.ensureQueryData(topicItemsOptions(topic.slug));
 
     return {
-      items,
+      itemCount: items.length,
       topic,
       title: topic.label,
     };
   },
   component: RouteComponent,
   shouldReload: true,
-  validateSearch: parseSearch,
 });

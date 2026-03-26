@@ -33,7 +33,7 @@ describe('AdminSuccessPage', () => {
 
     expect(navigateMock).toHaveBeenCalledWith({
       params: { topicId: 'art' },
-      to: '/admin/$topicId/new',
+      to: '/admin/$topicId/items/new',
     });
   });
 
@@ -47,7 +47,7 @@ describe('AdminSuccessPage', () => {
     expect(navigateMock).toHaveBeenCalledWith({
       params: { topicId: 'art' },
       search: { saved: undefined },
-      to: '/admin/$topicId',
+      to: '/admin/$topicId/items',
     });
   });
 });

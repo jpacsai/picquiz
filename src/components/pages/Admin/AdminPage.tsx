@@ -1,4 +1,6 @@
 import { RouterLink } from '@components/ui/RouterLink';
+import LaunchIcon from '@mui/icons-material/Launch';
+import SchemaIcon from '@mui/icons-material/Schema';
 import { Box, Button, Card, Stack, Typography } from '@mui/material';
 
 import type { Topic } from '../../../types/topics';
@@ -11,11 +13,16 @@ const AdminPage = ({ topics }: AdminPageProps) => {
   return (
     <Box sx={{ display: 'grid', gap: '20px' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
-        <Typography variant="h5">Topic admin</Typography>
+        <Box sx={{ display: 'grid', gap: 0.5 }}>
+          <Typography variant="h5">Topic admin</Typography>
+          <Typography color="text.secondary" variant="body2">
+            Válassz topikot, vagy menj a külön sémalistára.
+          </Typography>
+        </Box>
 
-        <RouterLink to="/admin/topics/new" underline="none" preload="intent">
-          <Button component="span" variant="contained">
-            Uj topic schema
+        <RouterLink to="/admin/schemas" underline="none" preload="intent">
+          <Button component="span" startIcon={<SchemaIcon />} variant="contained">
+            Sémák kezelése
           </Button>
         </RouterLink>
       </Box>
@@ -30,41 +37,16 @@ const AdminPage = ({ topics }: AdminPageProps) => {
           >
             <Typography variant="h6">{topic.label}</Typography>
 
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
-              <RouterLink
-                params={{ topicId: topic.id }}
-                search={{ saved: undefined }}
-                to="/admin/$topicId"
-                underline="none"
-                preload="intent"
-              >
-                <Button component="span" variant="outlined">
-                  Itemek
-                </Button>
-              </RouterLink>
-
-              <RouterLink
-                params={{ topicId: topic.id }}
-                to="/admin/topics/$topicId/edit"
-                underline="none"
-                preload="intent"
-              >
-                <Button component="span" variant="contained">
-                  Schema szerkesztes
-                </Button>
-              </RouterLink>
-
-              <RouterLink
-                params={{ topicId: topic.id }}
-                to="/admin/topics/$topicId/duplicate"
-                underline="none"
-                preload="intent"
-              >
-                <Button component="span" variant="outlined">
-                  Schema duplikalasa
-                </Button>
-              </RouterLink>
-            </Stack>
+            <RouterLink
+              params={{ topicId: topic.id }}
+              to="/admin/$topicId"
+              underline="none"
+              preload="intent"
+            >
+              <Button component="span" endIcon={<LaunchIcon />} variant="outlined">
+                Megnyitás
+              </Button>
+            </RouterLink>
           </Stack>
         </Card>
       ))}

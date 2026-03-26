@@ -171,6 +171,7 @@ export const useTopicSchemaBuilderStateValue = ({
     selectedFieldIndex,
     submitError,
     title,
+    topic,
     validation,
   };
 };

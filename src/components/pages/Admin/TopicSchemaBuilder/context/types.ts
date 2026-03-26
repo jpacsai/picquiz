@@ -1,5 +1,6 @@
 import type { TopicFieldDraft } from '@/types/topicSchema';
 import type { SelectedFieldIndex, TopicSchemaBuilderPageProps } from '@/types/topicSchemaBuilder';
+import type { Topic } from '@/types/topics';
 import type { validateTopicDraft } from '@/utils/topicSchemaValidation';
 
 import type { getInitialDraft } from '../hook/utils';
@@ -36,6 +37,7 @@ export type TopicSchemaBuilderStateValue = {
   selectedFieldIndex: SelectedFieldIndex;
   submitError: string;
   title: string;
+  topic?: Topic;
   validation: ReturnType<typeof validateTopicDraft>;
 };
 

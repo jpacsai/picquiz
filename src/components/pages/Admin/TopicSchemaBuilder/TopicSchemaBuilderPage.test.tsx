@@ -214,7 +214,7 @@ describe('TopicSchemaBuilderPage', () => {
       queryKey: QUERY_KEYS.TOPICS.byId('art'),
     });
     expect(navigateMock).toHaveBeenCalledWith({
-      to: '/admin',
+      to: '/admin/schemas',
     });
     expect(enqueueSnackbarMock).toHaveBeenCalledWith('Az uj topic schema elmentve.', {
       key: 'topic-schema-created',
@@ -251,7 +251,8 @@ describe('TopicSchemaBuilderPage', () => {
       queryKey: QUERY_KEYS.TOPICS.byId('art'),
     });
     expect(navigateMock).toHaveBeenCalledWith({
-      to: '/admin',
+      params: { topicId: 'art' },
+      to: '/admin/$topicId',
     });
     expect(enqueueSnackbarMock).toHaveBeenCalledWith('A topic schema modositasai elmentve.', {
       key: 'topic-schema-updated',
@@ -800,7 +801,9 @@ describe('TopicSchemaBuilderPage', () => {
 
     await user.click(within(editDialog).getByRole('checkbox', { name: 'Quiz enabled' }));
 
-    expect(within(editDialog).queryByRole('combobox', { name: 'Distractor type' })).not.toBeInTheDocument();
+    expect(
+      within(editDialog).queryByRole('combobox', { name: 'Distractor type' }),
+    ).not.toBeInTheDocument();
   });
 
   it('allows enabling quiz and editing the quiz prompt for eligible fields', async () => {
@@ -833,7 +836,9 @@ describe('TopicSchemaBuilderPage', () => {
 
     const reopenedEditDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
-    expect(within(reopenedEditDialog).getByRole('checkbox', { name: 'Quiz enabled' })).toBeChecked();
+    expect(
+      within(reopenedEditDialog).getByRole('checkbox', { name: 'Quiz enabled' }),
+    ).toBeChecked();
     expect(within(reopenedEditDialog).getByLabelText('Quiz prompt')).toHaveValue('Melyik ev?');
   });
 
@@ -875,9 +880,9 @@ describe('TopicSchemaBuilderPage', () => {
 
     const reopenedEditDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
-    expect(within(reopenedEditDialog).getByRole('combobox', { name: 'Distractor type' })).toHaveTextContent(
-      'Numeric range',
-    );
+    expect(
+      within(reopenedEditDialog).getByRole('combobox', { name: 'Distractor type' }),
+    ).toHaveTextContent('Numeric range');
     expect(within(reopenedEditDialog).getByLabelText('Min offset')).toHaveValue('1');
     expect(within(reopenedEditDialog).getByLabelText('Max offset')).toHaveValue('3');
     expect(within(reopenedEditDialog).getByLabelText('Max value')).toHaveValue('1900');
@@ -940,9 +945,9 @@ describe('TopicSchemaBuilderPage', () => {
 
     const reopenedEditDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
-    expect(within(reopenedEditDialog).getByRole('combobox', { name: 'Distractor type' })).toHaveTextContent(
-      'Derived range',
-    );
+    expect(
+      within(reopenedEditDialog).getByRole('combobox', { name: 'Distractor type' }),
+    ).toHaveTextContent('Derived range');
     expect(
       within(reopenedEditDialog).getByRole('combobox', { name: 'Distractor source field' }),
     ).toHaveTextContent('Ev');
@@ -1028,7 +1033,9 @@ describe('TopicSchemaBuilderPage', () => {
 
     await user.click(within(editDialog).getByRole('checkbox', { name: 'Quiz enabled' }));
 
-    expect(within(editDialog).queryByRole('combobox', { name: 'Distractor type' })).not.toBeInTheDocument();
+    expect(
+      within(editDialog).queryByRole('combobox', { name: 'Distractor type' }),
+    ).not.toBeInTheDocument();
   });
 
   it('allows configuring image upload fields from the dialog', async () => {
