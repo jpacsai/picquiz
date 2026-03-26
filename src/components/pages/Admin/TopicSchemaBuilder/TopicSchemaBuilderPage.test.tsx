@@ -97,13 +97,13 @@ describe('TopicSchemaBuilderPage', () => {
     expect(screen.getByLabelText('Label')).toHaveValue('Muveszet masolat');
     expect(screen.getByLabelText('Slug')).toHaveValue('');
     expect(screen.getByLabelText('Storage prefix')).toHaveValue('');
-    expect(screen.getByText('Artist')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Artist' })).toBeInTheDocument();
   });
 
   it('shows the fixed image upload field in the list from the start', () => {
     render(<TopicSchemaBuilderPage mode="create" />);
 
-    expect(screen.getByText('Kepfeltoltes')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Kepfeltoltes' })).toBeInTheDocument();
     expect(screen.getByText('Fix image upload field')).toBeInTheDocument();
   });
 
@@ -112,8 +112,8 @@ describe('TopicSchemaBuilderPage', () => {
 
     render(<TopicSchemaBuilderPage mode="create" />);
 
-    expect(screen.getByText('Meg nincs user altal szerkesztheto mezod.')).toBeInTheDocument();
-    expect(screen.getByText('Meg nincs quizre hasznalt mezod.')).toBeInTheDocument();
+    expect(screen.getByText('Form mezok: 0')).toBeInTheDocument();
+    expect(screen.queryByText('Field neve')).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Uj field' }));
     await user.type(screen.getByLabelText('Field label'), 'Artist');
@@ -125,7 +125,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Artist'));
+    await user.click(screen.getByRole('heading', { name: 'Artist' }));
 
     const editDialog = await screen.findByRole('dialog', { name: 'Field szerkesztes' });
 
@@ -137,10 +137,20 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
     });
 
-    expect(screen.getByText('Artist (string)')).toBeInTheDocument();
-    expect(screen.getByText('Artist | Ki az alkoto?')).toBeInTheDocument();
+    expect(screen.getByText('Form mezok: 1')).toBeInTheDocument();
+    expect(screen.getByText('Quiz mezok: 1')).toBeInTheDocument();
+    expect(screen.getByText('Field neve')).toBeInTheDocument();
+    expect(screen.getByText('Kulcs')).toBeInTheDocument();
+    expect(screen.getByText('Tipus')).toBeInTheDocument();
+    expect(screen.getByText('Kotelezo')).toBeInTheDocument();
+    expect(screen.getByText('Kviz')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Artist' })).toBeInTheDocument();
+    expect(screen.getByText('artist')).toBeInTheDocument();
+    expect(screen.getByText('string')).toBeInTheDocument();
+    expect(screen.getByText('Ki az alkoto?')).toBeInTheDocument();
+    expect(screen.getAllByText('✓').length).toBeGreaterThan(0);
 
-    await user.click(screen.getByText('Kepfeltoltes'));
+    await user.click(screen.getByRole('heading', { name: 'Kepfeltoltes' }));
 
     const imageUploadDialog = await screen.findByRole('dialog', { name: 'Field szerkesztes' });
     await user.click(within(imageUploadDialog).getByRole('button', { name: 'Kesz' }));
@@ -149,9 +159,11 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
     });
 
-    expect(screen.getByText('Kepfeltoltes (imageUpload)')).toBeInTheDocument();
-    expect(screen.getByText('image_url_desktop')).toBeInTheDocument();
-    expect(screen.getByText('image_path_mobile')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Kepfeltoltes' })).toBeInTheDocument();
+    expect(screen.getByText('image_upload')).toBeInTheDocument();
+    expect(screen.getByText('imageUpload')).toBeInTheDocument();
+    expect(screen.getByText('Rendszermezok')).toBeInTheDocument();
+    expect(screen.getByText(/image_url_desktop/)).toBeInTheDocument();
   });
 
   it('shows metadata validation errors in create mode until required fields are filled', async () => {
@@ -267,7 +279,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Name'));
+    await user.click(screen.getByRole('heading', { name: 'Name' }));
 
     const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
@@ -320,7 +332,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Artist'));
+    await user.click(screen.getByRole('heading', { name: 'Artist' }));
 
     const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
@@ -395,7 +407,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Artist'));
+    await user.click(screen.getByRole('heading', { name: 'Artist' }));
 
     const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
@@ -474,14 +486,14 @@ describe('TopicSchemaBuilderPage', () => {
     await user.click(screen.getByRole('checkbox', { name: 'Required' }));
     await user.click(screen.getByRole('button', { name: 'Field hozzaadasa' }));
 
-    expect(screen.getByText('Ev')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Ev' })).toBeInTheDocument();
     expect(screen.getByText('#1 | key: year | type: string')).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
     expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
 
-    await user.click(screen.getByText('Ev'));
+    await user.click(screen.getByRole('heading', { name: 'Ev' }));
 
     const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
@@ -528,7 +540,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Ev'));
+    await user.click(screen.getByRole('heading', { name: 'Ev' }));
 
     const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
@@ -536,7 +548,7 @@ describe('TopicSchemaBuilderPage', () => {
     await user.type(within(editDialog).getByLabelText('Field label'), 'Evszam');
     await user.click(within(editDialog).getByRole('checkbox', { name: 'Required' }));
 
-    expect(screen.getByText('Evszam')).toBeInTheDocument();
+    expect(within(editDialog).getByLabelText('Field label')).toHaveValue('Evszam');
     expect(within(editDialog).getByRole('checkbox', { name: 'Required' })).toBeChecked();
   });
 
@@ -560,7 +572,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Ev'));
+    await user.click(screen.getByRole('heading', { name: 'Ev' }));
 
     const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
@@ -588,7 +600,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Eletkor'));
+    await user.click(screen.getByRole('heading', { name: 'Eletkor' }));
 
     const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
@@ -610,7 +622,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Artist'));
+    await user.click(screen.getByRole('heading', { name: 'Artist' }));
 
     await user.click(
       within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', {
@@ -631,7 +643,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Title'));
+    await user.click(screen.getByRole('heading', { name: 'Title' }));
 
     await user.click(
       within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', {
@@ -667,7 +679,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Ev'));
+    await user.click(screen.getByRole('heading', { name: 'Ev' }));
 
     await user.click(
       within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', {
@@ -704,7 +716,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Kepfeltoltes'));
+    await user.click(screen.getByRole('heading', { name: 'Kepfeltoltes' }));
 
     const imageUploadDialog = await screen.findByRole('dialog', { name: 'Field szerkesztes' });
 
@@ -717,7 +729,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Name'));
+    await user.click(screen.getByRole('heading', { name: 'Name' }));
     await user.click(
       within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', {
         name: 'Torles',
@@ -746,7 +758,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Korszak'));
+    await user.click(screen.getByRole('heading', { name: 'Korszak' }));
 
     const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
@@ -782,7 +794,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Korszak'));
+    await user.click(screen.getByRole('heading', { name: 'Korszak' }));
 
     const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
@@ -805,7 +817,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Ev'));
+    await user.click(screen.getByRole('heading', { name: 'Ev' }));
 
     const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
@@ -817,7 +829,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Ev'));
+    await user.click(screen.getByRole('heading', { name: 'Ev' }));
 
     const reopenedEditDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
@@ -841,7 +853,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Ev'));
+    await user.click(screen.getByRole('heading', { name: 'Ev' }));
 
     const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
@@ -859,7 +871,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Ev'));
+    await user.click(screen.getByRole('heading', { name: 'Ev' }));
 
     const reopenedEditDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
@@ -887,7 +899,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Ev'));
+    await user.click(screen.getByRole('heading', { name: 'Ev' }));
 
     await user.click(
       within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', {
@@ -908,7 +920,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Szazad'));
+    await user.click(screen.getByRole('heading', { name: 'Szazad' }));
 
     const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
@@ -924,7 +936,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Szazad'));
+    await user.click(screen.getByRole('heading', { name: 'Szazad' }));
 
     const reopenedEditDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
@@ -950,7 +962,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Szazad'));
+    await user.click(screen.getByRole('heading', { name: 'Szazad' }));
 
     const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
@@ -987,7 +999,7 @@ describe('TopicSchemaBuilderPage', () => {
 
     render(<TopicSchemaBuilderPage mode="edit" topic={invalidTopic} />);
 
-    fireEvent.click(screen.getByText('Ev'));
+    fireEvent.click(screen.getByRole('heading', { name: 'Ev' }));
 
     const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
@@ -1010,7 +1022,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Publikalt'));
+    await user.click(screen.getByRole('heading', { name: 'Publikalt' }));
 
     const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
 
@@ -1034,7 +1046,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Uj field hozzaadasa' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Artist'));
+    await user.click(screen.getByRole('heading', { name: 'Artist' }));
 
     await user.click(
       within(screen.getByRole('dialog', { name: 'Field szerkesztes' })).getByRole('button', {
@@ -1046,7 +1058,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('Kepfeltoltes'));
+    await user.click(screen.getByRole('heading', { name: 'Kepfeltoltes' }));
 
     const editDialog = screen.getByRole('dialog', { name: 'Field szerkesztes' });
     const submitButton = within(editDialog).getByRole('button', { name: 'Kesz' });
@@ -1087,9 +1099,9 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
     });
 
-    const persistedEditDialogTrigger = screen.getByText('Kepfeltoltes');
+    const persistedEditDialogTrigger = screen.getByRole('heading', { name: 'Kepfeltoltes' });
 
-    expect(screen.getByText('Kepfeltoltes')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Kepfeltoltes' })).toBeInTheDocument();
     expect(screen.getByText('#2 | key: image_upload | type: imageUpload')).toBeInTheDocument();
     await user.click(persistedEditDialogTrigger);
 
