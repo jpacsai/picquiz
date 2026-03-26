@@ -1,7 +1,4 @@
-import { createImageFileUniqueSuffix, getResponsiveImageFileNames } from '@data/storage';
-import { useMediaQuery, useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
-import { useRef, useState } from 'react';
 
 import ImageUploadDialog from '@/components/pages/Admin/TopicItemFormPage/TopicItemForm/components/ImageUploadDialog';
 import type { PendingImageSelection } from '@/types/topicItemForm';
@@ -10,6 +7,7 @@ import type { TopicField } from '@/types/topics';
 import ImagePreviewDialog from './components/ImagePreviewDialog';
 import ImageUploadAction from './components/ImageUploadAction';
 import StoredImagePreview from './components/StoredImagePreview';
+import useImageUploadField from './useImageUploadField';
 
 type ImageUploadFieldProps = {
   existingDesktopImageUrl?: string | null;
@@ -38,69 +36,37 @@ const ImageUploadField = ({
   onSelectImage,
   uniqueSuffix,
 }: ImageUploadFieldProps) => {
-  const directFileInputRef = useRef<HTMLInputElement | null>(null);
-  const directSelectionUniqueSuffixRef = useRef<string | null>(null);
-  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
-  const [isPreviewDialogOpen, setIsPreviewDialogOpen] = useState(false);
-  const [draftUniqueSuffix, setDraftUniqueSuffix] = useState(() => createImageFileUniqueSuffix());
-  const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
-  const [loadedImageUrl, setLoadedImageUrl] = useState<string | null>(null);
-  const [loadedPreviewImageUrl, setLoadedPreviewImageUrl] = useState<string | null>(null);
-  const theme = useTheme();
-  const isMobileScreen = useMediaQuery(theme.breakpoints.down('md'));
-  const normalizedFileNameParts = fileNameParts.map((part) => part.trim()).filter(Boolean);
-  const activeUniqueSuffix = existingSelection?.uniqueSuffix ?? uniqueSuffix ?? draftUniqueSuffix;
-  const generatedFileNames = getResponsiveImageFileNames({
-    fileNameParts: normalizedFileNameParts,
-    uniqueSuffix: activeUniqueSuffix,
+  const {
+    directFileInputRef,
+    existingImageSrc,
+    generatedFileNames,
+    handleActionClick,
+    handleDialogSelect,
+    handleDirectFileChange,
+    handlePreviewImageLoad,
+    handleStoredImageError,
+    handleStoredImageLoad,
+    imageAlt,
+    isImageDialogOpen,
+    isMobileScreen,
+    isPreviewDialogOpen,
+    openPreviewDialog,
+    setIsImageDialogOpen,
+    showExistingImage,
+    showExistingImageLoader,
+    showMissingImagePlaceholder,
+    showPreviewDialogLoader,
+    closePreviewDialog,
+  } = useImageUploadField({
+    existingDesktopImageUrl,
+    existingImageUrl,
+    existingMobileImageUrl,
+    existingSelection,
+    fileNameParts,
+    mode,
+    onSelectImage,
+    uniqueSuffix,
   });
-  const resolvedDesktopImageUrl =
-    typeof existingDesktopImageUrl === 'string' && existingDesktopImageUrl.trim().length > 0
-      ? existingDesktopImageUrl
-      : typeof existingImageUrl === 'string' && existingImageUrl.trim().length > 0
-        ? existingImageUrl
-        : null;
-  const resolvedMobileImageUrl =
-    typeof existingMobileImageUrl === 'string' && existingMobileImageUrl.trim().length > 0
-      ? existingMobileImageUrl
-      : null;
-  const preferredExistingImageUrl = isMobileScreen
-    ? (resolvedMobileImageUrl ?? resolvedDesktopImageUrl)
-    : (resolvedDesktopImageUrl ?? resolvedMobileImageUrl);
-  const showExistingImage = Boolean(
-    preferredExistingImageUrl && !existingSelection && failedImageUrl !== preferredExistingImageUrl,
-  );
-  const existingImageSrc = showExistingImage ? (preferredExistingImageUrl ?? undefined) : undefined;
-  const showExistingImageLoader = Boolean(
-    showExistingImage && preferredExistingImageUrl && loadedImageUrl !== preferredExistingImageUrl,
-  );
-  const showMissingImagePlaceholder =
-    mode === 'edit' &&
-    !existingSelection &&
-    (!preferredExistingImageUrl || failedImageUrl === preferredExistingImageUrl);
-  const hasUploadedImage = Boolean(existingSelection || showExistingImage);
-  const showPreviewDialogLoader = Boolean(
-    isPreviewDialogOpen && existingImageSrc && loadedPreviewImageUrl !== existingImageSrc,
-  );
-  const imageAlt = normalizedFileNameParts.join(' ') || 'Jelenlegi kép';
-
-  const handleDirectFileChange = (file: File | null) => {
-    if (!file) {
-      directSelectionUniqueSuffixRef.current = null;
-      return;
-    }
-
-    onSelectImage({
-      file,
-      uniqueSuffix: directSelectionUniqueSuffixRef.current ?? activeUniqueSuffix,
-    });
-
-    if (directFileInputRef.current) {
-      directFileInputRef.current.value = '';
-    }
-
-    directSelectionUniqueSuffixRef.current = null;
-  };
 
   return (
     <>
@@ -119,42 +85,16 @@ const ImageUploadField = ({
           disabled={!isReadyForUpload}
           helperText={helperText}
           label={field.label}
-          onClick={() => {
-            if (!hasUploadedImage) {
-              const nextUniqueSuffix = createImageFileUniqueSuffix();
-              setDraftUniqueSuffix(nextUniqueSuffix);
-              directSelectionUniqueSuffixRef.current = nextUniqueSuffix;
-
-              if (directFileInputRef.current) {
-                directFileInputRef.current.value = '';
-              }
-
-              directFileInputRef.current?.click();
-              return;
-            }
-
-            if (!existingSelection) {
-              setDraftUniqueSuffix(createImageFileUniqueSuffix());
-            }
-
-            setIsImageDialogOpen(true);
-          }}
+          onClick={handleActionClick}
         />
 
         <StoredImagePreview
           imageAlt={imageAlt}
           imageSrc={existingImageSrc}
           isLoading={showExistingImageLoader}
-          onImageError={() => {
-            setFailedImageUrl(preferredExistingImageUrl ?? null);
-          }}
-          onImageLoad={() => {
-            setLoadedImageUrl(preferredExistingImageUrl ?? null);
-          }}
-          onOpenPreview={() => {
-            setLoadedPreviewImageUrl(null);
-            setIsPreviewDialogOpen(true);
-          }}
+          onImageError={handleStoredImageError}
+          onImageLoad={handleStoredImageLoad}
+          onOpenPreview={openPreviewDialog}
           showImage={showExistingImage}
           showMissingPlaceholder={showMissingImagePlaceholder}
         />
@@ -176,12 +116,7 @@ const ImageUploadField = ({
         open={isImageDialogOpen}
         onClose={() => setIsImageDialogOpen(false)}
         generatedFileNames={generatedFileNames}
-        onSelect={(file) => {
-          onSelectImage({
-            file,
-            uniqueSuffix: activeUniqueSuffix,
-          });
-        }}
+        onSelect={handleDialogSelect}
       />
 
       <ImagePreviewDialog
@@ -189,14 +124,9 @@ const ImageUploadField = ({
         imageSrc={existingImageSrc}
         isLoading={showPreviewDialogLoader}
         isMobileScreen={isMobileScreen}
-        onClose={() => {
-          setIsPreviewDialogOpen(false);
-          setLoadedPreviewImageUrl(null);
-        }}
+        onClose={closePreviewDialog}
         open={isPreviewDialogOpen}
-        onImageLoad={() => {
-          setLoadedPreviewImageUrl(existingImageSrc ?? null);
-        }}
+        onImageLoad={handlePreviewImageLoad}
       />
     </>
   );
