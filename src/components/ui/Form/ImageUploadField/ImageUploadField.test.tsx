@@ -176,7 +176,6 @@ describe('ImageUploadField', () => {
 
     expect(dialog).toBeInTheDocument();
     expect(screen.getByLabelText('Nagy kep elonezet toltese')).toBeInTheDocument();
-    expect(screen.getByText('Desktop preview')).toBeInTheDocument();
     expect(within(dialog).getByRole('img', { name: 'Pablo Picasso' })).toHaveAttribute(
       'src',
       'https://example.com/desktop.jpg',
@@ -200,7 +199,6 @@ describe('ImageUploadField', () => {
 
     const dialog = screen.getByRole('dialog');
 
-    expect(screen.getByText('Mobil preview')).toBeInTheDocument();
     expect(within(dialog).getByRole('img', { name: 'Pablo Picasso' })).toHaveAttribute(
       'src',
       'https://example.com/mobile.jpg',

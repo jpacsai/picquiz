@@ -48,7 +48,7 @@ vi.mock('@lib/image', () => ({
     generateResponsiveImageVariantsMock(...args),
 }));
 
-vi.mock('@/components/ui/Form/ImageUploadField', () => ({
+vi.mock('@/components/ui/Form/ImageUploadField/ImageUploadField', () => ({
   default: ({
     onSelectImage,
   }: {

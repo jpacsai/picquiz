@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 
-import AppBreadcrumbs from '@/components/layout/AppBreadcrumbs';
+import AppBreadcrumbs from '@/components/layout/Breadcrumbs/AppBreadcrumbs';
 
 type PageLayoutProps = {
   title?: string;
@@ -24,6 +24,7 @@ const PageLayout = ({ title, subTitle, children }: PageLayoutProps) => {
           {subTitle && <Typography variant="h3">{subTitle}</Typography>}
         </Box>
       )}
+
       {children}
     </Box>
   );
