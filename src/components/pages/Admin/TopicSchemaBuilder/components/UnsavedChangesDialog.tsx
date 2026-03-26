@@ -17,6 +17,10 @@ const UnsavedChangesDialog = () => {
   const theme = useTheme();
   const { isUnsavedChangesDialogOpen } = useTopicSchemaBuilderState();
   const { handleConfirmNavigation, handleStayOnPage } = useTopicSchemaBuilderActions();
+  const accentColor = theme.customTokens?.brand.accent ?? theme.palette.secondary.main;
+  const accentDarkColor = theme.customTokens?.brand.accentDark ?? theme.palette.secondary.dark;
+  const primaryTextColor =
+    theme.customTokens?.onSurface.cardPrimary ?? theme.palette.text.primary;
 
   return (
     <Dialog
@@ -28,15 +32,15 @@ const UnsavedChangesDialog = () => {
         sx: {
           backgroundColor: theme.palette.background.paper,
           backgroundImage: 'none',
-          border: `1px solid ${theme.customTokens.brand.accent}`,
+          border: `1px solid ${accentColor}`,
           borderRadius: 3,
-          boxShadow: `0 24px 64px ${theme.customTokens.brand.accentDark}66`,
+          boxShadow: `0 24px 64px ${accentDarkColor}66`,
         },
       }}
     >
       <DialogTitle
         sx={{
-          color: theme.customTokens.onSurface.cardPrimary,
+          color: primaryTextColor,
           pb: 1,
         }}
       >
@@ -53,7 +57,7 @@ const UnsavedChangesDialog = () => {
         <Button
           onClick={handleStayOnPage}
           sx={{
-            color: theme.customTokens.onSurface.cardPrimary,
+            color: primaryTextColor,
           }}
         >
           Maradok
