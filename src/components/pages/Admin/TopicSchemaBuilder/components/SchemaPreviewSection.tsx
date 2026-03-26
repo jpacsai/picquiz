@@ -19,6 +19,10 @@ import { getPersistedFields } from '../hook/utils';
 
 const getFieldSummaryLabel = (label?: string, key?: string) => label || key || 'Nev nelkuli field';
 
+const hasFieldKey = (
+  entry: readonly [string | undefined, string],
+): entry is readonly [string, string] => Boolean(entry[0]);
+
 const getDependencySummaryLabel = ({
   dependencyKey,
   fieldLabelsByKey,
@@ -57,7 +61,7 @@ const SchemaPreviewSection = () => {
   const fieldLabelsByKey = new Map(
     persistedFields
       .map((field) => [field.key?.trim(), getFieldSummaryLabel(field.label, field.key)] as const)
-      .filter(([fieldKey]) => Boolean(fieldKey)),
+      .filter(hasFieldKey),
   );
   const previewRows = persistedFields
     .filter((field) => !field.hideInEdit)
