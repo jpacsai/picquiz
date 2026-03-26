@@ -36,8 +36,9 @@ const NavBar = () => {
               variant="h2"
               sx={(theme) => ({
                 color: theme.palette.primary.main,
-                marginRight: '60px',
+                marginRight: { xs: '10px', sm: '60px' },
                 transition: 'color 150ms ease',
+                backgroundColor: 'transparent',
                 '&:hover': {
                   color: theme.customTokens.brand.primaryHover,
                 },

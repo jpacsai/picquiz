@@ -1,11 +1,12 @@
+import { RouterLink } from '@components/ui/RouterLink';
 import LaunchIcon from '@mui/icons-material/Launch';
 import SchemaIcon from '@mui/icons-material/Schema';
 import { Box, Button, Card, Stack, Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
 import CreateSchemaDialog from '@/components/pages/Admin/CreateSchemaDialog';
+
 import type { Topic } from '../../../types/topics';
-import { RouterLink } from '@components/ui/RouterLink';
 
 type AdminPageProps = {
   defaultSchemaCreationMode: 'create' | 'duplicate';
@@ -25,13 +26,6 @@ const AdminPage = ({
   return (
     <Box sx={{ display: 'grid', gap: '20px' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
-        <Box sx={{ display: 'grid', gap: 0.5 }}>
-          <Typography variant="h5">Topic admin</Typography>
-          <Typography color="text.secondary" variant="body2">
-            Válassz topikot, vagy hozz létre új sémát innen.
-          </Typography>
-        </Box>
-
         <Button
           startIcon={<SchemaIcon />}
           variant="contained"
