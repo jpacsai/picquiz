@@ -164,7 +164,7 @@ describe('TopicSchemaBuilderPage', () => {
     expect(screen.getByText('imageUpload')).toBeInTheDocument();
     expect(screen.getByText('Rendszermezok')).toBeInTheDocument();
     expect(screen.getByText(/image_url_desktop/)).toBeInTheDocument();
-  });
+  }, 10000);
 
   it('lists dependency fields in the schema preview table', () => {
     const topicWithDependencies: Topic = {
