@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -450,6 +450,39 @@ describe('TopicItemForm saving', () => {
     expect(screen.getByRole('button', { name: 'Mentés' })).toBeDisabled();
   });
 
+  it('shows the pending image preview inside the separate image upload section', async () => {
+    const user = userEvent.setup();
+    const fields: TopicField[] = [
+      { key: 'artist', label: 'Artist', required: true, type: 'string' },
+      { key: 'title', label: 'Title', required: true, type: 'string' },
+      {
+        buttonLabel: 'Upload after artist and title',
+        fileNameFields: ['artist', 'title'],
+        key: 'image_upload',
+        label: 'Upload image',
+        targetFields: {
+          desktop: 'image_url_desktop',
+          mobile: 'image_url_mobile',
+        },
+        type: 'imageUpload',
+      },
+    ];
+
+    render(
+      <TopicItemForm collectionName="art" fields={fields} storagePrefix="art" topicId="art" />,
+    );
+
+    await user.type(screen.getByTestId('form-input-artist'), 'Leonardo da Vinci');
+    await user.type(screen.getByTestId('form-input-title'), 'Mona Lisa');
+    await user.click(screen.getByTestId('mock-image-upload-button'));
+
+    expect(
+      within(screen.getByTestId('topic-item-form-image-upload-container')).getByText(
+        'Feltöltésre váró kép',
+      ),
+    ).toBeInTheDocument();
+  });
+
   it('shows hideInEdit fields on create but hides them on edit', () => {
     const fields: TopicField[] = [
       { key: 'artist', label: 'Artist', required: true, type: 'string' },
@@ -504,6 +537,39 @@ describe('TopicItemForm saving', () => {
     expect(screen.getByText('Michelangelo')).toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: 'Title' })).toBe(
       screen.getByTestId('form-input-title'),
+    );
+  });
+
+  it('renders image upload fields in a separate bottom section outside the main field grid', () => {
+    const fields: TopicField[] = [
+      { key: 'artist', label: 'Artist', required: true, type: 'string' },
+      { key: 'title', label: 'Title', required: true, type: 'string' },
+      {
+        key: 'image_upload',
+        label: 'Upload image',
+        targetFields: { desktop: 'image_url_desktop', mobile: 'image_url_mobile' },
+        fileNameFields: ['artist', 'title'],
+        type: 'imageUpload',
+      },
+    ];
+
+    render(
+      <TopicItemForm collectionName="art" fields={fields} storagePrefix="art" topicId="art" />,
+    );
+
+    expect(screen.getByTestId('topic-item-form-fields-container')).toContainElement(
+      screen.getByTestId('form-input-artist'),
+    );
+    expect(screen.getByTestId('topic-item-form-fields-container')).toContainElement(
+      screen.getByTestId('form-input-title'),
+    );
+    expect(
+      within(screen.getByTestId('topic-item-form-image-upload-container')).getByTestId(
+        'mock-image-upload-button',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId('topic-item-form-fields-container')).not.toContainElement(
+      screen.getByTestId('mock-image-upload-button'),
     );
   });
 

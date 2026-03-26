@@ -80,60 +80,23 @@ const ImageUploadField = ({
     <>
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          gap: 1,
+          alignItems: 'start',
+          columnGap: 3,
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
           marginTop: '22px',
+          rowGap: 1,
         }}
+        data-testid="image-upload-field-container"
       >
-        {!isReadyForUpload && helperText ? (
-          <Box
-            component="span"
-            sx={{
-              color: 'text.secondary',
-              fontSize: 12,
-            }}
-          >
-            {helperText}
-          </Box>
-        ) : null}
-
-        <Button
-          variant="contained"
-          disabled={!isReadyForUpload}
-          onClick={() => {
-            if (!hasUploadedImage) {
-              const nextUniqueSuffix = createImageFileUniqueSuffix();
-              setDraftUniqueSuffix(nextUniqueSuffix);
-              directSelectionUniqueSuffixRef.current = nextUniqueSuffix;
-
-              if (directFileInputRef.current) {
-                directFileInputRef.current.value = '';
-              }
-
-              directFileInputRef.current?.click();
-              return;
-            }
-
-            if (!existingSelection) {
-              setDraftUniqueSuffix(createImageFileUniqueSuffix());
-            }
-
-            setIsImageDialogOpen(true);
+        <Box
+          sx={{
+            display: 'grid',
+            gap: 1,
+            width: '100%',
           }}
-          sx={{ height: '67px' }}
         >
-          {field.label}
-        </Button>
-
-        {showExistingImage || showMissingImagePlaceholder ? (
-          <Box
-            sx={{
-              display: 'grid',
-              gap: 1,
-            }}
-          >
+          {!isReadyForUpload && helperText ? (
             <Box
               component="span"
               sx={{
@@ -141,23 +104,74 @@ const ImageUploadField = ({
                 fontSize: 12,
               }}
             >
-              {showMissingImagePlaceholder ? 'Jelenlegi kép hiba' : 'Jelenlegi kép'}
+              {helperText}
             </Box>
+          ) : null}
+
+          <Button
+            variant="contained"
+            disabled={!isReadyForUpload}
+            onClick={() => {
+              if (!hasUploadedImage) {
+                const nextUniqueSuffix = createImageFileUniqueSuffix();
+                setDraftUniqueSuffix(nextUniqueSuffix);
+                directSelectionUniqueSuffixRef.current = nextUniqueSuffix;
+
+                if (directFileInputRef.current) {
+                  directFileInputRef.current.value = '';
+                }
+
+                directFileInputRef.current?.click();
+                return;
+              }
+
+              if (!existingSelection) {
+                setDraftUniqueSuffix(createImageFileUniqueSuffix());
+              }
+
+              setIsImageDialogOpen(true);
+            }}
+            sx={{ height: '67px' }}
+          >
+            {field.label}
+          </Button>
+        </Box>
+
+        {showExistingImage || showMissingImagePlaceholder ? (
+          <Box
+            sx={{
+              display: 'grid',
+              gap: 1,
+              minWidth: 0,
+            }}
+          >
+            {showMissingImagePlaceholder ? (
+              <Box
+                component="span"
+                sx={{
+                  color: 'text.secondary',
+                  fontSize: 12,
+                }}
+              >
+                Jelenlegi kép hiba
+              </Box>
+            ) : null}
+
             {showExistingImage ? (
               <Box
                 sx={{
+                  alignItems: 'center',
+                  backgroundColor: 'background.paper',
                   border: '1px solid',
                   borderColor: 'divider',
-                  backgroundColor: 'background.paper',
                   borderRadius: 1,
                   display: 'flex',
-                  alignItems: 'center',
                   justifyContent: 'center',
-                  minHeight: 72,
+                  maxWidth: '100%',
+                  height: '67px',
                   overflow: 'hidden',
                   position: 'relative',
                   width: 180,
-                  maxWidth: '100%',
                 }}
               >
                 {showExistingImageLoader ? (
@@ -186,10 +200,10 @@ const ImageUploadField = ({
                   }}
                   sx={{
                     display: 'block',
-                    width: '100%',
                     height: 72,
                     objectFit: 'contain',
                     opacity: showExistingImageLoader ? 0 : 1,
+                    width: '100%',
                   }}
                 />
               </Box>

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { TopicField } from '@/types/topics';
@@ -108,6 +108,24 @@ describe('ImageUploadField', () => {
     expect(imageUploadDialogMock).toHaveBeenLastCalledWith(
       expect.objectContaining({ open: true }),
     );
+  });
+
+  it('renders the action and preview in the shared image upload layout container', () => {
+    render(
+      <ImageUploadField
+        existingImageUrl="https://example.com/existing.jpg"
+        field={field}
+        fileNameParts={['Pablo Picasso']}
+        isReadyForUpload
+        mode="edit"
+        onSelectImage={vi.fn()}
+      />,
+    );
+
+    const container = screen.getByTestId('image-upload-field-container');
+
+    expect(within(container).getByRole('button', { name: 'Upload image' })).toBeInTheDocument();
+    expect(within(container).getByRole('img', { name: 'Pablo Picasso' })).toBeInTheDocument();
   });
 
   it('shows the fixed helper text while upload is blocked', () => {
