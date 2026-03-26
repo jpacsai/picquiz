@@ -47,11 +47,14 @@ const PreviewTable = ({ headers, rows }: { headers: string[]; rows: PreviewCell[
         <TableRow>
           {headers.map((header) => (
             <TableCell align={header === 'Kotelezo' ? 'center' : 'left'} key={header}>
-              {header}
+              <Typography variant="h6" sx={{ color: 'text.secondary' }}>
+                {header}
+              </Typography>
             </TableCell>
           ))}
         </TableRow>
       </TableHead>
+
       <TableBody>
         {rows.map((row, index) => (
           <TableRow key={`${row.map((cell) => cell.text).join('-')}-${index}`}>
