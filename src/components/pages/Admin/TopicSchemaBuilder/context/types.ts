@@ -9,7 +9,6 @@ export type TopicSchemaBuilderStateValue = {
   canAddField: boolean;
   canConfigureFixedImageUpload: boolean;
   canSave: boolean;
-  description: string;
   draft: ReturnType<typeof getInitialDraft>;
   fieldErrorsByPath: Map<string, string>;
   hasImageUploadField: boolean;
@@ -36,7 +35,6 @@ export type TopicSchemaBuilderStateValue = {
   selectedFieldFileNameFieldOptions: Array<{ key: string; label: string }>;
   selectedFieldIndex: SelectedFieldIndex;
   submitError: string;
-  title: string;
   topic?: Topic;
   validation: ReturnType<typeof validateTopicDraft>;
 };

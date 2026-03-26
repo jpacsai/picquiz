@@ -52,7 +52,6 @@ export const TopicSchemaBuilderProvider = ({
     mode,
     newFieldDraft,
     selectedFieldIndex,
-    sourceTopic,
     submitError,
     topic,
   });

@@ -1,6 +1,6 @@
 import { RouterLink } from '@components/ui/RouterLink';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Box, Button, Stack, Typography } from '@mui/material';
+import { Button, Stack } from '@mui/material';
 
 import {
   useTopicSchemaBuilderActions,
@@ -8,16 +8,11 @@ import {
 } from '../context/useTopicSchemaBuilderContext';
 
 const TopicSchemaBuilderHeader = () => {
-  const { canSave, description, isSaving, mode, title, topic } = useTopicSchemaBuilderState();
+  const { canSave, isSaving, mode, topic } = useTopicSchemaBuilderState();
   const { handleSave } = useTopicSchemaBuilderActions();
 
   return (
-    <Stack direction="row" justifyContent="space-between" alignItems="center" gap={2}>
-      <Box>
-        <Typography variant="h4">{title}</Typography>
-        <Typography color="text.secondary">{description}</Typography>
-      </Box>
-
+    <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={2}>
       <Stack direction="row" gap={1.5}>
         {mode === 'edit' && topic ? (
           <RouterLink
