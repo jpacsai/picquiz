@@ -146,11 +146,7 @@ const ImageUploadDialog = ({
             />
           ) : null}
 
-          <Alert
-            severity={
-              status === 'error' ? 'error' : status === 'ready' ? 'info' : 'warning'
-            }
-          >
+          <Alert severity={status === 'error' ? 'error' : status === 'ready' ? 'info' : 'warning'}>
             {status === 'idle' && 'Válassz egy képet a folytatáshoz.'}
             {status === 'ready' && 'A kép készen áll a formhoz adásra.'}
             {status === 'error' && 'A kép kiválasztása nem sikerült.'}

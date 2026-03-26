@@ -122,9 +122,7 @@ describe('ImageUploadField', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Upload image' }));
 
-    expect(imageUploadDialogMock).toHaveBeenLastCalledWith(
-      expect.objectContaining({ open: true }),
-    );
+    expect(imageUploadDialogMock).toHaveBeenLastCalledWith(expect.objectContaining({ open: true }));
   });
 
   it('renders the action and preview in the shared image upload layout container', () => {

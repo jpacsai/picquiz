@@ -13,7 +13,7 @@ import ImageUploadDialog from '@/components/pages/Admin/TopicItemFormPage/TopicI
 import type { PendingImageSelection } from '@/types/topicItemForm';
 import type { TopicField } from '@/types/topics';
 
-import { createImageFileUniqueSuffix, getResponsiveImageFileNames } from '../../../data/storage';
+import { createImageFileUniqueSuffix, getResponsiveImageFileNames } from '../../../../data/storage';
 
 type ImageUploadFieldProps = {
   existingDesktopImageUrl?: string | null;

@@ -22,7 +22,7 @@ import type { TopicField } from '@/types/topics';
 
 import FormInput from './FormInput';
 import FormSelect from './FormSelect';
-import ImageUploadField from './ImageUploadField';
+import ImageUploadField from './ImageUploadField/ImageUploadField';
 
 type FormFieldProps = {
   derivationIndex: Record<string, FormDeriveField>;
