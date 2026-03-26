@@ -17,6 +17,7 @@ const StyleSelector = () => {
         onChange={handleChange}
         renderValue={(selected) => getThemePreset(selected).meta.label}
         value={presetId}
+        sx={{ minHeight: '44px' }}
       >
         {themePresetOptions.map((option) => (
           <MenuItem key={option.id} value={option.id}>

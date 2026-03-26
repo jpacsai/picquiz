@@ -18,14 +18,20 @@ const NavBar = () => {
         <Box
           maxWidth="xl"
           sx={{
-            padding: '20px',
+            padding: '10px 20px',
             display: 'flex',
             margin: 'auto',
             width: '100%',
             alignItems: 'center',
           }}
         >
-          <NavLink to="/home" activeOptions={{ exact: true }} underline="none" preload="intent">
+          <NavLink
+            to="/home"
+            activeOptions={{ exact: true }}
+            underline="none"
+            preload="intent"
+            sx={{ padding: 0 }}
+          >
             <Typography
               variant="h2"
               sx={(theme) => ({
