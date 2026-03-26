@@ -1,13 +1,17 @@
 import { useMemo } from 'react';
 
+import type { TopicDraft } from '@/types/topicSchema';
 import type { SelectedFieldIndex, TopicSchemaBuilderPageProps } from '@/types/topicSchemaBuilder';
 import { validateTopicDraft } from '@/utils/topicSchemaValidation';
 
 import {
   getAvailableAutocompleteCopyFieldOptions,
   getAvailableDistractorSourceFieldOptions,
+  getEmptyFieldDraft,
   getAvailableFileNameFieldOptions,
+  getFixedImageUploadFieldDraft,
   getPersistedFields,
+  getPersistedTopicValues,
   isIgnoredCreateImageUploadError,
 } from '../hook/utils';
 import type { TopicSchemaBuilderStateValue } from './types';
@@ -15,6 +19,7 @@ import type { TopicSchemaBuilderStateValue } from './types';
 type BuildStateValueParams = {
   draft: TopicSchemaBuilderStateValue['draft'];
   fixedImageUploadFieldDraft: NonNullable<TopicSchemaBuilderStateValue['selectedField']>;
+  initialDraft: TopicDraft;
   isAddFieldDialogOpen: boolean;
   isDeleteFieldDialogOpen: boolean;
   isEditFieldDialogOpen: boolean;
@@ -29,6 +34,7 @@ type BuildStateValueParams = {
 export const useTopicSchemaBuilderStateValue = ({
   draft,
   fixedImageUploadFieldDraft,
+  initialDraft,
   isAddFieldDialogOpen,
   isDeleteFieldDialogOpen,
   isEditFieldDialogOpen,
@@ -39,6 +45,11 @@ export const useTopicSchemaBuilderStateValue = ({
   submitError,
   topic,
 }: BuildStateValueParams): TopicSchemaBuilderStateValue => {
+  const getDirtySnapshot = (value: TopicDraft) => ({
+    ...getPersistedTopicValues(value),
+    id: value.id?.trim() ?? '',
+  });
+
   const validationDraft = useMemo(
     () => ({
       ...draft,
@@ -98,6 +109,22 @@ export const useTopicSchemaBuilderStateValue = ({
   );
   const canAddField = newFieldErrorsByPath.size === 0;
   const hasImageUploadField = draft.fields.some((field) => field.type === 'imageUpload');
+  const isDirty = useMemo(() => {
+    const initialPersistedSnapshot = JSON.stringify(getDirtySnapshot(initialDraft));
+    const currentPersistedSnapshot = JSON.stringify(getDirtySnapshot(draft));
+    const currentImageUploadField =
+      draft.fields.find((field) => field.type === 'imageUpload') ?? getFixedImageUploadFieldDraft();
+    const hasDirtyFixedImageUploadDraft =
+      JSON.stringify(fixedImageUploadFieldDraft) !== JSON.stringify(currentImageUploadField);
+    const hasDirtyNewFieldDraft =
+      JSON.stringify(newFieldDraft) !== JSON.stringify(getEmptyFieldDraft());
+
+    return (
+      initialPersistedSnapshot !== currentPersistedSnapshot ||
+      hasDirtyFixedImageUploadDraft ||
+      hasDirtyNewFieldDraft
+    );
+  }, [draft, fixedImageUploadFieldDraft, initialDraft, newFieldDraft]);
   const selectedField =
     selectedFieldIndex === 'fixed-image-upload'
       ? fixedImageUploadFieldDraft
@@ -136,6 +163,7 @@ export const useTopicSchemaBuilderStateValue = ({
     draft,
     fieldErrorsByPath,
     hasImageUploadField,
+    isDirty,
     isAddFieldDialogOpen,
     isDeleteFieldDialogOpen,
     isEditFieldDialogOpen,

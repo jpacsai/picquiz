@@ -8,6 +8,7 @@ import type { getInitialDraft } from '../hook/utils';
 export type TopicSchemaBuilderStateValue = {
   canAddField: boolean;
   canConfigureFixedImageUpload: boolean;
+  isDirty: boolean;
   canSave: boolean;
   draft: ReturnType<typeof getInitialDraft>;
   fieldErrorsByPath: Map<string, string>;
@@ -48,6 +49,7 @@ export type TopicSchemaBuilderActionsValue = {
   handleConfirmDeleteSelectedField: () => void;
   handleEditFieldSubmit: () => void;
   handleMoveField: (params: { fromIndex: number; toIndex: number }) => void;
+  handleNavigateBack: () => Promise<void>;
   handleOpenDeleteFieldDialog: () => void;
   handleSave: () => Promise<void>;
   setDraft: React.Dispatch<React.SetStateAction<ReturnType<typeof getInitialDraft>>>;

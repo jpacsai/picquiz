@@ -25,6 +25,7 @@ type BuildActionsValueParams = {
   canSave: boolean;
   draft: TopicSchemaBuilderStateValue['draft'];
   fixedImageUploadFieldDraft: NonNullable<TopicSchemaBuilderStateValue['selectedField']>;
+  isDirty: boolean;
   mode: TopicSchemaBuilderPageProps['mode'];
   navigate: NavigateFn;
   newFieldDraft: TopicSchemaBuilderStateValue['newFieldDraft'];
@@ -48,6 +49,7 @@ export const buildTopicSchemaBuilderActionsValue = ({
   canSave,
   draft,
   fixedImageUploadFieldDraft,
+  isDirty,
   mode,
   navigate,
   newFieldDraft,
@@ -65,6 +67,32 @@ export const buildTopicSchemaBuilderActionsValue = ({
   setSubmitError,
   topic,
 }: BuildActionsValueParams): TopicSchemaBuilderActionsValue => {
+  const handleNavigateBack = async () => {
+    if (isDirty) {
+      const shouldLeave = globalThis.confirm('Nem mentett valtozasok vannak. Biztosan kilepsz?');
+
+      if (!shouldLeave) {
+        return;
+      }
+    }
+
+    await navigate(
+      mode === 'edit' && topic
+        ? {
+            to: '/admin/$topicId',
+            params: { topicId: topic.id },
+          }
+        : {
+            to: '/admin',
+            search: {
+              schemaDialog: undefined,
+              schemaMode: undefined,
+              sourceTopicId: undefined,
+            },
+          },
+    );
+  };
+
   const handleCloseAddFieldDialog = () => {
     setIsAddFieldDialogOpen(false);
     setNewFieldDraft(getEmptyFieldDraft());
@@ -247,6 +275,7 @@ export const buildTopicSchemaBuilderActionsValue = ({
     handleConfirmDeleteSelectedField,
     handleEditFieldSubmit,
     handleMoveField,
+    handleNavigateBack,
     handleOpenDeleteFieldDialog,
     handleSave,
     setDraft,

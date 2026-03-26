@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { useSnackbar } from 'notistack';
-import { type PropsWithChildren, useState } from 'react';
+import { type PropsWithChildren, useEffect, useMemo, useState } from 'react';
 
 import type { SelectedFieldIndex, TopicSchemaBuilderPageProps } from '@/types/topicSchemaBuilder';
 
@@ -27,16 +27,27 @@ export const TopicSchemaBuilderProvider = ({
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
-  const [draft, setDraft] = useState(() =>
-    mode === 'edit' ? getInitialDraft(topic) : sourceTopic ? getDuplicateDraft(sourceTopic) : getInitialDraft(),
+  const initialDraft = useMemo(
+    () =>
+      mode === 'edit'
+        ? getInitialDraft(topic)
+        : sourceTopic
+          ? getDuplicateDraft(sourceTopic)
+          : getInitialDraft(),
+    [mode, sourceTopic, topic],
   );
+  const initialFixedImageUploadFieldDraft = useMemo(
+    () =>
+      initialDraft.fields.find((field) => field.type === 'imageUpload') ?? getFixedImageUploadFieldDraft(),
+    [initialDraft],
+  );
+  const [draft, setDraft] = useState(() => initialDraft);
   const [isAddFieldDialogOpen, setIsAddFieldDialogOpen] = useState(false);
   const [isDeleteFieldDialogOpen, setIsDeleteFieldDialogOpen] = useState(false);
   const [isEditFieldDialogOpen, setIsEditFieldDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [fixedImageUploadFieldDraft, setFixedImageUploadFieldDraft] = useState(
-    () =>
-      draft.fields.find((field) => field.type === 'imageUpload') ?? getFixedImageUploadFieldDraft(),
+    () => initialFixedImageUploadFieldDraft,
   );
   const [newFieldDraft, setNewFieldDraft] = useState(() => getEmptyFieldDraft());
   const [selectedFieldIndex, setSelectedFieldIndex] = useState<SelectedFieldIndex>(null);
@@ -45,6 +56,7 @@ export const TopicSchemaBuilderProvider = ({
   const stateValue = useTopicSchemaBuilderStateValue({
     draft,
     fixedImageUploadFieldDraft,
+    initialDraft,
     isAddFieldDialogOpen,
     isDeleteFieldDialogOpen,
     isEditFieldDialogOpen,
@@ -56,11 +68,29 @@ export const TopicSchemaBuilderProvider = ({
     topic,
   });
 
+  useEffect(() => {
+    if (!stateValue.isDirty) {
+      return undefined;
+    }
+
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [stateValue.isDirty]);
+
   const actionsValue = buildTopicSchemaBuilderActionsValue({
     canAddField: stateValue.canAddField,
     canSave: stateValue.canSave,
     draft,
     fixedImageUploadFieldDraft,
+    isDirty: stateValue.isDirty,
     mode,
     navigate,
     newFieldDraft,

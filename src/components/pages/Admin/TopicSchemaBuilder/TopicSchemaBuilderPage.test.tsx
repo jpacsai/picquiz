@@ -14,6 +14,7 @@ const setQueryDataMock = vi.fn();
 const enqueueSnackbarMock = vi.fn();
 const createTopicMock = vi.fn();
 const updateTopicMock = vi.fn();
+const confirmMock = vi.fn();
 
 vi.mock('@components/ui/RouterLink', () => ({
   RouterLink: ({ children }: { children: ReactNode }) => <>{children}</>,
@@ -72,6 +73,9 @@ describe('TopicSchemaBuilderPage', () => {
     invalidateQueriesMock.mockResolvedValue(undefined);
     createTopicMock.mockResolvedValue(undefined);
     updateTopicMock.mockResolvedValue(undefined);
+    confirmMock.mockReset();
+    confirmMock.mockReturnValue(true);
+    vi.stubGlobal('confirm', confirmMock);
   });
 
   it('renders the metadata fields prefilled in edit mode', () => {
@@ -247,6 +251,42 @@ describe('TopicSchemaBuilderPage', () => {
     await user.type(screen.getByLabelText('Storage prefix'), 'art');
 
     expect(screen.getByText('A topic metadata jelenleg ervenyes.')).toBeInTheDocument();
+  });
+
+  it('blocks navigating back when there are unsaved changes and the user cancels', async () => {
+    const user = userEvent.setup();
+
+    confirmMock.mockReturnValue(false);
+
+    render(<TopicSchemaBuilderPage mode="create" />);
+
+    await user.type(screen.getByLabelText('Topic ID'), 'portrait');
+    await user.click(screen.getByRole('button', { name: 'Vissza az adminhoz' }));
+
+    expect(confirmMock).toHaveBeenCalledWith('Nem mentett valtozasok vannak. Biztosan kilepsz?');
+    expect(navigateMock).not.toHaveBeenCalled();
+  });
+
+  it('navigates back after confirming unsaved changes', async () => {
+    const user = userEvent.setup();
+
+    confirmMock.mockReturnValue(true);
+
+    render(<TopicSchemaBuilderPage mode="create" />);
+
+    await user.type(screen.getByLabelText('Topic ID'), 'portrait');
+    await user.click(screen.getByRole('button', { name: 'Vissza az adminhoz' }));
+
+    await waitFor(() => {
+      expect(navigateMock).toHaveBeenCalledWith({
+        search: {
+          schemaDialog: undefined,
+          schemaMode: undefined,
+          sourceTopicId: undefined,
+        },
+        to: '/admin',
+      });
+    });
   });
 
   it('creates a topic schema and navigates back to admin', async () => {
