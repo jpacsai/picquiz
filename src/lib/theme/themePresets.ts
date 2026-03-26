@@ -150,29 +150,29 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
     typography: {
       fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
       h1: {
-        fontSize: '1.875rem',
+        fontSize: '2.5rem',
         fontWeight: 700,
       },
       h2: {
-        fontSize: '1.5rem',
+        fontSize: '2rem',
         fontWeight: 700,
       },
       h3: {
-        fontSize: '1.25rem',
+        fontSize: '1.75rem',
         fontWeight: 700,
       },
       h4: {
-        fontSize: '1.125rem',
+        fontSize: '1.5rem',
         fontWeight: 700,
       },
       body1: {
-        fontSize: '.875rem',
-        lineHeight: '1.375rem',
+        fontSize: '1.125rem',
+        lineHeight: '1.75rem',
         fontWeight: 400,
       },
       body2: {
-        fontSize: '.75rem',
-        lineHeight: '1.25rem',
+        fontSize: '1rem',
+        lineHeight: '1.5rem',
         fontWeight: 400,
       },
     },
@@ -218,29 +218,29 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
     typography: {
       fontFamily: '"Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif',
       h1: {
-        fontSize: '1.95rem',
+        fontSize: '2.5rem',
         fontWeight: 700,
       },
       h2: {
-        fontSize: '1.55rem',
+        fontSize: '2rem',
         fontWeight: 700,
       },
       h3: {
-        fontSize: '1.25rem',
+        fontSize: '1.75rem',
         fontWeight: 600,
       },
       h4: {
-        fontSize: '1.125rem',
+        fontSize: '1.5rem',
         fontWeight: 600,
       },
       body1: {
-        fontSize: '.9rem',
-        lineHeight: '1.45rem',
+        fontSize: '1.125rem',
+        lineHeight: '1.75rem',
         fontWeight: 400,
       },
       body2: {
-        fontSize: '.78rem',
-        lineHeight: '1.3rem',
+        fontSize: '1rem',
+        lineHeight: '1.5rem',
         fontWeight: 400,
       },
     },
@@ -286,29 +286,29 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
     typography: {
       fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
       h1: {
-        fontSize: '1.875rem',
+        fontSize: '2.5rem',
         fontWeight: 700,
       },
       h2: {
-        fontSize: '1.5rem',
+        fontSize: '2rem',
         fontWeight: 700,
       },
       h3: {
-        fontSize: '1.25rem',
+        fontSize: '1.75rem',
         fontWeight: 700,
       },
       h4: {
-        fontSize: '1.125rem',
+        fontSize: '1.5rem',
         fontWeight: 700,
       },
       body1: {
-        fontSize: '.875rem',
-        lineHeight: '1.375rem',
+        fontSize: '1.125rem',
+        lineHeight: '1.75rem',
         fontWeight: 400,
       },
       body2: {
-        fontSize: '.75rem',
-        lineHeight: '1.25rem',
+        fontSize: '1rem',
+        lineHeight: '1.5rem',
         fontWeight: 400,
       },
     },
@@ -354,29 +354,29 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
     typography: {
       fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
       h1: {
-        fontSize: '1.875rem',
+        fontSize: '2.5rem',
         fontWeight: 700,
       },
       h2: {
-        fontSize: '1.5rem',
+        fontSize: '2rem',
         fontWeight: 700,
       },
       h3: {
-        fontSize: '1.25rem',
+        fontSize: '1.75rem',
         fontWeight: 700,
       },
       h4: {
-        fontSize: '1.125rem',
+        fontSize: '1.5rem',
         fontWeight: 700,
       },
       body1: {
-        fontSize: '.875rem',
-        lineHeight: '1.375rem',
+        fontSize: '1.125rem',
+        lineHeight: '1.75rem',
         fontWeight: 400,
       },
       body2: {
-        fontSize: '.75rem',
-        lineHeight: '1.25rem',
+        fontSize: '1rem',
+        lineHeight: '1.5rem',
         fontWeight: 400,
       },
     },
@@ -422,29 +422,29 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
     typography: {
       fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
       h1: {
-        fontSize: '1.875rem',
+        fontSize: '2.5rem',
         fontWeight: 700,
       },
       h2: {
-        fontSize: '1.5rem',
+        fontSize: '2rem',
         fontWeight: 700,
       },
       h3: {
-        fontSize: '1.25rem',
+        fontSize: '1.75rem',
         fontWeight: 700,
       },
       h4: {
-        fontSize: '1.125rem',
+        fontSize: '1.5rem',
         fontWeight: 700,
       },
       body1: {
-        fontSize: '.875rem',
-        lineHeight: '1.375rem',
+        fontSize: '1.125rem',
+        lineHeight: '1.75rem',
         fontWeight: 400,
       },
       body2: {
-        fontSize: '.75rem',
-        lineHeight: '1.25rem',
+        fontSize: '1rem',
+        lineHeight: '1.5rem',
         fontWeight: 400,
       },
     },
@@ -482,29 +482,29 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
     typography: {
       fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
       h1: {
-        fontSize: '1.875rem',
+        fontSize: '2.5rem',
         fontWeight: 700,
       },
       h2: {
-        fontSize: '1.5rem',
+        fontSize: '2rem',
         fontWeight: 700,
       },
       h3: {
-        fontSize: '1.25rem',
+        fontSize: '1.75rem',
         fontWeight: 700,
       },
       h4: {
-        fontSize: '1.125rem',
+        fontSize: '1.5rem',
         fontWeight: 700,
       },
       body1: {
-        fontSize: '.875rem',
-        lineHeight: '1.375rem',
+        fontSize: '1.125rem',
+        lineHeight: '1.75rem',
         fontWeight: 400,
       },
       body2: {
-        fontSize: '.75rem',
-        lineHeight: '1.25rem',
+        fontSize: '1rem',
+        lineHeight: '1.5rem',
         fontWeight: 400,
       },
     },
@@ -550,29 +550,29 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
     typography: {
       fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
       h1: {
-        fontSize: '1.875rem',
+        fontSize: '2.5rem',
         fontWeight: 700,
       },
       h2: {
-        fontSize: '1.5rem',
+        fontSize: '2rem',
         fontWeight: 700,
       },
       h3: {
-        fontSize: '1.25rem',
+        fontSize: '1.75rem',
         fontWeight: 700,
       },
       h4: {
-        fontSize: '1.125rem',
+        fontSize: '1.5rem',
         fontWeight: 700,
       },
       body1: {
-        fontSize: '.875rem',
-        lineHeight: '1.375rem',
+        fontSize: '1.125rem',
+        lineHeight: '1.75rem',
         fontWeight: 400,
       },
       body2: {
-        fontSize: '.75rem',
-        lineHeight: '1.25rem',
+        fontSize: '1rem',
+        lineHeight: '1.5rem',
         fontWeight: 400,
       },
     },
@@ -618,29 +618,29 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
     typography: {
       fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
       h1: {
-        fontSize: '1.875rem',
+        fontSize: '2.5rem',
         fontWeight: 700,
       },
       h2: {
-        fontSize: '1.5rem',
+        fontSize: '2rem',
         fontWeight: 700,
       },
       h3: {
-        fontSize: '1.25rem',
+        fontSize: '1.75rem',
         fontWeight: 700,
       },
       h4: {
-        fontSize: '1.125rem',
+        fontSize: '1.5rem',
         fontWeight: 700,
       },
       body1: {
-        fontSize: '.875rem',
-        lineHeight: '1.375rem',
+        fontSize: '1.125rem',
+        lineHeight: '1.75rem',
         fontWeight: 400,
       },
       body2: {
-        fontSize: '.75rem',
-        lineHeight: '1.25rem',
+        fontSize: '1rem',
+        lineHeight: '1.5rem',
         fontWeight: 400,
       },
     },
@@ -686,29 +686,29 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
     typography: {
       fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
       h1: {
-        fontSize: '1.875rem',
+        fontSize: '2.5rem',
         fontWeight: 700,
       },
       h2: {
-        fontSize: '1.5rem',
+        fontSize: '2rem',
         fontWeight: 700,
       },
       h3: {
-        fontSize: '1.25rem',
+        fontSize: '1.75rem',
         fontWeight: 700,
       },
       h4: {
-        fontSize: '1.125rem',
+        fontSize: '1.5rem',
         fontWeight: 700,
       },
       body1: {
-        fontSize: '.875rem',
-        lineHeight: '1.375rem',
+        fontSize: '1.125rem',
+        lineHeight: '1.75rem',
         fontWeight: 400,
       },
       body2: {
-        fontSize: '.75rem',
-        lineHeight: '1.25rem',
+        fontSize: '1rem',
+        lineHeight: '1.5rem',
         fontWeight: 400,
       },
     },
@@ -754,29 +754,29 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
     typography: {
       fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
       h1: {
-        fontSize: '1.875rem',
+        fontSize: '2.5rem',
         fontWeight: 700,
       },
       h2: {
-        fontSize: '1.5rem',
+        fontSize: '2rem',
         fontWeight: 700,
       },
       h3: {
-        fontSize: '1.25rem',
+        fontSize: '1.75rem',
         fontWeight: 700,
       },
       h4: {
-        fontSize: '1.125rem',
+        fontSize: '1.5rem',
         fontWeight: 700,
       },
       body1: {
-        fontSize: '.875rem',
-        lineHeight: '1.375rem',
+        fontSize: '1.125rem',
+        lineHeight: '1.75rem',
         fontWeight: 400,
       },
       body2: {
-        fontSize: '.75rem',
-        lineHeight: '1.25rem',
+        fontSize: '1rem',
+        lineHeight: '1.5rem',
         fontWeight: 400,
       },
     },
@@ -822,29 +822,29 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
     typography: {
       fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
       h1: {
-        fontSize: '1.875rem',
+        fontSize: '2.5rem',
         fontWeight: 700,
       },
       h2: {
-        fontSize: '1.5rem',
+        fontSize: '2rem',
         fontWeight: 700,
       },
       h3: {
-        fontSize: '1.25rem',
+        fontSize: '1.75rem',
         fontWeight: 700,
       },
       h4: {
-        fontSize: '1.125rem',
+        fontSize: '1.5rem',
         fontWeight: 700,
       },
       body1: {
-        fontSize: '.875rem',
-        lineHeight: '1.375rem',
+        fontSize: '1.125rem',
+        lineHeight: '1.75rem',
         fontWeight: 400,
       },
       body2: {
-        fontSize: '.75rem',
-        lineHeight: '1.25rem',
+        fontSize: '1rem',
+        lineHeight: '1.5rem',
         fontWeight: 400,
       },
     },
@@ -890,29 +890,29 @@ export const themePresets: ReadonlyArray<ThemePresetDefinition> = [
     typography: {
       fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
       h1: {
-        fontSize: '1.875rem',
+        fontSize: '2.5rem',
         fontWeight: 700,
       },
       h2: {
-        fontSize: '1.5rem',
+        fontSize: '2rem',
         fontWeight: 700,
       },
       h3: {
-        fontSize: '1.25rem',
+        fontSize: '1.75rem',
         fontWeight: 700,
       },
       h4: {
-        fontSize: '1.125rem',
+        fontSize: '1.5rem',
         fontWeight: 700,
       },
       body1: {
-        fontSize: '.875rem',
-        lineHeight: '1.375rem',
+        fontSize: '1.125rem',
+        lineHeight: '1.75rem',
         fontWeight: 400,
       },
       body2: {
-        fontSize: '.75rem',
-        lineHeight: '1.25rem',
+        fontSize: '1rem',
+        lineHeight: '1.5rem',
         fontWeight: 400,
       },
     },
