@@ -18,7 +18,7 @@ vi.mock(
   }),
 );
 
-vi.mock('../../../data/storage', () => ({
+vi.mock('@data/storage', () => ({
   createImageFileUniqueSuffix: () => 'unique1234',
   getResponsiveImageFileNames: () => ({
     desktop: 'desktop.jpg',

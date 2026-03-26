@@ -1,19 +1,15 @@
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import { createImageFileUniqueSuffix, getResponsiveImageFileNames } from '@data/storage';
 import { useMediaQuery, useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import ButtonBase from '@mui/material/ButtonBase';
-import CircularProgress from '@mui/material/CircularProgress';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import Typography from '@mui/material/Typography';
 import { useRef, useState } from 'react';
 
 import ImageUploadDialog from '@/components/pages/Admin/TopicItemFormPage/TopicItemForm/components/ImageUploadDialog';
 import type { PendingImageSelection } from '@/types/topicItemForm';
 import type { TopicField } from '@/types/topics';
 
-import { createImageFileUniqueSuffix, getResponsiveImageFileNames } from '../../../../data/storage';
+import ImagePreviewDialog from './components/ImagePreviewDialog';
+import ImageUploadAction from './components/ImageUploadAction';
+import StoredImagePreview from './components/StoredImagePreview';
 
 type ImageUploadFieldProps = {
   existingDesktopImageUrl?: string | null;
@@ -86,6 +82,7 @@ const ImageUploadField = ({
   const showPreviewDialogLoader = Boolean(
     isPreviewDialogOpen && existingImageSrc && loadedPreviewImageUrl !== existingImageSrc,
   );
+  const imageAlt = normalizedFileNameParts.join(' ') || 'Jelenlegi kép';
 
   const handleDirectFileChange = (file: File | null) => {
     if (!file) {
@@ -118,170 +115,49 @@ const ImageUploadField = ({
         }}
         data-testid="image-upload-field-container"
       >
-        <Box
-          sx={{
-            display: 'grid',
-            gap: 1,
-            width: '100%',
+        <ImageUploadAction
+          disabled={!isReadyForUpload}
+          helperText={helperText}
+          label={field.label}
+          onClick={() => {
+            if (!hasUploadedImage) {
+              const nextUniqueSuffix = createImageFileUniqueSuffix();
+              setDraftUniqueSuffix(nextUniqueSuffix);
+              directSelectionUniqueSuffixRef.current = nextUniqueSuffix;
+
+              if (directFileInputRef.current) {
+                directFileInputRef.current.value = '';
+              }
+
+              directFileInputRef.current?.click();
+              return;
+            }
+
+            if (!existingSelection) {
+              setDraftUniqueSuffix(createImageFileUniqueSuffix());
+            }
+
+            setIsImageDialogOpen(true);
           }}
-        >
-          {!isReadyForUpload && helperText ? (
-            <Box
-              component="span"
-              sx={{
-                color: 'text.secondary',
-                fontSize: 12,
-              }}
-            >
-              {helperText}
-            </Box>
-          ) : null}
+        />
 
-          <Button
-            variant="contained"
-            disabled={!isReadyForUpload}
-            onClick={() => {
-              if (!hasUploadedImage) {
-                const nextUniqueSuffix = createImageFileUniqueSuffix();
-                setDraftUniqueSuffix(nextUniqueSuffix);
-                directSelectionUniqueSuffixRef.current = nextUniqueSuffix;
-
-                if (directFileInputRef.current) {
-                  directFileInputRef.current.value = '';
-                }
-
-                directFileInputRef.current?.click();
-                return;
-              }
-
-              if (!existingSelection) {
-                setDraftUniqueSuffix(createImageFileUniqueSuffix());
-              }
-
-              setIsImageDialogOpen(true);
-            }}
-            sx={{ height: '67px' }}
-          >
-            {field.label}
-          </Button>
-        </Box>
-
-        {showExistingImage || showMissingImagePlaceholder ? (
-          <Box
-            sx={{
-              display: 'grid',
-              gap: 1,
-              minWidth: 0,
-            }}
-          >
-            {showMissingImagePlaceholder ? (
-              <Box
-                component="span"
-                sx={{
-                  color: 'text.secondary',
-                  fontSize: 12,
-                }}
-              >
-                Jelenlegi kép hiba
-              </Box>
-            ) : null}
-
-            {showExistingImage ? (
-              <ButtonBase
-                onClick={() => {
-                  setLoadedPreviewImageUrl(null);
-                  setIsPreviewDialogOpen(true);
-                }}
-                sx={{
-                  borderRadius: 1,
-                  display: 'block',
-                  maxWidth: '100%',
-                  overflow: 'hidden',
-                  textAlign: 'left',
-                  width: 180,
-                }}
-              >
-                <Box
-                  sx={{
-                    alignItems: 'center',
-                    backgroundColor: 'background.paper',
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    borderRadius: 1,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    maxWidth: '100%',
-                    height: '67px',
-                    overflow: 'hidden',
-                    position: 'relative',
-                    width: 180,
-                  }}
-                >
-                  {showExistingImageLoader ? (
-                    <Box
-                      sx={{
-                        alignItems: 'center',
-                        display: 'flex',
-                        inset: 0,
-                        justifyContent: 'center',
-                        position: 'absolute',
-                      }}
-                    >
-                      <CircularProgress aria-label="Kep elonezet toltese" size={20} />
-                    </Box>
-                  ) : null}
-
-                  <Box
-                    component="img"
-                    src={existingImageSrc}
-                    alt={normalizedFileNameParts.join(' ') || 'Jelenlegi kép'}
-                    onError={() => {
-                      setFailedImageUrl(preferredExistingImageUrl ?? null);
-                    }}
-                    onLoad={() => {
-                      setLoadedImageUrl(preferredExistingImageUrl ?? null);
-                    }}
-                    sx={{
-                      cursor: 'zoom-in',
-                      display: 'block',
-                      height: 72,
-                      objectFit: 'contain',
-                      opacity: showExistingImageLoader ? 0 : 1,
-                      width: '100%',
-                    }}
-                  />
-                </Box>
-              </ButtonBase>
-            ) : (
-              <Box
-                sx={{
-                  alignItems: 'center',
-                  border: '1px dashed',
-                  borderColor: 'error.main',
-                  borderRadius: 1,
-                  color: 'error.main',
-                  display: 'flex',
-                  gap: 1,
-                  maxWidth: '100%',
-                  minHeight: 72,
-                  px: 2,
-                  width: 180,
-                }}
-              >
-                <ErrorOutlineIcon fontSize="small" titleAccess="Hibas vagy hianyzo kep" />
-                <Box
-                  component="span"
-                  sx={{
-                    fontSize: 12,
-                    lineHeight: 1.4,
-                  }}
-                >
-                  Hibas vagy hianyzo kep
-                </Box>
-              </Box>
-            )}
-          </Box>
-        ) : null}
+        <StoredImagePreview
+          imageAlt={imageAlt}
+          imageSrc={existingImageSrc}
+          isLoading={showExistingImageLoader}
+          onImageError={() => {
+            setFailedImageUrl(preferredExistingImageUrl ?? null);
+          }}
+          onImageLoad={() => {
+            setLoadedImageUrl(preferredExistingImageUrl ?? null);
+          }}
+          onOpenPreview={() => {
+            setLoadedPreviewImageUrl(null);
+            setIsPreviewDialogOpen(true);
+          }}
+          showImage={showExistingImage}
+          showMissingPlaceholder={showMissingImagePlaceholder}
+        />
 
         <input
           ref={directFileInputRef}
@@ -308,67 +184,20 @@ const ImageUploadField = ({
         }}
       />
 
-      <Dialog
-        fullWidth
-        maxWidth={isMobileScreen ? 'xs' : 'md'}
+      <ImagePreviewDialog
+        imageAlt={imageAlt}
+        imageSrc={existingImageSrc}
+        isLoading={showPreviewDialogLoader}
+        isMobileScreen={isMobileScreen}
         onClose={() => {
           setIsPreviewDialogOpen(false);
           setLoadedPreviewImageUrl(null);
         }}
         open={isPreviewDialogOpen}
-      >
-        <DialogContent>
-          <Box
-            sx={{
-              alignItems: 'center',
-              backgroundColor: 'background.paper',
-              display: 'flex',
-              height: isMobileScreen ? 400 : 600,
-              justifyContent: 'center',
-              mx: 'auto',
-              overflow: 'hidden',
-              position: 'relative',
-              width: '100%',
-              maxWidth: isMobileScreen ? 330 : 800,
-            }}
-          >
-            {showPreviewDialogLoader ? (
-              <Box
-                sx={{
-                  alignItems: 'center',
-                  display: 'flex',
-                  inset: 0,
-                  justifyContent: 'center',
-                  position: 'absolute',
-                }}
-              >
-                <CircularProgress aria-label="Nagy kep elonezet toltese" size={28} />
-              </Box>
-            ) : null}
-
-            <Box
-              component="img"
-              src={existingImageSrc}
-              alt={normalizedFileNameParts.join(' ') || 'Jelenlegi kép'}
-              onLoad={() => {
-                setLoadedPreviewImageUrl(existingImageSrc ?? null);
-              }}
-              sx={{
-                display: 'block',
-                height: '100%',
-                maxHeight: '100%',
-                maxWidth: '100%',
-                objectFit: 'contain',
-                opacity: showPreviewDialogLoader ? 0 : 1,
-                width: '100%',
-              }}
-            />
-          </Box>
-          <Typography color="text.secondary" sx={{ mt: 1, textAlign: 'center' }} variant="body2">
-            {isMobileScreen ? 'Mobil preview' : 'Desktop preview'}
-          </Typography>
-        </DialogContent>
-      </Dialog>
+        onImageLoad={() => {
+          setLoadedPreviewImageUrl(existingImageSrc ?? null);
+        }}
+      />
     </>
   );
 };
