@@ -86,6 +86,28 @@ const getAdminTopicSectionItems = (
     : [ADMIN_ITEM, topicItem, { label: sectionLabel }];
 };
 
+const getAdminTopicItemsSection = (
+  context: RouteContext,
+  currentLabel?: string,
+): BreadcrumbItem[] => {
+  if (!currentLabel) {
+    return getAdminTopicSectionItems(context, 'Itemek');
+  }
+
+  const topicItem = getAdminTopicItem(context);
+
+  if (!topicItem || !context.topicId) {
+    return [ADMIN_ITEM, { label: 'Itemek' }, { label: currentLabel }];
+  }
+
+  return [
+    ADMIN_ITEM,
+    topicItem,
+    { label: 'Itemek', params: { topicId: context.topicId }, to: '/admin/$topicId/items' },
+    { label: currentLabel },
+  ];
+};
+
 const getAdminSchemasItems = (
   context: RouteContext,
   currentLabel?: string,
@@ -153,13 +175,13 @@ const getItems = (matches: ReturnType<typeof useMatches>): BreadcrumbItem[] => {
     case '/_app/admin/$topicId/schema':
       return getAdminTopicSectionItems(context, 'Séma szerkesztése');
     case '/_app/admin/$topicId/items/':
-      return getAdminTopicSectionItems(context, 'Itemek');
+      return getAdminTopicItemsSection(context);
     case '/_app/admin/$topicId/items/new':
-      return getAdminTopicSectionItems(context, 'Itemek', 'Új elem');
+      return getAdminTopicItemsSection(context, 'Új elem');
     case '/_app/admin/$topicId/items/$itemId/edit':
-      return getAdminTopicSectionItems(context, 'Itemek', 'Szerkesztés');
+      return getAdminTopicItemsSection(context, 'Szerkesztés');
     case '/_app/admin/$topicId/items/success':
-      return getAdminTopicSectionItems(context, 'Itemek', 'Sikeres mentés');
+      return getAdminTopicItemsSection(context, 'Sikeres mentés');
     case '/_app/$topicId/':
       return getTopicItems(context);
     case '/_app/$topicId/quiz-config':
