@@ -84,6 +84,7 @@ describe('TopicSchemaBuilderPage', () => {
     expect(screen.getByLabelText('Topic ID')).toHaveValue('art');
     expect(screen.getByLabelText('Label')).toHaveValue('Muveszet');
     expect(screen.getByLabelText('Topic ID')).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Valtozasok mentese' })).toBeDisabled();
   });
 
   it('prefills a duplicated draft in create mode from a source topic', () => {

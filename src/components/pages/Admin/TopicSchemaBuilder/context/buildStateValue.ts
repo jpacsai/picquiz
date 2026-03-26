@@ -58,7 +58,6 @@ export const useTopicSchemaBuilderStateValue = ({
     [draft],
   );
   const validation = useMemo(() => validateTopicDraft(validationDraft), [validationDraft]);
-  const canSave = validation.errors.length === 0 && !isSaving;
 
   const metadataFields = [
     {
@@ -125,6 +124,7 @@ export const useTopicSchemaBuilderStateValue = ({
       hasDirtyNewFieldDraft
     );
   }, [draft, fixedImageUploadFieldDraft, initialDraft, newFieldDraft]);
+  const canSave = validation.errors.length === 0 && isDirty && !isSaving;
   const selectedField =
     selectedFieldIndex === 'fixed-image-upload'
       ? fixedImageUploadFieldDraft
