@@ -12,33 +12,10 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import type { ReactNode } from 'react';
 
-import BooleanValue from '@/components/ui/BooleanValue';
-
-import { getFieldDependencyKeys } from '../context/fieldActions';
 import { useTopicSchemaBuilderState } from '../context/useTopicSchemaBuilderContext';
+import { getSchemaPreview, type PreviewCell } from '../hook/schemaPreview';
 import { getPersistedFields } from '../hook/utils';
-
-const getFieldSummaryLabel = (label?: string, key?: string) => label || key || 'Nev nelkuli field';
-
-const hasFieldKey = (
-  entry: readonly [string | undefined, string],
-): entry is readonly [string, string] => Boolean(entry[0]);
-
-const getDependencySummaryLabel = ({
-  dependencyKey,
-  fieldLabelsByKey,
-}: {
-  dependencyKey: string;
-  fieldLabelsByKey: Map<string, string>;
-}) => fieldLabelsByKey.get(dependencyKey) || dependencyKey;
-
-type PreviewCell = {
-  align?: 'center' | 'left' | 'right';
-  text: string;
-  value: ReactNode;
-};
 
 const PreviewTable = ({ headers, rows }: { headers: string[]; rows: PreviewCell[][] }) => (
   <TableContainer>
@@ -73,62 +50,7 @@ const PreviewTable = ({ headers, rows }: { headers: string[]; rows: PreviewCell[
 const SchemaPreviewSection = () => {
   const { draft } = useTopicSchemaBuilderState();
   const persistedFields = getPersistedFields(draft.fields);
-  const hiddenSystemFields = persistedFields.filter((field) => field.hideInEdit);
-  const fieldLabelsByKey = new Map(
-    persistedFields
-      .map((field) => [field.key?.trim(), getFieldSummaryLabel(field.label, field.key)] as const)
-      .filter(hasFieldKey),
-  );
-  const previewRows: PreviewCell[][] = persistedFields
-    .filter((field) => !field.hideInEdit)
-    .map((field) => [
-      {
-        text: getFieldSummaryLabel(field.label, field.key),
-        value: getFieldSummaryLabel(field.label, field.key),
-      },
-      {
-        text: field.key || '-',
-        value: field.key || '-',
-      },
-      {
-        text: field.type || '-',
-        value: field.type || '-',
-      },
-      {
-        align: 'center',
-        text: field.required ? 'Igaz' : 'Hamis',
-        value: (
-          <BooleanValue
-            ariaLabel={`${getFieldSummaryLabel(field.label, field.key)} kötelező: ${field.required ? 'Igaz' : 'Hamis'}`}
-            value={field.required === true}
-          />
-        ),
-      },
-      {
-        text:
-          getFieldDependencyKeys(field)
-            .map((dependencyKey) =>
-              getDependencySummaryLabel({
-                dependencyKey,
-                fieldLabelsByKey,
-              }),
-            )
-            .join(', ') || '-',
-        value:
-          getFieldDependencyKeys(field)
-            .map((dependencyKey) =>
-              getDependencySummaryLabel({
-                dependencyKey,
-                fieldLabelsByKey,
-              }),
-            )
-            .join(', ') || '-',
-      },
-      {
-        text: field.quiz?.enabled ? field.quiz.prompt || '-' : '-',
-        value: field.quiz?.enabled ? field.quiz.prompt || '-' : '-',
-      },
-    ]);
+  const { hiddenSystemFields, quizFieldCount, rows } = getSchemaPreview(persistedFields);
 
   return (
     <Card variant="outlined" sx={{ p: 3 }}>
@@ -138,12 +60,10 @@ const SchemaPreviewSection = () => {
         </Stack>
 
         <Stack direction="row" flexWrap="wrap" gap={1}>
-          <Chip label={`Form mezok: ${previewRows.length}`} variant="outlined" />
+          <Chip label={`Form mezok: ${rows.length}`} variant="outlined" />
           <Chip
-            color={
-              previewRows.some(([, , , , , prompt]) => prompt.text !== '-') ? 'primary' : 'default'
-            }
-            label={`Quiz mezok: ${previewRows.filter(([, , , , , prompt]) => prompt.text !== '-').length}`}
+            color={quizFieldCount ? 'primary' : 'default'}
+            label={`Quiz mezok: ${quizFieldCount}`}
             variant="outlined"
           />
           <Chip
@@ -155,10 +75,10 @@ const SchemaPreviewSection = () => {
 
         <Divider />
 
-        {previewRows.length ? (
+        {rows.length ? (
           <PreviewTable
             headers={['Field neve', 'Kulcs', 'Tipus', 'Kotelezo', 'Dependency field-ek', 'Kviz']}
-            rows={previewRows}
+            rows={rows}
           />
         ) : null}
 
