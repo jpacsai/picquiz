@@ -35,6 +35,7 @@ export type QuizQuestion = {
 };
 
 export type QuizAnswerDetail = {
+  booleanValue?: boolean;
   key: string;
   label: string;
   value: string;

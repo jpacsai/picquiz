@@ -11,6 +11,7 @@ import {
   getFieldValidator,
   parseYearRangeValue,
 } from '@/components/pages/Admin/TopicItemFormPage/TopicItemForm/utils';
+import BooleanValue from '@/components/ui/BooleanValue';
 import type {
   FormDeriveField,
   FormFieldFormApi,
@@ -315,7 +316,7 @@ const FormField = ({
                   label={label}
                 />
                 <Typography color="text.secondary" variant="body2">
-                  {fieldApi.state.value === true ? 'Igaz' : 'Hamis'}
+                  <BooleanValue value={fieldApi.state.value === true} showLabel />
                 </Typography>
                 {typeof errorMessage === 'string' ? (
                   <Typography color="error" variant="caption">

@@ -1,5 +1,6 @@
 import { Box, Button, Stack, Typography } from '@mui/material';
 
+import BooleanValue from '@/components/ui/BooleanValue';
 import type { QuizAnswerDetail } from '@/types/quiz';
 
 type QuizAnsweredProps = {
@@ -41,8 +42,17 @@ const QuizAnswered = ({
         <Stack spacing={0.5}>
           {answerDetails.map((detail) => (
             <Typography color="text.secondary" variant="subtitle1" key={detail.key}>
-              {/* {detail.label} -  */}
-              <Box component="strong">{detail.value}</Box>
+              <Box component="strong">
+                {typeof detail.booleanValue === 'boolean' ? (
+                  <BooleanValue
+                    ariaLabel={`${detail.label}: ${detail.value}`}
+                    value={detail.booleanValue}
+                    showLabel
+                  />
+                ) : (
+                  detail.value
+                )}
+              </Box>
             </Typography>
           ))}
         </Stack>

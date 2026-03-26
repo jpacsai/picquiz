@@ -95,4 +95,27 @@ describe('QuizAnswered', () => {
 
     expect(screen.getByText(/Leonardo da Vinci/i)).toBeInTheDocument();
   });
+
+  it('renders boolean answer details with the shared icon component', () => {
+    render(
+      <QuizAnswered
+        autoAdvanceAfterAnswer={false}
+        autoAdvanceCountdownSeconds={3}
+        answerDetails={[
+          {
+            booleanValue: false,
+            key: 'self_portrait',
+            label: 'Önarckép',
+            value: 'Hamis',
+          },
+        ]}
+        currentQuestionIndex={0}
+        questionsLength={3}
+        showAnswerDetails
+        onContinue={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole('img', { name: 'Önarckép: Hamis' })).toBeInTheDocument();
+  });
 });

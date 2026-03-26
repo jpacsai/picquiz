@@ -183,7 +183,7 @@ describe('AdminTopicItemCard UI', () => {
     ]);
   });
 
-  it('renders boolean subtitle fields with the field label and x marker for false', () => {
+  it('renders boolean subtitle fields with the field label and false icon', () => {
     const queryClient = new QueryClient({
       defaultOptions: {
         queries: { gcTime: Infinity, retry: false },
@@ -202,7 +202,10 @@ describe('AdminTopicItemCard UI', () => {
     };
 
     queryClient.setQueryData(QUERY_KEYS.ITEMS.byTopic('art'), [booleanSubtitleItem]);
-    queryClient.setQueryData(QUERY_KEYS.ITEMS.detail('art', booleanSubtitleItem.id), booleanSubtitleItem);
+    queryClient.setQueryData(
+      QUERY_KEYS.ITEMS.detail('art', booleanSubtitleItem.id),
+      booleanSubtitleItem,
+    );
 
     render(
       <QueryClientProvider client={queryClient}>
@@ -221,9 +224,7 @@ describe('AdminTopicItemCard UI', () => {
     );
 
     expect(screen.getByText('Mona Lisa')).toBeInTheDocument();
-    expect(
-      screen.getByText((_, element) => element?.textContent === 'Önarckép: x'),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'Önarckép: Hamis' })).toBeInTheDocument();
   });
 
   it('omits subtitle fallback when no subtitle display field is configured and shows meta directly under the title', () => {

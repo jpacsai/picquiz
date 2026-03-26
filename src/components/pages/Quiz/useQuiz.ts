@@ -7,6 +7,7 @@ import {
 } from '@/consts/quiz';
 import type { QuizAnswerDetail, QuizValueField } from '@/types/quiz';
 import type { Topic, TopicItem } from '@/types/topics';
+import { getBooleanValueLabel } from '@/utils/booleanValue';
 import { buildQuizQuestions, getSelectedQuizFields } from '@/utils/quiz';
 
 type UseQuizParams = {
@@ -133,9 +134,7 @@ export const useQuiz = ({
         const value = currentItem[field.key];
         const displayValue =
           typeof value === 'boolean'
-            ? value
-              ? 'Igaz'
-              : 'Hamis'
+            ? getBooleanValueLabel(value)
             : typeof value === 'number'
               ? String(value)
               : typeof value === 'string'
@@ -145,6 +144,7 @@ export const useQuiz = ({
         return displayValue
           ? [
               {
+                booleanValue: typeof value === 'boolean' ? value : undefined,
                 key: field.key,
                 label: field.label,
                 value: displayValue,

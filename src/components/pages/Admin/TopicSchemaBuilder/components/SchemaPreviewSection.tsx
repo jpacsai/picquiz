@@ -12,6 +12,9 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
+import type { ReactNode } from 'react';
+
+import BooleanValue from '@/components/ui/BooleanValue';
 
 import { getFieldDependencyKeys } from '../context/fieldActions';
 import { useTopicSchemaBuilderState } from '../context/useTopicSchemaBuilderContext';
@@ -31,21 +34,31 @@ const getDependencySummaryLabel = ({
   fieldLabelsByKey: Map<string, string>;
 }) => fieldLabelsByKey.get(dependencyKey) || dependencyKey;
 
-const PreviewTable = ({ headers, rows }: { headers: string[]; rows: string[][] }) => (
+type PreviewCell = {
+  align?: 'center' | 'left' | 'right';
+  text: string;
+  value: ReactNode;
+};
+
+const PreviewTable = ({ headers, rows }: { headers: string[]; rows: PreviewCell[][] }) => (
   <TableContainer>
     <Table size="small">
       <TableHead>
         <TableRow>
           {headers.map((header) => (
-            <TableCell key={header}>{header}</TableCell>
+            <TableCell align={header === 'Kotelezo' ? 'center' : 'left'} key={header}>
+              {header}
+            </TableCell>
           ))}
         </TableRow>
       </TableHead>
       <TableBody>
         {rows.map((row, index) => (
-          <TableRow key={`${row.join('-')}-${index}`}>
+          <TableRow key={`${row.map((cell) => cell.text).join('-')}-${index}`}>
             {row.map((cell, cellIndex) => (
-              <TableCell key={`${cell}-${cellIndex}`}>{cell}</TableCell>
+              <TableCell align={cell.align ?? 'left'} key={`${cell.text}-${cellIndex}`}>
+                {cell.value}
+              </TableCell>
             ))}
           </TableRow>
         ))}
@@ -63,22 +76,55 @@ const SchemaPreviewSection = () => {
       .map((field) => [field.key?.trim(), getFieldSummaryLabel(field.label, field.key)] as const)
       .filter(hasFieldKey),
   );
-  const previewRows = persistedFields
+  const previewRows: PreviewCell[][] = persistedFields
     .filter((field) => !field.hideInEdit)
     .map((field) => [
-      getFieldSummaryLabel(field.label, field.key),
-      field.key || '-',
-      field.type || '-',
-      field.hideInEdit ? 'n/a' : field.required ? '✓' : 'X',
-      getFieldDependencyKeys(field)
-        .map((dependencyKey) =>
-          getDependencySummaryLabel({
-            dependencyKey,
-            fieldLabelsByKey,
-          }),
-        )
-        .join(', ') || '-',
-      field.quiz?.enabled ? field.quiz.prompt || '-' : '-',
+      {
+        text: getFieldSummaryLabel(field.label, field.key),
+        value: getFieldSummaryLabel(field.label, field.key),
+      },
+      {
+        text: field.key || '-',
+        value: field.key || '-',
+      },
+      {
+        text: field.type || '-',
+        value: field.type || '-',
+      },
+      {
+        align: 'center',
+        text: field.required ? 'Igaz' : 'Hamis',
+        value: (
+          <BooleanValue
+            ariaLabel={`${getFieldSummaryLabel(field.label, field.key)} kötelező: ${field.required ? 'Igaz' : 'Hamis'}`}
+            value={field.required === true}
+          />
+        ),
+      },
+      {
+        text:
+          getFieldDependencyKeys(field)
+            .map((dependencyKey) =>
+              getDependencySummaryLabel({
+                dependencyKey,
+                fieldLabelsByKey,
+              }),
+            )
+            .join(', ') || '-',
+        value:
+          getFieldDependencyKeys(field)
+            .map((dependencyKey) =>
+              getDependencySummaryLabel({
+                dependencyKey,
+                fieldLabelsByKey,
+              }),
+            )
+            .join(', ') || '-',
+      },
+      {
+        text: field.quiz?.enabled ? field.quiz.prompt || '-' : '-',
+        value: field.quiz?.enabled ? field.quiz.prompt || '-' : '-',
+      },
     ]);
 
   return (
@@ -91,8 +137,10 @@ const SchemaPreviewSection = () => {
         <Stack direction="row" flexWrap="wrap" gap={1}>
           <Chip label={`Form mezok: ${previewRows.length}`} variant="outlined" />
           <Chip
-            color={previewRows.some(([, , , , , prompt]) => prompt !== '-') ? 'primary' : 'default'}
-            label={`Quiz mezok: ${previewRows.filter(([, , , , , prompt]) => prompt !== '-').length}`}
+            color={
+              previewRows.some(([, , , , , prompt]) => prompt.text !== '-') ? 'primary' : 'default'
+            }
+            label={`Quiz mezok: ${previewRows.filter(([, , , , , prompt]) => prompt.text !== '-').length}`}
             variant="outlined"
           />
           <Chip

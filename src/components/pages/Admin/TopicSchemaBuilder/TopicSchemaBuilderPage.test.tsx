@@ -148,7 +148,7 @@ describe('TopicSchemaBuilderPage', () => {
     expect(screen.getByText('artist')).toBeInTheDocument();
     expect(screen.getByText('string')).toBeInTheDocument();
     expect(screen.getByText('Ki az alkoto?')).toBeInTheDocument();
-    expect(screen.getAllByText('✓').length).toBeGreaterThan(0);
+    expect(screen.getByRole('img', { name: 'Artist kötelező: Igaz' })).toBeInTheDocument();
 
     await user.click(screen.getByRole('heading', { name: 'Kepfeltoltes' }));
 

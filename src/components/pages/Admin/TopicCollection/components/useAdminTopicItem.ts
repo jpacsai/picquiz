@@ -6,7 +6,9 @@ import { useNavigate } from '@tanstack/react-router';
 import { useSnackbar } from 'notistack';
 import { Fragment, createElement, useState, type ReactNode } from 'react';
 
+import BooleanValue from '@/components/ui/BooleanValue';
 import type { TopicField, TopicItem } from '@/types/topics';
+import { getBooleanValueLabel } from '@/utils/booleanValue';
 
 type UseAdminTopicItemParams = {
   collectionName: string;
@@ -42,24 +44,18 @@ const getDisplayValue = (field: TopicField, value: unknown): DisplayValue | null
   }
 
   if (typeof value === 'boolean') {
-    const marker = value ? '✓' : 'x';
-    const text = `${field.label}: ${marker}`;
+    const booleanLabel = getBooleanValueLabel(value);
+    const text = `${field.label}: ${booleanLabel}`;
 
     return {
       node: createElement(
         Fragment,
         null,
         `${field.label}: `,
-        createElement(
-          'span',
-          {
-            style: {
-              color: value ? 'var(--mui-palette-success-main)' : 'var(--mui-palette-error-main)',
-              fontWeight: 700,
-            } as React.CSSProperties,
-          },
-          marker,
-        ),
+        createElement(BooleanValue, {
+          ariaLabel: text,
+          value,
+        }),
       ),
       text,
     };
