@@ -24,6 +24,7 @@ type BuildStateValueParams = {
   isDeleteFieldDialogOpen: boolean;
   isEditFieldDialogOpen: boolean;
   isSaving: boolean;
+  isUnsavedChangesDialogOpen: boolean;
   mode: TopicSchemaBuilderPageProps['mode'];
   newFieldDraft: TopicSchemaBuilderStateValue['newFieldDraft'];
   selectedFieldIndex: SelectedFieldIndex;
@@ -39,6 +40,7 @@ export const useTopicSchemaBuilderStateValue = ({
   isDeleteFieldDialogOpen,
   isEditFieldDialogOpen,
   isSaving,
+  isUnsavedChangesDialogOpen,
   mode,
   newFieldDraft,
   selectedFieldIndex,
@@ -168,6 +170,7 @@ export const useTopicSchemaBuilderStateValue = ({
     isDeleteFieldDialogOpen,
     isEditFieldDialogOpen,
     isSaving,
+    isUnsavedChangesDialogOpen,
     metadataErrorsByPath,
     metadataFields,
     mode,

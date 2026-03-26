@@ -14,7 +14,6 @@ const setQueryDataMock = vi.fn();
 const enqueueSnackbarMock = vi.fn();
 const createTopicMock = vi.fn();
 const updateTopicMock = vi.fn();
-const confirmMock = vi.fn();
 const useBlockerMock = vi.fn();
 
 vi.mock('@components/ui/RouterLink', () => ({
@@ -75,10 +74,15 @@ describe('TopicSchemaBuilderPage', () => {
     invalidateQueriesMock.mockResolvedValue(undefined);
     createTopicMock.mockResolvedValue(undefined);
     updateTopicMock.mockResolvedValue(undefined);
-    confirmMock.mockReset();
-    confirmMock.mockReturnValue(true);
     useBlockerMock.mockReset();
-    vi.stubGlobal('confirm', confirmMock);
+    useBlockerMock.mockReturnValue({
+      action: undefined,
+      current: undefined,
+      next: undefined,
+      proceed: undefined,
+      reset: undefined,
+      status: 'idle',
+    });
   });
 
   it('renders the metadata fields prefilled in edit mode', () => {
@@ -257,40 +261,46 @@ describe('TopicSchemaBuilderPage', () => {
     expect(screen.getByText('A topic metadata jelenleg ervenyes.')).toBeInTheDocument();
   });
 
-  it('blocks navigating back when there are unsaved changes and the user cancels', async () => {
+  it('shows a custom unsaved changes dialog when route navigation is blocked', async () => {
     const user = userEvent.setup();
+    const resetMock = vi.fn();
 
-    confirmMock.mockReturnValue(false);
+    useBlockerMock.mockReturnValue({
+      action: 'PUSH',
+      current: undefined,
+      next: undefined,
+      proceed: vi.fn(),
+      reset: resetMock,
+      status: 'blocked',
+    });
 
     render(<TopicSchemaBuilderPage mode="create" />);
 
-    await user.type(screen.getByLabelText('Topic ID'), 'portrait');
-    await user.click(screen.getByRole('button', { name: 'Vissza az adminhoz' }));
+    expect(screen.getByRole('dialog', { name: 'Nem mentett változások' })).toBeInTheDocument();
 
-    expect(confirmMock).toHaveBeenCalledWith('Nem mentett valtozasok vannak. Biztosan kilepsz?');
-    expect(navigateMock).not.toHaveBeenCalled();
+    await user.click(screen.getByRole('button', { name: 'Maradok' }));
+
+    expect(resetMock).toHaveBeenCalled();
   });
 
-  it('navigates back after confirming unsaved changes', async () => {
+  it('proceeds with navigation after confirming unsaved changes', async () => {
     const user = userEvent.setup();
+    const proceedMock = vi.fn();
 
-    confirmMock.mockReturnValue(true);
+    useBlockerMock.mockReturnValue({
+      action: 'PUSH',
+      current: undefined,
+      next: undefined,
+      proceed: proceedMock,
+      reset: vi.fn(),
+      status: 'blocked',
+    });
 
     render(<TopicSchemaBuilderPage mode="create" />);
 
-    await user.type(screen.getByLabelText('Topic ID'), 'portrait');
-    await user.click(screen.getByRole('button', { name: 'Vissza az adminhoz' }));
+    await user.click(screen.getByRole('button', { name: 'Kilépek' }));
 
-    await waitFor(() => {
-      expect(navigateMock).toHaveBeenCalledWith({
-        search: {
-          schemaDialog: undefined,
-          schemaMode: undefined,
-          sourceTopicId: undefined,
-        },
-        to: '/admin',
-      });
-    });
+    expect(proceedMock).toHaveBeenCalled();
   });
 
   it('creates a topic schema and navigates back to admin', async () => {

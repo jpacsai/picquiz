@@ -17,6 +17,7 @@ export type TopicSchemaBuilderStateValue = {
   isDeleteFieldDialogOpen: boolean;
   isEditFieldDialogOpen: boolean;
   isSaving: boolean;
+  isUnsavedChangesDialogOpen: boolean;
   metadataErrorsByPath: Map<string, string>;
   metadataFields: readonly {
     key: 'id' | 'label' | 'slug' | 'storage_prefix';
@@ -46,10 +47,12 @@ export type TopicSchemaBuilderActionsValue = {
   handleCloseAddFieldDialog: () => void;
   handleCloseDeleteFieldDialog: () => void;
   handleCloseEditFieldDialog: () => void;
+  handleConfirmNavigation: () => void;
   handleConfirmDeleteSelectedField: () => void;
   handleEditFieldSubmit: () => void;
   handleMoveField: (params: { fromIndex: number; toIndex: number }) => void;
   handleNavigateBack: () => Promise<void>;
+  handleStayOnPage: () => void;
   handleOpenDeleteFieldDialog: () => void;
   handleSave: () => Promise<void>;
   setDraft: React.Dispatch<React.SetStateAction<ReturnType<typeof getInitialDraft>>>;

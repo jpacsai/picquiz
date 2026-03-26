@@ -7,6 +7,7 @@ import FieldListSection from './components/FieldListSection';
 import SchemaPreviewSection from './components/SchemaPreviewSection';
 import TopicMetadataSection from './components/TopicMetadataSection';
 import TopicSchemaBuilderHeader from './components/TopicSchemaBuilderHeader';
+import UnsavedChangesDialog from './components/UnsavedChangesDialog';
 import ValidationSummary from './components/ValidationSummary';
 import { useTopicSchemaBuilderState } from './context/useTopicSchemaBuilderContext';
 
@@ -32,6 +33,8 @@ const TopicSchemaBuilderPageView = () => {
       <EditFieldDialog />
 
       <DeleteFieldConfirmDialog />
+
+      <UnsavedChangesDialog />
     </Box>
   );
 };

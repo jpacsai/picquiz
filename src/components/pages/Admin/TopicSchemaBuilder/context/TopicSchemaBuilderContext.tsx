@@ -53,7 +53,7 @@ export const TopicSchemaBuilderProvider = ({
   const [selectedFieldIndex, setSelectedFieldIndex] = useState<SelectedFieldIndex>(null);
   const [submitError, setSubmitError] = useState('');
 
-  const stateValue = useTopicSchemaBuilderStateValue({
+  const baseStateValue = useTopicSchemaBuilderStateValue({
     draft,
     fixedImageUploadFieldDraft,
     initialDraft,
@@ -61,24 +61,31 @@ export const TopicSchemaBuilderProvider = ({
     isDeleteFieldDialogOpen,
     isEditFieldDialogOpen,
     isSaving,
+    isUnsavedChangesDialogOpen: false,
     mode,
     newFieldDraft,
     selectedFieldIndex,
     submitError,
     topic,
   });
-  useBlocker({
-    disabled: !stateValue.isDirty || isSaving,
+
+  const navigationBlocker = useBlocker({
+    disabled: !baseStateValue.isDirty || isSaving,
     enableBeforeUnload: true,
-    shouldBlockFn: () => !globalThis.confirm('Nem mentett valtozasok vannak. Biztosan kilepsz?'),
+    shouldBlockFn: () => true,
+    withResolver: true,
   });
 
-  const actionsValue = buildTopicSchemaBuilderActionsValue({
+  const stateValue = {
+    ...baseStateValue,
+    isUnsavedChangesDialogOpen: navigationBlocker.status === 'blocked',
+  };
+
+  const baseActionsValue = buildTopicSchemaBuilderActionsValue({
     canAddField: stateValue.canAddField,
     canSave: stateValue.canSave,
     draft,
     fixedImageUploadFieldDraft,
-    isDirty: stateValue.isDirty,
     mode,
     navigate,
     newFieldDraft,
@@ -96,6 +103,12 @@ export const TopicSchemaBuilderProvider = ({
     setSubmitError,
     topic,
   });
+
+  const actionsValue = {
+    ...baseActionsValue,
+    handleConfirmNavigation: () => navigationBlocker.proceed?.(),
+    handleStayOnPage: () => navigationBlocker.reset?.(),
+  };
 
   return (
     <TopicSchemaBuilderStateContext.Provider value={stateValue}>
