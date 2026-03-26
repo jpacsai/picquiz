@@ -405,7 +405,17 @@ const FormField = ({
             return wrapFieldContent(
               <ImageUploadField
                 field={field}
+                existingDesktopImageUrl={
+                  typeof desktopImageValue === 'string' && desktopImageValue.trim().length > 0
+                    ? desktopImageValue
+                    : null
+                }
                 existingImageUrl={existingImageUrl}
+                existingMobileImageUrl={
+                  typeof mobileImageValue === 'string' && mobileImageValue.trim().length > 0
+                    ? mobileImageValue
+                    : null
+                }
                 fileNameParts={fileNameParts}
                 helperText={helperText}
                 isReadyForUpload={isReadyForUpload}

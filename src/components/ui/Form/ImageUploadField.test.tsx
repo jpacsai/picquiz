@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { TopicField } from '@/types/topics';
 
@@ -39,6 +39,23 @@ const field: Extract<TopicField, { type: 'imageUpload' }> = {
 };
 
 describe('ImageUploadField', () => {
+  beforeEach(() => {
+    imageUploadDialogMock.mockReset();
+    Object.defineProperty(window, 'matchMedia', {
+      configurable: true,
+      value: vi.fn().mockImplementation((query: string) => ({
+        matches: query.includes('max-width'),
+        media: query,
+        onchange: null,
+        addEventListener: vi.fn(),
+        addListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+        removeEventListener: vi.fn(),
+        removeListener: vi.fn(),
+      })),
+    });
+  });
+
   it('opens the native file chooser directly when there is no image yet', () => {
     const clickMock = vi.fn();
     const onSelectImage = vi.fn();
@@ -126,6 +143,97 @@ describe('ImageUploadField', () => {
 
     expect(within(container).getByRole('button', { name: 'Upload image' })).toBeInTheDocument();
     expect(within(container).getByRole('img', { name: 'Pablo Picasso' })).toBeInTheDocument();
+  });
+
+  it('opens the larger preview dialog when the thumbnail is clicked', () => {
+    Object.defineProperty(window, 'matchMedia', {
+      configurable: true,
+      value: vi.fn().mockImplementation((query: string) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addEventListener: vi.fn(),
+        addListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+        removeEventListener: vi.fn(),
+        removeListener: vi.fn(),
+      })),
+    });
+
+    render(
+      <ImageUploadField
+        existingDesktopImageUrl="https://example.com/desktop.jpg"
+        existingMobileImageUrl="https://example.com/mobile.jpg"
+        field={field}
+        fileNameParts={['Pablo Picasso']}
+        isReadyForUpload
+        mode="edit"
+        onSelectImage={vi.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('img', { name: 'Pablo Picasso' }));
+
+    const dialog = screen.getByRole('dialog');
+
+    expect(dialog).toBeInTheDocument();
+    expect(screen.getByLabelText('Nagy kep elonezet toltese')).toBeInTheDocument();
+    expect(screen.getByText('Desktop preview')).toBeInTheDocument();
+    expect(within(dialog).getByRole('img', { name: 'Pablo Picasso' })).toHaveAttribute(
+      'src',
+      'https://example.com/desktop.jpg',
+    );
+  });
+
+  it('uses the mobile image in the larger preview on small screens', () => {
+    render(
+      <ImageUploadField
+        existingDesktopImageUrl="https://example.com/desktop.jpg"
+        existingMobileImageUrl="https://example.com/mobile.jpg"
+        field={field}
+        fileNameParts={['Pablo Picasso']}
+        isReadyForUpload
+        mode="edit"
+        onSelectImage={vi.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('img', { name: 'Pablo Picasso' }));
+
+    const dialog = screen.getByRole('dialog');
+
+    expect(screen.getByText('Mobil preview')).toBeInTheDocument();
+    expect(within(dialog).getByRole('img', { name: 'Pablo Picasso' })).toHaveAttribute(
+      'src',
+      'https://example.com/mobile.jpg',
+    );
+  });
+
+  it('keeps the large preview dialog at a fixed size with a loader until the image finishes loading', () => {
+    render(
+      <ImageUploadField
+        existingDesktopImageUrl="https://example.com/desktop.jpg"
+        existingMobileImageUrl="https://example.com/mobile.jpg"
+        field={field}
+        fileNameParts={['Pablo Picasso']}
+        isReadyForUpload
+        mode="edit"
+        onSelectImage={vi.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('img', { name: 'Pablo Picasso' }));
+
+    const dialog = screen.getByRole('dialog');
+    const previewImage = within(dialog).getByRole('img', { name: 'Pablo Picasso' });
+
+    expect(screen.getByLabelText('Nagy kep elonezet toltese')).toBeInTheDocument();
+    expect(previewImage).toHaveStyle({ opacity: '0' });
+
+    fireEvent.load(previewImage);
+
+    expect(screen.queryByLabelText('Nagy kep elonezet toltese')).not.toBeInTheDocument();
+    expect(previewImage).toHaveStyle({ opacity: '1' });
   });
 
   it('shows the fixed helper text while upload is blocked', () => {
