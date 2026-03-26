@@ -5,12 +5,16 @@ import type { TopicField } from '@/types/topics';
 
 import ImageUploadField from './ImageUploadField';
 
-const imageUploadDialogMock = vi.fn(() => null);
+const imageUploadDialogMock = vi.fn();
 
 vi.mock(
   '@/components/pages/Admin/TopicItemFormPage/TopicItemForm/components/ImageUploadDialog',
   () => ({
-    default: (props: unknown) => imageUploadDialogMock(props),
+    default: (props: unknown) => {
+      imageUploadDialogMock(props);
+
+      return null;
+    },
   }),
 );
 

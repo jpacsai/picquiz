@@ -82,6 +82,24 @@ describe('TopicSchemaBuilderPage', () => {
     expect(screen.getByLabelText('Topic ID')).toBeDisabled();
   });
 
+  it('prefills a duplicated draft in create mode from a source topic', () => {
+    const sourceTopic: Topic = {
+      fields: [{ key: 'artist', label: 'Artist', type: 'string', required: true }],
+      id: 'art',
+      label: 'Muveszet',
+      slug: 'art',
+      storage_prefix: 'art',
+    };
+
+    render(<TopicSchemaBuilderPage mode="create" sourceTopic={sourceTopic} />);
+
+    expect(screen.getByLabelText('Topic ID')).toHaveValue('');
+    expect(screen.getByLabelText('Label')).toHaveValue('Muveszet masolat');
+    expect(screen.getByLabelText('Slug')).toHaveValue('');
+    expect(screen.getByLabelText('Storage prefix')).toHaveValue('');
+    expect(screen.getByText('Artist')).toBeInTheDocument();
+  });
+
   it('shows the fixed image upload field in the list from the start', () => {
     render(<TopicSchemaBuilderPage mode="create" />);
 

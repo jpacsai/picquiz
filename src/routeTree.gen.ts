@@ -23,6 +23,7 @@ import { Route as AppAdminTopicsNewRouteImport } from './routes/_app/admin/topic
 import { Route as AppAdminTopicIdSuccessRouteImport } from './routes/_app/admin/$topicId/success'
 import { Route as AppAdminTopicIdNewRouteImport } from './routes/_app/admin/$topicId/new'
 import { Route as AppAdminTopicsTopicIdEditRouteImport } from './routes/_app/admin/topics/$topicId/edit'
+import { Route as AppAdminTopicsTopicIdDuplicateRouteImport } from './routes/_app/admin/topics/$topicId/duplicate'
 import { Route as AppAdminTopicIdItemIdEditRouteImport } from './routes/_app/admin/$topicId/$itemId/edit'
 
 const LoginRoute = LoginRouteImport.update({
@@ -95,6 +96,12 @@ const AppAdminTopicsTopicIdEditRoute =
     path: '/admin/topics/$topicId/edit',
     getParentRoute: () => AppRoute,
   } as any)
+const AppAdminTopicsTopicIdDuplicateRoute =
+  AppAdminTopicsTopicIdDuplicateRouteImport.update({
+    id: '/admin/topics/$topicId/duplicate',
+    path: '/admin/topics/$topicId/duplicate',
+    getParentRoute: () => AppRoute,
+  } as any)
 const AppAdminTopicIdItemIdEditRoute =
   AppAdminTopicIdItemIdEditRouteImport.update({
     id: '/admin/$topicId/$itemId/edit',
@@ -116,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/admin/topics/new': typeof AppAdminTopicsNewRoute
   '/admin/$topicId/': typeof AppAdminTopicIdIndexRoute
   '/admin/$topicId/$itemId/edit': typeof AppAdminTopicIdItemIdEditRoute
+  '/admin/topics/$topicId/duplicate': typeof AppAdminTopicsTopicIdDuplicateRoute
   '/admin/topics/$topicId/edit': typeof AppAdminTopicsTopicIdEditRoute
 }
 export interface FileRoutesByTo {
@@ -132,6 +140,7 @@ export interface FileRoutesByTo {
   '/admin/topics/new': typeof AppAdminTopicsNewRoute
   '/admin/$topicId': typeof AppAdminTopicIdIndexRoute
   '/admin/$topicId/$itemId/edit': typeof AppAdminTopicIdItemIdEditRoute
+  '/admin/topics/$topicId/duplicate': typeof AppAdminTopicsTopicIdDuplicateRoute
   '/admin/topics/$topicId/edit': typeof AppAdminTopicsTopicIdEditRoute
 }
 export interface FileRoutesById {
@@ -150,6 +159,7 @@ export interface FileRoutesById {
   '/_app/admin/topics/new': typeof AppAdminTopicsNewRoute
   '/_app/admin/$topicId/': typeof AppAdminTopicIdIndexRoute
   '/_app/admin/$topicId/$itemId/edit': typeof AppAdminTopicIdItemIdEditRoute
+  '/_app/admin/topics/$topicId/duplicate': typeof AppAdminTopicsTopicIdDuplicateRoute
   '/_app/admin/topics/$topicId/edit': typeof AppAdminTopicsTopicIdEditRoute
 }
 export interface FileRouteTypes {
@@ -168,6 +178,7 @@ export interface FileRouteTypes {
     | '/admin/topics/new'
     | '/admin/$topicId/'
     | '/admin/$topicId/$itemId/edit'
+    | '/admin/topics/$topicId/duplicate'
     | '/admin/topics/$topicId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -184,6 +195,7 @@ export interface FileRouteTypes {
     | '/admin/topics/new'
     | '/admin/$topicId'
     | '/admin/$topicId/$itemId/edit'
+    | '/admin/topics/$topicId/duplicate'
     | '/admin/topics/$topicId/edit'
   id:
     | '__root__'
@@ -201,6 +213,7 @@ export interface FileRouteTypes {
     | '/_app/admin/topics/new'
     | '/_app/admin/$topicId/'
     | '/_app/admin/$topicId/$itemId/edit'
+    | '/_app/admin/topics/$topicId/duplicate'
     | '/_app/admin/topics/$topicId/edit'
   fileRoutesById: FileRoutesById
 }
@@ -310,6 +323,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminTopicsTopicIdEditRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/admin/topics/$topicId/duplicate': {
+      id: '/_app/admin/topics/$topicId/duplicate'
+      path: '/admin/topics/$topicId/duplicate'
+      fullPath: '/admin/topics/$topicId/duplicate'
+      preLoaderRoute: typeof AppAdminTopicsTopicIdDuplicateRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/admin/$topicId/$itemId/edit': {
       id: '/_app/admin/$topicId/$itemId/edit'
       path: '/admin/$topicId/$itemId/edit'
@@ -332,6 +352,7 @@ interface AppRouteChildren {
   AppAdminTopicsNewRoute: typeof AppAdminTopicsNewRoute
   AppAdminTopicIdIndexRoute: typeof AppAdminTopicIdIndexRoute
   AppAdminTopicIdItemIdEditRoute: typeof AppAdminTopicIdItemIdEditRoute
+  AppAdminTopicsTopicIdDuplicateRoute: typeof AppAdminTopicsTopicIdDuplicateRoute
   AppAdminTopicsTopicIdEditRoute: typeof AppAdminTopicsTopicIdEditRoute
 }
 
@@ -347,6 +368,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminTopicsNewRoute: AppAdminTopicsNewRoute,
   AppAdminTopicIdIndexRoute: AppAdminTopicIdIndexRoute,
   AppAdminTopicIdItemIdEditRoute: AppAdminTopicIdItemIdEditRoute,
+  AppAdminTopicsTopicIdDuplicateRoute: AppAdminTopicsTopicIdDuplicateRoute,
   AppAdminTopicsTopicIdEditRoute: AppAdminTopicsTopicIdEditRoute,
 }
 

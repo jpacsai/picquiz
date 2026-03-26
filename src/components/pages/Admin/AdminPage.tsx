@@ -53,6 +53,17 @@ const AdminPage = ({ topics }: AdminPageProps) => {
                   Schema szerkesztes
                 </Button>
               </RouterLink>
+
+              <RouterLink
+                params={{ topicId: topic.id }}
+                to="/admin/topics/$topicId/duplicate"
+                underline="none"
+                preload="intent"
+              >
+                <Button component="span" variant="outlined">
+                  Schema duplikalasa
+                </Button>
+              </RouterLink>
             </Stack>
           </Stack>
         </Card>

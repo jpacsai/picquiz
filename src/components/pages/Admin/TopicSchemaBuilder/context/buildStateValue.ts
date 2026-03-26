@@ -22,6 +22,7 @@ type BuildStateValueParams = {
   mode: TopicSchemaBuilderPageProps['mode'];
   newFieldDraft: TopicSchemaBuilderStateValue['newFieldDraft'];
   selectedFieldIndex: SelectedFieldIndex;
+  sourceTopic: TopicSchemaBuilderPageProps['sourceTopic'];
   submitError: string;
   topic: TopicSchemaBuilderPageProps['topic'];
 };
@@ -36,6 +37,7 @@ export const useTopicSchemaBuilderStateValue = ({
   mode,
   newFieldDraft,
   selectedFieldIndex,
+  sourceTopic,
   submitError,
   topic,
 }: BuildStateValueParams): TopicSchemaBuilderStateValue => {
@@ -48,10 +50,17 @@ export const useTopicSchemaBuilderStateValue = ({
   );
   const validation = useMemo(() => validateTopicDraft(validationDraft), [validationDraft]);
   const canSave = validation.errors.length === 0 && !isSaving;
-  const title = mode === 'create' ? 'Uj topic schema' : `${topic?.label ?? 'Topic'} schema`;
+  const title =
+    mode === 'create'
+      ? sourceTopic
+        ? `${sourceTopic.label} schema masolasa`
+        : 'Uj topic schema'
+      : `${topic?.label ?? 'Topic'} schema`;
   const description =
     mode === 'create'
-      ? 'Itt lesz a topic schema builder. A kovetkezo lepesben jon a metadata es field editor.'
+      ? sourceTopic
+        ? 'A forras schema mezoi be vannak toltve, csak az uj topic metadatait kell megadnod.'
+        : 'Itt lesz a topic schema builder. A kovetkezo lepesben jon a metadata es field editor.'
       : 'Itt lesz a topic schema szerkeszto. A kovetkezo lepesben jon a metadata es field editor.';
 
   const metadataFields = [

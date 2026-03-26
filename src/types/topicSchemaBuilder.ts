@@ -4,6 +4,7 @@ export type TopicSchemaBuilderMode = 'create' | 'edit';
 
 export type TopicSchemaBuilderPageProps = {
   mode: TopicSchemaBuilderMode;
+  sourceTopic?: Topic;
   topic?: Topic;
 };
 

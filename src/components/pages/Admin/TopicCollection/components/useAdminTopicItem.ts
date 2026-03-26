@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box';
 import { deleteTopicImageByPath } from '@data/storage';
 import { QUERY_KEYS } from '@queries/queryKeys';
 import { deleteTopicItem } from '@service/items';
@@ -52,13 +51,12 @@ const getDisplayValue = (field: TopicField, value: unknown): DisplayValue | null
         null,
         `${field.label}: `,
         createElement(
-          Box,
+          'span',
           {
-            component: 'span',
-            sx: {
-              color: value ? 'success.main' : 'error.main',
+            style: {
+              color: value ? 'var(--mui-palette-success-main)' : 'var(--mui-palette-error-main)',
               fontWeight: 700,
-            },
+            } as React.CSSProperties,
           },
           marker,
         ),

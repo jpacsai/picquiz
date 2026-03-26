@@ -5,7 +5,12 @@ import { type PropsWithChildren, useState } from 'react';
 
 import type { SelectedFieldIndex, TopicSchemaBuilderPageProps } from '@/types/topicSchemaBuilder';
 
-import { getEmptyFieldDraft, getFixedImageUploadFieldDraft, getInitialDraft } from '../hook/utils';
+import {
+  getDuplicateDraft,
+  getEmptyFieldDraft,
+  getFixedImageUploadFieldDraft,
+  getInitialDraft,
+} from '../hook/utils';
 import { buildTopicSchemaBuilderActionsValue } from './buildActionsValue';
 import { useTopicSchemaBuilderStateValue } from './buildStateValue';
 import {
@@ -16,12 +21,15 @@ import {
 export const TopicSchemaBuilderProvider = ({
   children,
   mode,
+  sourceTopic,
   topic,
 }: PropsWithChildren<TopicSchemaBuilderPageProps>) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
-  const [draft, setDraft] = useState(() => getInitialDraft(topic));
+  const [draft, setDraft] = useState(() =>
+    mode === 'edit' ? getInitialDraft(topic) : sourceTopic ? getDuplicateDraft(sourceTopic) : getInitialDraft(),
+  );
   const [isAddFieldDialogOpen, setIsAddFieldDialogOpen] = useState(false);
   const [isDeleteFieldDialogOpen, setIsDeleteFieldDialogOpen] = useState(false);
   const [isEditFieldDialogOpen, setIsEditFieldDialogOpen] = useState(false);
@@ -44,6 +52,7 @@ export const TopicSchemaBuilderProvider = ({
     mode,
     newFieldDraft,
     selectedFieldIndex,
+    sourceTopic,
     submitError,
     topic,
   });

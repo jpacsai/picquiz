@@ -44,6 +44,17 @@ export const getInitialDraft = (topic?: Topic): TopicDraft => ({
   storage_prefix: topic?.storage_prefix ?? '',
 });
 
+export const getDuplicateDraft = (topic: Topic): TopicDraft => ({
+  fields:
+    topic.fields
+      .filter((field) => !isImageUploadSystemField(field))
+      .map((field) => normalizeImageUploadField(field)) ?? [],
+  id: '',
+  label: `${topic.label} masolat`,
+  slug: '',
+  storage_prefix: '',
+});
+
 export const getEmptyFieldDraft = (): TopicFieldDraft => ({
   fileNameFields: [],
   key: '',
