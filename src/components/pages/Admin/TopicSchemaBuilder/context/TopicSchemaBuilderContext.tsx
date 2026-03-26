@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from '@tanstack/react-router';
+import { useBlocker, useNavigate } from '@tanstack/react-router';
 import { useSnackbar } from 'notistack';
-import { type PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import { type PropsWithChildren, useMemo, useState } from 'react';
 
 import type { SelectedFieldIndex, TopicSchemaBuilderPageProps } from '@/types/topicSchemaBuilder';
 
@@ -67,23 +67,11 @@ export const TopicSchemaBuilderProvider = ({
     submitError,
     topic,
   });
-
-  useEffect(() => {
-    if (!stateValue.isDirty) {
-      return undefined;
-    }
-
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-      event.returnValue = '';
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [stateValue.isDirty]);
+  useBlocker({
+    disabled: !stateValue.isDirty || isSaving,
+    enableBeforeUnload: true,
+    shouldBlockFn: () => !globalThis.confirm('Nem mentett valtozasok vannak. Biztosan kilepsz?'),
+  });
 
   const actionsValue = buildTopicSchemaBuilderActionsValue({
     canAddField: stateValue.canAddField,

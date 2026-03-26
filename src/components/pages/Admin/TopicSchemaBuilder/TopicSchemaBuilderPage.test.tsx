@@ -15,6 +15,7 @@ const enqueueSnackbarMock = vi.fn();
 const createTopicMock = vi.fn();
 const updateTopicMock = vi.fn();
 const confirmMock = vi.fn();
+const useBlockerMock = vi.fn();
 
 vi.mock('@components/ui/RouterLink', () => ({
   RouterLink: ({ children }: { children: ReactNode }) => <>{children}</>,
@@ -25,6 +26,7 @@ vi.mock('@tanstack/react-router', async () => {
 
   return {
     ...actual,
+    useBlocker: (...args: unknown[]) => useBlockerMock(...args),
     useNavigate: () => navigateMock,
   };
 });
@@ -75,6 +77,7 @@ describe('TopicSchemaBuilderPage', () => {
     updateTopicMock.mockResolvedValue(undefined);
     confirmMock.mockReset();
     confirmMock.mockReturnValue(true);
+    useBlockerMock.mockReset();
     vi.stubGlobal('confirm', confirmMock);
   });
 
