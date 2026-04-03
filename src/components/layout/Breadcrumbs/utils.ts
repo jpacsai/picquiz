@@ -159,6 +159,16 @@ export const getItems = (matches: ReturnType<typeof useMatches>): BreadcrumbItem
       return getAdminTopicItemsSection(context, 'Sikeres mentés');
     case '/_app/$topicId/':
       return getTopicItems(context);
+    case '/_app/$topicId/schema':
+      return getTopicItems(context, 'Séma szerkesztése');
+    case '/_app/$topicId/items/':
+      return getTopicItems(context, 'Itemek');
+    case '/_app/$topicId/items/new':
+      return getTopicItems(context, 'Új elem');
+    case '/_app/$topicId/items/$itemId/edit':
+      return getTopicItems(context, 'Szerkesztés');
+    case '/_app/$topicId/items/success':
+      return getTopicItems(context, 'Sikeres mentés');
     case '/_app/$topicId/quiz-config':
       return getTopicItems(context);
     case '/_app/$topicId/quiz':

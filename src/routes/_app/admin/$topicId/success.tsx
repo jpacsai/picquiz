@@ -6,7 +6,7 @@ export const Route = createFileRoute(path)({
   beforeLoad: ({ params }) => {
     throw redirect({
       params,
-      to: '/admin/$topicId/items/success',
+      to: '/$topicId/items/success',
     });
   },
 });

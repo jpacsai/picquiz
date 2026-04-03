@@ -69,7 +69,7 @@ export const buildTopicSchemaBuilderActionsValue = ({
     await navigate(
       mode === 'edit' && topic
         ? {
-            to: '/admin/$topicId',
+            to: '/$topicId',
             params: { topicId: topic.id },
           }
         : {
@@ -235,7 +235,7 @@ export const buildTopicSchemaBuilderActionsValue = ({
       await navigate(
         mode === 'edit' && topic
           ? {
-              to: '/admin/$topicId',
+              to: '/$topicId',
               params: { topicId: topic.id },
             }
           : {

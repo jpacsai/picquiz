@@ -193,7 +193,7 @@ export const useAdminTopicItem = ({
     onConfirmDelete: () => void handleDelete(),
     onEdit: () => {
       void navigate({
-        to: '/admin/$topicId/items/$itemId/edit',
+        to: '/$topicId/items/$itemId/edit',
         params: { itemId: item.id, topicId },
       });
     },

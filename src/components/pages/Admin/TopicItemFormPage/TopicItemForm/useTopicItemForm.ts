@@ -174,11 +174,11 @@ export const useTopicItemForm = ({
           mode === 'edit'
             ? {
                 search: { saved: 'edited' },
-                to: '/admin/$topicId/items',
+                to: '/$topicId/items',
                 params: { topicId },
               }
             : {
-                to: '/admin/$topicId/items/success',
+                to: '/$topicId/items/success',
                 params: { topicId },
               },
         );

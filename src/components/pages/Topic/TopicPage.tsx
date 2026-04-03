@@ -31,6 +31,35 @@ const TopicPage = ({ topic }: TopicPageProps) => {
           Eredmények
         </Button>
       </Stack>
+
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+        <Button
+          onClick={() => {
+            void navigate({
+              to: '/$topicId/items',
+              params: { topicId: topic.id },
+              search: { saved: undefined },
+            });
+          }}
+          size="large"
+          variant="outlined"
+        >
+          Itemek
+        </Button>
+
+        <Button
+          onClick={() => {
+            void navigate({
+              to: '/$topicId/schema',
+              params: { topicId: topic.id },
+            });
+          }}
+          size="large"
+          variant="outlined"
+        >
+          Séma
+        </Button>
+      </Stack>
     </Stack>
   );
 };

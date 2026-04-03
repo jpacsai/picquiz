@@ -32,7 +32,7 @@ const AdminSuccessPage = ({ topicId, topicLabel }: AdminSuccessPageProps) => {
         <Button
           variant="contained"
           onClick={() => {
-            void navigate({ to: '/admin/$topicId/items/new', params: { topicId } });
+            void navigate({ to: '/$topicId/items/new', params: { topicId } });
           }}
         >
           Igen, feltöltök még egyet
@@ -41,7 +41,7 @@ const AdminSuccessPage = ({ topicId, topicLabel }: AdminSuccessPageProps) => {
           variant="outlined"
           onClick={() => {
             void navigate({
-              to: '/admin/$topicId/items',
+              to: '/$topicId/items',
               params: { topicId },
               search: { saved: undefined },
             });

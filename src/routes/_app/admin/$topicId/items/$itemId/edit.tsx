@@ -1,29 +1,12 @@
-import { topicItemOptions } from '@queries/items';
-import { topicOptions } from '@queries/topics';
-import { createFileRoute, useLoaderData } from '@tanstack/react-router';
-
-import AdminTopicItemFormPage from '@/components/pages/Admin/TopicItemFormPage/TopicItemFormPage';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 
 const path = '/_app/admin/$topicId/items/$itemId/edit';
 
-const RouteComponent = () => {
-  const { item, topic } = useLoaderData({ from: path });
-
-  return <AdminTopicItemFormPage initialValues={item} item={item} mode="edit" topic={topic} />;
-};
-
 export const Route = createFileRoute(path)({
-  loader: async ({ context: { queryClient }, params }) => {
-    const topic = await queryClient.ensureQueryData(topicOptions(params.topicId));
-    const item = await queryClient.ensureQueryData(topicItemOptions(topic.slug, params.itemId));
-
-    return {
-      item,
-      title: topic.label,
-      topic,
-      subtitle: 'Elem szerkesztése',
-    };
+  beforeLoad: ({ params }) => {
+    throw redirect({
+      params,
+      to: '/$topicId/items/$itemId/edit',
+    });
   },
-  component: RouteComponent,
-  shouldReload: true,
 });

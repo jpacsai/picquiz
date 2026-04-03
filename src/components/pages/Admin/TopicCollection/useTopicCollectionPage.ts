@@ -86,7 +86,7 @@ export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollecti
     void navigate({
       replace: true,
       search: { saved: undefined },
-      to: '/admin/$topicId/items',
+      to: '/$topicId/items',
       params: { topicId: topic.id },
     });
   }, [enqueueSnackbar, navigate, saved, topic.id]);
@@ -97,7 +97,7 @@ export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollecti
       liveItems.length > 0 && sortedItems.length === 0 ? debouncedSearchQuery.trim() : undefined,
     onCreateNewItem: () => {
       void navigate({
-        to: '/admin/$topicId/items/new',
+        to: '/$topicId/items/new',
         params: { topicId: topic.id },
       });
     },

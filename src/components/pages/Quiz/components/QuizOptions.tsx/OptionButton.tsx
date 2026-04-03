@@ -34,6 +34,10 @@ const OptionButton = ({
           minHeight: 64,
           textAlign: 'left',
           whiteSpace: 'normal',
+          fontSize: {
+            xs: '1.1rem',
+            sm: '1.2rem',
+          },
           lineHeight: 1.4,
           py: 1.5,
           borderWidth: 2,
