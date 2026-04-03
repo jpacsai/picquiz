@@ -37,8 +37,7 @@ const topics: ReadonlyArray<Topic> = [
 const RootComponent = () => <Outlet />;
 
 const TopicRouteComponent = () => <div>Topic page</div>;
-const NewSchemaRouteComponent = () => <div>New schema page</div>;
-const DuplicateSchemaRouteComponent = () => <div>Duplicate schema page</div>;
+const NewTopicRouteComponent = () => <div>New topic page</div>;
 
 const renderDashboard = async () => {
   const queryClient = new QueryClient({
@@ -65,19 +64,13 @@ const renderDashboard = async () => {
     path: '/$topicId',
   });
 
-  const newSchemaRoute = createRoute({
-    component: NewSchemaRouteComponent,
+  const newTopicRoute = createRoute({
+    component: NewTopicRouteComponent,
     getParentRoute: () => rootRoute,
-    path: '/schemas/new',
+    path: '/newTopic',
   });
 
-  const duplicateSchemaRoute = createRoute({
-    component: DuplicateSchemaRouteComponent,
-    getParentRoute: () => rootRoute,
-    path: '/schemas/$topicId/duplicate',
-  });
-
-  const routeTree = rootRoute.addChildren([homeRoute, topicRoute, newSchemaRoute, duplicateSchemaRoute]);
+  const routeTree = rootRoute.addChildren([homeRoute, topicRoute, newTopicRoute]);
 
   const router = createRouter({
     context: { queryClient },
@@ -122,10 +115,10 @@ describe('Dashboard integration', () => {
     await user.click(screen.getByRole('button', { name: 'Új topic' }));
     await user.click(screen.getByRole('button', { name: 'Létrehozás folytatása' }));
 
-    expect(await screen.findByText('New schema page')).toBeInTheDocument();
+    expect(await screen.findByText('New topic page')).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(router.state.location.pathname).toBe('/schemas/new');
+      expect(router.state.location.pathname).toBe('/newTopic');
     });
   });
 
@@ -140,10 +133,11 @@ describe('Dashboard integration', () => {
     await user.click(screen.getByRole('option', { name: 'Művészet' }));
     await user.click(screen.getByRole('button', { name: 'Duplikálás folytatása' }));
 
-    expect(await screen.findByText('Duplicate schema page')).toBeInTheDocument();
+    expect(await screen.findByText('New topic page')).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(router.state.location.pathname).toBe('/schemas/art/duplicate');
+      expect(router.state.location.pathname).toBe('/newTopic');
+      expect(router.state.location.search).toEqual({ sourceTopicId: 'art' });
     });
   });
 });

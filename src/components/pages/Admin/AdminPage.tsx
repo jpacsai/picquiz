@@ -31,7 +31,7 @@ const AdminPage = ({
           variant="contained"
           onClick={() =>
             navigate({
-              to: '/schemas/new',
+              to: '/newTopic',
             })
           }
         >

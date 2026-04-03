@@ -12,16 +12,14 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppNewTopicRouteImport } from './routes/_app/newTopic'
 import { Route as AppHomeRouteImport } from './routes/_app/home'
-import { Route as AppSchemasIndexRouteImport } from './routes/_app/schemas/index'
 import { Route as AppQuizIndexRouteImport } from './routes/_app/quiz/index'
 import { Route as AppTopicIdIndexRouteImport } from './routes/_app/$topicId/index'
-import { Route as AppSchemasNewRouteImport } from './routes/_app/schemas/new'
 import { Route as AppTopicIdSchemaRouteImport } from './routes/_app/$topicId/schema'
 import { Route as AppTopicIdQuizConfigRouteImport } from './routes/_app/$topicId/quiz-config'
 import { Route as AppTopicIdQuizRouteImport } from './routes/_app/$topicId/quiz'
 import { Route as AppTopicIdItemsIndexRouteImport } from './routes/_app/$topicId/items/index'
-import { Route as AppSchemasTopicIdDuplicateRouteImport } from './routes/_app/schemas/$topicId/duplicate'
 import { Route as AppTopicIdItemsSuccessRouteImport } from './routes/_app/$topicId/items/success'
 import { Route as AppTopicIdItemsNewRouteImport } from './routes/_app/$topicId/items/new'
 import { Route as AppTopicIdItemsItemIdEditRouteImport } from './routes/_app/$topicId/items/$itemId/edit'
@@ -40,14 +38,14 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppNewTopicRoute = AppNewTopicRouteImport.update({
+  id: '/newTopic',
+  path: '/newTopic',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppHomeRoute = AppHomeRouteImport.update({
   id: '/home',
   path: '/home',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppSchemasIndexRoute = AppSchemasIndexRouteImport.update({
-  id: '/schemas/',
-  path: '/schemas/',
   getParentRoute: () => AppRoute,
 } as any)
 const AppQuizIndexRoute = AppQuizIndexRouteImport.update({
@@ -58,11 +56,6 @@ const AppQuizIndexRoute = AppQuizIndexRouteImport.update({
 const AppTopicIdIndexRoute = AppTopicIdIndexRouteImport.update({
   id: '/$topicId/',
   path: '/$topicId/',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppSchemasNewRoute = AppSchemasNewRouteImport.update({
-  id: '/schemas/new',
-  path: '/schemas/new',
   getParentRoute: () => AppRoute,
 } as any)
 const AppTopicIdSchemaRoute = AppTopicIdSchemaRouteImport.update({
@@ -85,12 +78,6 @@ const AppTopicIdItemsIndexRoute = AppTopicIdItemsIndexRouteImport.update({
   path: '/$topicId/items/',
   getParentRoute: () => AppRoute,
 } as any)
-const AppSchemasTopicIdDuplicateRoute =
-  AppSchemasTopicIdDuplicateRouteImport.update({
-    id: '/schemas/$topicId/duplicate',
-    path: '/schemas/$topicId/duplicate',
-    getParentRoute: () => AppRoute,
-  } as any)
 const AppTopicIdItemsSuccessRoute = AppTopicIdItemsSuccessRouteImport.update({
   id: '/$topicId/items/success',
   path: '/$topicId/items/success',
@@ -112,16 +99,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/home': typeof AppHomeRoute
+  '/newTopic': typeof AppNewTopicRoute
   '/$topicId/quiz': typeof AppTopicIdQuizRoute
   '/$topicId/quiz-config': typeof AppTopicIdQuizConfigRoute
   '/$topicId/schema': typeof AppTopicIdSchemaRoute
-  '/schemas/new': typeof AppSchemasNewRoute
   '/$topicId/': typeof AppTopicIdIndexRoute
   '/quiz/': typeof AppQuizIndexRoute
-  '/schemas/': typeof AppSchemasIndexRoute
   '/$topicId/items/new': typeof AppTopicIdItemsNewRoute
   '/$topicId/items/success': typeof AppTopicIdItemsSuccessRoute
-  '/schemas/$topicId/duplicate': typeof AppSchemasTopicIdDuplicateRoute
   '/$topicId/items/': typeof AppTopicIdItemsIndexRoute
   '/$topicId/items/$itemId/edit': typeof AppTopicIdItemsItemIdEditRoute
 }
@@ -129,16 +114,14 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/home': typeof AppHomeRoute
+  '/newTopic': typeof AppNewTopicRoute
   '/$topicId/quiz': typeof AppTopicIdQuizRoute
   '/$topicId/quiz-config': typeof AppTopicIdQuizConfigRoute
   '/$topicId/schema': typeof AppTopicIdSchemaRoute
-  '/schemas/new': typeof AppSchemasNewRoute
   '/$topicId': typeof AppTopicIdIndexRoute
   '/quiz': typeof AppQuizIndexRoute
-  '/schemas': typeof AppSchemasIndexRoute
   '/$topicId/items/new': typeof AppTopicIdItemsNewRoute
   '/$topicId/items/success': typeof AppTopicIdItemsSuccessRoute
-  '/schemas/$topicId/duplicate': typeof AppSchemasTopicIdDuplicateRoute
   '/$topicId/items': typeof AppTopicIdItemsIndexRoute
   '/$topicId/items/$itemId/edit': typeof AppTopicIdItemsItemIdEditRoute
 }
@@ -148,16 +131,14 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/_app/home': typeof AppHomeRoute
+  '/_app/newTopic': typeof AppNewTopicRoute
   '/_app/$topicId/quiz': typeof AppTopicIdQuizRoute
   '/_app/$topicId/quiz-config': typeof AppTopicIdQuizConfigRoute
   '/_app/$topicId/schema': typeof AppTopicIdSchemaRoute
-  '/_app/schemas/new': typeof AppSchemasNewRoute
   '/_app/$topicId/': typeof AppTopicIdIndexRoute
   '/_app/quiz/': typeof AppQuizIndexRoute
-  '/_app/schemas/': typeof AppSchemasIndexRoute
   '/_app/$topicId/items/new': typeof AppTopicIdItemsNewRoute
   '/_app/$topicId/items/success': typeof AppTopicIdItemsSuccessRoute
-  '/_app/schemas/$topicId/duplicate': typeof AppSchemasTopicIdDuplicateRoute
   '/_app/$topicId/items/': typeof AppTopicIdItemsIndexRoute
   '/_app/$topicId/items/$itemId/edit': typeof AppTopicIdItemsItemIdEditRoute
 }
@@ -167,16 +148,14 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/home'
+    | '/newTopic'
     | '/$topicId/quiz'
     | '/$topicId/quiz-config'
     | '/$topicId/schema'
-    | '/schemas/new'
     | '/$topicId/'
     | '/quiz/'
-    | '/schemas/'
     | '/$topicId/items/new'
     | '/$topicId/items/success'
-    | '/schemas/$topicId/duplicate'
     | '/$topicId/items/'
     | '/$topicId/items/$itemId/edit'
   fileRoutesByTo: FileRoutesByTo
@@ -184,16 +163,14 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/home'
+    | '/newTopic'
     | '/$topicId/quiz'
     | '/$topicId/quiz-config'
     | '/$topicId/schema'
-    | '/schemas/new'
     | '/$topicId'
     | '/quiz'
-    | '/schemas'
     | '/$topicId/items/new'
     | '/$topicId/items/success'
-    | '/schemas/$topicId/duplicate'
     | '/$topicId/items'
     | '/$topicId/items/$itemId/edit'
   id:
@@ -202,16 +179,14 @@ export interface FileRouteTypes {
     | '/_app'
     | '/login'
     | '/_app/home'
+    | '/_app/newTopic'
     | '/_app/$topicId/quiz'
     | '/_app/$topicId/quiz-config'
     | '/_app/$topicId/schema'
-    | '/_app/schemas/new'
     | '/_app/$topicId/'
     | '/_app/quiz/'
-    | '/_app/schemas/'
     | '/_app/$topicId/items/new'
     | '/_app/$topicId/items/success'
-    | '/_app/schemas/$topicId/duplicate'
     | '/_app/$topicId/items/'
     | '/_app/$topicId/items/$itemId/edit'
   fileRoutesById: FileRoutesById
@@ -245,18 +220,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/newTopic': {
+      id: '/_app/newTopic'
+      path: '/newTopic'
+      fullPath: '/newTopic'
+      preLoaderRoute: typeof AppNewTopicRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/home': {
       id: '/_app/home'
       path: '/home'
       fullPath: '/home'
       preLoaderRoute: typeof AppHomeRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/schemas/': {
-      id: '/_app/schemas/'
-      path: '/schemas'
-      fullPath: '/schemas/'
-      preLoaderRoute: typeof AppSchemasIndexRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/quiz/': {
@@ -271,13 +246,6 @@ declare module '@tanstack/react-router' {
       path: '/$topicId'
       fullPath: '/$topicId/'
       preLoaderRoute: typeof AppTopicIdIndexRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/schemas/new': {
-      id: '/_app/schemas/new'
-      path: '/schemas/new'
-      fullPath: '/schemas/new'
-      preLoaderRoute: typeof AppSchemasNewRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/$topicId/schema': {
@@ -308,13 +276,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTopicIdItemsIndexRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/schemas/$topicId/duplicate': {
-      id: '/_app/schemas/$topicId/duplicate'
-      path: '/schemas/$topicId/duplicate'
-      fullPath: '/schemas/$topicId/duplicate'
-      preLoaderRoute: typeof AppSchemasTopicIdDuplicateRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/$topicId/items/success': {
       id: '/_app/$topicId/items/success'
       path: '/$topicId/items/success'
@@ -341,32 +302,28 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppHomeRoute: typeof AppHomeRoute
+  AppNewTopicRoute: typeof AppNewTopicRoute
   AppTopicIdQuizRoute: typeof AppTopicIdQuizRoute
   AppTopicIdQuizConfigRoute: typeof AppTopicIdQuizConfigRoute
   AppTopicIdSchemaRoute: typeof AppTopicIdSchemaRoute
-  AppSchemasNewRoute: typeof AppSchemasNewRoute
   AppTopicIdIndexRoute: typeof AppTopicIdIndexRoute
   AppQuizIndexRoute: typeof AppQuizIndexRoute
-  AppSchemasIndexRoute: typeof AppSchemasIndexRoute
   AppTopicIdItemsNewRoute: typeof AppTopicIdItemsNewRoute
   AppTopicIdItemsSuccessRoute: typeof AppTopicIdItemsSuccessRoute
-  AppSchemasTopicIdDuplicateRoute: typeof AppSchemasTopicIdDuplicateRoute
   AppTopicIdItemsIndexRoute: typeof AppTopicIdItemsIndexRoute
   AppTopicIdItemsItemIdEditRoute: typeof AppTopicIdItemsItemIdEditRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppHomeRoute: AppHomeRoute,
+  AppNewTopicRoute: AppNewTopicRoute,
   AppTopicIdQuizRoute: AppTopicIdQuizRoute,
   AppTopicIdQuizConfigRoute: AppTopicIdQuizConfigRoute,
   AppTopicIdSchemaRoute: AppTopicIdSchemaRoute,
-  AppSchemasNewRoute: AppSchemasNewRoute,
   AppTopicIdIndexRoute: AppTopicIdIndexRoute,
   AppQuizIndexRoute: AppQuizIndexRoute,
-  AppSchemasIndexRoute: AppSchemasIndexRoute,
   AppTopicIdItemsNewRoute: AppTopicIdItemsNewRoute,
   AppTopicIdItemsSuccessRoute: AppTopicIdItemsSuccessRoute,
-  AppSchemasTopicIdDuplicateRoute: AppSchemasTopicIdDuplicateRoute,
   AppTopicIdItemsIndexRoute: AppTopicIdItemsIndexRoute,
   AppTopicIdItemsItemIdEditRoute: AppTopicIdItemsItemIdEditRoute,
 }

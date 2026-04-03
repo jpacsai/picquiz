@@ -58,12 +58,7 @@ describe('AdminPage', () => {
     await user.click(screen.getByRole('button', { name: 'Új séma' }));
 
     expect(navigateMock).toHaveBeenCalledWith({
-      search: {
-        schemaDialog: 'new',
-        schemaMode: 'create',
-        sourceTopicId: undefined,
-      },
-      to: '/admin',
+      to: '/newTopic',
     });
   });
 
@@ -81,7 +76,7 @@ describe('AdminPage', () => {
     await user.click(screen.getByRole('button', { name: 'Létrehozás folytatása' }));
 
     expect(navigateMock).toHaveBeenCalledWith({
-      to: '/admin/schemas/new',
+      to: '/newTopic',
     });
   });
 
@@ -106,8 +101,8 @@ describe('AdminPage', () => {
     await user.click(continueButton);
 
     expect(navigateMock).toHaveBeenCalledWith({
-      params: { topicId: 'art' },
-      to: '/admin/schemas/$topicId/duplicate',
+      search: { sourceTopicId: 'art' },
+      to: '/newTopic',
     });
   });
 });

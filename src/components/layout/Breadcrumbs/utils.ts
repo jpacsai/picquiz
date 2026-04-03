@@ -9,12 +9,22 @@ import type {
 
 const getTopicLabel = (matches: ReturnType<typeof useMatches>) => {
   const matchWithTopic = [...matches].reverse().find((match) => {
-    const loaderData = match.loaderData as BreadcrumbRouteLoaderData | undefined;
+    const loaderData = match.loaderData as
+      | (BreadcrumbRouteLoaderData & { sourceTopic?: { label?: string } })
+      | undefined;
 
-    return typeof loaderData?.topic?.label === 'string' && loaderData.topic.label.trim().length > 0;
+    return (
+      (typeof loaderData?.topic?.label === 'string' && loaderData.topic.label.trim().length > 0) ||
+      (typeof loaderData?.sourceTopic?.label === 'string' &&
+        loaderData.sourceTopic.label.trim().length > 0)
+    );
   });
 
-  return (matchWithTopic?.loaderData as BreadcrumbRouteLoaderData | undefined)?.topic?.label;
+  const loaderData = matchWithTopic?.loaderData as
+    | (BreadcrumbRouteLoaderData & { sourceTopic?: { label?: string } })
+    | undefined;
+
+  return loaderData?.topic?.label ?? loaderData?.sourceTopic?.label;
 };
 
 const getSchemaItems = (
@@ -65,18 +75,18 @@ export const getItems = (matches: ReturnType<typeof useMatches>): BreadcrumbItem
   const routeId = currentMatch.routeId;
   const topicId =
     typeof currentMatch.params.topicId === 'string' ? currentMatch.params.topicId : undefined;
+  const sourceTopicId =
+    typeof (currentMatch.search as Record<string, unknown> | undefined)?.sourceTopicId === 'string'
+      ? ((currentMatch.search as Record<string, unknown>).sourceTopicId as string)
+      : undefined;
   const topicLabel = getTopicLabel(matches);
-  const context = { topicId, topicLabel };
+  const context = { topicId: topicId ?? sourceTopicId, topicLabel };
 
   switch (routeId) {
     case '/_app/home':
       return [{ label: 'Kezdőlap' }];
-    case '/_app/schemas/':
-      return [HOME_BREADCRUMB_ITEM, { label: 'Új séma' }];
-    case '/_app/schemas/new':
-      return getSchemaItems(context, 'Új séma');
-    case '/_app/schemas/$topicId/duplicate':
-      return getSchemaItems(context, 'Duplikálás', true);
+    case '/_app/newTopic':
+      return getSchemaItems(context, topicId ? 'Duplikálás' : 'Új séma', Boolean(topicId));
     case '/_app/$topicId/':
       return getTopicItems(context);
     case '/_app/$topicId/schema':

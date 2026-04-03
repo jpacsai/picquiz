@@ -52,15 +52,15 @@ const CreateSchemaDialogContent = ({
       }
 
       await navigate({
-        params: { topicId: selectedTopicId },
-        to: '/schemas/$topicId/duplicate',
+        search: { sourceTopicId: selectedTopicId },
+        to: '/newTopic',
       });
 
       return;
     }
 
     await navigate({
-      to: '/schemas/new',
+      to: '/newTopic',
     });
   };
 
