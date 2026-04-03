@@ -19,7 +19,7 @@ const ItemTopicPageCard = ({ itemCount, topicId }: ItemTopicPageCardProps) => {
         label="Itemek kezelése"
         params={{ topicId }}
         search={{ saved: undefined }}
-        to="/admin/$topicId/items"
+        to="/$topicId/items"
         variant="contained"
       />
     </TopicPageCard>

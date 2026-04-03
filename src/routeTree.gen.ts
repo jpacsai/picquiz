@@ -13,30 +13,18 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppHomeRouteImport } from './routes/_app/home'
+import { Route as AppSchemasIndexRouteImport } from './routes/_app/schemas/index'
 import { Route as AppQuizIndexRouteImport } from './routes/_app/quiz/index'
 import { Route as AppTopicIdIndexRouteImport } from './routes/_app/$topicId/index'
+import { Route as AppSchemasNewRouteImport } from './routes/_app/schemas/new'
 import { Route as AppTopicIdSchemaRouteImport } from './routes/_app/$topicId/schema'
 import { Route as AppTopicIdQuizConfigRouteImport } from './routes/_app/$topicId/quiz-config'
 import { Route as AppTopicIdQuizRouteImport } from './routes/_app/$topicId/quiz'
-import { Route as AppAdminSchemasIndexRouteImport } from './routes/_app/admin/schemas/index'
-import { Route as AppAdminTopicIdIndexRouteImport } from './routes/_app/admin/$topicId/index'
 import { Route as AppTopicIdItemsIndexRouteImport } from './routes/_app/$topicId/items/index'
-import { Route as AppAdminTopicsNewRouteImport } from './routes/_app/admin/topics/new'
-import { Route as AppAdminSchemasNewRouteImport } from './routes/_app/admin/schemas/new'
-import { Route as AppAdminTopicIdSuccessRouteImport } from './routes/_app/admin/$topicId/success'
-import { Route as AppAdminTopicIdSchemaRouteImport } from './routes/_app/admin/$topicId/schema'
-import { Route as AppAdminTopicIdNewRouteImport } from './routes/_app/admin/$topicId/new'
+import { Route as AppSchemasTopicIdDuplicateRouteImport } from './routes/_app/schemas/$topicId/duplicate'
 import { Route as AppTopicIdItemsSuccessRouteImport } from './routes/_app/$topicId/items/success'
 import { Route as AppTopicIdItemsNewRouteImport } from './routes/_app/$topicId/items/new'
-import { Route as AppAdminTopicIdItemsIndexRouteImport } from './routes/_app/admin/$topicId/items/index'
-import { Route as AppAdminTopicsTopicIdEditRouteImport } from './routes/_app/admin/topics/$topicId/edit'
-import { Route as AppAdminTopicsTopicIdDuplicateRouteImport } from './routes/_app/admin/topics/$topicId/duplicate'
-import { Route as AppAdminSchemasTopicIdDuplicateRouteImport } from './routes/_app/admin/schemas/$topicId/duplicate'
-import { Route as AppAdminTopicIdItemsSuccessRouteImport } from './routes/_app/admin/$topicId/items/success'
-import { Route as AppAdminTopicIdItemsNewRouteImport } from './routes/_app/admin/$topicId/items/new'
-import { Route as AppAdminTopicIdItemIdEditRouteImport } from './routes/_app/admin/$topicId/$itemId/edit'
 import { Route as AppTopicIdItemsItemIdEditRouteImport } from './routes/_app/$topicId/items/$itemId/edit'
-import { Route as AppAdminTopicIdItemsItemIdEditRouteImport } from './routes/_app/admin/$topicId/items/$itemId/edit'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -57,6 +45,11 @@ const AppHomeRoute = AppHomeRouteImport.update({
   path: '/home',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSchemasIndexRoute = AppSchemasIndexRouteImport.update({
+  id: '/schemas/',
+  path: '/schemas/',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppQuizIndexRoute = AppQuizIndexRouteImport.update({
   id: '/quiz/',
   path: '/quiz/',
@@ -65,6 +58,11 @@ const AppQuizIndexRoute = AppQuizIndexRouteImport.update({
 const AppTopicIdIndexRoute = AppTopicIdIndexRouteImport.update({
   id: '/$topicId/',
   path: '/$topicId/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSchemasNewRoute = AppSchemasNewRouteImport.update({
+  id: '/schemas/new',
+  path: '/schemas/new',
   getParentRoute: () => AppRoute,
 } as any)
 const AppTopicIdSchemaRoute = AppTopicIdSchemaRouteImport.update({
@@ -82,46 +80,17 @@ const AppTopicIdQuizRoute = AppTopicIdQuizRouteImport.update({
   path: '/$topicId/quiz',
   getParentRoute: () => AppRoute,
 } as any)
-const AppAdminSchemasIndexRoute = AppAdminSchemasIndexRouteImport.update({
-  id: '/admin/schemas/',
-  path: '/admin/schemas/',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdminTopicIdIndexRoute = AppAdminTopicIdIndexRouteImport.update({
-  id: '/admin/$topicId/',
-  path: '/admin/$topicId/',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppTopicIdItemsIndexRoute = AppTopicIdItemsIndexRouteImport.update({
   id: '/$topicId/items/',
   path: '/$topicId/items/',
   getParentRoute: () => AppRoute,
 } as any)
-const AppAdminTopicsNewRoute = AppAdminTopicsNewRouteImport.update({
-  id: '/admin/topics/new',
-  path: '/admin/topics/new',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdminSchemasNewRoute = AppAdminSchemasNewRouteImport.update({
-  id: '/admin/schemas/new',
-  path: '/admin/schemas/new',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdminTopicIdSuccessRoute = AppAdminTopicIdSuccessRouteImport.update({
-  id: '/admin/$topicId/success',
-  path: '/admin/$topicId/success',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdminTopicIdSchemaRoute = AppAdminTopicIdSchemaRouteImport.update({
-  id: '/admin/$topicId/schema',
-  path: '/admin/$topicId/schema',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdminTopicIdNewRoute = AppAdminTopicIdNewRouteImport.update({
-  id: '/admin/$topicId/new',
-  path: '/admin/$topicId/new',
-  getParentRoute: () => AppRoute,
-} as any)
+const AppSchemasTopicIdDuplicateRoute =
+  AppSchemasTopicIdDuplicateRouteImport.update({
+    id: '/schemas/$topicId/duplicate',
+    path: '/schemas/$topicId/duplicate',
+    getParentRoute: () => AppRoute,
+  } as any)
 const AppTopicIdItemsSuccessRoute = AppTopicIdItemsSuccessRouteImport.update({
   id: '/$topicId/items/success',
   path: '/$topicId/items/success',
@@ -132,57 +101,10 @@ const AppTopicIdItemsNewRoute = AppTopicIdItemsNewRouteImport.update({
   path: '/$topicId/items/new',
   getParentRoute: () => AppRoute,
 } as any)
-const AppAdminTopicIdItemsIndexRoute =
-  AppAdminTopicIdItemsIndexRouteImport.update({
-    id: '/admin/$topicId/items/',
-    path: '/admin/$topicId/items/',
-    getParentRoute: () => AppRoute,
-  } as any)
-const AppAdminTopicsTopicIdEditRoute =
-  AppAdminTopicsTopicIdEditRouteImport.update({
-    id: '/admin/topics/$topicId/edit',
-    path: '/admin/topics/$topicId/edit',
-    getParentRoute: () => AppRoute,
-  } as any)
-const AppAdminTopicsTopicIdDuplicateRoute =
-  AppAdminTopicsTopicIdDuplicateRouteImport.update({
-    id: '/admin/topics/$topicId/duplicate',
-    path: '/admin/topics/$topicId/duplicate',
-    getParentRoute: () => AppRoute,
-  } as any)
-const AppAdminSchemasTopicIdDuplicateRoute =
-  AppAdminSchemasTopicIdDuplicateRouteImport.update({
-    id: '/admin/schemas/$topicId/duplicate',
-    path: '/admin/schemas/$topicId/duplicate',
-    getParentRoute: () => AppRoute,
-  } as any)
-const AppAdminTopicIdItemsSuccessRoute =
-  AppAdminTopicIdItemsSuccessRouteImport.update({
-    id: '/admin/$topicId/items/success',
-    path: '/admin/$topicId/items/success',
-    getParentRoute: () => AppRoute,
-  } as any)
-const AppAdminTopicIdItemsNewRoute = AppAdminTopicIdItemsNewRouteImport.update({
-  id: '/admin/$topicId/items/new',
-  path: '/admin/$topicId/items/new',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdminTopicIdItemIdEditRoute =
-  AppAdminTopicIdItemIdEditRouteImport.update({
-    id: '/admin/$topicId/$itemId/edit',
-    path: '/admin/$topicId/$itemId/edit',
-    getParentRoute: () => AppRoute,
-  } as any)
 const AppTopicIdItemsItemIdEditRoute =
   AppTopicIdItemsItemIdEditRouteImport.update({
     id: '/$topicId/items/$itemId/edit',
     path: '/$topicId/items/$itemId/edit',
-    getParentRoute: () => AppRoute,
-  } as any)
-const AppAdminTopicIdItemsItemIdEditRoute =
-  AppAdminTopicIdItemsItemIdEditRouteImport.update({
-    id: '/admin/$topicId/items/$itemId/edit',
-    path: '/admin/$topicId/items/$itemId/edit',
     getParentRoute: () => AppRoute,
   } as any)
 
@@ -193,27 +115,15 @@ export interface FileRoutesByFullPath {
   '/$topicId/quiz': typeof AppTopicIdQuizRoute
   '/$topicId/quiz-config': typeof AppTopicIdQuizConfigRoute
   '/$topicId/schema': typeof AppTopicIdSchemaRoute
+  '/schemas/new': typeof AppSchemasNewRoute
   '/$topicId/': typeof AppTopicIdIndexRoute
   '/quiz/': typeof AppQuizIndexRoute
+  '/schemas/': typeof AppSchemasIndexRoute
   '/$topicId/items/new': typeof AppTopicIdItemsNewRoute
   '/$topicId/items/success': typeof AppTopicIdItemsSuccessRoute
-  '/admin/$topicId/new': typeof AppAdminTopicIdNewRoute
-  '/admin/$topicId/schema': typeof AppAdminTopicIdSchemaRoute
-  '/admin/$topicId/success': typeof AppAdminTopicIdSuccessRoute
-  '/admin/schemas/new': typeof AppAdminSchemasNewRoute
-  '/admin/topics/new': typeof AppAdminTopicsNewRoute
+  '/schemas/$topicId/duplicate': typeof AppSchemasTopicIdDuplicateRoute
   '/$topicId/items/': typeof AppTopicIdItemsIndexRoute
-  '/admin/$topicId/': typeof AppAdminTopicIdIndexRoute
-  '/admin/schemas/': typeof AppAdminSchemasIndexRoute
   '/$topicId/items/$itemId/edit': typeof AppTopicIdItemsItemIdEditRoute
-  '/admin/$topicId/$itemId/edit': typeof AppAdminTopicIdItemIdEditRoute
-  '/admin/$topicId/items/new': typeof AppAdminTopicIdItemsNewRoute
-  '/admin/$topicId/items/success': typeof AppAdminTopicIdItemsSuccessRoute
-  '/admin/schemas/$topicId/duplicate': typeof AppAdminSchemasTopicIdDuplicateRoute
-  '/admin/topics/$topicId/duplicate': typeof AppAdminTopicsTopicIdDuplicateRoute
-  '/admin/topics/$topicId/edit': typeof AppAdminTopicsTopicIdEditRoute
-  '/admin/$topicId/items/': typeof AppAdminTopicIdItemsIndexRoute
-  '/admin/$topicId/items/$itemId/edit': typeof AppAdminTopicIdItemsItemIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -222,27 +132,15 @@ export interface FileRoutesByTo {
   '/$topicId/quiz': typeof AppTopicIdQuizRoute
   '/$topicId/quiz-config': typeof AppTopicIdQuizConfigRoute
   '/$topicId/schema': typeof AppTopicIdSchemaRoute
+  '/schemas/new': typeof AppSchemasNewRoute
   '/$topicId': typeof AppTopicIdIndexRoute
   '/quiz': typeof AppQuizIndexRoute
+  '/schemas': typeof AppSchemasIndexRoute
   '/$topicId/items/new': typeof AppTopicIdItemsNewRoute
   '/$topicId/items/success': typeof AppTopicIdItemsSuccessRoute
-  '/admin/$topicId/new': typeof AppAdminTopicIdNewRoute
-  '/admin/$topicId/schema': typeof AppAdminTopicIdSchemaRoute
-  '/admin/$topicId/success': typeof AppAdminTopicIdSuccessRoute
-  '/admin/schemas/new': typeof AppAdminSchemasNewRoute
-  '/admin/topics/new': typeof AppAdminTopicsNewRoute
+  '/schemas/$topicId/duplicate': typeof AppSchemasTopicIdDuplicateRoute
   '/$topicId/items': typeof AppTopicIdItemsIndexRoute
-  '/admin/$topicId': typeof AppAdminTopicIdIndexRoute
-  '/admin/schemas': typeof AppAdminSchemasIndexRoute
   '/$topicId/items/$itemId/edit': typeof AppTopicIdItemsItemIdEditRoute
-  '/admin/$topicId/$itemId/edit': typeof AppAdminTopicIdItemIdEditRoute
-  '/admin/$topicId/items/new': typeof AppAdminTopicIdItemsNewRoute
-  '/admin/$topicId/items/success': typeof AppAdminTopicIdItemsSuccessRoute
-  '/admin/schemas/$topicId/duplicate': typeof AppAdminSchemasTopicIdDuplicateRoute
-  '/admin/topics/$topicId/duplicate': typeof AppAdminTopicsTopicIdDuplicateRoute
-  '/admin/topics/$topicId/edit': typeof AppAdminTopicsTopicIdEditRoute
-  '/admin/$topicId/items': typeof AppAdminTopicIdItemsIndexRoute
-  '/admin/$topicId/items/$itemId/edit': typeof AppAdminTopicIdItemsItemIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -253,27 +151,15 @@ export interface FileRoutesById {
   '/_app/$topicId/quiz': typeof AppTopicIdQuizRoute
   '/_app/$topicId/quiz-config': typeof AppTopicIdQuizConfigRoute
   '/_app/$topicId/schema': typeof AppTopicIdSchemaRoute
+  '/_app/schemas/new': typeof AppSchemasNewRoute
   '/_app/$topicId/': typeof AppTopicIdIndexRoute
   '/_app/quiz/': typeof AppQuizIndexRoute
+  '/_app/schemas/': typeof AppSchemasIndexRoute
   '/_app/$topicId/items/new': typeof AppTopicIdItemsNewRoute
   '/_app/$topicId/items/success': typeof AppTopicIdItemsSuccessRoute
-  '/_app/admin/$topicId/new': typeof AppAdminTopicIdNewRoute
-  '/_app/admin/$topicId/schema': typeof AppAdminTopicIdSchemaRoute
-  '/_app/admin/$topicId/success': typeof AppAdminTopicIdSuccessRoute
-  '/_app/admin/schemas/new': typeof AppAdminSchemasNewRoute
-  '/_app/admin/topics/new': typeof AppAdminTopicsNewRoute
+  '/_app/schemas/$topicId/duplicate': typeof AppSchemasTopicIdDuplicateRoute
   '/_app/$topicId/items/': typeof AppTopicIdItemsIndexRoute
-  '/_app/admin/$topicId/': typeof AppAdminTopicIdIndexRoute
-  '/_app/admin/schemas/': typeof AppAdminSchemasIndexRoute
   '/_app/$topicId/items/$itemId/edit': typeof AppTopicIdItemsItemIdEditRoute
-  '/_app/admin/$topicId/$itemId/edit': typeof AppAdminTopicIdItemIdEditRoute
-  '/_app/admin/$topicId/items/new': typeof AppAdminTopicIdItemsNewRoute
-  '/_app/admin/$topicId/items/success': typeof AppAdminTopicIdItemsSuccessRoute
-  '/_app/admin/schemas/$topicId/duplicate': typeof AppAdminSchemasTopicIdDuplicateRoute
-  '/_app/admin/topics/$topicId/duplicate': typeof AppAdminTopicsTopicIdDuplicateRoute
-  '/_app/admin/topics/$topicId/edit': typeof AppAdminTopicsTopicIdEditRoute
-  '/_app/admin/$topicId/items/': typeof AppAdminTopicIdItemsIndexRoute
-  '/_app/admin/$topicId/items/$itemId/edit': typeof AppAdminTopicIdItemsItemIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -284,27 +170,15 @@ export interface FileRouteTypes {
     | '/$topicId/quiz'
     | '/$topicId/quiz-config'
     | '/$topicId/schema'
+    | '/schemas/new'
     | '/$topicId/'
     | '/quiz/'
+    | '/schemas/'
     | '/$topicId/items/new'
     | '/$topicId/items/success'
-    | '/admin/$topicId/new'
-    | '/admin/$topicId/schema'
-    | '/admin/$topicId/success'
-    | '/admin/schemas/new'
-    | '/admin/topics/new'
+    | '/schemas/$topicId/duplicate'
     | '/$topicId/items/'
-    | '/admin/$topicId/'
-    | '/admin/schemas/'
     | '/$topicId/items/$itemId/edit'
-    | '/admin/$topicId/$itemId/edit'
-    | '/admin/$topicId/items/new'
-    | '/admin/$topicId/items/success'
-    | '/admin/schemas/$topicId/duplicate'
-    | '/admin/topics/$topicId/duplicate'
-    | '/admin/topics/$topicId/edit'
-    | '/admin/$topicId/items/'
-    | '/admin/$topicId/items/$itemId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -313,27 +187,15 @@ export interface FileRouteTypes {
     | '/$topicId/quiz'
     | '/$topicId/quiz-config'
     | '/$topicId/schema'
+    | '/schemas/new'
     | '/$topicId'
     | '/quiz'
+    | '/schemas'
     | '/$topicId/items/new'
     | '/$topicId/items/success'
-    | '/admin/$topicId/new'
-    | '/admin/$topicId/schema'
-    | '/admin/$topicId/success'
-    | '/admin/schemas/new'
-    | '/admin/topics/new'
+    | '/schemas/$topicId/duplicate'
     | '/$topicId/items'
-    | '/admin/$topicId'
-    | '/admin/schemas'
     | '/$topicId/items/$itemId/edit'
-    | '/admin/$topicId/$itemId/edit'
-    | '/admin/$topicId/items/new'
-    | '/admin/$topicId/items/success'
-    | '/admin/schemas/$topicId/duplicate'
-    | '/admin/topics/$topicId/duplicate'
-    | '/admin/topics/$topicId/edit'
-    | '/admin/$topicId/items'
-    | '/admin/$topicId/items/$itemId/edit'
   id:
     | '__root__'
     | '/'
@@ -343,27 +205,15 @@ export interface FileRouteTypes {
     | '/_app/$topicId/quiz'
     | '/_app/$topicId/quiz-config'
     | '/_app/$topicId/schema'
+    | '/_app/schemas/new'
     | '/_app/$topicId/'
     | '/_app/quiz/'
+    | '/_app/schemas/'
     | '/_app/$topicId/items/new'
     | '/_app/$topicId/items/success'
-    | '/_app/admin/$topicId/new'
-    | '/_app/admin/$topicId/schema'
-    | '/_app/admin/$topicId/success'
-    | '/_app/admin/schemas/new'
-    | '/_app/admin/topics/new'
+    | '/_app/schemas/$topicId/duplicate'
     | '/_app/$topicId/items/'
-    | '/_app/admin/$topicId/'
-    | '/_app/admin/schemas/'
     | '/_app/$topicId/items/$itemId/edit'
-    | '/_app/admin/$topicId/$itemId/edit'
-    | '/_app/admin/$topicId/items/new'
-    | '/_app/admin/$topicId/items/success'
-    | '/_app/admin/schemas/$topicId/duplicate'
-    | '/_app/admin/topics/$topicId/duplicate'
-    | '/_app/admin/topics/$topicId/edit'
-    | '/_app/admin/$topicId/items/'
-    | '/_app/admin/$topicId/items/$itemId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -402,6 +252,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppHomeRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/schemas/': {
+      id: '/_app/schemas/'
+      path: '/schemas'
+      fullPath: '/schemas/'
+      preLoaderRoute: typeof AppSchemasIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/quiz/': {
       id: '/_app/quiz/'
       path: '/quiz'
@@ -414,6 +271,13 @@ declare module '@tanstack/react-router' {
       path: '/$topicId'
       fullPath: '/$topicId/'
       preLoaderRoute: typeof AppTopicIdIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/schemas/new': {
+      id: '/_app/schemas/new'
+      path: '/schemas/new'
+      fullPath: '/schemas/new'
+      preLoaderRoute: typeof AppSchemasNewRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/$topicId/schema': {
@@ -437,20 +301,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTopicIdQuizRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/admin/schemas/': {
-      id: '/_app/admin/schemas/'
-      path: '/admin/schemas'
-      fullPath: '/admin/schemas/'
-      preLoaderRoute: typeof AppAdminSchemasIndexRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/admin/$topicId/': {
-      id: '/_app/admin/$topicId/'
-      path: '/admin/$topicId'
-      fullPath: '/admin/$topicId/'
-      preLoaderRoute: typeof AppAdminTopicIdIndexRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/$topicId/items/': {
       id: '/_app/$topicId/items/'
       path: '/$topicId/items'
@@ -458,39 +308,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTopicIdItemsIndexRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/admin/topics/new': {
-      id: '/_app/admin/topics/new'
-      path: '/admin/topics/new'
-      fullPath: '/admin/topics/new'
-      preLoaderRoute: typeof AppAdminTopicsNewRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/admin/schemas/new': {
-      id: '/_app/admin/schemas/new'
-      path: '/admin/schemas/new'
-      fullPath: '/admin/schemas/new'
-      preLoaderRoute: typeof AppAdminSchemasNewRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/admin/$topicId/success': {
-      id: '/_app/admin/$topicId/success'
-      path: '/admin/$topicId/success'
-      fullPath: '/admin/$topicId/success'
-      preLoaderRoute: typeof AppAdminTopicIdSuccessRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/admin/$topicId/schema': {
-      id: '/_app/admin/$topicId/schema'
-      path: '/admin/$topicId/schema'
-      fullPath: '/admin/$topicId/schema'
-      preLoaderRoute: typeof AppAdminTopicIdSchemaRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/admin/$topicId/new': {
-      id: '/_app/admin/$topicId/new'
-      path: '/admin/$topicId/new'
-      fullPath: '/admin/$topicId/new'
-      preLoaderRoute: typeof AppAdminTopicIdNewRouteImport
+    '/_app/schemas/$topicId/duplicate': {
+      id: '/_app/schemas/$topicId/duplicate'
+      path: '/schemas/$topicId/duplicate'
+      fullPath: '/schemas/$topicId/duplicate'
+      preLoaderRoute: typeof AppSchemasTopicIdDuplicateRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/$topicId/items/success': {
@@ -507,67 +329,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTopicIdItemsNewRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/admin/$topicId/items/': {
-      id: '/_app/admin/$topicId/items/'
-      path: '/admin/$topicId/items'
-      fullPath: '/admin/$topicId/items/'
-      preLoaderRoute: typeof AppAdminTopicIdItemsIndexRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/admin/topics/$topicId/edit': {
-      id: '/_app/admin/topics/$topicId/edit'
-      path: '/admin/topics/$topicId/edit'
-      fullPath: '/admin/topics/$topicId/edit'
-      preLoaderRoute: typeof AppAdminTopicsTopicIdEditRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/admin/topics/$topicId/duplicate': {
-      id: '/_app/admin/topics/$topicId/duplicate'
-      path: '/admin/topics/$topicId/duplicate'
-      fullPath: '/admin/topics/$topicId/duplicate'
-      preLoaderRoute: typeof AppAdminTopicsTopicIdDuplicateRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/admin/schemas/$topicId/duplicate': {
-      id: '/_app/admin/schemas/$topicId/duplicate'
-      path: '/admin/schemas/$topicId/duplicate'
-      fullPath: '/admin/schemas/$topicId/duplicate'
-      preLoaderRoute: typeof AppAdminSchemasTopicIdDuplicateRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/admin/$topicId/items/success': {
-      id: '/_app/admin/$topicId/items/success'
-      path: '/admin/$topicId/items/success'
-      fullPath: '/admin/$topicId/items/success'
-      preLoaderRoute: typeof AppAdminTopicIdItemsSuccessRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/admin/$topicId/items/new': {
-      id: '/_app/admin/$topicId/items/new'
-      path: '/admin/$topicId/items/new'
-      fullPath: '/admin/$topicId/items/new'
-      preLoaderRoute: typeof AppAdminTopicIdItemsNewRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/admin/$topicId/$itemId/edit': {
-      id: '/_app/admin/$topicId/$itemId/edit'
-      path: '/admin/$topicId/$itemId/edit'
-      fullPath: '/admin/$topicId/$itemId/edit'
-      preLoaderRoute: typeof AppAdminTopicIdItemIdEditRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/$topicId/items/$itemId/edit': {
       id: '/_app/$topicId/items/$itemId/edit'
       path: '/$topicId/items/$itemId/edit'
       fullPath: '/$topicId/items/$itemId/edit'
       preLoaderRoute: typeof AppTopicIdItemsItemIdEditRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/admin/$topicId/items/$itemId/edit': {
-      id: '/_app/admin/$topicId/items/$itemId/edit'
-      path: '/admin/$topicId/items/$itemId/edit'
-      fullPath: '/admin/$topicId/items/$itemId/edit'
-      preLoaderRoute: typeof AppAdminTopicIdItemsItemIdEditRouteImport
       parentRoute: typeof AppRoute
     }
   }
@@ -578,27 +344,15 @@ interface AppRouteChildren {
   AppTopicIdQuizRoute: typeof AppTopicIdQuizRoute
   AppTopicIdQuizConfigRoute: typeof AppTopicIdQuizConfigRoute
   AppTopicIdSchemaRoute: typeof AppTopicIdSchemaRoute
+  AppSchemasNewRoute: typeof AppSchemasNewRoute
   AppTopicIdIndexRoute: typeof AppTopicIdIndexRoute
   AppQuizIndexRoute: typeof AppQuizIndexRoute
+  AppSchemasIndexRoute: typeof AppSchemasIndexRoute
   AppTopicIdItemsNewRoute: typeof AppTopicIdItemsNewRoute
   AppTopicIdItemsSuccessRoute: typeof AppTopicIdItemsSuccessRoute
-  AppAdminTopicIdNewRoute: typeof AppAdminTopicIdNewRoute
-  AppAdminTopicIdSchemaRoute: typeof AppAdminTopicIdSchemaRoute
-  AppAdminTopicIdSuccessRoute: typeof AppAdminTopicIdSuccessRoute
-  AppAdminSchemasNewRoute: typeof AppAdminSchemasNewRoute
-  AppAdminTopicsNewRoute: typeof AppAdminTopicsNewRoute
+  AppSchemasTopicIdDuplicateRoute: typeof AppSchemasTopicIdDuplicateRoute
   AppTopicIdItemsIndexRoute: typeof AppTopicIdItemsIndexRoute
-  AppAdminTopicIdIndexRoute: typeof AppAdminTopicIdIndexRoute
-  AppAdminSchemasIndexRoute: typeof AppAdminSchemasIndexRoute
   AppTopicIdItemsItemIdEditRoute: typeof AppTopicIdItemsItemIdEditRoute
-  AppAdminTopicIdItemIdEditRoute: typeof AppAdminTopicIdItemIdEditRoute
-  AppAdminTopicIdItemsNewRoute: typeof AppAdminTopicIdItemsNewRoute
-  AppAdminTopicIdItemsSuccessRoute: typeof AppAdminTopicIdItemsSuccessRoute
-  AppAdminSchemasTopicIdDuplicateRoute: typeof AppAdminSchemasTopicIdDuplicateRoute
-  AppAdminTopicsTopicIdDuplicateRoute: typeof AppAdminTopicsTopicIdDuplicateRoute
-  AppAdminTopicsTopicIdEditRoute: typeof AppAdminTopicsTopicIdEditRoute
-  AppAdminTopicIdItemsIndexRoute: typeof AppAdminTopicIdItemsIndexRoute
-  AppAdminTopicIdItemsItemIdEditRoute: typeof AppAdminTopicIdItemsItemIdEditRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -606,27 +360,15 @@ const AppRouteChildren: AppRouteChildren = {
   AppTopicIdQuizRoute: AppTopicIdQuizRoute,
   AppTopicIdQuizConfigRoute: AppTopicIdQuizConfigRoute,
   AppTopicIdSchemaRoute: AppTopicIdSchemaRoute,
+  AppSchemasNewRoute: AppSchemasNewRoute,
   AppTopicIdIndexRoute: AppTopicIdIndexRoute,
   AppQuizIndexRoute: AppQuizIndexRoute,
+  AppSchemasIndexRoute: AppSchemasIndexRoute,
   AppTopicIdItemsNewRoute: AppTopicIdItemsNewRoute,
   AppTopicIdItemsSuccessRoute: AppTopicIdItemsSuccessRoute,
-  AppAdminTopicIdNewRoute: AppAdminTopicIdNewRoute,
-  AppAdminTopicIdSchemaRoute: AppAdminTopicIdSchemaRoute,
-  AppAdminTopicIdSuccessRoute: AppAdminTopicIdSuccessRoute,
-  AppAdminSchemasNewRoute: AppAdminSchemasNewRoute,
-  AppAdminTopicsNewRoute: AppAdminTopicsNewRoute,
+  AppSchemasTopicIdDuplicateRoute: AppSchemasTopicIdDuplicateRoute,
   AppTopicIdItemsIndexRoute: AppTopicIdItemsIndexRoute,
-  AppAdminTopicIdIndexRoute: AppAdminTopicIdIndexRoute,
-  AppAdminSchemasIndexRoute: AppAdminSchemasIndexRoute,
   AppTopicIdItemsItemIdEditRoute: AppTopicIdItemsItemIdEditRoute,
-  AppAdminTopicIdItemIdEditRoute: AppAdminTopicIdItemIdEditRoute,
-  AppAdminTopicIdItemsNewRoute: AppAdminTopicIdItemsNewRoute,
-  AppAdminTopicIdItemsSuccessRoute: AppAdminTopicIdItemsSuccessRoute,
-  AppAdminSchemasTopicIdDuplicateRoute: AppAdminSchemasTopicIdDuplicateRoute,
-  AppAdminTopicsTopicIdDuplicateRoute: AppAdminTopicsTopicIdDuplicateRoute,
-  AppAdminTopicsTopicIdEditRoute: AppAdminTopicsTopicIdEditRoute,
-  AppAdminTopicIdItemsIndexRoute: AppAdminTopicIdItemsIndexRoute,
-  AppAdminTopicIdItemsItemIdEditRoute: AppAdminTopicIdItemsItemIdEditRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

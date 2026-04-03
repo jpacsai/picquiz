@@ -62,14 +62,14 @@ const CreateSchemaDialog = ({
 
       await navigate({
         params: { topicId: selectedTopicId },
-        to: '/admin/schemas/$topicId/duplicate',
+        to: '/schemas/$topicId/duplicate',
       });
 
       return;
     }
 
     await navigate({
-      to: '/admin/schemas/new',
+      to: '/schemas/new',
     });
   };
 

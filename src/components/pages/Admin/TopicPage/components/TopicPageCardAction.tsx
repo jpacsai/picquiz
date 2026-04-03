@@ -10,7 +10,7 @@ type TopicPageCardActionProps = {
   search?: {
     saved?: undefined;
   };
-  to: '/admin/$topicId/items' | '/admin/$topicId/schema';
+  to: '/$topicId/items' | '/$topicId/schema';
   variant: 'contained' | 'outlined';
 };
 

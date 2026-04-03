@@ -17,7 +17,7 @@ const getTopicLabel = (matches: ReturnType<typeof useMatches>) => {
   return (matchWithTopic?.loaderData as BreadcrumbRouteLoaderData | undefined)?.topic?.label;
 };
 
-const getAdminSchemasItems = (
+const getSchemaItems = (
   context: BreadcrumbRouteContext,
   currentLabel?: string,
   includeTopicLabel = false,
@@ -71,12 +71,12 @@ export const getItems = (matches: ReturnType<typeof useMatches>): BreadcrumbItem
   switch (routeId) {
     case '/_app/home':
       return [{ label: 'Kezdőlap' }];
-    case '/_app/admin/schemas/':
+    case '/_app/schemas/':
       return [HOME_BREADCRUMB_ITEM, { label: 'Új séma' }];
-    case '/_app/admin/schemas/new':
-      return getAdminSchemasItems(context, 'Új séma');
-    case '/_app/admin/schemas/$topicId/duplicate':
-      return getAdminSchemasItems(context, 'Duplikálás', true);
+    case '/_app/schemas/new':
+      return getSchemaItems(context, 'Új séma');
+    case '/_app/schemas/$topicId/duplicate':
+      return getSchemaItems(context, 'Duplikálás', true);
     case '/_app/$topicId/':
       return getTopicItems(context);
     case '/_app/$topicId/schema':

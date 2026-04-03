@@ -3,7 +3,7 @@ import { createFileRoute, useLoaderData } from '@tanstack/react-router';
 import TopicSchemaBuilderPage from '@/components/pages/Admin/TopicSchemaBuilder/TopicSchemaBuilderPage';
 import { topicOptions } from '@/queries/topics';
 
-const path = '/_app/admin/schemas/$topicId/duplicate';
+const path = '/_app/schemas/$topicId/duplicate';
 
 const RouteComponent = () => {
   const { topic } = useLoaderData({ from: path });

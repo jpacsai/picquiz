@@ -17,7 +17,7 @@ const SchemaTopicPageCard = ({ topicId }: SchemaTopicPageCardProps) => {
       <TopicPageCardAction
         label="Séma szerkesztése"
         params={{ topicId }}
-        to="/admin/$topicId/schema"
+        to="/$topicId/schema"
         variant="outlined"
       />
     </TopicPageCard>
