@@ -1,5 +1,3 @@
-import { useEffect, useState } from 'react';
-
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import {
@@ -19,6 +17,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
+import { useState } from 'react';
 
 import type { Topic } from '@/types/topics';
 
@@ -32,25 +31,17 @@ type CreateSchemaDialogProps = {
   topics: ReadonlyArray<Topic>;
 };
 
-const CreateSchemaDialog = ({
+type CreateSchemaDialogContentProps = Omit<CreateSchemaDialogProps, 'open'>;
+
+const CreateSchemaDialogContent = ({
   duplicateSourceTopicId,
   initialMode,
   onClose,
-  open,
   topics,
-}: CreateSchemaDialogProps) => {
+}: CreateSchemaDialogContentProps) => {
   const navigate = useNavigate();
   const [mode, setMode] = useState<SchemaCreationMode>(initialMode);
   const [selectedTopicId, setSelectedTopicId] = useState(duplicateSourceTopicId ?? '');
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    setMode(initialMode);
-    setSelectedTopicId(duplicateSourceTopicId ?? '');
-  }, [duplicateSourceTopicId, initialMode, open]);
 
   const isSubmitDisabled = mode === 'duplicate' && selectedTopicId.length === 0;
 
@@ -74,14 +65,14 @@ const CreateSchemaDialog = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <>
       <DialogTitle>Új séma</DialogTitle>
 
       <DialogContent>
         <Stack spacing={3} sx={{ pt: 1 }}>
           <Typography color="text.secondary" variant="body2">
-            Válaszd ki, hogy teljesen új sémát szeretnél létrehozni, vagy egy meglévőt
-            duplikálnál kiindulásnak.
+            Válaszd ki, hogy teljesen új sémát szeretnél létrehozni, vagy egy meglévőt duplikálnál
+            kiindulásnak.
           </Typography>
 
           <FormControl>
@@ -92,11 +83,7 @@ const CreateSchemaDialog = ({
               value={mode}
               onChange={(event) => setMode(event.target.value as SchemaCreationMode)}
             >
-              <FormControlLabel
-                value="create"
-                control={<Radio />}
-                label="Új séma létrehozása"
-              />
+              <FormControlLabel value="create" control={<Radio />} label="Új séma létrehozása" />
               <FormControlLabel
                 value="duplicate"
                 control={<Radio />}
@@ -139,6 +126,27 @@ const CreateSchemaDialog = ({
           {mode === 'duplicate' ? 'Duplikálás folytatása' : 'Létrehozás folytatása'}
         </Button>
       </DialogActions>
+    </>
+  );
+};
+
+const CreateSchemaDialog = ({
+  duplicateSourceTopicId,
+  initialMode,
+  onClose,
+  open,
+  topics,
+}: CreateSchemaDialogProps) => {
+  return (
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      {open ? (
+        <CreateSchemaDialogContent
+          duplicateSourceTopicId={duplicateSourceTopicId}
+          initialMode={initialMode}
+          onClose={onClose}
+          topics={topics}
+        />
+      ) : null}
     </Dialog>
   );
 };
