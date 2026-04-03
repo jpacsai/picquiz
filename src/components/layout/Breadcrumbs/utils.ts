@@ -1,9 +1,6 @@
 import type { useMatches } from '@tanstack/react-router';
 
-import {
-  ADMIN_BREADCRUMB_ITEM,
-  HOME_BREADCRUMB_ITEM,
-} from '@/consts/breadcrumbs';
+import { HOME_BREADCRUMB_ITEM } from '@/consts/breadcrumbs';
 import type {
   BreadcrumbItem,
   BreadcrumbRouteContext,
@@ -20,69 +17,6 @@ const getTopicLabel = (matches: ReturnType<typeof useMatches>) => {
   return (matchWithTopic?.loaderData as BreadcrumbRouteLoaderData | undefined)?.topic?.label;
 };
 
-const getAdminTopicItem = ({
-  topicId,
-  topicLabel,
-}: BreadcrumbRouteContext): BreadcrumbItem | null => {
-  if (!topicId || !topicLabel) {
-    return null;
-  }
-
-  return { label: topicLabel, params: { topicId }, to: '/admin/$topicId' };
-};
-
-const getAdminItems = (context: BreadcrumbRouteContext, currentLabel?: string): BreadcrumbItem[] => {
-  const topicItem = getAdminTopicItem(context);
-
-  if (!topicItem) {
-    return [ADMIN_BREADCRUMB_ITEM];
-  }
-
-  return currentLabel
-    ? [ADMIN_BREADCRUMB_ITEM, topicItem, { label: currentLabel }]
-    : [ADMIN_BREADCRUMB_ITEM, { label: topicItem.label }];
-};
-
-const getAdminTopicSectionItems = (
-  context: BreadcrumbRouteContext,
-  sectionLabel: string,
-  currentLabel?: string,
-): BreadcrumbItem[] => {
-  const topicItem = getAdminTopicItem(context);
-
-  if (!topicItem) {
-    return currentLabel
-      ? [ADMIN_BREADCRUMB_ITEM, { label: sectionLabel }, { label: currentLabel }]
-      : [ADMIN_BREADCRUMB_ITEM, { label: sectionLabel }];
-  }
-
-  return currentLabel
-    ? [ADMIN_BREADCRUMB_ITEM, topicItem, { label: sectionLabel }, { label: currentLabel }]
-    : [ADMIN_BREADCRUMB_ITEM, topicItem, { label: sectionLabel }];
-};
-
-const getAdminTopicItemsSection = (
-  context: BreadcrumbRouteContext,
-  currentLabel?: string,
-): BreadcrumbItem[] => {
-  if (!currentLabel) {
-    return getAdminTopicSectionItems(context, 'Itemek');
-  }
-
-  const topicItem = getAdminTopicItem(context);
-
-  if (!topicItem || !context.topicId) {
-    return [ADMIN_BREADCRUMB_ITEM, { label: 'Itemek' }, { label: currentLabel }];
-  }
-
-  return [
-    ADMIN_BREADCRUMB_ITEM,
-    topicItem,
-    { label: 'Itemek', params: { topicId: context.topicId }, to: '/admin/$topicId/items' },
-    { label: currentLabel },
-  ];
-};
-
 const getAdminSchemasItems = (
   context: BreadcrumbRouteContext,
   currentLabel?: string,
@@ -90,13 +24,13 @@ const getAdminSchemasItems = (
 ): BreadcrumbItem[] => {
   if (!includeTopicLabel || !context.topicId || !context.topicLabel) {
     return currentLabel
-      ? [ADMIN_BREADCRUMB_ITEM, { label: currentLabel }]
-      : [ADMIN_BREADCRUMB_ITEM];
+      ? [HOME_BREADCRUMB_ITEM, { label: currentLabel }]
+      : [HOME_BREADCRUMB_ITEM];
   }
 
   return currentLabel
-    ? [ADMIN_BREADCRUMB_ITEM, { label: context.topicLabel }, { label: currentLabel }]
-    : [ADMIN_BREADCRUMB_ITEM, { label: context.topicLabel }];
+    ? [HOME_BREADCRUMB_ITEM, { label: context.topicLabel }, { label: currentLabel }]
+    : [HOME_BREADCRUMB_ITEM, { label: context.topicLabel }];
 };
 
 const getTopicItem = ({ topicId, topicLabel }: BreadcrumbRouteContext): BreadcrumbItem | null => {
@@ -137,26 +71,12 @@ export const getItems = (matches: ReturnType<typeof useMatches>): BreadcrumbItem
   switch (routeId) {
     case '/_app/home':
       return [{ label: 'Kezdőlap' }];
-    case '/_app/admin/':
-      return [{ label: 'Admin' }];
     case '/_app/admin/schemas/':
-      return [ADMIN_BREADCRUMB_ITEM];
+      return [HOME_BREADCRUMB_ITEM, { label: 'Új séma' }];
     case '/_app/admin/schemas/new':
       return getAdminSchemasItems(context, 'Új séma');
     case '/_app/admin/schemas/$topicId/duplicate':
       return getAdminSchemasItems(context, 'Duplikálás', true);
-    case '/_app/admin/$topicId/':
-      return getAdminItems(context);
-    case '/_app/admin/$topicId/schema':
-      return getAdminTopicSectionItems(context, 'Séma szerkesztése');
-    case '/_app/admin/$topicId/items/':
-      return getAdminTopicItemsSection(context);
-    case '/_app/admin/$topicId/items/new':
-      return getAdminTopicItemsSection(context, 'Új elem');
-    case '/_app/admin/$topicId/items/$itemId/edit':
-      return getAdminTopicItemsSection(context, 'Szerkesztés');
-    case '/_app/admin/$topicId/items/success':
-      return getAdminTopicItemsSection(context, 'Sikeres mentés');
     case '/_app/$topicId/':
       return getTopicItems(context);
     case '/_app/$topicId/schema':

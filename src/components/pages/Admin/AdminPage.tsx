@@ -31,12 +31,7 @@ const AdminPage = ({
           variant="contained"
           onClick={() =>
             navigate({
-              search: {
-                schemaDialog: 'new',
-                schemaMode: 'create',
-                sourceTopicId: undefined,
-              },
-              to: '/admin',
+              to: '/admin/schemas/new',
             })
           }
         >
@@ -56,7 +51,7 @@ const AdminPage = ({
 
             <RouterLink
               params={{ topicId: topic.id }}
-              to="/admin/$topicId"
+              to="/$topicId"
               underline="none"
               preload="intent"
             >
@@ -74,12 +69,7 @@ const AdminPage = ({
         open={isCreateSchemaDialogOpen}
         onClose={() =>
           navigate({
-            search: {
-              schemaDialog: undefined,
-              schemaMode: undefined,
-              sourceTopicId: undefined,
-            },
-            to: '/admin',
+            to: '/home',
           })
         }
         topics={topics}

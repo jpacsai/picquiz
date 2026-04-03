@@ -5,12 +5,7 @@ const path = '/_app/admin/schemas/';
 export const Route = createFileRoute(path)({
   beforeLoad: () => {
     throw redirect({
-      search: {
-        schemaDialog: 'new',
-        schemaMode: 'create',
-        sourceTopicId: undefined,
-      },
-      to: '/admin',
+      to: '/admin/schemas/new',
     });
   },
 });

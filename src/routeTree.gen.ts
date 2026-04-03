@@ -14,7 +14,6 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppHomeRouteImport } from './routes/_app/home'
 import { Route as AppQuizIndexRouteImport } from './routes/_app/quiz/index'
-import { Route as AppAdminIndexRouteImport } from './routes/_app/admin/index'
 import { Route as AppTopicIdIndexRouteImport } from './routes/_app/$topicId/index'
 import { Route as AppTopicIdSchemaRouteImport } from './routes/_app/$topicId/schema'
 import { Route as AppTopicIdQuizConfigRouteImport } from './routes/_app/$topicId/quiz-config'
@@ -61,11 +60,6 @@ const AppHomeRoute = AppHomeRouteImport.update({
 const AppQuizIndexRoute = AppQuizIndexRouteImport.update({
   id: '/quiz/',
   path: '/quiz/',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdminIndexRoute = AppAdminIndexRouteImport.update({
-  id: '/admin/',
-  path: '/admin/',
   getParentRoute: () => AppRoute,
 } as any)
 const AppTopicIdIndexRoute = AppTopicIdIndexRouteImport.update({
@@ -200,7 +194,6 @@ export interface FileRoutesByFullPath {
   '/$topicId/quiz-config': typeof AppTopicIdQuizConfigRoute
   '/$topicId/schema': typeof AppTopicIdSchemaRoute
   '/$topicId/': typeof AppTopicIdIndexRoute
-  '/admin/': typeof AppAdminIndexRoute
   '/quiz/': typeof AppQuizIndexRoute
   '/$topicId/items/new': typeof AppTopicIdItemsNewRoute
   '/$topicId/items/success': typeof AppTopicIdItemsSuccessRoute
@@ -230,7 +223,6 @@ export interface FileRoutesByTo {
   '/$topicId/quiz-config': typeof AppTopicIdQuizConfigRoute
   '/$topicId/schema': typeof AppTopicIdSchemaRoute
   '/$topicId': typeof AppTopicIdIndexRoute
-  '/admin': typeof AppAdminIndexRoute
   '/quiz': typeof AppQuizIndexRoute
   '/$topicId/items/new': typeof AppTopicIdItemsNewRoute
   '/$topicId/items/success': typeof AppTopicIdItemsSuccessRoute
@@ -262,7 +254,6 @@ export interface FileRoutesById {
   '/_app/$topicId/quiz-config': typeof AppTopicIdQuizConfigRoute
   '/_app/$topicId/schema': typeof AppTopicIdSchemaRoute
   '/_app/$topicId/': typeof AppTopicIdIndexRoute
-  '/_app/admin/': typeof AppAdminIndexRoute
   '/_app/quiz/': typeof AppQuizIndexRoute
   '/_app/$topicId/items/new': typeof AppTopicIdItemsNewRoute
   '/_app/$topicId/items/success': typeof AppTopicIdItemsSuccessRoute
@@ -294,7 +285,6 @@ export interface FileRouteTypes {
     | '/$topicId/quiz-config'
     | '/$topicId/schema'
     | '/$topicId/'
-    | '/admin/'
     | '/quiz/'
     | '/$topicId/items/new'
     | '/$topicId/items/success'
@@ -324,7 +314,6 @@ export interface FileRouteTypes {
     | '/$topicId/quiz-config'
     | '/$topicId/schema'
     | '/$topicId'
-    | '/admin'
     | '/quiz'
     | '/$topicId/items/new'
     | '/$topicId/items/success'
@@ -355,7 +344,6 @@ export interface FileRouteTypes {
     | '/_app/$topicId/quiz-config'
     | '/_app/$topicId/schema'
     | '/_app/$topicId/'
-    | '/_app/admin/'
     | '/_app/quiz/'
     | '/_app/$topicId/items/new'
     | '/_app/$topicId/items/success'
@@ -419,13 +407,6 @@ declare module '@tanstack/react-router' {
       path: '/quiz'
       fullPath: '/quiz/'
       preLoaderRoute: typeof AppQuizIndexRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/admin/': {
-      id: '/_app/admin/'
-      path: '/admin'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AppAdminIndexRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/$topicId/': {
@@ -598,7 +579,6 @@ interface AppRouteChildren {
   AppTopicIdQuizConfigRoute: typeof AppTopicIdQuizConfigRoute
   AppTopicIdSchemaRoute: typeof AppTopicIdSchemaRoute
   AppTopicIdIndexRoute: typeof AppTopicIdIndexRoute
-  AppAdminIndexRoute: typeof AppAdminIndexRoute
   AppQuizIndexRoute: typeof AppQuizIndexRoute
   AppTopicIdItemsNewRoute: typeof AppTopicIdItemsNewRoute
   AppTopicIdItemsSuccessRoute: typeof AppTopicIdItemsSuccessRoute
@@ -627,7 +607,6 @@ const AppRouteChildren: AppRouteChildren = {
   AppTopicIdQuizConfigRoute: AppTopicIdQuizConfigRoute,
   AppTopicIdSchemaRoute: AppTopicIdSchemaRoute,
   AppTopicIdIndexRoute: AppTopicIdIndexRoute,
-  AppAdminIndexRoute: AppAdminIndexRoute,
   AppQuizIndexRoute: AppQuizIndexRoute,
   AppTopicIdItemsNewRoute: AppTopicIdItemsNewRoute,
   AppTopicIdItemsSuccessRoute: AppTopicIdItemsSuccessRoute,

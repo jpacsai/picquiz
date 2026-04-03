@@ -73,12 +73,7 @@ export const buildTopicSchemaBuilderActionsValue = ({
             params: { topicId: topic.id },
           }
         : {
-            to: '/admin',
-            search: {
-              schemaDialog: undefined,
-              schemaMode: undefined,
-              sourceTopicId: undefined,
-            },
+            to: '/home',
           },
     );
   };
@@ -239,7 +234,8 @@ export const buildTopicSchemaBuilderActionsValue = ({
               params: { topicId: topic.id },
             }
           : {
-              to: '/admin',
+              to: '/$topicId',
+              params: { topicId },
             },
       );
     } catch (error) {

@@ -48,10 +48,6 @@ const NavBar = () => {
             </Typography>
           </NavLink>
 
-          <NavLink to="/admin" activeOptions={{ exact: true }} underline="none" preload="intent">
-            Admin
-          </NavLink>
-
           <Box sx={{ marginLeft: 'auto' }}>
             <StyleSelector />
           </Box>
