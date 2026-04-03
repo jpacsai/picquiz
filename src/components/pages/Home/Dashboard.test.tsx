@@ -37,6 +37,8 @@ const topics: ReadonlyArray<Topic> = [
 const RootComponent = () => <Outlet />;
 
 const TopicRouteComponent = () => <div>Topic page</div>;
+const NewSchemaRouteComponent = () => <div>New schema page</div>;
+const DuplicateSchemaRouteComponent = () => <div>Duplicate schema page</div>;
 
 const renderDashboard = async () => {
   const queryClient = new QueryClient({
@@ -63,7 +65,19 @@ const renderDashboard = async () => {
     path: '/$topicId',
   });
 
-  const routeTree = rootRoute.addChildren([homeRoute, topicRoute]);
+  const newSchemaRoute = createRoute({
+    component: NewSchemaRouteComponent,
+    getParentRoute: () => rootRoute,
+    path: '/schemas/new',
+  });
+
+  const duplicateSchemaRoute = createRoute({
+    component: DuplicateSchemaRouteComponent,
+    getParentRoute: () => rootRoute,
+    path: '/schemas/$topicId/duplicate',
+  });
+
+  const routeTree = rootRoute.addChildren([homeRoute, topicRoute, newSchemaRoute, duplicateSchemaRoute]);
 
   const router = createRouter({
     context: { queryClient },
@@ -97,6 +111,39 @@ describe('Dashboard integration', () => {
 
     await waitFor(() => {
       expect(router.state.location.pathname).toBe('/art');
+    });
+  });
+
+  it('opens schema creation from the new topic action', async () => {
+    const user = userEvent.setup();
+
+    const { router } = await renderDashboard();
+
+    await user.click(screen.getByRole('button', { name: 'Új topic' }));
+    await user.click(screen.getByRole('button', { name: 'Létrehozás folytatása' }));
+
+    expect(await screen.findByText('New schema page')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe('/schemas/new');
+    });
+  });
+
+  it('lets the user duplicate an existing schema from the new topic action', async () => {
+    const user = userEvent.setup();
+
+    const { router } = await renderDashboard();
+
+    await user.click(screen.getByRole('button', { name: 'Új topic' }));
+    await user.click(screen.getByRole('radio', { name: 'Meglévő séma duplikálása' }));
+    await user.click(screen.getByRole('combobox'));
+    await user.click(screen.getByRole('option', { name: 'Művészet' }));
+    await user.click(screen.getByRole('button', { name: 'Duplikálás folytatása' }));
+
+    expect(await screen.findByText('Duplicate schema page')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe('/schemas/art/duplicate');
     });
   });
 });
