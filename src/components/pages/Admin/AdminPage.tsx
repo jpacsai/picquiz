@@ -31,6 +31,7 @@ const AdminPage = ({
           variant="contained"
           onClick={() =>
             navigate({
+              search: { sourceTopicId: undefined },
               to: '/newTopic',
             })
           }

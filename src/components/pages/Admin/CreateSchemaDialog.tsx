@@ -60,6 +60,7 @@ const CreateSchemaDialogContent = ({
     }
 
     await navigate({
+      search: { sourceTopicId: undefined },
       to: '/newTopic',
     });
   };
