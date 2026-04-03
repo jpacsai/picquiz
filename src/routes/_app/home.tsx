@@ -1,6 +1,6 @@
 import { createFileRoute, useLoaderData } from '@tanstack/react-router';
 
-import Dashboard from '../../components/pages/Dashboard';
+import Dashboard from '../../components/pages/Home/Dashboard';
 import { topicsOptions } from '../../queries/topics';
 
 export const parentPath = '/_app/home';
