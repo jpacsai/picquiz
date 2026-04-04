@@ -92,7 +92,7 @@ export const getItems = (matches: ReturnType<typeof useMatches>): BreadcrumbItem
     case '/_app/$topicId/schema':
       return getTopicItems(context, 'Séma szerkesztése');
     case '/_app/$topicId/items/':
-      return getTopicItems(context, 'Itemek');
+      return getTopicItems(context, 'Elemek');
     case '/_app/$topicId/items/new':
       return getTopicItems(context, 'Új elem');
     case '/_app/$topicId/items/$itemId/edit':

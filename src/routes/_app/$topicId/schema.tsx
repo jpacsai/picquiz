@@ -17,7 +17,7 @@ export const Route = createFileRoute(path)({
     const topic = await queryClient.ensureQueryData(topicOptions(params.topicId));
 
     return {
-      title: `${topic.label} schema`,
+      title: `${topic.label} séma`,
       topic,
     };
   },

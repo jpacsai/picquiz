@@ -4,8 +4,8 @@ import type { QueryClient } from '@tanstack/react-query';
 import type { NavigateFn } from '@tanstack/react-router';
 import type { OptionsObject, SnackbarKey, SnackbarMessage } from 'notistack';
 
-import type { TopicFieldDraft } from '@/types/topicSchema';
 import type { Topic } from '@/types/topics';
+import type { TopicFieldDraft } from '@/types/topicSchema';
 import type { SelectedFieldIndex, TopicSchemaBuilderPageProps } from '@/types/topicSchemaBuilder';
 
 import { getEmptyFieldDraft, getPersistedTopicValues, getSelectOptionsText } from '../hook/utils';
@@ -170,7 +170,7 @@ export const buildTopicSchemaBuilderActionsValue = ({
       const topicId = mode === 'edit' ? topic?.id : draft.id?.trim();
 
       if (!topicId) {
-        throw new Error('Hianyzik a topic azonosito a menteshez.');
+        throw new Error('Hiányzik a topic azonosító a mentéshez.');
       }
 
       const values = getPersistedTopicValues(draft);
@@ -219,7 +219,7 @@ export const buildTopicSchemaBuilderActionsValue = ({
       });
 
       enqueueSnackbar(
-        mode === 'edit' ? 'A topic schema modositasai elmentve.' : 'Az uj topic schema elmentve.',
+        mode === 'edit' ? 'A topic séma módosításai elmentve.' : 'Az új topic séma elmentve.',
         {
           key: mode === 'edit' ? 'topic-schema-updated' : 'topic-schema-created',
           preventDuplicate: true,

@@ -44,7 +44,7 @@ const TopicPage = ({ topic }: TopicPageProps) => {
           size="large"
           variant="outlined"
         >
-          Itemek
+          Elemek
         </Button>
 
         <Button

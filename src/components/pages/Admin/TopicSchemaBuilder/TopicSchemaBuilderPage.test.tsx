@@ -258,7 +258,7 @@ describe('TopicSchemaBuilderPage', () => {
     await user.type(screen.getByLabelText('Slug'), 'art');
     await user.type(screen.getByLabelText('Storage prefix'), 'art');
 
-    expect(screen.getByText('A topic metadata jelenleg ervenyes.')).toBeInTheDocument();
+    expect(screen.getByText('A topic metadata jelenleg érvényes.')).toBeInTheDocument();
   });
 
   it('shows a custom unsaved changes dialog when route navigation is blocked', async () => {
@@ -335,7 +335,7 @@ describe('TopicSchemaBuilderPage', () => {
     expect(navigateMock).toHaveBeenCalledWith({
       to: '/admin',
     });
-    expect(enqueueSnackbarMock).toHaveBeenCalledWith('Az uj topic schema elmentve.', {
+    expect(enqueueSnackbarMock).toHaveBeenCalledWith('Az új topic séma elmentve.', {
       key: 'topic-schema-created',
       preventDuplicate: true,
       variant: 'success',
@@ -373,7 +373,7 @@ describe('TopicSchemaBuilderPage', () => {
       params: { topicId: 'art' },
       to: '/admin/$topicId',
     });
-    expect(enqueueSnackbarMock).toHaveBeenCalledWith('A topic schema modositasai elmentve.', {
+    expect(enqueueSnackbarMock).toHaveBeenCalledWith('A topic séma módosításai elmentve.', {
       key: 'topic-schema-updated',
       preventDuplicate: true,
       variant: 'success',

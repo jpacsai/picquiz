@@ -12,11 +12,11 @@ const ItemTopicPageCard = ({ itemCount, topicId }: ItemTopicPageCardProps) => {
   return (
     <TopicPageCard
       icon={<CollectionsBookmarkIcon color="primary" />}
-      title="Itemek"
+      title="Elemek"
       subtitle={`${itemCount} elem`}
     >
       <TopicPageCardAction
-        label="Itemek kezelése"
+        label="Elemek kezelése"
         params={{ topicId }}
         search={{ saved: undefined }}
         to="/$topicId/items"
