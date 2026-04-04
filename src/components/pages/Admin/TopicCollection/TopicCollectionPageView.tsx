@@ -28,6 +28,7 @@ const TopicCollectionPageView = ({
   searchOptions,
   searchQuery,
   searchableFields,
+  totalItemCount,
   topic,
 }: TopicCollectionPageViewProps) => {
   return (
@@ -74,7 +75,7 @@ const TopicCollectionPageView = ({
         }}
       >
         <Typography color="text.secondary" variant="h6">
-          {items.length} elem
+          {totalItemCount} / {items.length} elem
         </Typography>
 
         <Button variant="contained" onClick={onCreateNewItem}>

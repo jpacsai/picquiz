@@ -1,6 +1,6 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { Topic, TopicItem } from '@/types/topics';
 
@@ -9,9 +9,14 @@ import AdminTopicCollectionPage from '../TopicCollectionPage';
 const navigateMock = vi.fn();
 const enqueueSnackbarMock = vi.fn();
 
-vi.mock('@/consts/admin', () => ({
-  ADMIN_TOPIC_COLLECTION_SEARCH_DEBOUNCE_MS: 0,
-}));
+vi.mock('@/consts/admin', async () => {
+  const actual = await vi.importActual('@/consts/admin');
+
+  return {
+    ...actual,
+    ADMIN_TOPIC_COLLECTION_SEARCH_DEBOUNCE_MS: 0,
+  };
+});
 
 vi.mock('@tanstack/react-router', async () => {
   const actual = await vi.importActual('@tanstack/react-router');
@@ -104,8 +109,14 @@ const items: TopicItem[] = [
 
 describe('AdminTopicCollectionPage', () => {
   const getSearchInput = () => screen.getByRole('combobox', { name: 'Keresett érték' });
-  const getDisplayedCount = (count: number) =>
-    screen.getByText(`${count} elem`);
+  const getDisplayedCount = (filteredCount: number, totalCount = items.length) =>
+    screen.getByText(`${totalCount} / ${filteredCount} elem`);
+
+  beforeEach(() => {
+    navigateMock.mockReset();
+    enqueueSnackbarMock.mockReset();
+    window.localStorage.clear();
+  });
 
   it('filters the rendered list by the selected field', async () => {
     const user = userEvent.setup();
@@ -187,6 +198,23 @@ describe('AdminTopicCollectionPage', () => {
       expect(screen.getByText('Mona Lisa')).toBeInTheDocument();
       expect(screen.getByText('Csillagos ég')).toBeInTheDocument();
       expect(screen.getByText('Tavirózsák')).toBeInTheDocument();
+    });
+  });
+
+  it('restores the previously saved filter state on a new mount', async () => {
+    window.localStorage.setItem('picquiz-admin-topic-collection-search-field-art', 'artist');
+    window.localStorage.setItem('picquiz-admin-topic-collection-search-query-art', 'claude');
+
+    render(<AdminTopicCollectionPage items={items} topic={topic} />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('combobox', { name: 'Keresés mező szerint' })).toHaveTextContent(
+        'Alkotó',
+      );
+      expect(getSearchInput()).toHaveValue('claude');
+      expect(getDisplayedCount(1)).toBeInTheDocument();
+      expect(screen.getByText('Tavirózsák')).toBeInTheDocument();
+      expect(screen.queryByText('Mona Lisa')).not.toBeInTheDocument();
     });
   });
 });

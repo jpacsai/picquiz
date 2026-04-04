@@ -10,8 +10,12 @@ import {
   getSearchableTopicFields,
   sortTopicItemsByNewestCreated,
 } from '@/components/pages/Admin/TopicCollection/utils';
-import { ADMIN_TOPIC_COLLECTION_SEARCH_DEBOUNCE_MS } from '@/consts/admin';
+import {
+  ADMIN_TOPIC_COLLECTION_SEARCH_DEBOUNCE_MS,
+  ADMIN_TOPIC_COLLECTION_STORAGE_KEYS,
+} from '@/consts/admin';
 import type { Topic, TopicCollectionSearchField, TopicItem } from '@/types/topics';
+import { getStoredString } from '@/utils/storage';
 
 type UseTopicCollectionPageParams = {
   items: ReadonlyArray<TopicItem>;
@@ -28,9 +32,17 @@ export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollecti
   });
   const searchableFields = useMemo(() => getSearchableTopicFields(topic.fields), [topic.fields]);
   const defaultSearchFieldKey = useMemo(() => getDefaultSearchFieldKey(topic), [topic]);
-  const [searchFieldKey, setSearchFieldKey] = useState(defaultSearchFieldKey);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+  const searchFieldStorageKey: string = ADMIN_TOPIC_COLLECTION_STORAGE_KEYS.searchFieldKey(
+    topic.id,
+  );
+  const searchQueryStorageKey: string = ADMIN_TOPIC_COLLECTION_STORAGE_KEYS.searchQuery(topic.id);
+  const [searchFieldKey, setSearchFieldKey] = useState<string>(() =>
+    getStoredString(searchFieldStorageKey),
+  );
+  const [searchQuery, setSearchQuery] = useState<string>(() =>
+    getStoredString(searchQueryStorageKey),
+  );
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>('');
   const activeSearchFieldKey = searchableFields.some((field) => field.key === searchFieldKey)
     ? searchFieldKey
     : defaultSearchFieldKey;
@@ -60,6 +72,14 @@ export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollecti
       window.clearTimeout(timeoutId);
     };
   }, [searchQuery]);
+
+  useEffect(() => {
+    window.localStorage.setItem(searchFieldStorageKey, activeSearchFieldKey);
+  }, [activeSearchFieldKey, searchFieldStorageKey]);
+
+  useEffect(() => {
+    window.localStorage.setItem(searchQueryStorageKey, searchQuery);
+  }, [searchQuery, searchQueryStorageKey]);
 
   const filteredItems = useMemo(
     () =>
@@ -115,6 +135,7 @@ export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollecti
     searchOptions,
     searchQuery,
     searchableFields,
+    totalItemCount: liveItems.length,
     topic,
   };
 };
