@@ -91,7 +91,7 @@ describe('TopicSchemaBuilderPage', () => {
     expect(screen.getByLabelText('Topic ID')).toHaveValue('art');
     expect(screen.getByLabelText('Label')).toHaveValue('Muveszet');
     expect(screen.getByLabelText('Topic ID')).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Valtozasok mentese' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Változások mentése' })).toBeDisabled();
   });
 
   it('prefills a duplicated draft in create mode from a source topic', () => {
@@ -258,7 +258,7 @@ describe('TopicSchemaBuilderPage', () => {
     await user.type(screen.getByLabelText('Slug'), 'art');
     await user.type(screen.getByLabelText('Storage prefix'), 'art');
 
-    expect(screen.getByText('A topic metadata jelenleg érvényes.')).toBeInTheDocument();
+    expect(screen.getByText('A topik metadata jelenleg érvényes.')).toBeInTheDocument();
   });
 
   it('shows a custom unsaved changes dialog when route navigation is blocked', async () => {
@@ -312,7 +312,7 @@ describe('TopicSchemaBuilderPage', () => {
     await user.type(screen.getByLabelText('Label'), 'Muveszet');
     await user.type(screen.getByLabelText('Slug'), 'art');
     await user.type(screen.getByLabelText('Storage prefix'), 'art');
-    await user.click(screen.getByRole('button', { name: 'Schema letrehozasa' }));
+    await user.click(screen.getByRole('button', { name: 'Schema létrehozása' }));
 
     await waitFor(() => {
       expect(createTopicMock).toHaveBeenCalledWith({
@@ -333,7 +333,8 @@ describe('TopicSchemaBuilderPage', () => {
       queryKey: QUERY_KEYS.TOPICS.byId('art'),
     });
     expect(navigateMock).toHaveBeenCalledWith({
-      to: '/admin',
+      params: { topicId: 'art' },
+      to: '/$topicId',
     });
     expect(enqueueSnackbarMock).toHaveBeenCalledWith('Az új topic séma elmentve.', {
       key: 'topic-schema-created',
@@ -349,7 +350,7 @@ describe('TopicSchemaBuilderPage', () => {
 
     await user.clear(screen.getByLabelText('Label'));
     await user.type(screen.getByLabelText('Label'), 'Muveszet 2');
-    await user.click(screen.getByRole('button', { name: 'Valtozasok mentese' }));
+    await user.click(screen.getByRole('button', { name: 'Változások mentése' }));
 
     await waitFor(() => {
       expect(updateTopicMock).toHaveBeenCalledWith({
@@ -371,7 +372,7 @@ describe('TopicSchemaBuilderPage', () => {
     });
     expect(navigateMock).toHaveBeenCalledWith({
       params: { topicId: 'art' },
-      to: '/admin/$topicId',
+      to: '/$topicId',
     });
     expect(enqueueSnackbarMock).toHaveBeenCalledWith('A topic séma módosításai elmentve.', {
       key: 'topic-schema-updated',
@@ -411,7 +412,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole('button', { name: 'Schema letrehozasa' }));
+    await user.click(screen.getByRole('button', { name: 'Schema létrehozása' }));
 
     await waitFor(() => {
       expect(createTopicMock).toHaveBeenCalledWith({
@@ -463,7 +464,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole('button', { name: 'Schema letrehozasa' }));
+    await user.click(screen.getByRole('button', { name: 'Schema létrehozása' }));
 
     await waitFor(() => {
       expect(createTopicMock).toHaveBeenCalledWith({
@@ -544,7 +545,7 @@ describe('TopicSchemaBuilderPage', () => {
       expect(screen.queryByRole('dialog', { name: 'Field szerkesztes' })).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole('button', { name: 'Schema letrehozasa' }));
+    await user.click(screen.getByRole('button', { name: 'Schema létrehozása' }));
 
     await waitFor(() => {
       expect(createTopicMock).toHaveBeenCalledWith({
@@ -579,7 +580,7 @@ describe('TopicSchemaBuilderPage', () => {
     await user.type(screen.getByLabelText('Label'), 'Muveszet');
     await user.type(screen.getByLabelText('Slug'), 'art');
     await user.type(screen.getByLabelText('Storage prefix'), 'art');
-    await user.click(screen.getByRole('button', { name: 'Schema letrehozasa' }));
+    await user.click(screen.getByRole('button', { name: 'Schema létrehozása' }));
 
     await waitFor(() => {
       expect(enqueueSnackbarMock).toHaveBeenCalledWith('Boom', {

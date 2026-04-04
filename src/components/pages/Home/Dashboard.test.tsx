@@ -112,7 +112,7 @@ describe('Dashboard integration', () => {
 
     const { router } = await renderDashboard();
 
-    await user.click(screen.getByRole('button', { name: 'Új topic' }));
+    await user.click(screen.getByRole('button', { name: 'Új topik' }));
     await user.click(screen.getByRole('button', { name: 'Létrehozás folytatása' }));
 
     expect(await screen.findByText('New topic page')).toBeInTheDocument();
@@ -127,7 +127,7 @@ describe('Dashboard integration', () => {
 
     const { router } = await renderDashboard();
 
-    await user.click(screen.getByRole('button', { name: 'Új topic' }));
+    await user.click(screen.getByRole('button', { name: 'Új topik' }));
     await user.click(screen.getByRole('radio', { name: 'Meglévő séma duplikálása' }));
     await user.click(screen.getByRole('combobox'));
     await user.click(screen.getByRole('option', { name: 'Művészet' }));

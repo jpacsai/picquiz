@@ -119,7 +119,7 @@ describe('TopicItemForm saving', () => {
 
     expect(navigateMock).toHaveBeenCalledWith({
       params: { topicId: 'art' },
-      to: '/admin/$topicId/items/success',
+      to: '/$topicId/items/success',
     });
   });
 
@@ -806,7 +806,7 @@ describe('TopicItemForm saving', () => {
     expect(navigateMock).toHaveBeenCalledWith({
       params: { topicId: 'art' },
       search: { saved: 'edited' },
-      to: '/admin/$topicId/items',
+      to: '/$topicId/items',
     });
   });
 

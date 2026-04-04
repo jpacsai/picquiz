@@ -58,6 +58,7 @@ describe('AdminPage', () => {
     await user.click(screen.getByRole('button', { name: 'Új séma' }));
 
     expect(navigateMock).toHaveBeenCalledWith({
+      search: { sourceTopicId: undefined },
       to: '/newTopic',
     });
   });
@@ -76,6 +77,7 @@ describe('AdminPage', () => {
     await user.click(screen.getByRole('button', { name: 'Létrehozás folytatása' }));
 
     expect(navigateMock).toHaveBeenCalledWith({
+      search: { sourceTopicId: undefined },
       to: '/newTopic',
     });
   });

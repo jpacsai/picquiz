@@ -250,7 +250,7 @@ describe('useTopicItemForm', () => {
     expect(navigateMock).toHaveBeenCalledWith({
       search: { saved: 'edited' },
       params: { topicId: 'art' },
-      to: '/admin/$topicId/items',
+      to: '/$topicId/items',
     });
   });
 
