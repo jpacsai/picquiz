@@ -28,11 +28,11 @@ const FieldDialogQuizSection = ({
   const quizDistractorType = field.quiz?.enabled ? (field.quiz.distractor?.type ?? '') : '';
   const availableDistractorOptions =
     field.type === 'number' || field.type === 'year'
-        ? [{ label: 'Numeric range', value: 'numericRange' as const }]
-        : (field.type === 'string' || field.type === 'yearRange') &&
-            availableDistractorSourceFieldOptions.length > 0
-          ? [{ label: 'Derived range', value: 'derivedRange' as const }]
-          : [];
+      ? [{ label: 'Numeric range', value: 'numericRange' as const }]
+      : (field.type === 'string' || field.type === 'yearRange') &&
+          availableDistractorSourceFieldOptions.length > 0
+        ? [{ label: 'Derived range', value: 'derivedRange' as const }]
+        : [];
   const isDistractorTypeDisabled = availableDistractorOptions.length === 0;
 
   if (field.type === 'imageUpload') {
@@ -144,7 +144,7 @@ const FieldDialogQuizSection = ({
               fullWidth
               margin="normal"
             >
-              <MenuItem value="">Default topic values</MenuItem>
+              <MenuItem value="">Alapértelmezett topik értékek</MenuItem>
               {availableDistractorOptions.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
@@ -161,7 +161,7 @@ const FieldDialogQuizSection = ({
               error={errorsByPath.has(`${pathPrefix}.quiz.distractor.sourceField`)}
               helperText={
                 errorsByPath.get(`${pathPrefix}.quiz.distractor.sourceField`) ??
-                'Valaszd ki azt a number mezot, amibol a distractorok kepzodnek.'
+                'Válaszd ki azt a szám típusú mezőt, amiből a distractorok képződnek.'
               }
               onChange={(event) => {
                 const nextValue = event.target.value;
@@ -298,8 +298,7 @@ const FieldDialogQuizSection = ({
                             ...currentField.quiz,
                             distractor: {
                               ...currentField.quiz.distractor,
-                              maxValue:
-                                nextValue === 'todayYear' ? 'todayYear' : Number(nextValue),
+                              maxValue: nextValue === 'todayYear' ? 'todayYear' : Number(nextValue),
                             },
                           }
                         : currentField.quiz,

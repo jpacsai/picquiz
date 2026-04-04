@@ -1,5 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { useState } from 'react';
 
 import CreateSchemaDialog from '@/components/pages/Admin/CreateSchemaDialog';
@@ -15,13 +15,14 @@ const Dashboard = ({ topics }: DashboardProps) => {
 
   return (
     <Box sx={{ display: 'grid', gap: 2 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+        <Typography variant="h1">Topikok</Typography>
         <Button
           startIcon={<AddIcon />}
           variant="contained"
           onClick={() => setIsCreateSchemaDialogOpen(true)}
         >
-          Új topic
+          Új topik
         </Button>
       </Box>
 

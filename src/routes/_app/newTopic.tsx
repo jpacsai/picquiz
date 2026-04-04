@@ -31,7 +31,7 @@ export const Route = createFileRoute(path)({
 
     return {
       sourceTopic,
-      title: sourceTopic ? `${sourceTopic.label} séma másolása` : 'Új topic séma',
+      title: sourceTopic ? `${sourceTopic.label} séma másolása` : 'Új topik séma',
     };
   },
   validateSearch: parseSearch,

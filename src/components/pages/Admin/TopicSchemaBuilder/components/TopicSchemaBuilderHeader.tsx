@@ -13,12 +13,16 @@ const TopicSchemaBuilderHeader = () => {
   return (
     <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={2}>
       <Stack direction="row" gap={1.5}>
-        <Button startIcon={<ArrowBackIcon />} variant="outlined" onClick={() => void handleNavigateBack()}>
-          {mode === 'edit' && topic ? 'Vissza a topichoz' : 'Vissza az adminhoz'}
+        <Button
+          startIcon={<ArrowBackIcon />}
+          variant="outlined"
+          onClick={() => void handleNavigateBack()}
+        >
+          {mode === 'edit' && topic ? 'Vissza a topikhoz' : 'Vissza az adminhoz'}
         </Button>
 
         <Button variant="contained" onClick={handleSave} disabled={!canSave}>
-          {isSaving ? 'Mentes...' : mode === 'create' ? 'Schema letrehozasa' : 'Valtozasok mentese'}
+          {isSaving ? 'Mentés...' : mode === 'create' ? 'Schema létrehozása' : 'Változások mentése'}
         </Button>
       </Stack>
     </Stack>
