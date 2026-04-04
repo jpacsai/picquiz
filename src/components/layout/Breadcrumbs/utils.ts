@@ -65,6 +65,29 @@ const getTopicItems = (context: BreadcrumbRouteContext, currentLabel?: string): 
   return [HOME_BREADCRUMB_ITEM, topicItem, { label: currentLabel }];
 };
 
+const getTopicItemsWithItems = (
+  context: BreadcrumbRouteContext,
+  currentLabel?: string,
+): BreadcrumbItem[] => {
+  const topicItem = getTopicItem(context);
+
+  if (!topicItem || !context.topicId) {
+    return currentLabel
+      ? [HOME_BREADCRUMB_ITEM, { label: 'Elemek' }, { label: currentLabel }]
+      : [HOME_BREADCRUMB_ITEM, { label: 'Elemek' }];
+  }
+
+  const itemsItem: BreadcrumbItem = {
+    label: 'Elemek',
+    params: { topicId: context.topicId },
+    to: '/$topicId/items',
+  };
+
+  return currentLabel
+    ? [HOME_BREADCRUMB_ITEM, topicItem, itemsItem, { label: currentLabel }]
+    : [HOME_BREADCRUMB_ITEM, topicItem, itemsItem];
+};
+
 export const getItems = (matches: ReturnType<typeof useMatches>): BreadcrumbItem[] => {
   const currentMatch = matches.at(-1);
 
@@ -96,7 +119,7 @@ export const getItems = (matches: ReturnType<typeof useMatches>): BreadcrumbItem
     case '/_app/$topicId/items/new':
       return getTopicItems(context, 'Új elem');
     case '/_app/$topicId/items/$itemId/edit':
-      return getTopicItems(context, 'Szerkesztés');
+      return getTopicItemsWithItems(context, 'Szerkesztés');
     case '/_app/$topicId/items/success':
       return getTopicItems(context, 'Sikeres mentés');
     case '/_app/$topicId/quiz-config':
