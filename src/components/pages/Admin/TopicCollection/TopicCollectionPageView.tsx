@@ -78,7 +78,7 @@ const TopicCollectionPageView = ({
         </Typography>
 
         <Button variant="contained" onClick={onCreateNewItem}>
-          Új item feltöltése
+          Új elem feltöltése
         </Button>
       </Box>
 
