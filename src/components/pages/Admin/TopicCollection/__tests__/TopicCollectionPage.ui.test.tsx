@@ -2,6 +2,7 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { ADMIN_TOPIC_COLLECTION_ITEMS_PER_PAGE } from '@/consts/admin';
 import type { Topic, TopicItem } from '@/types/topics';
 
 import AdminTopicCollectionPage from '../TopicCollectionPage';
@@ -215,6 +216,47 @@ describe('AdminTopicCollectionPage', () => {
       expect(getDisplayedCount(1)).toBeInTheDocument();
       expect(screen.getByText('Tavirózsák')).toBeInTheDocument();
       expect(screen.queryByText('Mona Lisa')).not.toBeInTheDocument();
+    });
+  });
+
+  it('shows the newest items first by default', () => {
+    render(<AdminTopicCollectionPage items={items} topic={topic} />);
+
+    const renderedTitles = screen
+      .getAllByText(/Mona Lisa|Csillagos ég|Tavirózsák/)
+      .map((element) => element.textContent);
+
+    expect(renderedTitles).toEqual(['Tavirózsák', 'Csillagos ég', 'Mona Lisa']);
+  });
+
+  it('paginates the filtered list with the configured page size', async () => {
+    const user = userEvent.setup();
+    const manyItems: TopicItem[] = Array.from(
+      { length: ADMIN_TOPIC_COLLECTION_ITEMS_PER_PAGE + 5 },
+      (_, index) => ({
+        artist: `Artist ${index + 1}`,
+        created_at: { seconds: index + 1 },
+        id: String(index + 1),
+        title: `Item ${index + 1}`,
+        year: 1900 + index,
+      }),
+    );
+
+    render(<AdminTopicCollectionPage items={manyItems} topic={topic} />);
+
+    expect(screen.getByText(`Item ${ADMIN_TOPIC_COLLECTION_ITEMS_PER_PAGE + 5}`)).toBeInTheDocument();
+    expect(screen.getByText('Item 6')).toBeInTheDocument();
+    expect(screen.queryByText('Item 5')).not.toBeInTheDocument();
+    expect(screen.getByTestId('topic-collection-pagination')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '2. oldal' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Item 5')).toBeInTheDocument();
+      expect(screen.getByText('Item 1')).toBeInTheDocument();
+      expect(
+        screen.queryByText(`Item ${ADMIN_TOPIC_COLLECTION_ITEMS_PER_PAGE + 5}`),
+      ).not.toBeInTheDocument();
     });
   });
 });

@@ -1,5 +1,5 @@
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import { Card, Stack } from '@mui/material';
+import { Card, Pagination, Stack } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
@@ -18,18 +18,22 @@ type TopicCollectionPageViewProps = Omit<UseTopicCollectionPageResult, 'searchab
 };
 
 const TopicCollectionPageView = ({
+  currentPage,
   items,
   noResultsQuery,
   onCreateNewItem,
+  onPageChange,
   onResetSearch,
   onSearchFieldChange,
   onSearchQueryChange,
+  pageCount,
   searchFieldKey,
   searchOptions,
   searchQuery,
   searchableFields,
   totalItemCount,
   topic,
+  visibleItemCount,
 }: TopicCollectionPageViewProps) => {
   return (
     <Box sx={{ display: 'grid', gap: 3 }}>
@@ -75,7 +79,7 @@ const TopicCollectionPageView = ({
         }}
       >
         <Typography color="text.secondary" variant="h6">
-          {totalItemCount} / {items.length} elem
+          {totalItemCount} / {visibleItemCount} elem
         </Typography>
 
         <Button variant="contained" onClick={onCreateNewItem}>
@@ -84,6 +88,35 @@ const TopicCollectionPageView = ({
       </Box>
 
       <TopicItemSection noResultsQuery={noResultsQuery} items={items} topic={topic} />
+
+      {pageCount > 1 ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Pagination
+            color="primary"
+            count={pageCount}
+            data-testid="topic-collection-pagination"
+            getItemAriaLabel={(type, page, selected) => {
+              if (type === 'page') {
+                return selected ? `${page}. oldal, aktuális oldal` : `${page}. oldal`;
+              }
+
+              if (type === 'previous') {
+                return 'Előző oldal';
+              }
+
+              if (type === 'next') {
+                return 'Következő oldal';
+              }
+
+              return 'Pagination';
+            }}
+            page={currentPage}
+            onChange={(_event, nextPage) => {
+              onPageChange(nextPage);
+            }}
+          />
+        </Box>
+      ) : null}
     </Box>
   );
 };

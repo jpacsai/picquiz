@@ -11,6 +11,7 @@ import {
   sortTopicItemsByNewestCreated,
 } from '@/components/pages/Admin/TopicCollection/utils';
 import {
+  ADMIN_TOPIC_COLLECTION_ITEMS_PER_PAGE,
   ADMIN_TOPIC_COLLECTION_SEARCH_DEBOUNCE_MS,
   ADMIN_TOPIC_COLLECTION_STORAGE_KEYS,
 } from '@/consts/admin';
@@ -43,6 +44,7 @@ export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollecti
     getStoredString(searchQueryStorageKey),
   );
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>('');
+  const [page, setPage] = useState<number>(1);
   const activeSearchFieldKey = searchableFields.some((field) => field.key === searchFieldKey)
     ? searchFieldKey
     : defaultSearchFieldKey;
@@ -91,6 +93,13 @@ export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollecti
     [activeSearchFieldKey, debouncedSearchQuery, liveItems],
   );
   const sortedItems = useMemo(() => sortTopicItemsByNewestCreated(filteredItems), [filteredItems]);
+  const pageCount = Math.ceil(sortedItems.length / ADMIN_TOPIC_COLLECTION_ITEMS_PER_PAGE);
+  const currentPage = Math.min(page, Math.max(pageCount, 1));
+  const paginatedItems = useMemo(() => {
+    const startIndex = (currentPage - 1) * ADMIN_TOPIC_COLLECTION_ITEMS_PER_PAGE;
+
+    return sortedItems.slice(startIndex, startIndex + ADMIN_TOPIC_COLLECTION_ITEMS_PER_PAGE);
+  }, [currentPage, sortedItems]);
 
   useEffect(() => {
     if (saved !== 'edited') {
@@ -112,7 +121,8 @@ export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollecti
   }, [enqueueSnackbar, navigate, saved, topic.id]);
 
   return {
-    items: sortedItems,
+    currentPage,
+    items: paginatedItems,
     noResultsQuery:
       liveItems.length > 0 && sortedItems.length === 0 ? debouncedSearchQuery.trim() : undefined,
     onCreateNewItem: () => {
@@ -121,20 +131,30 @@ export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollecti
         params: { topicId: topic.id },
       });
     },
+    onPageChange: (nextPage: number) => {
+      setPage(nextPage);
+    },
     onSearchFieldChange: (newValue: string) => {
+      setPage(1);
       setSearchFieldKey(newValue);
       setSearchQuery('');
     },
-    onSearchQueryChange: setSearchQuery,
+    onSearchQueryChange: (nextSearchQuery: string) => {
+      setPage(1);
+      setSearchQuery(nextSearchQuery);
+    },
     onResetSearch: () => {
+      setPage(1);
       setSearchFieldKey(defaultSearchFieldKey);
       setSearchQuery('');
       setDebouncedSearchQuery('');
     },
+    pageCount,
     searchFieldKey: activeSearchFieldKey,
     searchOptions,
     searchQuery,
     searchableFields,
+    visibleItemCount: sortedItems.length,
     totalItemCount: liveItems.length,
     topic,
   };
