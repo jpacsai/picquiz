@@ -128,10 +128,12 @@ export const getDefaultSearchFieldKey = (topic: Topic) =>
   getSearchableTopicFields(topic.fields)[0]?.key ?? '';
 
 export const filterTopicItems = ({
+  fieldType,
   fieldKey,
   items,
   query,
 }: {
+  fieldType?: TopicCollectionSearchField['type'];
   fieldKey: string;
   items: ReadonlyArray<TopicItem>;
   query: string;
@@ -142,5 +144,13 @@ export const filterTopicItems = ({
     return items;
   }
 
-  return items.filter((item) => getSearchValue(item[fieldKey]).includes(normalizedQuery));
+  return items.filter((item) => {
+    const value = item[fieldKey];
+
+    if (fieldType === 'boolean' && normalizedQuery === 'hamis' && typeof value === 'undefined') {
+      return true;
+    }
+
+    return getSearchValue(value).includes(normalizedQuery);
+  });
 };

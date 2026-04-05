@@ -118,7 +118,6 @@ const items: TopicItem[] = [
     artist: 'Claude Monet',
     created_at: { seconds: 300 },
     id: '3',
-    published: true,
     style: 'Impresszionizmus',
     title: 'Tavirózsák',
     year: 1906,
@@ -208,9 +207,9 @@ describe('AdminTopicCollectionPage', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Csillagos ég')).toBeInTheDocument();
+      expect(screen.getByText('Tavirózsák')).toBeInTheDocument();
       expect(screen.queryByText('Mona Lisa')).not.toBeInTheDocument();
-      expect(screen.queryByText('Tavirózsák')).not.toBeInTheDocument();
-      expect(getDisplayedCount(1)).toBeInTheDocument();
+      expect(getDisplayedCount(2)).toBeInTheDocument();
     });
   });
 

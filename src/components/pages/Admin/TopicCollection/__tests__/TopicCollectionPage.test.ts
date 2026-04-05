@@ -163,6 +163,21 @@ describe('TopicCollection utils', () => {
     ).toEqual(['1', '2']);
   });
 
+  it('treats undefined boolean values as hamis during filtering', () => {
+    expect(
+      filterTopicItems({
+        fieldKey: 'published',
+        fieldType: 'boolean',
+        items: [
+          { id: '1', published: true },
+          { id: '2', published: false },
+          { id: '3' },
+        ],
+        query: 'hamis',
+      }).map((item) => item.id),
+    ).toEqual(['2', '3']);
+  });
+
   it('returns all items when the query or field is missing', () => {
     const items = [
       { artist: 'Leonardo da Vinci', id: '1' },

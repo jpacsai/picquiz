@@ -56,6 +56,7 @@ export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollecti
   const activeSearchFieldKey = searchableFields.some((field) => field.key === searchFieldKey)
     ? searchFieldKey
     : defaultSearchFieldKey;
+  const activeSearchField = searchableFields.find((field) => field.key === activeSearchFieldKey);
   const activeSortFieldKey =
     sortFieldKey === 'created_at' || sortableFields.some((field) => field.key === sortFieldKey)
       ? sortFieldKey
@@ -104,11 +105,12 @@ export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollecti
   const filteredItems = useMemo(
     () =>
       filterTopicItems({
+        fieldType: activeSearchField?.type,
         fieldKey: activeSearchFieldKey,
         items: liveItems,
         query: debouncedSearchQuery,
       }),
-    [activeSearchFieldKey, debouncedSearchQuery, liveItems],
+    [activeSearchField?.type, activeSearchFieldKey, debouncedSearchQuery, liveItems],
   );
   const sortedItems = useMemo(
     () =>
