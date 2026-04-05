@@ -17,6 +17,7 @@ import {
   ADMIN_TOPIC_COLLECTION_STORAGE_KEYS,
 } from '@/consts/admin';
 import type { Topic, TopicCollectionSearchField, TopicCollectionSortField, TopicItem } from '@/types/topics';
+import { getStoredNumber } from '@/utils/quiz';
 import { getStoredString } from '@/utils/storage';
 
 const FILTER_SORT_LOADER_MIN_DURATION_MS = 500;
@@ -38,6 +39,7 @@ export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollecti
   const searchableFields = useMemo(() => getSearchableTopicFields(topic.fields), [topic.fields]);
   const sortableFields = useMemo(() => getSortableTopicFields(topic.fields), [topic.fields]);
   const defaultSearchFieldKey = useMemo(() => getDefaultSearchFieldKey(topic), [topic]);
+  const pageStorageKey: string = ADMIN_TOPIC_COLLECTION_STORAGE_KEYS.page(topic.id);
   const searchFieldStorageKey: string = ADMIN_TOPIC_COLLECTION_STORAGE_KEYS.searchFieldKey(
     topic.id,
   );
@@ -56,7 +58,7 @@ export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollecti
   const [sortFieldKey, setSortFieldKey] = useState<string>(() => getStoredString(sortFieldStorageKey));
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>('');
   const [isInteractionLoading, setIsInteractionLoading] = useState<boolean>(false);
-  const [page, setPage] = useState<number>(1);
+  const [page, setPage] = useState<number>(() => getStoredNumber(pageStorageKey, 1));
   const activeSearchFieldKey = searchableFields.some((field) => field.key === searchFieldKey)
     ? searchFieldKey
     : defaultSearchFieldKey;
@@ -132,6 +134,10 @@ export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollecti
 
     return sortedItems.slice(startIndex, startIndex + ADMIN_TOPIC_COLLECTION_ITEMS_PER_PAGE);
   }, [currentPage, sortedItems]);
+
+  useEffect(() => {
+    window.localStorage.setItem(pageStorageKey, String(currentPage));
+  }, [currentPage, pageStorageKey]);
 
   useEffect(() => {
     if (saved !== 'edited') {

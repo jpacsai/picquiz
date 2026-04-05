@@ -112,7 +112,7 @@ const AdminTopicItemCardView = ({
         imageAlt={mobileImageAlt}
         imageSrc={mobileImageUrl}
         isLoading={showMobileImagePreviewLoader}
-        isMobileScreen
+        isMobileScreen={isMobileScreen}
         onClose={onCloseMobileImagePreview}
         open={isMobileImagePreviewOpen}
         onImageLoad={onMobileImageLoad}

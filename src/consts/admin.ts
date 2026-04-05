@@ -2,6 +2,7 @@ export const ADMIN_TOPIC_COLLECTION_SEARCH_DEBOUNCE_MS = 1000;
 export const ADMIN_TOPIC_COLLECTION_ITEMS_PER_PAGE = 24;
 
 export const ADMIN_TOPIC_COLLECTION_STORAGE_KEYS = {
+  page: (topicId: string) => `picquiz-admin-topic-collection-page-${topicId}`,
   searchFieldKey: (topicId: string) => `picquiz-admin-topic-collection-search-field-${topicId}`,
   searchQuery: (topicId: string) => `picquiz-admin-topic-collection-search-query-${topicId}`,
   sortDirection: (topicId: string) => `picquiz-admin-topic-collection-sort-direction-${topicId}`,

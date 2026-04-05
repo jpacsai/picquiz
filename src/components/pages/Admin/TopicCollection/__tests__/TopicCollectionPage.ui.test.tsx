@@ -321,6 +321,31 @@ describe('AdminTopicCollectionPage', () => {
     });
   });
 
+  it('restores the previously saved pagination state on a new mount', async () => {
+    const manyItems: TopicItem[] = Array.from(
+      { length: ADMIN_TOPIC_COLLECTION_ITEMS_PER_PAGE + 5 },
+      (_, index) => ({
+        artist: `Artist ${index + 1}`,
+        created_at: { seconds: index + 1 },
+        id: String(index + 1),
+        title: `Item ${index + 1}`,
+        year: 1900 + index,
+      }),
+    );
+
+    window.localStorage.setItem('picquiz-admin-topic-collection-page-art', '2');
+
+    render(<AdminTopicCollectionPage items={manyItems} topic={topic} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Item 5')).toBeInTheDocument();
+      expect(screen.getByText('Item 1')).toBeInTheDocument();
+      expect(
+        screen.queryByText(`Item ${ADMIN_TOPIC_COLLECTION_ITEMS_PER_PAGE + 5}`),
+      ).not.toBeInTheDocument();
+    });
+  });
+
   it('paginates the filtered list with the configured page size', async () => {
     const user = userEvent.setup();
     const manyItems: TopicItem[] = Array.from(
