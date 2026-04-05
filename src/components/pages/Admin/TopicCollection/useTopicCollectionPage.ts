@@ -19,7 +19,7 @@ import {
 import type { Topic, TopicCollectionSearchField, TopicCollectionSortField, TopicItem } from '@/types/topics';
 import { getStoredString } from '@/utils/storage';
 
-const FILTER_SORT_LOADER_MIN_DURATION_MS = 150;
+const FILTER_SORT_LOADER_MIN_DURATION_MS = 500;
 
 type UseTopicCollectionPageParams = {
   items: ReadonlyArray<TopicItem>;
