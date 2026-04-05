@@ -37,7 +37,7 @@ describe('TopicCollection utils', () => {
     ).toEqual(['dated', 'missing']);
   });
 
-  it('returns searchable topic fields only for visible quiz-enabled fields', () => {
+  it('returns searchable topic fields only for visible supported fields', () => {
     const topic: Topic = {
       fields: [
         {
@@ -78,6 +78,7 @@ describe('TopicCollection utils', () => {
 
     expect(getSearchableTopicFields(topic.fields).map((field) => field.key)).toEqual([
       'artist',
+      'year',
       'style',
     ]);
     expect(getDefaultSearchFieldKey(topic)).toBe('artist');
