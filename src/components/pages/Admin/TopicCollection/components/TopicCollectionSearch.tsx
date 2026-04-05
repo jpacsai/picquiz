@@ -1,14 +1,19 @@
 import { Autocomplete, Box, MenuItem, TextField } from '@mui/material';
 
-import type { TopicCollectionSearchField } from '@/types/topics';
+import type { TopicCollectionSearchField, TopicCollectionSortField } from '@/types/topics';
 
 type TopicCollectionSearchProps = {
   searchFieldKey: string;
   searchableFields: readonly TopicCollectionSearchField[];
   searchOptions: readonly string[];
   searchQuery: string;
+  sortDirection: 'asc' | 'desc';
+  sortFieldKey: string;
+  sortableFields: readonly TopicCollectionSortField[];
   onSearchFieldChange: (value: string) => void;
   onSearchQueryChange: (value: string) => void;
+  onSortDirectionChange: (value: 'asc' | 'desc') => void;
+  onSortFieldChange: (value: string) => void;
 };
 
 const TopicCollectionSearch = ({
@@ -16,8 +21,13 @@ const TopicCollectionSearch = ({
   searchableFields,
   searchOptions,
   searchQuery,
+  sortDirection,
+  sortFieldKey,
+  sortableFields,
   onSearchFieldChange,
   onSearchQueryChange,
+  onSortDirectionChange,
+  onSortFieldChange,
 }: TopicCollectionSearchProps) => {
   const activeSearchField = searchableFields.find((field) => field.key === searchFieldKey);
   const isBooleanSearchField = activeSearchField?.type === 'boolean';
@@ -42,7 +52,7 @@ const TopicCollectionSearch = ({
         flex: 1,
         gap: 2,
         gridTemplateColumns: {
-          md: 'minmax(220px, 280px) minmax(240px, 1fr)',
+          md: 'minmax(220px, 280px) minmax(240px, 1fr) minmax(180px, 220px) minmax(220px, 280px)',
           xs: '1fr',
         },
       }}
@@ -102,6 +112,34 @@ const TopicCollectionSearch = ({
           )}
         />
       )}
+
+      <TextField
+        select
+        label="Rendezés mező szerint"
+        size="small"
+        sx={selectFieldSx}
+        value={sortFieldKey}
+        onChange={(event) => onSortFieldChange(event.target.value)}
+      >
+        <MenuItem value="created_at">Létrehozva</MenuItem>
+        {sortableFields.map((field) => (
+          <MenuItem key={field.key} value={field.key}>
+            {field.label}
+          </MenuItem>
+        ))}
+      </TextField>
+
+      <TextField
+        select
+        label="Rendezés iránya"
+        size="small"
+        sx={selectFieldSx}
+        value={sortDirection}
+        onChange={(event) => onSortDirectionChange(event.target.value as 'asc' | 'desc')}
+      >
+        <MenuItem value="asc">Növekvő</MenuItem>
+        <MenuItem value="desc">Csökkenő</MenuItem>
+      </TextField>
     </Box>
   );
 };

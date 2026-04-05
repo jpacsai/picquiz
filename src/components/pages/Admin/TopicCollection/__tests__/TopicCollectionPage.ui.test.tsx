@@ -82,6 +82,12 @@ const topic: Topic = {
       quiz: { enabled: true, prompt: 'Melyik ev?' },
       type: 'number',
     },
+    {
+      key: 'style',
+      label: 'Stílus',
+      options: ['Impresszionizmus', 'Reneszánsz', 'Posztimpresszionizmus'],
+      type: 'select',
+    },
   ],
   id: 'art',
   label: 'Műalkotások',
@@ -95,6 +101,7 @@ const items: TopicItem[] = [
     created_at: { seconds: 100 },
     id: '1',
     published: true,
+    style: 'Reneszánsz',
     title: 'Mona Lisa',
     year: 1503,
   },
@@ -103,6 +110,7 @@ const items: TopicItem[] = [
     created_at: { seconds: 200 },
     id: '2',
     published: false,
+    style: 'Posztimpresszionizmus',
     title: 'Csillagos ég',
     year: 1889,
   },
@@ -111,6 +119,7 @@ const items: TopicItem[] = [
     created_at: { seconds: 300 },
     id: '3',
     published: true,
+    style: 'Impresszionizmus',
     title: 'Tavirózsák',
     year: 1906,
   },
@@ -162,6 +171,21 @@ describe('AdminTopicCollectionPage', () => {
     expect(screen.getByRole('option', { name: 'Cím' })).toBeInTheDocument();
     expect(screen.getByRole('option', { name: 'Alkotó' })).toBeInTheDocument();
     expect(screen.getByRole('option', { name: 'Publikált' })).toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: 'Év' })).not.toBeInTheDocument();
+  });
+
+  it('lists only supported visible fields in the sort selector', async () => {
+    const user = userEvent.setup();
+
+    render(<AdminTopicCollectionPage items={items} topic={topic} />);
+
+    await user.click(screen.getByRole('combobox', { name: 'Rendezés mező szerint' }));
+
+    expect(screen.getByRole('option', { name: 'Létrehozva' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Cím' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Alkotó' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Stílus' })).toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: 'Publikált' })).not.toBeInTheDocument();
     expect(screen.queryByRole('option', { name: 'Év' })).not.toBeInTheDocument();
   });
 
@@ -261,6 +285,41 @@ describe('AdminTopicCollectionPage', () => {
       .map((element) => element.textContent);
 
     expect(renderedTitles).toEqual(['Tavirózsák', 'Csillagos ég', 'Mona Lisa']);
+  });
+
+  it('sorts the rendered list by the selected field and direction', async () => {
+    const user = userEvent.setup();
+
+    render(<AdminTopicCollectionPage items={items} topic={topic} />);
+
+    await user.click(screen.getByRole('combobox', { name: 'Rendezés mező szerint' }));
+    await user.click(screen.getByRole('option', { name: 'Alkotó' }));
+    await user.click(screen.getByRole('combobox', { name: 'Rendezés iránya' }));
+    await user.click(screen.getByRole('option', { name: 'Növekvő' }));
+
+    await waitFor(() => {
+      const renderedTitles = screen
+        .getAllByText(/Mona Lisa|Csillagos ég|Tavirózsák/)
+        .map((element) => element.textContent);
+
+      expect(renderedTitles).toEqual(['Tavirózsák', 'Mona Lisa', 'Csillagos ég']);
+    });
+  });
+
+  it('restores the previously saved sort state on a new mount', async () => {
+    window.localStorage.setItem('picquiz-admin-topic-collection-sort-direction-art', 'asc');
+    window.localStorage.setItem('picquiz-admin-topic-collection-sort-field-art', 'artist');
+
+    render(<AdminTopicCollectionPage items={items} topic={topic} />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('combobox', { name: 'Rendezés iránya' })).toHaveTextContent(
+        'Növekvő',
+      );
+      expect(screen.getByRole('combobox', { name: 'Rendezés mező szerint' })).toHaveTextContent(
+        'Alkotó',
+      );
+    });
   });
 
   it('paginates the filtered list with the configured page size', async () => {

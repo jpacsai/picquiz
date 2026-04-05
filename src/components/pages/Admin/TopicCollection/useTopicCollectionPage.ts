@@ -8,14 +8,15 @@ import {
   filterTopicItems,
   getDefaultSearchFieldKey,
   getSearchableTopicFields,
-  sortTopicItemsByNewestCreated,
+  getSortableTopicFields,
+  sortTopicItems,
 } from '@/components/pages/Admin/TopicCollection/utils';
 import {
   ADMIN_TOPIC_COLLECTION_ITEMS_PER_PAGE,
   ADMIN_TOPIC_COLLECTION_SEARCH_DEBOUNCE_MS,
   ADMIN_TOPIC_COLLECTION_STORAGE_KEYS,
 } from '@/consts/admin';
-import type { Topic, TopicCollectionSearchField, TopicItem } from '@/types/topics';
+import type { Topic, TopicCollectionSearchField, TopicCollectionSortField, TopicItem } from '@/types/topics';
 import { getStoredString } from '@/utils/storage';
 
 type UseTopicCollectionPageParams = {
@@ -32,22 +33,33 @@ export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollecti
     initialData: items,
   });
   const searchableFields = useMemo(() => getSearchableTopicFields(topic.fields), [topic.fields]);
+  const sortableFields = useMemo(() => getSortableTopicFields(topic.fields), [topic.fields]);
   const defaultSearchFieldKey = useMemo(() => getDefaultSearchFieldKey(topic), [topic]);
   const searchFieldStorageKey: string = ADMIN_TOPIC_COLLECTION_STORAGE_KEYS.searchFieldKey(
     topic.id,
   );
   const searchQueryStorageKey: string = ADMIN_TOPIC_COLLECTION_STORAGE_KEYS.searchQuery(topic.id);
+  const sortDirectionStorageKey: string = ADMIN_TOPIC_COLLECTION_STORAGE_KEYS.sortDirection(topic.id);
+  const sortFieldStorageKey: string = ADMIN_TOPIC_COLLECTION_STORAGE_KEYS.sortFieldKey(topic.id);
   const [searchFieldKey, setSearchFieldKey] = useState<string>(() =>
     getStoredString(searchFieldStorageKey),
   );
   const [searchQuery, setSearchQuery] = useState<string>(() =>
     getStoredString(searchQueryStorageKey),
   );
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>(() =>
+    getStoredString(sortDirectionStorageKey) === 'asc' ? 'asc' : 'desc',
+  );
+  const [sortFieldKey, setSortFieldKey] = useState<string>(() => getStoredString(sortFieldStorageKey));
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>('');
   const [page, setPage] = useState<number>(1);
   const activeSearchFieldKey = searchableFields.some((field) => field.key === searchFieldKey)
     ? searchFieldKey
     : defaultSearchFieldKey;
+  const activeSortFieldKey =
+    sortFieldKey === 'created_at' || sortableFields.some((field) => field.key === sortFieldKey)
+      ? sortFieldKey
+      : 'created_at';
   const searchOptions = useMemo(
     () =>
       [
@@ -82,6 +94,12 @@ export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollecti
   useEffect(() => {
     window.localStorage.setItem(searchQueryStorageKey, searchQuery);
   }, [searchQuery, searchQueryStorageKey]);
+  useEffect(() => {
+    window.localStorage.setItem(sortDirectionStorageKey, sortDirection);
+  }, [sortDirection, sortDirectionStorageKey]);
+  useEffect(() => {
+    window.localStorage.setItem(sortFieldStorageKey, activeSortFieldKey);
+  }, [activeSortFieldKey, sortFieldStorageKey]);
 
   const filteredItems = useMemo(
     () =>
@@ -92,7 +110,15 @@ export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollecti
       }),
     [activeSearchFieldKey, debouncedSearchQuery, liveItems],
   );
-  const sortedItems = useMemo(() => sortTopicItemsByNewestCreated(filteredItems), [filteredItems]);
+  const sortedItems = useMemo(
+    () =>
+      sortTopicItems({
+        direction: sortDirection,
+        fieldKey: activeSortFieldKey,
+        items: filteredItems,
+      }),
+    [activeSortFieldKey, filteredItems, sortDirection],
+  );
   const pageCount = Math.ceil(sortedItems.length / ADMIN_TOPIC_COLLECTION_ITEMS_PER_PAGE);
   const currentPage = Math.min(page, Math.max(pageCount, 1));
   const paginatedItems = useMemo(() => {
@@ -143,10 +169,20 @@ export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollecti
       setPage(1);
       setSearchQuery(nextSearchQuery);
     },
+    onSortDirectionChange: (nextDirection: 'asc' | 'desc') => {
+      setPage(1);
+      setSortDirection(nextDirection);
+    },
+    onSortFieldChange: (nextFieldKey: string) => {
+      setPage(1);
+      setSortFieldKey(nextFieldKey);
+    },
     onResetSearch: () => {
       setPage(1);
       setSearchFieldKey(defaultSearchFieldKey);
       setSearchQuery('');
+      setSortDirection('desc');
+      setSortFieldKey('created_at');
       setDebouncedSearchQuery('');
     },
     pageCount,
@@ -154,6 +190,9 @@ export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollecti
     searchOptions,
     searchQuery,
     searchableFields,
+    sortDirection,
+    sortFieldKey: activeSortFieldKey,
+    sortableFields,
     visibleItemCount: sortedItems.length,
     totalItemCount: liveItems.length,
     topic,
@@ -162,3 +201,4 @@ export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollecti
 
 export type UseTopicCollectionPageResult = ReturnType<typeof useTopicCollectionPage>;
 export type TopicCollectionPageSearchField = TopicCollectionSearchField;
+export type TopicCollectionPageSortField = TopicCollectionSortField;

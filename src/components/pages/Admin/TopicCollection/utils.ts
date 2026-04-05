@@ -1,4 +1,10 @@
-import type { Topic, TopicCollectionSearchField, TopicField, TopicItem } from '@/types/topics';
+import type {
+  Topic,
+  TopicCollectionSearchField,
+  TopicCollectionSortField,
+  TopicField,
+  TopicItem,
+} from '@/types/topics';
 
 const getCreatedAtValue = (value: unknown) => {
   if (value && typeof value === 'object' && 'toMillis' in value) {
@@ -44,7 +50,7 @@ export const sortTopicItemsByNewestCreated = (items: ReadonlyArray<TopicItem>) =
 
 export const getSearchableTopicFields = (fields: ReadonlyArray<TopicField>) =>
   fields.filter(
-      (field): field is TopicCollectionSearchField =>
+    (field): field is TopicCollectionSearchField =>
       (field.type === 'string' ||
         field.type === 'number' ||
         field.type === 'year' ||
@@ -53,6 +59,70 @@ export const getSearchableTopicFields = (fields: ReadonlyArray<TopicField>) =>
         field.type === 'boolean') &&
       field.hideInEdit !== true,
   );
+
+export const getSortableTopicFields = (fields: ReadonlyArray<TopicField>) =>
+  fields.filter(
+    (field): field is TopicCollectionSortField =>
+      (field.type === 'string' ||
+        field.type === 'number' ||
+        field.type === 'year' ||
+        field.type === 'select') &&
+      field.hideInEdit !== true,
+  );
+
+export const getDefaultSortFieldKey = (topic: Topic) => getSortableTopicFields(topic.fields)[0]?.key ?? '';
+
+const getSortableValue = (value: unknown) => {
+  if (typeof value === 'string') {
+    return value.trim().toLocaleLowerCase();
+  }
+
+  if (typeof value === 'number') {
+    return value;
+  }
+
+  return null;
+};
+
+export const sortTopicItems = ({
+  direction,
+  fieldKey,
+  items,
+}: {
+  direction: 'asc' | 'desc';
+  fieldKey: string;
+  items: ReadonlyArray<TopicItem>;
+}) => {
+  if (fieldKey === 'created_at') {
+    const sortedItems = sortTopicItemsByNewestCreated(items);
+
+    return direction === 'desc' ? sortedItems : [...sortedItems].reverse();
+  }
+
+  return [...items].sort((left, right) => {
+    const leftValue = getSortableValue(left[fieldKey]);
+    const rightValue = getSortableValue(right[fieldKey]);
+
+    if (leftValue === null && rightValue === null) {
+      return 0;
+    }
+
+    if (leftValue === null) {
+      return 1;
+    }
+
+    if (rightValue === null) {
+      return -1;
+    }
+
+    const comparison =
+      typeof leftValue === 'number' && typeof rightValue === 'number'
+        ? leftValue - rightValue
+        : String(leftValue).localeCompare(String(rightValue), 'hu');
+
+    return direction === 'asc' ? comparison : comparison * -1;
+  });
+};
 
 export const getDefaultSearchFieldKey = (topic: Topic) =>
   getSearchableTopicFields(topic.fields)[0]?.key ?? '';

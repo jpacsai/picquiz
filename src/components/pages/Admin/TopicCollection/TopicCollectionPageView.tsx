@@ -10,11 +10,16 @@ import TopicItemSection from '@/components/pages/Admin/TopicCollection/component
 
 import type {
   TopicCollectionPageSearchField,
+  TopicCollectionPageSortField,
   UseTopicCollectionPageResult,
 } from './useTopicCollectionPage';
 
-type TopicCollectionPageViewProps = Omit<UseTopicCollectionPageResult, 'searchableFields'> & {
+type TopicCollectionPageViewProps = Omit<
+  UseTopicCollectionPageResult,
+  'searchableFields' | 'sortableFields'
+> & {
   searchableFields: ReadonlyArray<TopicCollectionPageSearchField>;
+  sortableFields: ReadonlyArray<TopicCollectionPageSortField>;
 };
 
 const TopicCollectionPageView = ({
@@ -26,11 +31,16 @@ const TopicCollectionPageView = ({
   onResetSearch,
   onSearchFieldChange,
   onSearchQueryChange,
+  onSortDirectionChange,
+  onSortFieldChange,
   pageCount,
   searchFieldKey,
   searchOptions,
   searchQuery,
   searchableFields,
+  sortDirection,
+  sortFieldKey,
+  sortableFields,
   totalItemCount,
   topic,
   visibleItemCount,
@@ -63,6 +73,11 @@ const TopicCollectionPageView = ({
                 searchQuery={searchQuery}
                 onSearchFieldChange={onSearchFieldChange}
                 onSearchQueryChange={onSearchQueryChange}
+                onSortDirectionChange={onSortDirectionChange}
+                onSortFieldChange={onSortFieldChange}
+                sortDirection={sortDirection}
+                sortFieldKey={sortFieldKey}
+                sortableFields={sortableFields}
               />
             ) : null}
           </Box>

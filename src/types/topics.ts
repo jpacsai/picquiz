@@ -93,7 +93,13 @@ export type TopicCollectionSearchField = Extract<
   { type: 'string' | 'number' | 'year' | 'yearRange' | 'select' | 'boolean' }
 > & {
   hideInEdit?: false;
-  quiz: Extract<QuizFieldConfig, { enabled: true }>;
+};
+
+export type TopicCollectionSortField = Extract<
+  TopicField,
+  { type: 'string' | 'number' | 'year' | 'select' }
+> & {
+  hideInEdit?: false;
 };
 
 export type Topic = {
