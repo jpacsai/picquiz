@@ -1,10 +1,11 @@
 import { deleteTopicImageByPath } from '@data/storage';
+import { useMediaQuery, useTheme } from '@mui/material';
 import { QUERY_KEYS } from '@queries/queryKeys';
 import { deleteTopicItem } from '@service/items';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { useSnackbar } from 'notistack';
-import { Fragment, createElement, useState, type ReactNode } from 'react';
+import { createElement, Fragment, type ReactNode, useState } from 'react';
 
 import BooleanValue from '@/components/ui/BooleanValue';
 import type { TopicField, TopicItem } from '@/types/topics';
@@ -118,6 +119,21 @@ const getImagePathsToDelete = ({
     .filter((path): path is string => typeof path === 'string' && path.trim().length > 0);
 };
 
+const getMobileImageUrl = ({
+  fields,
+  item,
+}: {
+  fields: ReadonlyArray<TopicField>;
+  item: TopicItem;
+}) => {
+  const mobileFieldKey = fields.find((field) => field.type === 'imageUpload')?.targetFields.mobile;
+  const mobileImageUrl = mobileFieldKey ? item[mobileFieldKey] : undefined;
+
+  return typeof mobileImageUrl === 'string' && mobileImageUrl.trim().length > 0
+    ? mobileImageUrl
+    : undefined;
+};
+
 export const useAdminTopicItem = ({
   collectionName,
   fields,
@@ -129,6 +145,10 @@ export const useAdminTopicItem = ({
   const { enqueueSnackbar } = useSnackbar();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isMobileImagePreviewOpen, setIsMobileImagePreviewOpen] = useState(false);
+  const [loadedPreviewImageUrl, setLoadedPreviewImageUrl] = useState<string | null>(null);
+  const theme = useTheme();
+  const isMobileScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const titleValues = getValuesByDisplay(fields, item, 'title');
   const subtitleValues = getValuesByDisplay(fields, item, 'subtitle');
@@ -140,6 +160,7 @@ export const useAdminTopicItem = ({
   const metaText = joinDisplayValueTexts(metaValues);
   const meta = metaValues.length ? joinDisplayValueNodes(metaValues) : undefined;
   const imagePathsToDelete = getImagePathsToDelete({ fields, item });
+  const mobileImageUrl = getMobileImageUrl({ fields, item });
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -188,8 +209,16 @@ export const useAdminTopicItem = ({
     description: subtitleText || metaText || undefined,
     isDeleteDialogOpen,
     isDeleting,
+    isMobileImagePreviewOpen,
+    isMobileScreen,
     meta,
+    mobileImageAlt: `${title} mobil kep`,
+    mobileImageUrl,
     onCloseDeleteDialog: () => setIsDeleteDialogOpen(false),
+    onCloseMobileImagePreview: () => {
+      setIsMobileImagePreviewOpen(false);
+      setLoadedPreviewImageUrl(null);
+    },
     onConfirmDelete: () => void handleDelete(),
     onEdit: () => {
       void navigate({
@@ -197,7 +226,15 @@ export const useAdminTopicItem = ({
         params: { itemId: item.id, topicId },
       });
     },
+    onMobileImageLoad: () => setLoadedPreviewImageUrl(mobileImageUrl ?? null),
     onOpenDeleteDialog: () => setIsDeleteDialogOpen(true),
+    onOpenMobileImagePreview: () => {
+      setLoadedPreviewImageUrl(null);
+      setIsMobileImagePreviewOpen(true);
+    },
+    showMobileImagePreviewLoader: Boolean(
+      isMobileImagePreviewOpen && mobileImageUrl && loadedPreviewImageUrl !== mobileImageUrl,
+    ),
     subtitle: subtitle || undefined,
     title,
   };

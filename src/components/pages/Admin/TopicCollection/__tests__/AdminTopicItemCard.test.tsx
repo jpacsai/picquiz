@@ -73,6 +73,7 @@ const item: TopicItem = {
   id: 'item-1',
   image_path_desktop: 'art/desktop/monalisa.jpg',
   image_path_mobile: 'art/mobile/monalisa.jpg',
+  image_url_mobile: 'https://example.com/art/mobile/monalisa.jpg',
   title: 'Mona Lisa',
 };
 
@@ -225,6 +226,43 @@ describe('AdminTopicItemCard UI', () => {
 
     expect(screen.getByText('Mona Lisa')).toBeInTheDocument();
     expect(screen.getByRole('img', { name: 'Önarckép: Hamis' })).toBeInTheDocument();
+  });
+
+  it('opens the uploaded mobile image in a preview dialog from the item card', async () => {
+    const user = userEvent.setup();
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { gcTime: Infinity, retry: false },
+      },
+    });
+
+    renderAdminTopicItemCard({ queryClient });
+
+    await user.click(screen.getByRole('button', { name: 'Mobilkép megnyitása' }));
+
+    const dialog = screen.getByRole('dialog');
+    expect(within(dialog).getByRole('img', { name: 'Mona Lisa mobil kep' })).toHaveAttribute(
+      'src',
+      'https://example.com/art/mobile/monalisa.jpg',
+    );
+  });
+
+  it('does not render the mobile image preview button when the item has no mobile image url', () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { gcTime: Infinity, retry: false },
+      },
+    });
+
+    renderAdminTopicItemCard({
+      queryClient,
+      itemOverride: {
+        ...item,
+        image_url_mobile: '',
+      },
+    });
+
+    expect(screen.queryByRole('button', { name: 'Mobilkép megnyitása' })).not.toBeInTheDocument();
   });
 
   it('omits subtitle fallback when no subtitle display field is configured and shows meta directly under the title', () => {
