@@ -22,10 +22,15 @@ const TopicCollectionSearch = ({
   const activeSearchField = searchableFields.find((field) => field.key === searchFieldKey);
   const isBooleanSearchField = activeSearchField?.type === 'boolean';
   const selectFieldSx = {
+    '& .MuiInputBase-root': {
+      alignItems: 'stretch',
+    },
     '& .MuiSelect-select': {
       alignItems: 'center',
+      boxSizing: 'border-box',
       display: 'flex',
-      minHeight: 'auto',
+      minHeight: '100% !important',
+      width: '100%',
     },
   } as const;
 
@@ -63,6 +68,7 @@ const TopicCollectionSearch = ({
           inputProps={{ 'aria-label': 'Keresett érték' }}
           placeholder="Keresett érték"
           size="small"
+          sx={selectFieldSx}
           value={searchQuery}
           onChange={(event) => onSearchQueryChange(event.target.value)}
         >
