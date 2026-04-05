@@ -2,7 +2,7 @@ import { topicItemsOptions } from '@queries/items';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { useSnackbar } from 'notistack';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useTransition } from 'react';
 
 import {
   filterTopicItems,
@@ -19,6 +19,8 @@ import {
 import type { Topic, TopicCollectionSearchField, TopicCollectionSortField, TopicItem } from '@/types/topics';
 import { getStoredString } from '@/utils/storage';
 
+const FILTER_SORT_LOADER_MIN_DURATION_MS = 150;
+
 type UseTopicCollectionPageParams = {
   items: ReadonlyArray<TopicItem>;
   saved?: 'edited';
@@ -28,6 +30,7 @@ type UseTopicCollectionPageParams = {
 export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollectionPageParams) => {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
+  const [isPending, startTransition] = useTransition();
   const { data: liveItems = items } = useQuery({
     ...topicItemsOptions(topic.slug),
     initialData: items,
@@ -52,6 +55,7 @@ export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollecti
   );
   const [sortFieldKey, setSortFieldKey] = useState<string>(() => getStoredString(sortFieldStorageKey));
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>('');
+  const [isInteractionLoading, setIsInteractionLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const activeSearchFieldKey = searchableFields.some((field) => field.key === searchFieldKey)
     ? searchFieldKey
@@ -148,8 +152,25 @@ export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollecti
     });
   }, [enqueueSnackbar, navigate, saved, topic.id]);
 
+  useEffect(() => {
+    if (isPending || searchQuery !== debouncedSearchQuery) {
+      return;
+    }
+
+    const timeoutId: ReturnType<typeof window.setTimeout> = window.setTimeout(() => {
+      setIsInteractionLoading(false);
+    }, FILTER_SORT_LOADER_MIN_DURATION_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [debouncedSearchQuery, isPending, searchQuery]);
+
+  const isFilterSortLoading = isInteractionLoading || isPending || searchQuery !== debouncedSearchQuery;
+
   return {
     currentPage,
+    isFilterSortLoading,
     items: paginatedItems,
     noResultsQuery:
       liveItems.length > 0 && sortedItems.length === 0 ? debouncedSearchQuery.trim() : undefined,
@@ -163,29 +184,44 @@ export const useTopicCollectionPage = ({ items, saved, topic }: UseTopicCollecti
       setPage(nextPage);
     },
     onSearchFieldChange: (newValue: string) => {
-      setPage(1);
-      setSearchFieldKey(newValue);
-      setSearchQuery('');
+      setIsInteractionLoading(true);
+      startTransition(() => {
+        setPage(1);
+        setSearchFieldKey(newValue);
+        setSearchQuery('');
+      });
     },
     onSearchQueryChange: (nextSearchQuery: string) => {
-      setPage(1);
-      setSearchQuery(nextSearchQuery);
+      setIsInteractionLoading(true);
+      startTransition(() => {
+        setPage(1);
+        setSearchQuery(nextSearchQuery);
+      });
     },
     onSortDirectionChange: (nextDirection: 'asc' | 'desc') => {
-      setPage(1);
-      setSortDirection(nextDirection);
+      setIsInteractionLoading(true);
+      startTransition(() => {
+        setPage(1);
+        setSortDirection(nextDirection);
+      });
     },
     onSortFieldChange: (nextFieldKey: string) => {
-      setPage(1);
-      setSortFieldKey(nextFieldKey);
+      setIsInteractionLoading(true);
+      startTransition(() => {
+        setPage(1);
+        setSortFieldKey(nextFieldKey);
+      });
     },
     onResetSearch: () => {
-      setPage(1);
-      setSearchFieldKey(defaultSearchFieldKey);
-      setSearchQuery('');
-      setSortDirection('desc');
-      setSortFieldKey('created_at');
-      setDebouncedSearchQuery('');
+      setIsInteractionLoading(true);
+      startTransition(() => {
+        setPage(1);
+        setSearchFieldKey(defaultSearchFieldKey);
+        setSearchQuery('');
+        setSortDirection('desc');
+        setSortFieldKey('created_at');
+        setDebouncedSearchQuery('');
+      });
     },
     pageCount,
     searchFieldKey: activeSearchFieldKey,

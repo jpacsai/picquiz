@@ -24,6 +24,7 @@ type TopicCollectionPageViewProps = Omit<
 
 const TopicCollectionPageView = ({
   currentPage,
+  isFilterSortLoading,
   items,
   noResultsQuery,
   onCreateNewItem,
@@ -102,7 +103,12 @@ const TopicCollectionPageView = ({
         </Button>
       </Box>
 
-      <TopicItemSection noResultsQuery={noResultsQuery} items={items} topic={topic} />
+      <TopicItemSection
+        isLoading={isFilterSortLoading}
+        noResultsQuery={noResultsQuery}
+        items={items}
+        topic={topic}
+      />
 
       {pageCount > 1 ? (
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
