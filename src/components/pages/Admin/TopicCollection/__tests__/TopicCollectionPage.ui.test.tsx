@@ -71,6 +71,11 @@ const topic: Topic = {
       type: 'string',
     },
     {
+      key: 'published',
+      label: 'Publikált',
+      type: 'boolean',
+    },
+    {
       hideInEdit: true,
       key: 'year',
       label: 'Év',
@@ -89,6 +94,7 @@ const items: TopicItem[] = [
     artist: 'Leonardo da Vinci',
     created_at: { seconds: 100 },
     id: '1',
+    published: true,
     title: 'Mona Lisa',
     year: 1503,
   },
@@ -96,6 +102,7 @@ const items: TopicItem[] = [
     artist: 'Vincent van Gogh',
     created_at: { seconds: 200 },
     id: '2',
+    published: false,
     title: 'Csillagos ég',
     year: 1889,
   },
@@ -103,6 +110,7 @@ const items: TopicItem[] = [
     artist: 'Claude Monet',
     created_at: { seconds: 300 },
     id: '3',
+    published: true,
     title: 'Tavirózsák',
     year: 1906,
   },
@@ -153,7 +161,33 @@ describe('AdminTopicCollectionPage', () => {
 
     expect(screen.getByRole('option', { name: 'Cím' })).toBeInTheDocument();
     expect(screen.getByRole('option', { name: 'Alkotó' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Publikált' })).toBeInTheDocument();
     expect(screen.queryByRole('option', { name: 'Év' })).not.toBeInTheDocument();
+  });
+
+  it('uses a boolean select input with igaz and hamis options', async () => {
+    const user = userEvent.setup();
+
+    render(<AdminTopicCollectionPage items={items} topic={topic} />);
+
+    await user.click(screen.getByRole('combobox', { name: 'Keresés mező szerint' }));
+    await user.click(screen.getByRole('option', { name: 'Publikált' }));
+
+    const booleanInput = screen.getByRole('combobox', { name: 'Keresett érték' });
+
+    await user.click(booleanInput);
+
+    expect(screen.getByRole('option', { name: 'Igaz' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Hamis' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('option', { name: 'Hamis' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Csillagos ég')).toBeInTheDocument();
+      expect(screen.queryByText('Mona Lisa')).not.toBeInTheDocument();
+      expect(screen.queryByText('Tavirózsák')).not.toBeInTheDocument();
+      expect(getDisplayedCount(1)).toBeInTheDocument();
+    });
   });
 
   it('shows a no-results message when nothing matches the query', async () => {

@@ -19,6 +19,8 @@ const TopicCollectionSearch = ({
   onSearchFieldChange,
   onSearchQueryChange,
 }: TopicCollectionSearchProps) => {
+  const activeSearchField = searchableFields.find((field) => field.key === searchFieldKey);
+  const isBooleanSearchField = activeSearchField?.type === 'boolean';
   const selectFieldSx = {
     '& .MuiSelect-select': {
       alignItems: 'center',
@@ -55,30 +57,45 @@ const TopicCollectionSearch = ({
         ))}
       </TextField>
 
-      <Autocomplete
-        freeSolo
-        options={searchOptions}
-        value={searchQuery}
-        onChange={(_, nextValue) => {
-          onSearchQueryChange(nextValue ?? '');
-        }}
-        onInputChange={(_, nextValue, reason) => {
-          if (reason === 'input' || reason === 'clear') {
-            onSearchQueryChange(nextValue);
-          }
-        }}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            inputProps={{
-              ...params.inputProps,
-              'aria-label': 'Keresett érték',
-            }}
-            placeholder="Keresett érték"
-            size="small"
-          />
-        )}
-      />
+      {isBooleanSearchField ? (
+        <TextField
+          select
+          inputProps={{ 'aria-label': 'Keresett érték' }}
+          placeholder="Keresett érték"
+          size="small"
+          value={searchQuery}
+          onChange={(event) => onSearchQueryChange(event.target.value)}
+        >
+          <MenuItem value="">Összes</MenuItem>
+          <MenuItem value="igaz">Igaz</MenuItem>
+          <MenuItem value="hamis">Hamis</MenuItem>
+        </TextField>
+      ) : (
+        <Autocomplete
+          freeSolo
+          options={searchOptions}
+          value={searchQuery}
+          onChange={(_, nextValue) => {
+            onSearchQueryChange(nextValue ?? '');
+          }}
+          onInputChange={(_, nextValue, reason) => {
+            if (reason === 'input' || reason === 'clear') {
+              onSearchQueryChange(nextValue);
+            }
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              inputProps={{
+                ...params.inputProps,
+                'aria-label': 'Keresett érték',
+              }}
+              placeholder="Keresett érték"
+              size="small"
+            />
+          )}
+        />
+      )}
     </Box>
   );
 };
