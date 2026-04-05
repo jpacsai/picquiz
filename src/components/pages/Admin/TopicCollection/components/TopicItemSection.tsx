@@ -59,7 +59,7 @@ const TopicItemSection = ({ isLoading, noResultsQuery, items, topic }: TopicItem
             zIndex: 1,
           }}
         >
-          <CircularProgress aria-label="Szűrés és rendezés folyamatban" size={28} />
+          <CircularProgress aria-label="Szűrés és rendezés folyamatban" color="primary" size={56} />
         </Box>
       ) : null}
     </Box>
