@@ -18,7 +18,7 @@ const TopicSchemaBuilderHeader = () => {
           variant="outlined"
           onClick={() => void handleNavigateBack()}
         >
-          {mode === 'edit' && topic ? 'Vissza a topikhoz' : 'Vissza az adminhoz'}
+          {mode === 'edit' && topic ? 'Vissza a topikhoz' : 'Vissza az topiklistához'}
         </Button>
 
         <Button variant="contained" onClick={handleSave} disabled={!canSave}>
