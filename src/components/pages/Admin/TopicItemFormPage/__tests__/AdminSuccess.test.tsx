@@ -42,7 +42,7 @@ describe('AdminSuccessPage', () => {
 
     render(<AdminSuccessPage topicId="art" topicLabel="Műalkotás" />);
 
-    await user.click(screen.getByRole('button', { name: 'Vissza a collectionhöz' }));
+    await user.click(screen.getByRole('button', { name: 'Vissza a listához' }));
 
     expect(navigateMock).toHaveBeenCalledWith({
       params: { topicId: 'art' },
