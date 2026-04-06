@@ -1,3 +1,5 @@
+import { IMAGE_UPLOAD_MAX_DIMENSIONS } from '@/constants/imageUpload';
+
 type ResizeImageOptions = {
   maxHeight: number;
   maxWidth: number;
@@ -96,8 +98,8 @@ export const generateResponsiveImageVariants = async (
   file: File,
 ): Promise<ResponsiveImageVariants> => {
   const [desktop, mobile] = await Promise.all([
-    resizeImageToFit(file, { maxWidth: 800, maxHeight: 600 }),
-    resizeImageToFit(file, { maxWidth: 330, maxHeight: 400 }),
+    resizeImageToFit(file, IMAGE_UPLOAD_MAX_DIMENSIONS.desktop),
+    resizeImageToFit(file, IMAGE_UPLOAD_MAX_DIMENSIONS.mobile),
   ]);
 
   return { desktop, mobile };

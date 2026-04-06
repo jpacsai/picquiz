@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 
+import { IMAGE_UPLOAD_MAX_DIMENSIONS } from '@/constants/imageUpload';
 import type { ImageFileNames, PendingImageSelection } from '@/types/topicItemForm';
 
 import ImagePreviewSection from './ImagePreviewSection';
@@ -112,10 +113,12 @@ const ImageUploadDialog = ({
           <Stack spacing={1.5}>
             <Typography variant="subtitle2">Maximális végső méretek:</Typography>
             <Typography variant="body2" color="text.secondary">
-              Desktop: 800 x 600
+              Desktop: {IMAGE_UPLOAD_MAX_DIMENSIONS.desktop.maxWidth} x{' '}
+              {IMAGE_UPLOAD_MAX_DIMENSIONS.desktop.maxHeight}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Mobil: 330 x 400
+              Mobil: {IMAGE_UPLOAD_MAX_DIMENSIONS.mobile.maxWidth} x{' '}
+              {IMAGE_UPLOAD_MAX_DIMENSIONS.mobile.maxHeight}
             </Typography>
           </Stack>
 

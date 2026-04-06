@@ -7,6 +7,17 @@ export const IMAGE_UPLOAD_TARGET_FIELD_KEYS = {
   mobile: 'image_url_mobile',
 } as const;
 
+export const IMAGE_UPLOAD_MAX_DIMENSIONS = {
+  desktop: {
+    maxHeight: 600,
+    maxWidth: 800,
+  },
+  mobile: {
+    maxHeight: 400,
+    maxWidth: 330,
+  },
+} as const;
+
 export const IMAGE_UPLOAD_SYSTEM_FIELDS: TopicFieldDraft[] = [
   {
     hideInEdit: true,

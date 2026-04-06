@@ -3,6 +3,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 
+import { IMAGE_UPLOAD_MAX_DIMENSIONS } from '@/constants/imageUpload';
+
 type ImagePreviewDialogProps = {
   imageAlt: string;
   imageSrc?: string;
@@ -22,14 +24,32 @@ const ImagePreviewDialog = ({
   onImageLoad,
   open,
 }: ImagePreviewDialogProps) => {
+  const dialogMaxDimensions = isMobileScreen
+    ? IMAGE_UPLOAD_MAX_DIMENSIONS.mobile
+    : IMAGE_UPLOAD_MAX_DIMENSIONS.desktop;
+
   return (
-    <Dialog fullWidth maxWidth={isMobileScreen ? 'xs' : 'md'} onClose={onClose} open={open}>
+    <Dialog
+      fullWidth
+      maxWidth={false}
+      onClose={onClose}
+      open={open}
+      slotProps={{
+        paper: {
+          sx: {
+            maxWidth: dialogMaxDimensions.maxWidth,
+            width: '100%',
+          },
+        },
+      }}
+    >
       <DialogContent sx={{ p: 0 }}>
         <Box
           sx={{
             alignItems: 'center',
             display: 'flex',
             justifyContent: 'center',
+            maxHeight: dialogMaxDimensions.maxHeight,
             overflow: 'hidden',
             position: 'relative',
             p: 0,

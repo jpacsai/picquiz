@@ -18,7 +18,6 @@ type AdminTopicItemCardViewProps = {
   isDeleteDialogOpen: boolean;
   isDeleting: boolean;
   isMobileImagePreviewOpen: boolean;
-  isMobileScreen: boolean;
   meta?: ReactNode;
   mobileImageAlt: string;
   mobileImageUrl?: string;
@@ -39,7 +38,6 @@ const AdminTopicItemCardView = ({
   isDeleteDialogOpen,
   isDeleting,
   isMobileImagePreviewOpen,
-  isMobileScreen,
   meta,
   mobileImageAlt,
   mobileImageUrl,
@@ -112,7 +110,7 @@ const AdminTopicItemCardView = ({
         imageAlt={mobileImageAlt}
         imageSrc={mobileImageUrl}
         isLoading={showMobileImagePreviewLoader}
-        isMobileScreen={isMobileScreen}
+        isMobileScreen={true}
         onClose={onCloseMobileImagePreview}
         open={isMobileImagePreviewOpen}
         onImageLoad={onMobileImageLoad}
