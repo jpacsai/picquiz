@@ -117,7 +117,7 @@ export const getItems = (matches: ReturnType<typeof useMatches>): BreadcrumbItem
     case '/_app/$topicId/items/':
       return getTopicItems(context, 'Elemek');
     case '/_app/$topicId/items/new':
-      return getTopicItems(context, 'Új elem');
+      return getTopicItemsWithItems(context, 'Új elem');
     case '/_app/$topicId/items/$itemId/edit':
       return getTopicItemsWithItems(context, 'Szerkesztés');
     case '/_app/$topicId/items/success':
