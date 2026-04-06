@@ -47,7 +47,7 @@ const AdminSuccessPage = ({ topicId, topicLabel }: AdminSuccessPageProps) => {
             });
           }}
         >
-          Vissza az listához
+          Vissza a listához
         </Button>
       </Box>
     </Box>
