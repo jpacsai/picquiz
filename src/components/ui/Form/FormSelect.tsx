@@ -3,6 +3,8 @@ import { useId } from 'react';
 
 import { sortSelectOptions } from '@/utils/sortSelectOptions';
 
+import { getFormFieldHelperText } from './utils';
+
 type FormSelectProps = {
   id?: string;
   disabled?: boolean;
@@ -51,7 +53,7 @@ const FormSelect = ({
             name={name}
             required={required}
             error={Boolean(errorMessage)}
-            helperText={errorMessage}
+            helperText={getFormFieldHelperText(errorMessage)}
           />
         )}
       />

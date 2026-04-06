@@ -1,6 +1,8 @@
 import { Autocomplete, Box, InputLabel, TextField } from '@mui/material';
 import { type ChangeEvent, type ComponentProps, type ReactNode, useId } from 'react';
 
+import { getFormFieldHelperText } from './utils';
+
 type FormInputProps = Omit<ComponentProps<typeof TextField>, 'error'> & {
   errorMessage?: ReactNode;
   options?: string[];
@@ -59,7 +61,7 @@ const FormInput = ({
               required={required}
               placeholder={placeholder}
               error={!!errorMessage}
-              helperText={errorMessage ?? helperText}
+              helperText={getFormFieldHelperText(errorMessage, helperText)}
               onBlur={onBlur}
               inputProps={{
                 ...params.inputProps,
@@ -73,7 +75,7 @@ const FormInput = ({
         <TextField
           id={finalId}
           error={!!errorMessage}
-          helperText={errorMessage ?? helperText}
+          helperText={getFormFieldHelperText(errorMessage, helperText)}
           onBlur={onBlur}
           onChange={onChange}
           inputProps={{
