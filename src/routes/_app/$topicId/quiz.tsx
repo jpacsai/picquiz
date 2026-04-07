@@ -3,6 +3,7 @@ import { topicOptions } from '@queries/topics';
 import { createFileRoute, useLoaderData } from '@tanstack/react-router';
 
 import Quiz from '@/components/pages/Quiz/Quiz';
+import { filterQuizItems } from '@/utils/quiz';
 
 const path = '/_app/$topicId/quiz';
 
@@ -34,6 +35,10 @@ const parseSearch = (search: Record<string, unknown>) =>
       typeof search.autoAdvanceAfterAnswer === 'boolean'
         ? search.autoAdvanceAfterAnswer
         : search.autoAdvanceAfterAnswer === 'true',
+    itemFilterFieldKey:
+      typeof search.itemFilterFieldKey === 'string' ? search.itemFilterFieldKey.trim() : '',
+    itemFilterValue:
+      typeof search.itemFilterValue === 'string' ? search.itemFilterValue.trim() : '',
     questionCount:
       typeof search.questionCount === 'number'
         ? search.questionCount
@@ -54,17 +59,25 @@ const RouteComponent = () => {
     answerDetailFieldKeys,
     answerFieldKeys,
     autoAdvanceAfterAnswer,
+    itemFilterFieldKey,
+    itemFilterValue,
     questionCount,
     showCorrectAnswer,
   } =
     Route.useSearch();
+  const filteredItems = filterQuizItems({
+    fieldKey: itemFilterFieldKey,
+    filterValue: itemFilterValue,
+    items,
+    topic,
+  });
 
   return (
     <Quiz
       answerDetailFieldKeys={answerDetailFieldKeys}
       answerFieldKeys={answerFieldKeys}
       autoAdvanceAfterAnswer={autoAdvanceAfterAnswer}
-      items={items}
+      items={filteredItems}
       questionCount={questionCount}
       showCorrectAnswer={showCorrectAnswer}
       topic={topic}

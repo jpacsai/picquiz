@@ -46,6 +46,11 @@ const topic: Topic = {
       type: 'number',
     },
     {
+      key: 'featured',
+      label: 'Kiemelt',
+      type: 'boolean',
+    },
+    {
       buttonLabel: 'Upload image',
       fileNameFields: ['artist', 'title'],
       key: 'image_upload',
@@ -69,6 +74,7 @@ const items: ReadonlyArray<TopicItem> = [
     id: 'item-1',
     image_url_desktop: 'https://example.com/1-desktop.jpg',
     image_url_mobile: 'https://example.com/1-mobile.jpg',
+    featured: true,
     title: 'Mona Lisa',
     year: 1503,
   },
@@ -77,6 +83,7 @@ const items: ReadonlyArray<TopicItem> = [
     id: 'item-2',
     image_url_desktop: 'https://example.com/2-desktop.jpg',
     image_url_mobile: 'https://example.com/2-mobile.jpg',
+    featured: true,
     title: 'The Last Supper',
     year: 1498,
   },
@@ -85,6 +92,7 @@ const items: ReadonlyArray<TopicItem> = [
     id: 'item-3',
     image_url_desktop: 'https://example.com/3-desktop.jpg',
     image_url_mobile: 'https://example.com/3-mobile.jpg',
+    featured: false,
     title: 'Girl with a Pearl Earring',
     year: 1665,
   },
@@ -93,6 +101,7 @@ const items: ReadonlyArray<TopicItem> = [
     id: 'item-4',
     image_url_desktop: 'https://example.com/4-desktop.jpg',
     image_url_mobile: 'https://example.com/4-mobile.jpg',
+    featured: false,
     title: 'The Night Watch',
     year: 1642,
   },
@@ -101,12 +110,14 @@ const items: ReadonlyArray<TopicItem> = [
     id: 'item-5',
     image_url_desktop: 'https://example.com/5-desktop.jpg',
     image_url_mobile: 'https://example.com/5-mobile.jpg',
+    featured: true,
     title: 'Guernica',
     year: 1937,
   },
   {
     artist: 'Gustav Klimt',
     id: 'item-6',
+    featured: true,
     image_url_desktop: 'https://example.com/6-desktop.jpg',
     image_url_mobile: 'https://example.com/6-mobile.jpg',
     title: 'The Kiss',
@@ -328,6 +339,47 @@ describe('Quiz flow integration', () => {
       },
       to: '/$topicId/quiz',
     });
+  });
+
+  it('filters quiz items by the selected item filter and persists the selection', async () => {
+    const user = userEvent.setup();
+
+    const configView = renderWithTheme(<QuizConfig items={items} topic={topic} />);
+
+    await user.click(screen.getByRole('combobox', { name: 'Szűrés mező szerint' }));
+    await user.click(screen.getByRole('option', { name: 'Kiemelt' }));
+    await user.click(screen.getByRole('combobox', { name: 'Szűrt érték' }));
+    await user.click(screen.getByRole('option', { name: 'Igaz' }));
+
+    expect(screen.getByText('4 / 6 elem')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Kvíz indítása' }));
+
+    expect(window.localStorage.getItem('picquiz-quiz-item-filter-field-key-art')).toBe('featured');
+    expect(window.localStorage.getItem('picquiz-quiz-item-filter-value-art')).toBe('true');
+    expect(navigateMock).toHaveBeenLastCalledWith({
+      params: { topicId: 'art' },
+      search: {
+        answerDetailFieldKeys: [],
+        answerFieldKeys: ['title'],
+        autoAdvanceAfterAnswer: false,
+        itemFilterFieldKey: 'featured',
+        itemFilterValue: 'true',
+        questionCount: 4,
+        showCorrectAnswer: true,
+      },
+      to: '/$topicId/quiz',
+    });
+
+    configView.unmount();
+
+    renderWithTheme(<QuizConfig items={items} topic={topic} />);
+
+    expect(screen.getByRole('combobox', { name: 'Szűrés mező szerint' })).toHaveTextContent(
+      'Kiemelt',
+    );
+    expect(screen.getByRole('combobox', { name: 'Szűrt érték' })).toHaveTextContent('Igaz');
+    expect(screen.getByText('4 / 6 elem')).toBeInTheDocument();
   });
 
   it('resets quiz config controls to their defaults', async () => {

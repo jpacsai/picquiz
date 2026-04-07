@@ -7,6 +7,8 @@ export const QUIZ_CONFIG_STORAGE_KEYS = {
   answerDetailsEnabled: (topicId: string) => `picquiz-quiz-answer-details-enabled-${topicId}`,
   answerDetailsExpanded: (topicId: string) => `picquiz-quiz-answer-details-expanded-${topicId}`,
   autoAdvanceAfterAnswer: 'picquiz-quiz-auto-advance-after-answer',
+  itemFilterFieldKey: (topicId: string) => `picquiz-quiz-item-filter-field-key-${topicId}`,
+  itemFilterValue: (topicId: string) => `picquiz-quiz-item-filter-value-${topicId}`,
   showCorrectAnswer: 'picquiz-quiz-show-correct-answer',
   questionCount: (topicId: string) => `picquiz-quiz-question-count-${topicId}`,
   selectedFieldKeys: (topicId: string) => `picquiz-quiz-selected-field-keys-${topicId}`,

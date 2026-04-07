@@ -7,6 +7,7 @@ import type { QuizEligibleField, UseQuizConfigResult } from '@/types/quiz';
 import QuizConfigView from './QuizConfigView';
 
 const noQuizMock = vi.fn();
+const itemFilterSectionMock = vi.fn();
 const questionFieldsInputMock = vi.fn();
 const questionNumberInputMock = vi.fn();
 
@@ -21,6 +22,13 @@ vi.mock('@/components/pages/QuizConfig/components/QuestionFieldsInput', () => ({
   default: (props: unknown) => {
     questionFieldsInputMock(props);
     return <div data-testid="question-fields-input" />;
+  },
+}));
+
+vi.mock('@/components/pages/QuizConfig/components/ItemFilterSection', () => ({
+  default: (props: unknown) => {
+    itemFilterSectionMock(props);
+    return <div data-testid="item-filter-section" />;
   },
 }));
 
@@ -72,13 +80,26 @@ const createViewModel = (
   autoAdvanceAfterAnswer: false,
   effectiveSelectedFieldKeys: ['title'],
   eligibleFields: startableFields,
+  filteredItemCount: 6,
   handleToggleAnswerDetailField: vi.fn(),
+  handleItemFilterFieldChange: vi.fn(),
+  handleItemFilterValueChange: vi.fn(),
   handleReset: vi.fn(),
   handleStartQuiz: vi.fn(),
   handleQuestionCountBlur: vi.fn(),
   handleQuestionCountInputChange: vi.fn(),
   handleQuestionCountSliderChange: vi.fn(),
   handleToggleField: vi.fn(),
+  itemFilterFieldKey: '',
+  itemFilterFields: [
+    {
+      key: 'artist',
+      label: 'Alkotó',
+      type: 'string',
+    },
+  ],
+  itemFilterOptions: [],
+  itemFilterValue: '',
   maxQuestionCount: 10,
   minQuestionCount: 4,
   questionCount: 10,
@@ -89,12 +110,14 @@ const createViewModel = (
   setShowCorrectAnswer: vi.fn(),
   showCorrectAnswer: true,
   startableFields,
+  totalItemCount: 6,
   ...overrides,
 });
 
 describe('QuizConfigView', () => {
   beforeEach(() => {
     noQuizMock.mockClear();
+    itemFilterSectionMock.mockClear();
     questionFieldsInputMock.mockClear();
     questionNumberInputMock.mockClear();
   });
@@ -128,8 +151,21 @@ describe('QuizConfigView', () => {
 
     expect(screen.getByTestId('question-fields-input')).toBeInTheDocument();
     expect(screen.getByTestId('question-number-input')).toBeInTheDocument();
+    expect(screen.getByTestId('item-filter-section')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Kvíz indítása' })).toBeEnabled();
 
+    expect(itemFilterSectionMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        filteredItemCount: 6,
+        itemFilterFieldKey: '',
+        itemFilterFields: viewModel.itemFilterFields,
+        itemFilterOptions: [],
+        itemFilterValue: '',
+        onItemFilterFieldChange: viewModel.handleItemFilterFieldChange,
+        onItemFilterValueChange: viewModel.handleItemFilterValueChange,
+        totalItemCount: 6,
+      }),
+    );
     expect(questionFieldsInputMock).toHaveBeenCalledWith(
       expect.objectContaining({
         effectiveSelectedFieldKeys: ['title'],

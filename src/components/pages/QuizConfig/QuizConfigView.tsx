@@ -10,6 +10,7 @@ import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 
 import AnswerDetailsSection from '@/components/pages/QuizConfig/components/AnswerDetailsSection';
+import ItemFilterSection from '@/components/pages/QuizConfig/components/ItemFilterSection';
 import NoQuiz from '@/components/pages/QuizConfig/components/NoQuiz';
 import QuestionFieldsInput from '@/components/pages/QuizConfig/components/QuestionFieldsInput';
 import QuestionNumberInput from '@/components/pages/QuizConfig/components/QuestionNumberInput';
@@ -25,13 +26,20 @@ const QuizConfigView = ({
   autoAdvanceAfterAnswer,
   effectiveSelectedFieldKeys,
   eligibleFields,
+  filteredItemCount,
   handleToggleAnswerDetailField,
+  handleItemFilterFieldChange,
+  handleItemFilterValueChange,
   handleReset,
   handleStartQuiz,
   handleQuestionCountBlur,
   handleQuestionCountInputChange,
   handleQuestionCountSliderChange,
   handleToggleField,
+  itemFilterFieldKey,
+  itemFilterFields,
+  itemFilterOptions,
+  itemFilterValue,
   maxQuestionCount,
   minQuestionCount,
   questionCount,
@@ -42,6 +50,7 @@ const QuizConfigView = ({
   setShowCorrectAnswer,
   showCorrectAnswer,
   startableFields,
+  totalItemCount,
 }: QuizConfigViewProps) => {
   const hasStartableFields = startableFields.length > 0;
 
@@ -64,6 +73,21 @@ const QuizConfigView = ({
                 Alaphelyzet
               </Button>
             </Box>
+
+            <Card variant="outlined" sx={{ width: '100%' }}>
+              <CardContent>
+                <ItemFilterSection
+                  filteredItemCount={filteredItemCount}
+                  itemFilterFieldKey={itemFilterFieldKey}
+                  itemFilterFields={itemFilterFields}
+                  itemFilterOptions={itemFilterOptions}
+                  itemFilterValue={itemFilterValue}
+                  onItemFilterFieldChange={handleItemFilterFieldChange}
+                  onItemFilterValueChange={handleItemFilterValueChange}
+                  totalItemCount={totalItemCount}
+                />
+              </CardContent>
+            </Card>
 
             {!hasStartableFields ? (
               <NoQuiz eligibleFields={eligibleFields} />

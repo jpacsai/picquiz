@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from 'react';
 
-import type { TopicField, TopicItem } from '@/types/topics';
+import type { TopicCollectionSearchField, TopicField, TopicItem } from '@/types/topics';
 
 export type QuizValueField = Extract<
   TopicField,
@@ -13,6 +13,13 @@ export type QuizEligibleField = {
   maxQuestionCount: number;
   promptsLabel: string;
   distinctValueCount: number;
+};
+
+export type QuizItemFilterField = TopicCollectionSearchField;
+
+export type QuizItemFilterOption = {
+  label: string;
+  value: string;
 };
 
 export type QuizQuestionOption = {
@@ -58,13 +65,20 @@ export type UseQuizConfigResult = {
   autoAdvanceAfterAnswer: boolean;
   effectiveSelectedFieldKeys: string[];
   eligibleFields: QuizEligibleField[];
+  filteredItemCount: number;
   handleToggleAnswerDetailField: (fieldKey: string, checked: boolean) => void;
+  handleItemFilterFieldChange: (fieldKey: string) => void;
+  handleItemFilterValueChange: (value: string) => void;
   handleReset: () => void;
   handleStartQuiz: () => void;
   handleQuestionCountBlur: () => void;
   handleQuestionCountInputChange: (nextValue: string) => void;
   handleQuestionCountSliderChange: (nextValue: number) => void;
   handleToggleField: (fieldKey: string, checked: boolean) => void;
+  itemFilterFieldKey: string;
+  itemFilterFields: QuizItemFilterField[];
+  itemFilterOptions: QuizItemFilterOption[];
+  itemFilterValue: string;
   maxQuestionCount: number;
   minQuestionCount: number;
   questionCount: number;
@@ -75,4 +89,5 @@ export type UseQuizConfigResult = {
   setShowCorrectAnswer: Dispatch<SetStateAction<boolean>>;
   showCorrectAnswer: boolean;
   startableFields: QuizEligibleField[];
+  totalItemCount: number;
 };

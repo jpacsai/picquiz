@@ -4,10 +4,13 @@ import {
 } from '@/consts/quiz';
 import type {
   QuizEligibleField,
+  QuizItemFilterField,
+  QuizItemFilterOption,
   QuizPlayableItem,
   QuizQuestion,
 } from '@/types/quiz';
 import type { Topic, TopicField, TopicItem } from '@/types/topics';
+import { getBooleanValueLabel } from '@/utils/booleanValue';
 
 export const getStoredBoolean = (storageKey: string, fallbackValue: boolean): boolean => {
   if (typeof window === 'undefined') {
@@ -122,6 +125,57 @@ const getItemFieldValue = (item: TopicItem, fieldKey: string): string => {
   }
 
   return typeof value === 'string' ? value.trim() : '';
+};
+
+const isQuizItemFilterField = (
+  field: TopicField,
+): field is QuizItemFilterField =>
+  (field.type === 'string' ||
+    field.type === 'number' ||
+    field.type === 'year' ||
+    field.type === 'yearRange' ||
+    field.type === 'select' ||
+    field.type === 'boolean') &&
+  field.hideInEdit !== true;
+
+const getQuizItemFilterValue = ({
+  fieldType,
+  value,
+}: {
+  fieldType?: QuizItemFilterField['type'];
+  value: unknown;
+}): string => {
+  if (fieldType === 'boolean') {
+    if (value === true) {
+      return 'true';
+    }
+
+    if (value === false || typeof value === 'undefined') {
+      return 'false';
+    }
+
+    return '';
+  }
+
+  if (typeof value === 'number') {
+    return String(value);
+  }
+
+  return typeof value === 'string' ? value.trim() : '';
+};
+
+const getQuizItemFilterOptionLabel = ({
+  fieldType,
+  value,
+}: {
+  fieldType?: QuizItemFilterField['type'];
+  value: string;
+}): string => {
+  if (fieldType === 'boolean') {
+    return getBooleanValueLabel(value === 'true');
+  }
+
+  return value;
 };
 
 const shuffleArray = <T>(values: readonly T[]): T[] => {
@@ -414,6 +468,85 @@ export const getQuestionCountOptions = (maxQuestionCount: number): number[] => {
   }
 
   return options;
+};
+
+export const getQuizItemFilterFields = (topic: Topic): QuizItemFilterField[] =>
+  topic.fields.filter(isQuizItemFilterField);
+
+export const getQuizItemFilterOptions = ({
+  fieldKey,
+  items,
+  topic,
+}: {
+  fieldKey: string;
+  items: ReadonlyArray<TopicItem>;
+  topic: Topic;
+}): QuizItemFilterOption[] => {
+  const activeField = getQuizItemFilterFields(topic).find((field) => field.key === fieldKey);
+
+  if (!activeField) {
+    return [];
+  }
+
+  const distinctValues = Array.from(
+    new Set(
+      items
+        .map((item) =>
+          getQuizItemFilterValue({
+            fieldType: activeField.type,
+            value: item[activeField.key],
+          }),
+        )
+        .filter(Boolean),
+    ),
+  );
+
+  if (activeField.type === 'boolean') {
+    return ['true', 'false']
+      .filter((value) => distinctValues.includes(value))
+      .map((value) => ({
+        label: getQuizItemFilterOptionLabel({ fieldType: activeField.type, value }),
+        value,
+      }));
+  }
+
+  return distinctValues
+    .map((value) => ({
+      label: getQuizItemFilterOptionLabel({ fieldType: activeField.type, value }),
+      value,
+    }))
+    .sort((left, right) => left.label.localeCompare(right.label, 'hu'));
+};
+
+export const filterQuizItems = ({
+  fieldKey,
+  filterValue,
+  items,
+  topic,
+}: {
+  fieldKey: string;
+  filterValue: string;
+  items: ReadonlyArray<TopicItem>;
+  topic: Topic;
+}): ReadonlyArray<TopicItem> => {
+  if (!fieldKey || !filterValue) {
+    return items;
+  }
+
+  const activeField = getQuizItemFilterFields(topic).find((field) => field.key === fieldKey);
+
+  if (!activeField) {
+    return items;
+  }
+
+  return items.filter((item) => {
+    return (
+      getQuizItemFilterValue({
+        fieldType: activeField.type,
+        value: item[activeField.key],
+      }) === filterValue
+    );
+  });
 };
 
 export const getSelectedQuizFields = ({
