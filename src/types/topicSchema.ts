@@ -1,10 +1,11 @@
-import type { QuizFieldConfig, TopicField, TopicFieldFn } from '@/types/topics';
+import type { FilterFieldConfig, QuizFieldConfig, TopicField, TopicFieldFn } from '@/types/topics';
 
 type TopicFieldDraftBase = {
   autocomplete?: boolean;
   autocompleteCopyFields?: string[];
   autocompleteMatchField?: string;
   display?: TopicField['display'];
+  filter?: FilterFieldConfig;
   hideInEdit?: boolean;
   key?: string;
   label?: string;

@@ -137,6 +137,7 @@ const isQuizItemFilterField = (
     field.type === 'yearRange' ||
     field.type === 'select' ||
     field.type === 'boolean') &&
+  field.filter?.enabled !== false &&
   field.hideInEdit !== true;
 
 const getQuizItemFilterValue = ({

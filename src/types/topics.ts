@@ -37,6 +37,10 @@ export type QuizFieldConfig =
       distractor?: QuizDistractorConfig;
     };
 
+export type FilterFieldConfig = {
+  enabled: boolean;
+};
+
 type BaseTopicField = {
   autocomplete?: boolean;
   key: string;
@@ -45,6 +49,7 @@ type BaseTopicField = {
   required?: boolean;
   readonly?: boolean;
   fn?: TopicFieldFn;
+  filter?: FilterFieldConfig;
   hideInEdit?: boolean;
   quiz?: QuizFieldConfig;
 };

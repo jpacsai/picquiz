@@ -129,6 +129,27 @@ const FieldDialogSettingsSection = ({
       <FormControlLabel
         control={
           <Checkbox
+            checked={field.filter?.enabled !== false}
+            onChange={(event) => {
+              const nextValue = event.target.checked;
+
+              onChange((currentField) => ({
+                ...currentField,
+                filter: nextValue
+                  ? undefined
+                  : {
+                      enabled: false,
+                    },
+              }));
+            }}
+          />
+        }
+        label="Filter enabled"
+      />
+
+      <FormControlLabel
+        control={
+          <Checkbox
             checked={Boolean(field.readonly)}
             onChange={(event) => {
               const nextValue = event.target.checked;
