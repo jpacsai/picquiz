@@ -123,7 +123,7 @@ export const getItems = (matches: ReturnType<typeof useMatches>): BreadcrumbItem
     case '/_app/$topicId/items/success':
       return getTopicItems(context, 'Sikeres mentés');
     case '/_app/$topicId/quiz-config':
-      return getTopicItems(context);
+      return getTopicItems(context, 'Kvíz beállítása');
     case '/_app/$topicId/quiz':
       return getTopicItems(context, 'Kvíz');
     case '/_app/quiz/':
