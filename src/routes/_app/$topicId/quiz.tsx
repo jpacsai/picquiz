@@ -35,10 +35,17 @@ const parseSearch = (search: Record<string, unknown>) =>
       typeof search.autoAdvanceAfterAnswer === 'boolean'
         ? search.autoAdvanceAfterAnswer
         : search.autoAdvanceAfterAnswer === 'true',
-    itemFilterFieldKey:
-      typeof search.itemFilterFieldKey === 'string' ? search.itemFilterFieldKey.trim() : '',
-    itemFilterValue:
-      typeof search.itemFilterValue === 'string' ? search.itemFilterValue.trim() : '',
+    itemFilterFieldKeys: Array.isArray(search.itemFilterFieldKeys)
+      ? search.itemFilterFieldKeys.filter(
+          (fieldKey): fieldKey is string =>
+            typeof fieldKey === 'string' && fieldKey.trim().length > 0,
+        )
+      : [],
+    itemFilterValues: Array.isArray(search.itemFilterValues)
+      ? search.itemFilterValues.filter(
+          (value): value is string => typeof value === 'string' && value.trim().length > 0,
+        )
+      : [],
     questionCount:
       typeof search.questionCount === 'number'
         ? search.questionCount
@@ -59,15 +66,16 @@ const RouteComponent = () => {
     answerDetailFieldKeys,
     answerFieldKeys,
     autoAdvanceAfterAnswer,
-    itemFilterFieldKey,
-    itemFilterValue,
+    itemFilterFieldKeys,
+    itemFilterValues,
     questionCount,
     showCorrectAnswer,
-  } =
-    Route.useSearch();
+  } = Route.useSearch();
   const filteredItems = filterQuizItems({
-    fieldKey: itemFilterFieldKey,
-    filterValue: itemFilterValue,
+    filters: itemFilterFieldKeys.map((fieldKey, index) => ({
+      fieldKey,
+      value: itemFilterValues[index] ?? '',
+    })),
     items,
     topic,
   });

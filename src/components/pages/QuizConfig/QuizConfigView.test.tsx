@@ -81,6 +81,8 @@ const createViewModel = (
   effectiveSelectedFieldKeys: ['title'],
   eligibleFields: startableFields,
   filteredItemCount: 6,
+  handleAddItemFilter: vi.fn(),
+  handleRemoveItemFilter: vi.fn(),
   handleToggleAnswerDetailField: vi.fn(),
   handleItemFilterFieldChange: vi.fn(),
   handleItemFilterValueChange: vi.fn(),
@@ -90,7 +92,6 @@ const createViewModel = (
   handleQuestionCountInputChange: vi.fn(),
   handleQuestionCountSliderChange: vi.fn(),
   handleToggleField: vi.fn(),
-  itemFilterFieldKey: '',
   itemFilterFields: [
     {
       key: 'artist',
@@ -98,8 +99,13 @@ const createViewModel = (
       type: 'string',
     },
   ],
-  itemFilterOptions: [],
-  itemFilterValue: '',
+  itemFilterRows: [
+    {
+      fieldKey: '',
+      options: [],
+      value: '',
+    },
+  ],
   maxQuestionCount: 10,
   minQuestionCount: 4,
   questionCount: 10,
@@ -157,12 +163,12 @@ describe('QuizConfigView', () => {
     expect(itemFilterSectionMock).toHaveBeenCalledWith(
       expect.objectContaining({
         filteredItemCount: 6,
-        itemFilterFieldKey: '',
         itemFilterFields: viewModel.itemFilterFields,
-        itemFilterOptions: [],
-        itemFilterValue: '',
+        itemFilterRows: viewModel.itemFilterRows,
+        onAddItemFilter: viewModel.handleAddItemFilter,
         onItemFilterFieldChange: viewModel.handleItemFilterFieldChange,
         onItemFilterValueChange: viewModel.handleItemFilterValueChange,
+        onRemoveItemFilter: viewModel.handleRemoveItemFilter,
         totalItemCount: 6,
       }),
     );

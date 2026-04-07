@@ -10,7 +10,12 @@ import {
   MIN_QUESTION_COUNT,
   QUIZ_CONFIG_STORAGE_KEYS,
 } from '@/consts/quiz';
-import type { QuizValueField, UseQuizConfigResult } from '@/types/quiz';
+import type {
+  QuizItemFilter,
+  QuizItemFilterRow,
+  QuizValueField,
+  UseQuizConfigResult,
+} from '@/types/quiz';
 import type { Topic, TopicItem } from '@/types/topics';
 import {
   filterQuizItems,
@@ -21,12 +26,52 @@ import {
   getStoredBoolean,
   getStoredNumber,
   getStoredStringArray,
+  sanitizeQuizItemFilters,
 } from '@/utils/quiz';
-import { getStoredString } from '@/utils/storage';
 
 type UseQuizConfigParams = {
   items: ReadonlyArray<TopicItem>;
   topic: Topic;
+};
+
+const DEFAULT_ITEM_FILTER: QuizItemFilter = {
+  fieldKey: '',
+  value: '',
+};
+
+const getStoredItemFilters = (storageKey: string): QuizItemFilter[] => {
+  if (typeof window === 'undefined') {
+    return [DEFAULT_ITEM_FILTER];
+  }
+
+  const storedValue = window.localStorage.getItem(storageKey);
+
+  if (!storedValue) {
+    return [DEFAULT_ITEM_FILTER];
+  }
+
+  try {
+    const parsedValue = JSON.parse(storedValue);
+
+    if (!Array.isArray(parsedValue)) {
+      return [DEFAULT_ITEM_FILTER];
+    }
+
+    const parsedFilters = parsedValue.flatMap((item) => {
+      if (!item || typeof item !== 'object') {
+        return [];
+      }
+
+      const fieldKey = 'fieldKey' in item && typeof item.fieldKey === 'string' ? item.fieldKey : '';
+      const value = 'value' in item && typeof item.value === 'string' ? item.value : '';
+
+      return [{ fieldKey, value }];
+    });
+
+    return parsedFilters.length ? parsedFilters : [DEFAULT_ITEM_FILTER];
+  } catch {
+    return [DEFAULT_ITEM_FILTER];
+  }
 };
 
 export const useQuizConfig = ({ items, topic }: UseQuizConfigParams): UseQuizConfigResult => {
@@ -42,34 +87,61 @@ export const useQuizConfig = ({ items, topic }: UseQuizConfigParams): UseQuizCon
   const answerDetailFieldKeysStorageKey: string = QUIZ_CONFIG_STORAGE_KEYS.answerDetailFieldKeys(
     topic.id,
   );
-  const itemFilterFieldKeyStorageKey: string = QUIZ_CONFIG_STORAGE_KEYS.itemFilterFieldKey(topic.id);
-  const itemFilterValueStorageKey: string = QUIZ_CONFIG_STORAGE_KEYS.itemFilterValue(topic.id);
+  const itemFiltersStorageKey: string = QUIZ_CONFIG_STORAGE_KEYS.itemFilters(topic.id);
   const selectedFieldKeysStorageKey: string = QUIZ_CONFIG_STORAGE_KEYS.selectedFieldKeys(topic.id);
   const questionCountStorageKey: string = QUIZ_CONFIG_STORAGE_KEYS.questionCount(topic.id);
   const itemFilterFields = getQuizItemFilterFields(topic);
-  const [itemFilterFieldKey, setItemFilterFieldKey] = useState<string>(() =>
-    getStoredString(itemFilterFieldKeyStorageKey),
+  const [itemFilters, setItemFilters] = useState<QuizItemFilter[]>(() =>
+    getStoredItemFilters(itemFiltersStorageKey),
   );
-  const [itemFilterValue, setItemFilterValue] = useState<string>(() =>
-    getStoredString(itemFilterValueStorageKey),
-  );
-  const effectiveItemFilterFieldKey = itemFilterFields.some((field) => field.key === itemFilterFieldKey)
-    ? itemFilterFieldKey
-    : '';
-  const itemFilterOptions = getQuizItemFilterOptions({
-    fieldKey: effectiveItemFilterFieldKey,
+  const normalizedItemFilters = sanitizeQuizItemFilters({
+    filters: itemFilters,
     items,
     topic,
   });
-  const effectiveItemFilterValue = itemFilterOptions.some((option) => option.value === itemFilterValue)
-    ? itemFilterValue
-    : '';
-  const filteredItems = filterQuizItems({
-    fieldKey: effectiveItemFilterFieldKey,
-    filterValue: effectiveItemFilterValue,
-    items,
-    topic,
-  });
+  const { filteredItems, itemFilterRows } = normalizedItemFilters.reduce<{
+    filteredItems: ReadonlyArray<TopicItem>;
+    itemFilterRows: QuizItemFilterRow[];
+  }>(
+    (result, filter) => {
+      const options = getQuizItemFilterOptions({
+        fieldKey: filter.fieldKey,
+        items: result.filteredItems,
+        topic,
+      });
+      const nextFilter = {
+        fieldKey: filter.fieldKey,
+        value: options.some((option) => option.value === filter.value) ? filter.value : '',
+      };
+      const nextFilteredItems =
+        nextFilter.fieldKey && nextFilter.value
+          ? filterQuizItems({
+              filters: [nextFilter],
+              items: result.filteredItems,
+              topic,
+            })
+          : result.filteredItems;
+
+      return {
+        filteredItems: nextFilteredItems,
+        itemFilterRows: [
+          ...result.itemFilterRows,
+          {
+            ...nextFilter,
+            options,
+          },
+        ],
+      };
+    },
+    {
+      filteredItems: items,
+      itemFilterRows: [],
+    },
+  );
+  const effectiveItemFilters = itemFilterRows.map(({ fieldKey, value }) => ({
+    fieldKey,
+    value,
+  }));
   const eligibleFields = getEligibleQuizFields({ items: filteredItems, topic });
   const startableFields = eligibleFields.filter((field) => field.maxQuestionCount > 0);
   const answerDetailFields: QuizValueField[] = startableFields.map(({ field }) => field);
@@ -107,12 +179,8 @@ export const useQuizConfig = ({ items, topic }: UseQuizConfigParams): UseQuizCon
   }, [answerDetailsExpanded, answerDetailsExpandedStorageKey]);
 
   useEffect(() => {
-    window.localStorage.setItem(itemFilterFieldKeyStorageKey, effectiveItemFilterFieldKey);
-  }, [effectiveItemFilterFieldKey, itemFilterFieldKeyStorageKey]);
-
-  useEffect(() => {
-    window.localStorage.setItem(itemFilterValueStorageKey, effectiveItemFilterValue);
-  }, [effectiveItemFilterValue, itemFilterValueStorageKey]);
+    window.localStorage.setItem(itemFiltersStorageKey, JSON.stringify(effectiveItemFilters));
+  }, [effectiveItemFilters, itemFiltersStorageKey]);
 
   useEffect(() => {
     window.localStorage.setItem(
@@ -214,8 +282,7 @@ export const useQuizConfig = ({ items, topic }: UseQuizConfigParams): UseQuizCon
     setAnswerDetailsEnabled(defaultAnswerDetailsEnabled);
     setAnswerDetailsExpanded(defaultAnswerDetailsExpanded);
     setAnswerDetailFieldKeys([]);
-    setItemFilterFieldKey('');
-    setItemFilterValue('');
+    setItemFilters([DEFAULT_ITEM_FILTER]);
     setSelectedFieldKeys([]);
     setSelectedQuestionCount(defaultQuestionCount);
     setShowCorrectAnswer(DEFAULT_SHOW_CORRECT_ANSWER);
@@ -227,6 +294,10 @@ export const useQuizConfig = ({ items, topic }: UseQuizConfigParams): UseQuizCon
       return;
     }
 
+    const activeItemFilters = effectiveItemFilters.filter(
+      (filter) => Boolean(filter.fieldKey) && Boolean(filter.value),
+    );
+
     void navigate({
       to: '/$topicId/quiz',
       params: { topicId: topic.id },
@@ -234,8 +305,8 @@ export const useQuizConfig = ({ items, topic }: UseQuizConfigParams): UseQuizCon
         answerDetailFieldKeys: answerDetailsEnabled ? effectiveAnswerDetailFieldKeys : [],
         answerFieldKeys: effectiveSelectedFieldKeys,
         autoAdvanceAfterAnswer,
-        itemFilterFieldKey: effectiveItemFilterFieldKey,
-        itemFilterValue: effectiveItemFilterValue,
+        itemFilterFieldKeys: activeItemFilters.map((filter) => filter.fieldKey),
+        itemFilterValues: activeItemFilters.map((filter) => filter.value),
         questionCount,
         showCorrectAnswer,
       },
@@ -251,14 +322,32 @@ export const useQuizConfig = ({ items, topic }: UseQuizConfigParams): UseQuizCon
     effectiveSelectedFieldKeys,
     eligibleFields,
     filteredItemCount: filteredItems.length,
-    handleToggleAnswerDetailField,
-    handleItemFilterFieldChange: (fieldKey: string) => {
-      setItemFilterFieldKey(fieldKey);
-      setItemFilterValue('');
+    handleAddItemFilter: () => {
+      setItemFilters((currentFilters) => [...currentFilters, DEFAULT_ITEM_FILTER]);
+    },
+    handleRemoveItemFilter: (index: number) => {
+      setItemFilters((currentFilters) => {
+        const nextFilters = currentFilters.filter((_, currentIndex) => currentIndex !== index);
+
+        return nextFilters.length ? nextFilters : [DEFAULT_ITEM_FILTER];
+      });
       setSelectedQuestionCount(0);
     },
-    handleItemFilterValueChange: (value: string) => {
-      setItemFilterValue(value);
+    handleToggleAnswerDetailField,
+    handleItemFilterFieldChange: (index: number, fieldKey: string) => {
+      setItemFilters((currentFilters) =>
+        currentFilters.map((filter, currentIndex) =>
+          currentIndex === index ? { fieldKey, value: '' } : filter,
+        ),
+      );
+      setSelectedQuestionCount(0);
+    },
+    handleItemFilterValueChange: (index: number, value: string) => {
+      setItemFilters((currentFilters) =>
+        currentFilters.map((filter, currentIndex) =>
+          currentIndex === index ? { ...filter, value } : filter,
+        ),
+      );
       setSelectedQuestionCount(0);
     },
     handleReset,
@@ -267,10 +356,8 @@ export const useQuizConfig = ({ items, topic }: UseQuizConfigParams): UseQuizCon
     handleQuestionCountInputChange,
     handleQuestionCountSliderChange: (value: number) => setSelectedQuestionCount(value),
     handleToggleField,
-    itemFilterFieldKey: effectiveItemFilterFieldKey,
     itemFilterFields,
-    itemFilterOptions,
-    itemFilterValue: effectiveItemFilterValue,
+    itemFilterRows,
     maxQuestionCount,
     minQuestionCount: MIN_QUESTION_COUNT,
     questionCount,

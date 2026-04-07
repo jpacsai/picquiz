@@ -27,6 +27,8 @@ const QuizConfigView = ({
   effectiveSelectedFieldKeys,
   eligibleFields,
   filteredItemCount,
+  handleAddItemFilter,
+  handleRemoveItemFilter,
   handleToggleAnswerDetailField,
   handleItemFilterFieldChange,
   handleItemFilterValueChange,
@@ -36,10 +38,8 @@ const QuizConfigView = ({
   handleQuestionCountInputChange,
   handleQuestionCountSliderChange,
   handleToggleField,
-  itemFilterFieldKey,
   itemFilterFields,
-  itemFilterOptions,
-  itemFilterValue,
+  itemFilterRows,
   maxQuestionCount,
   minQuestionCount,
   questionCount,
@@ -78,12 +78,12 @@ const QuizConfigView = ({
               <CardContent>
                 <ItemFilterSection
                   filteredItemCount={filteredItemCount}
-                  itemFilterFieldKey={itemFilterFieldKey}
                   itemFilterFields={itemFilterFields}
-                  itemFilterOptions={itemFilterOptions}
-                  itemFilterValue={itemFilterValue}
+                  itemFilterRows={itemFilterRows}
+                  onAddItemFilter={handleAddItemFilter}
                   onItemFilterFieldChange={handleItemFilterFieldChange}
                   onItemFilterValueChange={handleItemFilterValueChange}
+                  onRemoveItemFilter={handleRemoveItemFilter}
                   totalItemCount={totalItemCount}
                 />
               </CardContent>

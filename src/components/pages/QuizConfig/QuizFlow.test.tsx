@@ -51,6 +51,11 @@ const topic: Topic = {
       type: 'boolean',
     },
     {
+      key: 'quiz_ready',
+      label: 'Quiz ready',
+      type: 'boolean',
+    },
+    {
       buttonLabel: 'Upload image',
       fileNameFields: ['artist', 'title'],
       key: 'image_upload',
@@ -75,6 +80,7 @@ const items: ReadonlyArray<TopicItem> = [
     image_url_desktop: 'https://example.com/1-desktop.jpg',
     image_url_mobile: 'https://example.com/1-mobile.jpg',
     featured: true,
+    quiz_ready: true,
     title: 'Mona Lisa',
     year: 1503,
   },
@@ -84,6 +90,7 @@ const items: ReadonlyArray<TopicItem> = [
     image_url_desktop: 'https://example.com/2-desktop.jpg',
     image_url_mobile: 'https://example.com/2-mobile.jpg',
     featured: true,
+    quiz_ready: true,
     title: 'The Last Supper',
     year: 1498,
   },
@@ -93,6 +100,7 @@ const items: ReadonlyArray<TopicItem> = [
     image_url_desktop: 'https://example.com/3-desktop.jpg',
     image_url_mobile: 'https://example.com/3-mobile.jpg',
     featured: false,
+    quiz_ready: false,
     title: 'Girl with a Pearl Earring',
     year: 1665,
   },
@@ -102,6 +110,7 @@ const items: ReadonlyArray<TopicItem> = [
     image_url_desktop: 'https://example.com/4-desktop.jpg',
     image_url_mobile: 'https://example.com/4-mobile.jpg',
     featured: false,
+    quiz_ready: false,
     title: 'The Night Watch',
     year: 1642,
   },
@@ -111,6 +120,7 @@ const items: ReadonlyArray<TopicItem> = [
     image_url_desktop: 'https://example.com/5-desktop.jpg',
     image_url_mobile: 'https://example.com/5-mobile.jpg',
     featured: true,
+    quiz_ready: true,
     title: 'Guernica',
     year: 1937,
   },
@@ -120,6 +130,7 @@ const items: ReadonlyArray<TopicItem> = [
     featured: true,
     image_url_desktop: 'https://example.com/6-desktop.jpg',
     image_url_mobile: 'https://example.com/6-mobile.jpg',
+    quiz_ready: true,
     title: 'The Kiss',
     year: 1908,
   },
@@ -165,6 +176,8 @@ describe('Quiz flow integration', () => {
         answerDetailFieldKeys: [],
         answerFieldKeys: ['title', 'year'],
         autoAdvanceAfterAnswer: false,
+        itemFilterFieldKeys: [],
+        itemFilterValues: [],
         questionCount: 10,
         showCorrectAnswer: true,
       },
@@ -334,6 +347,8 @@ describe('Quiz flow integration', () => {
         answerDetailFieldKeys: [],
         answerFieldKeys: ['year'],
         autoAdvanceAfterAnswer: false,
+        itemFilterFieldKeys: [],
+        itemFilterValues: [],
         questionCount: 6,
         showCorrectAnswer: true,
       },
@@ -350,21 +365,36 @@ describe('Quiz flow integration', () => {
     await user.click(screen.getByRole('option', { name: 'Kiemelt' }));
     await user.click(screen.getByRole('combobox', { name: 'Szűrt érték' }));
     await user.click(screen.getByRole('option', { name: 'Igaz' }));
+    await user.click(screen.getByRole('button', { name: 'Új feltétel' }));
+    await user.click(screen.getByRole('combobox', { name: 'Szűrés mező szerint 2.' }));
+    await user.click(screen.getByRole('option', { name: 'Quiz ready' }));
+    await user.click(screen.getByRole('combobox', { name: 'Szűrt érték 2.' }));
+    await user.click(screen.getByRole('option', { name: 'Igaz' }));
 
     expect(screen.getByText('4 / 6 elem')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Kvíz indítása' }));
 
-    expect(window.localStorage.getItem('picquiz-quiz-item-filter-field-key-art')).toBe('featured');
-    expect(window.localStorage.getItem('picquiz-quiz-item-filter-value-art')).toBe('true');
+    expect(window.localStorage.getItem('picquiz-quiz-item-filters-art')).toBe(
+      JSON.stringify([
+        {
+          fieldKey: 'featured',
+          value: 'true',
+        },
+        {
+          fieldKey: 'quiz_ready',
+          value: 'true',
+        },
+      ]),
+    );
     expect(navigateMock).toHaveBeenLastCalledWith({
       params: { topicId: 'art' },
       search: {
         answerDetailFieldKeys: [],
         answerFieldKeys: ['title'],
         autoAdvanceAfterAnswer: false,
-        itemFilterFieldKey: 'featured',
-        itemFilterValue: 'true',
+        itemFilterFieldKeys: ['featured', 'quiz_ready'],
+        itemFilterValues: ['true', 'true'],
         questionCount: 4,
         showCorrectAnswer: true,
       },
@@ -379,7 +409,29 @@ describe('Quiz flow integration', () => {
       'Kiemelt',
     );
     expect(screen.getByRole('combobox', { name: 'Szűrt érték' })).toHaveTextContent('Igaz');
+    expect(screen.getByRole('combobox', { name: 'Szűrés mező szerint 2.' })).toHaveTextContent(
+      'Quiz ready',
+    );
+    expect(screen.getByRole('combobox', { name: 'Szűrt érték 2.' })).toHaveTextContent('Igaz');
     expect(screen.getByText('4 / 6 elem')).toBeInTheDocument();
+  });
+
+  it('builds lower filter row options from the already filtered items', async () => {
+    const user = userEvent.setup();
+
+    renderWithTheme(<QuizConfig items={items} topic={topic} />);
+
+    await user.click(screen.getByRole('combobox', { name: 'Szűrés mező szerint' }));
+    await user.click(screen.getByRole('option', { name: 'Kiemelt' }));
+    await user.click(screen.getByRole('combobox', { name: 'Szűrt érték' }));
+    await user.click(screen.getByRole('option', { name: 'Igaz' }));
+    await user.click(screen.getByRole('button', { name: 'Új feltétel' }));
+    await user.click(screen.getByRole('combobox', { name: 'Szűrés mező szerint 2.' }));
+    await user.click(screen.getByRole('option', { name: 'Alkoto' }));
+    await user.click(screen.getByRole('combobox', { name: 'Szűrt érték 2.' }));
+
+    expect(screen.getByRole('option', { name: 'Leonardo da Vinci' })).toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: 'Johannes Vermeer' })).not.toBeInTheDocument();
   });
 
   it('resets quiz config controls to their defaults', async () => {
@@ -419,6 +471,8 @@ describe('Quiz flow integration', () => {
         answerDetailFieldKeys: [],
         answerFieldKeys: ['title'],
         autoAdvanceAfterAnswer: false,
+        itemFilterFieldKeys: [],
+        itemFilterValues: [],
         questionCount: 6,
         showCorrectAnswer: true,
       },
@@ -446,6 +500,8 @@ describe('Quiz flow integration', () => {
         answerDetailFieldKeys: ['year'],
         answerFieldKeys: ['title'],
         autoAdvanceAfterAnswer: false,
+        itemFilterFieldKeys: [],
+        itemFilterValues: [],
         questionCount: 6,
         showCorrectAnswer: false,
       },

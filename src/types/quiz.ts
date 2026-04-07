@@ -22,6 +22,15 @@ export type QuizItemFilterOption = {
   value: string;
 };
 
+export type QuizItemFilter = {
+  fieldKey: string;
+  value: string;
+};
+
+export type QuizItemFilterRow = QuizItemFilter & {
+  options: QuizItemFilterOption[];
+};
+
 export type QuizQuestionOption = {
   id: string;
   isCorrect: boolean;
@@ -66,19 +75,19 @@ export type UseQuizConfigResult = {
   effectiveSelectedFieldKeys: string[];
   eligibleFields: QuizEligibleField[];
   filteredItemCount: number;
+  handleAddItemFilter: () => void;
+  handleRemoveItemFilter: (index: number) => void;
   handleToggleAnswerDetailField: (fieldKey: string, checked: boolean) => void;
-  handleItemFilterFieldChange: (fieldKey: string) => void;
-  handleItemFilterValueChange: (value: string) => void;
+  handleItemFilterFieldChange: (index: number, fieldKey: string) => void;
+  handleItemFilterValueChange: (index: number, value: string) => void;
   handleReset: () => void;
   handleStartQuiz: () => void;
   handleQuestionCountBlur: () => void;
   handleQuestionCountInputChange: (nextValue: string) => void;
   handleQuestionCountSliderChange: (nextValue: number) => void;
   handleToggleField: (fieldKey: string, checked: boolean) => void;
-  itemFilterFieldKey: string;
   itemFilterFields: QuizItemFilterField[];
-  itemFilterOptions: QuizItemFilterOption[];
-  itemFilterValue: string;
+  itemFilterRows: QuizItemFilterRow[];
   maxQuestionCount: number;
   minQuestionCount: number;
   questionCount: number;

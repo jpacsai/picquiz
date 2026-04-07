@@ -1,15 +1,17 @@
-import { Box, MenuItem, Stack, TextField, Typography } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import { Box, Button, IconButton, MenuItem, Stack, TextField, Typography } from '@mui/material';
 
-import type { QuizItemFilterField, QuizItemFilterOption } from '@/types/quiz';
+import type { QuizItemFilterField, QuizItemFilterRow } from '@/types/quiz';
 
 type ItemFilterSectionProps = {
   filteredItemCount: number;
-  itemFilterFieldKey: string;
   itemFilterFields: ReadonlyArray<QuizItemFilterField>;
-  itemFilterOptions: ReadonlyArray<QuizItemFilterOption>;
-  itemFilterValue: string;
-  onItemFilterFieldChange: (fieldKey: string) => void;
-  onItemFilterValueChange: (value: string) => void;
+  itemFilterRows: ReadonlyArray<QuizItemFilterRow>;
+  onAddItemFilter: () => void;
+  onItemFilterFieldChange: (index: number, fieldKey: string) => void;
+  onItemFilterValueChange: (index: number, value: string) => void;
+  onRemoveItemFilter: (index: number) => void;
   totalItemCount: number;
 };
 
@@ -28,12 +30,12 @@ const selectFieldSx = {
 
 const ItemFilterSection = ({
   filteredItemCount,
-  itemFilterFieldKey,
   itemFilterFields,
-  itemFilterOptions,
-  itemFilterValue,
+  itemFilterRows,
+  onAddItemFilter,
   onItemFilterFieldChange,
   onItemFilterValueChange,
+  onRemoveItemFilter,
   totalItemCount,
 }: ItemFilterSectionProps) => {
   return (
@@ -53,49 +55,80 @@ const ItemFilterSection = ({
         </Typography>
       </Box>
 
-      <Box
-        sx={{
-          display: 'grid',
-          gap: 2,
-          gridTemplateColumns: {
-            md: 'minmax(220px, 280px) minmax(240px, 1fr)',
-            xs: '1fr',
-          },
-        }}
-      >
-        <TextField
-          select
-          label="Szűrés mező szerint"
-          size="small"
-          sx={selectFieldSx}
-          value={itemFilterFieldKey}
-          onChange={(event) => onItemFilterFieldChange(event.target.value)}
-        >
-          <MenuItem value="">Összes elem</MenuItem>
-          {itemFilterFields.map((field) => (
-            <MenuItem key={field.key} value={field.key}>
-              {field.label}
-            </MenuItem>
-          ))}
-        </TextField>
+      <Stack spacing={2}>
+        {itemFilterRows.map((row, index) => (
+          <Box
+            key={`item-filter-row-${index}`}
+            sx={{
+              display: 'grid',
+              gap: 2,
+              gridTemplateColumns: {
+                md: 'minmax(220px, 280px) minmax(240px, 1fr) auto',
+                xs: '1fr',
+              },
+            }}
+          >
+            <TextField
+              select
+              label={index === 0 ? 'Szűrés mező szerint' : `Szűrés mező szerint ${index + 1}.`}
+              size="small"
+              sx={selectFieldSx}
+              value={row.fieldKey}
+              onChange={(event) => onItemFilterFieldChange(index, event.target.value)}
+            >
+              <MenuItem value="">Összes elem</MenuItem>
+              {itemFilterFields.map((field) => (
+                <MenuItem key={field.key} value={field.key}>
+                  {field.label}
+                </MenuItem>
+              ))}
+            </TextField>
 
-        <TextField
-          select
-          disabled={!itemFilterFieldKey}
-          label="Szűrt érték"
-          size="small"
-          sx={selectFieldSx}
-          value={itemFilterValue}
-          onChange={(event) => onItemFilterValueChange(event.target.value)}
-        >
-          <MenuItem value="">Összes érték</MenuItem>
-          {itemFilterOptions.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </TextField>
-      </Box>
+            <TextField
+              select
+              disabled={!row.fieldKey}
+              label={index === 0 ? 'Szűrt érték' : `Szűrt érték ${index + 1}.`}
+              size="small"
+              sx={selectFieldSx}
+              value={row.value}
+              onChange={(event) => onItemFilterValueChange(index, event.target.value)}
+            >
+              <MenuItem value="">Összes érték</MenuItem>
+              {row.options.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+
+            <Box
+              sx={{
+                alignItems: { md: 'center', xs: 'flex-start' },
+                display: 'flex',
+                justifyContent: 'flex-end',
+              }}
+            >
+              {itemFilterRows.length > 1 ? (
+                <IconButton
+                  aria-label={`Szűrő feltétel ${index + 1}. törlése`}
+                  onClick={() => onRemoveItemFilter(index)}
+                  size="small"
+                >
+                  <RemoveCircleOutlineIcon />
+                </IconButton>
+              ) : (
+                <Box sx={{ width: 40 }} />
+              )}
+            </Box>
+          </Box>
+        ))}
+
+        <Box>
+          <Button onClick={onAddItemFilter} size="small" startIcon={<AddIcon />} variant="text">
+            Új feltétel
+          </Button>
+        </Box>
+      </Stack>
     </Stack>
   );
 };

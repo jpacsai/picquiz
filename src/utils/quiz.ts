@@ -4,6 +4,7 @@ import {
 } from '@/consts/quiz';
 import type {
   QuizEligibleField,
+  QuizItemFilter,
   QuizItemFilterField,
   QuizItemFilterOption,
   QuizPlayableItem,
@@ -518,34 +519,75 @@ export const getQuizItemFilterOptions = ({
     .sort((left, right) => left.label.localeCompare(right.label, 'hu'));
 };
 
-export const filterQuizItems = ({
-  fieldKey,
-  filterValue,
+export const sanitizeQuizItemFilters = ({
+  filters,
   items,
   topic,
 }: {
-  fieldKey: string;
-  filterValue: string;
+  filters: ReadonlyArray<QuizItemFilter>;
+  items: ReadonlyArray<TopicItem>;
+  topic: Topic;
+}): QuizItemFilter[] =>
+  filters
+    .map((filter) => ({
+      fieldKey: filter.fieldKey.trim(),
+      value: filter.value.trim(),
+    }))
+    .filter((filter) =>
+      filter.fieldKey ? getQuizItemFilterFields(topic).some((field) => field.key === filter.fieldKey) : true,
+    )
+    .map((filter) => {
+      if (!filter.fieldKey) {
+        return {
+          fieldKey: '',
+          value: '',
+        };
+      }
+
+      const options = getQuizItemFilterOptions({
+        fieldKey: filter.fieldKey,
+        items,
+        topic,
+      });
+
+      return {
+        fieldKey: filter.fieldKey,
+        value: options.some((option) => option.value === filter.value) ? filter.value : '',
+      };
+    });
+
+export const filterQuizItems = ({
+  filters,
+  items,
+  topic,
+}: {
+  filters: ReadonlyArray<QuizItemFilter>;
   items: ReadonlyArray<TopicItem>;
   topic: Topic;
 }): ReadonlyArray<TopicItem> => {
-  if (!fieldKey || !filterValue) {
-    return items;
-  }
+  const activeFilters = sanitizeQuizItemFilters({ filters, items, topic }).filter(
+    (filter) => Boolean(filter.fieldKey) && Boolean(filter.value),
+  );
 
-  const activeField = getQuizItemFilterFields(topic).find((field) => field.key === fieldKey);
-
-  if (!activeField) {
+  if (!activeFilters.length) {
     return items;
   }
 
   return items.filter((item) => {
-    return (
-      getQuizItemFilterValue({
-        fieldType: activeField.type,
-        value: item[activeField.key],
-      }) === filterValue
-    );
+    return activeFilters.every((filter) => {
+      const activeField = getQuizItemFilterFields(topic).find((field) => field.key === filter.fieldKey);
+
+      if (!activeField) {
+        return true;
+      }
+
+      return (
+        getQuizItemFilterValue({
+          fieldType: activeField.type,
+          value: item[activeField.key],
+        }) === filter.value
+      );
+    });
   });
 };
 
