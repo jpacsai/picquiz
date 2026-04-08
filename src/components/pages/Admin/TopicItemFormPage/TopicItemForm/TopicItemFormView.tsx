@@ -75,6 +75,59 @@ const TopicItemFormView = ({
           void form.handleSubmit();
         }}
       >
+        <form.Subscribe selector={(state: { isDirty: boolean }) => state.isDirty}>
+          {(isDirty: boolean) => {
+            const isActionEnabled = isDirty || Boolean(pendingImageSelection);
+
+            return (
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: 2,
+                  flexWrap: 'wrap',
+                  justifyContent: 'flex-end',
+                  marginBottom: '24px',
+                }}
+              >
+                {hasRefreshableSelectFields && onRefreshSelectOptions ? (
+                  <IconButton
+                    type="button"
+                    aria-label="Selectek frissítése"
+                    disabled={isSubmitting || isRefreshingSelectOptions}
+                    onClick={onRefreshSelectOptions}
+                  >
+                    {isRefreshingSelectOptions ? <CircularProgress size={18} /> : <RefreshIcon />}
+                  </IconButton>
+                ) : null}
+
+                <Button
+                  type="button"
+                  variant="outlined"
+                  disabled={isSubmitting || !isActionEnabled}
+                  onClick={onUndo}
+                >
+                  Visszaállítás
+                </Button>
+
+                <Button
+                  type="submit"
+                  variant="contained"
+                  disabled={isSubmitting || !isActionEnabled}
+                >
+                  {isSubmitting ? (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <CircularProgress size={18} color="inherit" />
+                      Mentés...
+                    </Box>
+                  ) : (
+                    'Mentés'
+                  )}
+                </Button>
+              </Box>
+            );
+          }}
+        </form.Subscribe>
+
         <form.Subscribe selector={(state: { values: Record<string, string | number | boolean> }) => state.values}>
           {(formValues: Record<string, string | number | boolean>) => (
             <>
@@ -193,51 +246,6 @@ const TopicItemFormView = ({
             {submitError}
           </Alert>
         ) : null}
-
-        <form.Subscribe selector={(state: { isDirty: boolean }) => state.isDirty}>
-          {(isDirty: boolean) => {
-            const isActionEnabled = isDirty || Boolean(pendingImageSelection);
-
-            return (
-              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                {hasRefreshableSelectFields && onRefreshSelectOptions ? (
-                  <IconButton
-                    type="button"
-                    aria-label="Selectek frissítése"
-                    disabled={isSubmitting || isRefreshingSelectOptions}
-                    onClick={onRefreshSelectOptions}
-                  >
-                    {isRefreshingSelectOptions ? <CircularProgress size={18} /> : <RefreshIcon />}
-                  </IconButton>
-                ) : null}
-
-                <Button
-                  type="button"
-                  variant="outlined"
-                  disabled={isSubmitting || !isActionEnabled}
-                  onClick={onUndo}
-                >
-                  Visszaállítás
-                </Button>
-
-                <Button
-                  type="submit"
-                  variant="contained"
-                  disabled={isSubmitting || !isActionEnabled}
-                >
-                  {isSubmitting ? (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <CircularProgress size={18} color="inherit" />
-                      Mentés...
-                    </Box>
-                  ) : (
-                    'Mentés'
-                  )}
-                </Button>
-              </Box>
-            );
-          }}
-        </form.Subscribe>
       </form>
 
       <FullPageLoader
