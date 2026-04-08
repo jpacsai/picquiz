@@ -1,6 +1,6 @@
 import { useMediaQuery, useTheme } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
-import { type ReactNode, useState } from 'react';
+import { useState } from 'react';
 
 import type { Topic, TopicItem } from '@/types/topics';
 
@@ -9,7 +9,6 @@ import {
   getTopicItemImageUrls,
   getTopicItemTitle,
   getTopicItemValuesByDisplay,
-  joinDisplayValueNodes,
 } from './utils';
 
 type UseTopicItemPageParams = {
@@ -24,9 +23,7 @@ export const useTopicItemPage = ({ item, topic }: UseTopicItemPageParams) => {
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [loadedPreviewImageUrl, setLoadedPreviewImageUrl] = useState<string | null>(null);
   const titleValues = getTopicItemValuesByDisplay(topic.fields, item, 'title');
-  const metaValues = getTopicItemValuesByDisplay(topic.fields, item, 'meta');
   const title = titleValues[0]?.text ?? getTopicItemTitle(topic.fields, item);
-  const meta = metaValues.length ? joinDisplayValueNodes(metaValues) : undefined;
   const detailRows = getTopicItemDetailRows(topic.fields, item);
   const { desktopImageUrl, mobileImageUrl } = getTopicItemImageUrls(topic.fields, item);
   const previewImageUrl = isMobileScreen
@@ -40,7 +37,6 @@ export const useTopicItemPage = ({ item, topic }: UseTopicItemPageParams) => {
     imageAlt: `${title} kep`,
     isImagePreviewOpen,
     isMobileScreen,
-    meta: meta as ReactNode | undefined,
     onCloseImagePreview: () => {
       setIsImagePreviewOpen(false);
       setLoadedPreviewImageUrl(null);

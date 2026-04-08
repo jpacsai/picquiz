@@ -13,7 +13,6 @@ const TopicItemPageView = ({
   imageAlt,
   isImagePreviewOpen,
   isMobileScreen,
-  meta,
   onCloseImagePreview,
   onEdit,
   onImageLoad,
