@@ -15,6 +15,23 @@ const uploadResponsiveTopicImagesMock = vi.fn();
 const deleteTopicImageByPathMock = vi.fn();
 const generateResponsiveImageVariantsMock = vi.fn();
 
+type Deferred<T> = {
+  promise: Promise<T>;
+  reject: (reason?: unknown) => void;
+  resolve: (value: T | PromiseLike<T>) => void;
+};
+
+const createDeferred = <T,>(): Deferred<T> => {
+  const deferred = {} as Deferred<T>;
+
+  deferred.promise = new Promise<T>((resolve, reject) => {
+    deferred.resolve = resolve;
+    deferred.reject = reject;
+  });
+
+  return deferred;
+};
+
 vi.mock('@tanstack/react-query', () => ({
   useQueryClient: () => ({
     invalidateQueries: invalidateQueriesMock,
@@ -911,5 +928,76 @@ describe('TopicItemForm saving', () => {
 
     expect(screen.getByRole('button', { name: 'Visszaállítás' })).toBeEnabled();
     expect(screen.getByRole('button', { name: 'Mentés' })).toBeEnabled();
+  });
+
+  it('shows a shared full page loader while creating a new item', async () => {
+    const user = userEvent.setup();
+    const fields: TopicField[] = [
+      { key: 'artist', label: 'Artist', required: true, type: 'string' },
+      { key: 'title', label: 'Title', required: true, type: 'string' },
+    ];
+    const createTopicItemDeferred = createDeferred<{ id: string }>();
+    createTopicItemMock.mockImplementation(() => createTopicItemDeferred.promise);
+
+    render(
+      <TopicItemForm collectionName="art" fields={fields} storagePrefix="art" topicId="art" />,
+    );
+
+    await user.type(screen.getByTestId('form-input-artist'), 'Leonardo da Vinci');
+    await user.type(screen.getByTestId('form-input-title'), 'Mona Lisa');
+    await user.click(screen.getByRole('button', { name: 'Mentés' }));
+
+    expect(screen.getByTestId('topic-item-form-full-page-loader')).toBeVisible();
+    expect(screen.getByText('Feltöltés és mentés folyamatban...')).toBeInTheDocument();
+
+    createTopicItemDeferred.resolve({ id: 'doc-1' });
+
+    await waitFor(() => {
+      expect(navigateMock).toHaveBeenCalledWith({
+        params: { topicId: 'art' },
+        to: '/$topicId/items/success',
+      });
+    });
+  });
+
+  it('does not show the full page loader while editing an item', async () => {
+    const user = userEvent.setup();
+    const fields: TopicField[] = [
+      { key: 'artist', label: 'Artist', required: true, type: 'string' },
+      { key: 'title', label: 'Title', required: true, type: 'string' },
+    ];
+    const updateTopicItemDeferred = createDeferred<void>();
+    updateTopicItemMock.mockImplementation(() => updateTopicItemDeferred.promise);
+
+    render(
+      <TopicItemForm
+        collectionName="art"
+        fields={fields}
+        initialValues={{
+          artist: 'Leonardo da Vinci',
+          title: 'Mona Lisa',
+        }}
+        itemId="item-1"
+        mode="edit"
+        storagePrefix="art"
+        topicId="art"
+      />,
+    );
+
+    await user.clear(screen.getByTestId('form-input-title'));
+    await user.type(screen.getByTestId('form-input-title'), 'Mona Lisa Restored');
+    await user.click(screen.getByRole('button', { name: 'Mentés' }));
+
+    expect(screen.getByTestId('topic-item-form-full-page-loader')).not.toBeVisible();
+
+    updateTopicItemDeferred.resolve();
+
+    await waitFor(() => {
+      expect(navigateMock).toHaveBeenCalledWith({
+        params: { topicId: 'art' },
+        search: { saved: 'edited' },
+        to: '/$topicId/items',
+      });
+    });
   });
 });

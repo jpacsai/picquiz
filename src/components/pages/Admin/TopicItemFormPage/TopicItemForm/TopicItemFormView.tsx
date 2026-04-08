@@ -7,6 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 
 import FormField from '@/components/ui/Form/FormField';
+import FullPageLoader from '@/components/ui/layout/FullPageLoader';
 import type { FormMode, UseTopicItemFormResult } from '@/types/topicItemForm';
 import type { TopicField } from '@/types/topics';
 
@@ -44,6 +45,7 @@ const TopicItemFormView = ({
   submitError,
 }: TopicItemFormViewProps) => {
   const hasRefreshableSelectFields = fields.some((field) => field.type === 'select');
+  const showFullPageLoader = isSubmitting && mode === 'create';
   const hiddenFieldKeys = new Set(
     fields.flatMap((field) =>
       field.type === 'imageUpload'
@@ -64,69 +66,30 @@ const TopicItemFormView = ({
   const imageUploadFields = visibleFields.filter((field) => field.type === 'imageUpload');
 
   return (
-    <form
-      noValidate
-      onSubmit={(event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        void form.handleSubmit();
-      }}
-    >
-      <form.Subscribe selector={(state: { values: Record<string, string | number | boolean> }) => state.values}>
-        {(formValues: Record<string, string | number | boolean>) => (
-          <>
-            {regularFields.length > 0 ? (
-              <Box
-                sx={{
-                  alignItems: 'end',
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(2, 1fr)',
-                  gap: '20px',
-                  marginBottom: imageUploadFields.length > 0 ? '20px' : '30px',
-                }}
-                data-testid="topic-item-form-fields-container"
-              >
-                {regularFields.map((field) => (
-                  <FormField
-                    key={field.key}
-                    autocompleteOptions={autocompleteOptionsByField?.[field.key]}
-                    fields={fields}
-                    field={field}
-                    form={form}
-                    formValues={formValues}
-                    derivationIndex={derivationIndex}
-                    mode={mode}
-                    onAutocompleteCopy={onAutocompleteCopy}
-                    pendingImageSelection={pendingImageSelection}
-                    onSelectPendingImage={onSelectPendingImage}
-                  />
-                ))}
-              </Box>
-            ) : null}
-
-            {imageUploadFields.length > 0 ? (
-              <Box
-                sx={{
-                  display: 'grid',
-                  gap: '20px',
-                  gridTemplateColumns: pendingImageSelection
-                    ? {
-                        md: 'minmax(280px, 1fr) minmax(220px, auto)',
-                        xs: '1fr',
-                      }
-                    : '1fr',
-                  alignItems: 'start',
-                  marginBottom: '30px',
-                }}
-                data-testid="topic-item-form-image-upload-container"
-              >
+    <Box sx={{ position: 'relative' }}>
+      <form
+        noValidate
+        onSubmit={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          void form.handleSubmit();
+        }}
+      >
+        <form.Subscribe selector={(state: { values: Record<string, string | number | boolean> }) => state.values}>
+          {(formValues: Record<string, string | number | boolean>) => (
+            <>
+              {regularFields.length > 0 ? (
                 <Box
                   sx={{
+                    alignItems: 'end',
                     display: 'grid',
+                    gridTemplateColumns: 'repeat(2, 1fr)',
                     gap: '20px',
+                    marginBottom: imageUploadFields.length > 0 ? '20px' : '30px',
                   }}
+                  data-testid="topic-item-form-fields-container"
                 >
-                  {imageUploadFields.map((field) => (
+                  {regularFields.map((field) => (
                     <FormField
                       key={field.key}
                       autocompleteOptions={autocompleteOptionsByField?.[field.key]}
@@ -142,104 +105,147 @@ const TopicItemFormView = ({
                     />
                   ))}
                 </Box>
+              ) : null}
 
-                {pendingImageSelection ? (
+              {imageUploadFields.length > 0 ? (
+                <Box
+                  sx={{
+                    alignItems: 'start',
+                    display: 'grid',
+                    gap: '20px',
+                    gridTemplateColumns: pendingImageSelection
+                      ? {
+                          md: 'minmax(280px, 1fr) minmax(220px, auto)',
+                          xs: '1fr',
+                        }
+                      : '1fr',
+                    marginBottom: '30px',
+                  }}
+                  data-testid="topic-item-form-image-upload-container"
+                >
                   <Box
                     sx={{
-                      minWidth: 0,
+                      display: 'grid',
+                      gap: '20px',
                     }}
                   >
-                    <Typography gutterBottom variant="subtitle2">
-                      Feltöltésre váró kép
-                    </Typography>
-                    <Box
-                      component="img"
-                      src={pendingImageSelection.previewUrl}
-                      alt={pendingImageSelection.file.name}
-                      sx={{
-                        display: 'block',
-                        width: 180,
-                        maxWidth: '100%',
-                        height: 'auto',
-                        borderRadius: 1,
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        objectFit: 'contain',
-                        backgroundColor: 'background.paper',
-                      }}
-                    />
-                    <Typography sx={{ marginTop: 1 }} variant="body2" color="text.secondary">
-                      {pendingImageSelection.file.name}
-                    </Typography>
+                    {imageUploadFields.map((field) => (
+                      <FormField
+                        key={field.key}
+                        autocompleteOptions={autocompleteOptionsByField?.[field.key]}
+                        fields={fields}
+                        field={field}
+                        form={form}
+                        formValues={formValues}
+                        derivationIndex={derivationIndex}
+                        mode={mode}
+                        onAutocompleteCopy={onAutocompleteCopy}
+                        pendingImageSelection={pendingImageSelection}
+                        onSelectPendingImage={onSelectPendingImage}
+                      />
+                    ))}
                   </Box>
-                ) : null}
-              </Box>
-            ) : null}
-          </>
-        )}
-      </form.Subscribe>
 
-      {autocompleteCopyWarning ? (
-        <Alert severity="warning" sx={{ marginBottom: '16px' }}>
-          {autocompleteCopyWarning}
-        </Alert>
-      ) : null}
-
-      {submitError ? (
-        <Alert severity="error" sx={{ marginBottom: '16px' }}>
-          {submitError}
-        </Alert>
-      ) : null}
-
-      <form.Subscribe selector={(state: { isDirty: boolean }) => state.isDirty}>
-        {(isDirty: boolean) => (
-          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-            {(() => {
-              const isActionEnabled = isDirty || Boolean(pendingImageSelection);
-
-              return (
-                <>
-                  {hasRefreshableSelectFields && onRefreshSelectOptions ? (
-                    <IconButton
-                      type="button"
-                      aria-label="Selectek frissítése"
-                      disabled={isSubmitting || isRefreshingSelectOptions}
-                      onClick={onRefreshSelectOptions}
+                  {pendingImageSelection ? (
+                    <Box
+                      sx={{
+                        minWidth: 0,
+                      }}
                     >
-                      {isRefreshingSelectOptions ? <CircularProgress size={18} /> : <RefreshIcon />}
-                    </IconButton>
+                      <Typography gutterBottom variant="subtitle2">
+                        Feltöltésre váró kép
+                      </Typography>
+                      <Box
+                        component="img"
+                        src={pendingImageSelection.previewUrl}
+                        alt={pendingImageSelection.file.name}
+                        sx={{
+                          backgroundColor: 'background.paper',
+                          border: '1px solid',
+                          borderColor: 'divider',
+                          borderRadius: 1,
+                          display: 'block',
+                          height: 'auto',
+                          maxWidth: '100%',
+                          objectFit: 'contain',
+                          width: 180,
+                        }}
+                      />
+                      <Typography sx={{ marginTop: 1 }} variant="body2" color="text.secondary">
+                        {pendingImageSelection.file.name}
+                      </Typography>
+                    </Box>
                   ) : null}
+                </Box>
+              ) : null}
+            </>
+          )}
+        </form.Subscribe>
 
-                  <Button
+        {autocompleteCopyWarning ? (
+          <Alert severity="warning" sx={{ marginBottom: '16px' }}>
+            {autocompleteCopyWarning}
+          </Alert>
+        ) : null}
+
+        {submitError ? (
+          <Alert severity="error" sx={{ marginBottom: '16px' }}>
+            {submitError}
+          </Alert>
+        ) : null}
+
+        <form.Subscribe selector={(state: { isDirty: boolean }) => state.isDirty}>
+          {(isDirty: boolean) => {
+            const isActionEnabled = isDirty || Boolean(pendingImageSelection);
+
+            return (
+              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                {hasRefreshableSelectFields && onRefreshSelectOptions ? (
+                  <IconButton
                     type="button"
-                    variant="outlined"
-                    disabled={isSubmitting || !isActionEnabled}
-                    onClick={onUndo}
+                    aria-label="Selectek frissítése"
+                    disabled={isSubmitting || isRefreshingSelectOptions}
+                    onClick={onRefreshSelectOptions}
                   >
-                    Visszaállítás
-                  </Button>
+                    {isRefreshingSelectOptions ? <CircularProgress size={18} /> : <RefreshIcon />}
+                  </IconButton>
+                ) : null}
 
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    disabled={isSubmitting || !isActionEnabled}
-                  >
-                    {isSubmitting ? (
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <CircularProgress size={18} color="inherit" />
-                        Mentés...
-                      </Box>
-                    ) : (
-                      'Mentés'
-                    )}
-                  </Button>
-                </>
-              );
-            })()}
-          </Box>
-        )}
-      </form.Subscribe>
-    </form>
+                <Button
+                  type="button"
+                  variant="outlined"
+                  disabled={isSubmitting || !isActionEnabled}
+                  onClick={onUndo}
+                >
+                  Visszaállítás
+                </Button>
+
+                <Button
+                  type="submit"
+                  variant="contained"
+                  disabled={isSubmitting || !isActionEnabled}
+                >
+                  {isSubmitting ? (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <CircularProgress size={18} color="inherit" />
+                      Mentés...
+                    </Box>
+                  ) : (
+                    'Mentés'
+                  )}
+                </Button>
+              </Box>
+            );
+          }}
+        </form.Subscribe>
+      </form>
+
+      <FullPageLoader
+        label="Feltöltés és mentés folyamatban..."
+        open={showFullPageLoader}
+        testId="topic-item-form-full-page-loader"
+      />
+    </Box>
   );
 };
 
