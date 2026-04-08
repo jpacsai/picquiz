@@ -27,15 +27,25 @@ const getTopicLabel = (matches: ReturnType<typeof useMatches>) => {
   return loaderData?.topic?.label ?? loaderData?.sourceTopic?.label;
 };
 
+const getItemLabel = (matches: ReturnType<typeof useMatches>) => {
+  const matchWithItem = [...matches].reverse().find((match) => {
+    const loaderData = match.loaderData as { item?: { name?: string } } | undefined;
+
+    return typeof loaderData?.item?.name === 'string' && loaderData.item.name.trim().length > 0;
+  });
+
+  const loaderData = matchWithItem?.loaderData as { item?: { name?: string } } | undefined;
+
+  return loaderData?.item?.name;
+};
+
 const getSchemaItems = (
   context: BreadcrumbRouteContext,
   currentLabel?: string,
   includeTopicLabel = false,
 ): BreadcrumbItem[] => {
   if (!includeTopicLabel || !context.topicId || !context.topicLabel) {
-    return currentLabel
-      ? [HOME_BREADCRUMB_ITEM, { label: currentLabel }]
-      : [HOME_BREADCRUMB_ITEM];
+    return currentLabel ? [HOME_BREADCRUMB_ITEM, { label: currentLabel }] : [HOME_BREADCRUMB_ITEM];
   }
 
   return currentLabel
@@ -88,6 +98,16 @@ const getTopicItemsWithItems = (
     : [HOME_BREADCRUMB_ITEM, topicItem, itemsItem];
 };
 
+const getTopicItemsWithItem = (
+  context: BreadcrumbRouteContext,
+  itemLabel?: string,
+  currentLabel?: string,
+): BreadcrumbItem[] => {
+  const items = getTopicItemsWithItems(context, itemLabel);
+
+  return currentLabel ? [...items, { label: currentLabel }] : items;
+};
+
 export const getItems = (matches: ReturnType<typeof useMatches>): BreadcrumbItem[] => {
   const currentMatch = matches.at(-1);
 
@@ -103,6 +123,7 @@ export const getItems = (matches: ReturnType<typeof useMatches>): BreadcrumbItem
       ? ((currentMatch.search as Record<string, unknown>).sourceTopicId as string)
       : undefined;
   const topicLabel = getTopicLabel(matches);
+  const itemLabel = getItemLabel(matches);
   const context = { topicId: topicId ?? sourceTopicId, topicLabel };
 
   switch (routeId) {
@@ -119,9 +140,9 @@ export const getItems = (matches: ReturnType<typeof useMatches>): BreadcrumbItem
     case '/_app/$topicId/items/new':
       return getTopicItemsWithItems(context, 'Új elem');
     case '/_app/$topicId/items/$itemId/edit':
-      return getTopicItemsWithItems(context, 'Szerkesztés');
+      return getTopicItemsWithItem(context, itemLabel, 'Szerkesztés');
     case '/_app/$topicId/items/success':
-      return getTopicItems(context, 'Sikeres mentés');
+      return getTopicItemsWithItems(context, 'Sikeres mentés');
     case '/_app/$topicId/quiz-config':
       return getTopicItems(context, 'Kvíz beállítása');
     case '/_app/$topicId/quiz':

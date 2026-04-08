@@ -1,6 +1,8 @@
 import type { useMatches } from '@tanstack/react-router';
 import { describe, expect, it } from 'vitest';
 
+import { router } from '@/lib/router';
+
 import { getItems } from './utils';
 
 const createMatches = (
@@ -20,7 +22,11 @@ const createMatches = (
       search: {},
     },
     {
-      loaderData: {},
+      loaderData: {
+        item: {
+          name: 'art-item-1',
+        },
+      },
       params: {
         itemId: 'item-1',
         topicId: 'art',
@@ -36,6 +42,7 @@ describe('getItems', () => {
       { label: 'Kezdőlap', to: '/home' },
       { label: 'Művészet', params: { topicId: 'art' }, to: '/$topicId' },
       { label: 'Elemek', params: { topicId: 'art' }, to: '/$topicId/items' },
+      { label: 'art-item-1' },
       { label: 'Szerkesztés' },
     ]);
   });
@@ -56,4 +63,76 @@ describe('getItems', () => {
       { label: 'Szerkesztés' },
     ]);
   });
+
+  it('keeps breadcrumb item counts aligned with the route path depth for every breadcrumb route', () => {
+    const breadcrumbRoutes = Object.values(router.routesById)
+      .filter(
+        (
+          route,
+        ): route is {
+          fullPath: string;
+          id: string;
+        } => route.id.startsWith('/_app/') && typeof route.fullPath === 'string',
+      )
+      .filter((route) => getItems(createRouteMatches(route)).length > 0);
+
+    expect(breadcrumbRoutes.length).toBeGreaterThan(0);
+
+    breadcrumbRoutes.forEach((route) => {
+      expect(getItems(createRouteMatches(route))).toHaveLength(
+        getExpectedBreadcrumbCount(route.fullPath),
+      );
+    });
+  });
 });
+
+const createRouteMatches = ({
+  fullPath,
+  id,
+}: {
+  fullPath: string;
+  id: string;
+}): ReturnType<typeof useMatches> => {
+  const params = {
+    ...(fullPath.includes('$itemId') ? { itemId: 'item-1' } : {}),
+    ...(fullPath.includes('$topicId') ? { topicId: 'art' } : {}),
+  };
+
+  const loaderData = fullPath.includes('$topicId')
+    ? {
+        ...(fullPath.includes('$itemId')
+          ? {
+              item: {
+                name: 'art-item-1',
+              },
+            }
+          : {}),
+        topic: {
+          label: 'Művészet',
+        },
+      }
+    : fullPath.includes('$itemId')
+      ? {
+          item: {
+            name: 'art-item-1',
+          },
+        }
+      : {};
+
+  return [
+    {
+      loaderData,
+      params,
+      routeId: id,
+      search: {},
+    },
+  ] as ReturnType<typeof useMatches>;
+};
+
+const getPathSegmentCount = (fullPath: string): number => fullPath.split('/').filter(Boolean).length;
+
+const getExpectedBreadcrumbCount = (fullPath: string): number => {
+  const pathSegmentCount = getPathSegmentCount(fullPath);
+
+  return fullPath === '/home' ? pathSegmentCount : pathSegmentCount + 1;
+};
