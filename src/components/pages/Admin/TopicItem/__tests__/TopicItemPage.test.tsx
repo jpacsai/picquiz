@@ -69,9 +69,8 @@ describe('TopicItemPage', () => {
   it('renders the item details and hides internal image storage fields', () => {
     renderTopicItemPage();
 
-    expect(screen.getByRole('heading', { name: 'Mona Lisa' })).toBeInTheDocument();
-    expect(screen.getAllByText('Leonardo da Vinci')).toHaveLength(2);
-    expect(screen.getByText('Mobilnézet')).toBeInTheDocument();
+    expect(screen.getByText('Leonardo da Vinci')).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'Mona Lisa kep' })).toBeInTheDocument();
     expect(screen.getByRole('img', { name: 'Highlighted: Igaz' })).toBeInTheDocument();
     expect(screen.queryByText('Image path - desktop')).not.toBeInTheDocument();
     expect(screen.queryByText('Image path - mobile')).not.toBeInTheDocument();
@@ -82,7 +81,7 @@ describe('TopicItemPage', () => {
 
     renderTopicItemPage();
 
-    await user.click(screen.getByRole('button', { name: /megnyitás/i }));
+    await user.click(screen.getByRole('button', { name: 'Mona Lisa kep' }));
 
     const dialog = screen.getByRole('dialog');
     expect(within(dialog).getByRole('img', { name: 'Mona Lisa kep' })).toHaveAttribute(

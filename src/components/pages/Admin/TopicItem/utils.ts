@@ -108,6 +108,14 @@ export const getTopicItemTitle = (fields: ReadonlyArray<TopicField>, item: Topic
   return titleValues[0]?.text ?? getFallbackTitle(item);
 };
 
+export const getTopicItemHeadingText = (fields: ReadonlyArray<TopicField>, item: TopicItem) => {
+  const title = getTopicItemTitle(fields, item);
+  const subtitleValues = getTopicItemValuesByDisplay(fields, item, 'subtitle');
+  const subtitleText = subtitleValues.length ? joinDisplayValueTexts(subtitleValues) : '';
+
+  return subtitleText ? `${title} - ${subtitleText}` : title;
+};
+
 const getResolvedImageUrl = (value: unknown) =>
   typeof value === 'string' && value.trim().length > 0 ? value : undefined;
 

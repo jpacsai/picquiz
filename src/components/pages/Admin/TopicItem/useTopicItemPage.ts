@@ -24,10 +24,8 @@ export const useTopicItemPage = ({ item, topic }: UseTopicItemPageParams) => {
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [loadedPreviewImageUrl, setLoadedPreviewImageUrl] = useState<string | null>(null);
   const titleValues = getTopicItemValuesByDisplay(topic.fields, item, 'title');
-  const subtitleValues = getTopicItemValuesByDisplay(topic.fields, item, 'subtitle');
   const metaValues = getTopicItemValuesByDisplay(topic.fields, item, 'meta');
   const title = titleValues[0]?.text ?? getTopicItemTitle(topic.fields, item);
-  const subtitle = subtitleValues.length ? joinDisplayValueNodes(subtitleValues) : undefined;
   const meta = metaValues.length ? joinDisplayValueNodes(metaValues) : undefined;
   const detailRows = getTopicItemDetailRows(topic.fields, item);
   const { desktopImageUrl, mobileImageUrl } = getTopicItemImageUrls(topic.fields, item);
@@ -63,10 +61,7 @@ export const useTopicItemPage = ({ item, topic }: UseTopicItemPageParams) => {
       isImagePreviewOpen && previewImageUrl && loadedPreviewImageUrl !== previewImageUrl,
     ),
     showThumbnail: Boolean(thumbnailImageUrl),
-    subtitle: subtitle as ReactNode | undefined,
-    thumbnailCaption: mobileImageUrl ? 'Mobilnézet' : 'Feltöltött kép',
     thumbnailImageUrl,
-    title,
   };
 };
 

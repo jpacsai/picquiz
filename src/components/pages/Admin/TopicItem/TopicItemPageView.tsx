@@ -1,14 +1,5 @@
 import EditIcon from '@mui/icons-material/Edit';
-import OpenInFullIcon from '@mui/icons-material/OpenInFull';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Divider,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Card, CardContent, Stack, Typography } from '@mui/material';
 
 import ImagePreviewDialog from '@/components/ui/Form/ImageUploadField/components/ImagePreviewDialog';
 
@@ -30,110 +21,21 @@ const TopicItemPageView = ({
   previewImageUrl,
   showImagePreviewLoader,
   showThumbnail,
-  subtitle,
-  thumbnailCaption,
   thumbnailImageUrl,
-  title,
 }: TopicItemPageViewProps) => {
   return (
     <>
-      <Box sx={{ display: 'grid', gap: 3 }}>
-        <Card variant="outlined">
-          <CardContent>
-            <Stack spacing={2.5}>
-              <Box
-                sx={{
-                  alignItems: { md: 'flex-start', xs: 'stretch' },
-                  display: 'flex',
-                  flexDirection: { md: 'row', xs: 'column' },
-                  gap: 2,
-                  justifyContent: 'space-between',
-                }}
-              >
-                <Box sx={{ display: 'grid', gap: 0.75 }}>
-                  <Typography variant="h5">{title}</Typography>
-                  {subtitle ? (
-                    <Typography color="text.secondary" variant="body1">
-                      {subtitle}
-                    </Typography>
-                  ) : null}
-                  {meta ? (
-                    <Typography color="text.secondary" variant="body2">
-                      {meta}
-                    </Typography>
-                  ) : null}
-                </Box>
-
-                <Button startIcon={<EditIcon />} variant="contained" onClick={onEdit}>
-                  Szerkesztés
-                </Button>
-              </Box>
-
-              {showThumbnail ? (
-                <>
-                  <Divider />
-
-                  <Box sx={{ display: 'grid', gap: 1.5 }}>
-                    <Typography variant="subtitle2">{thumbnailCaption}</Typography>
-
-                    <Box
-                      component="button"
-                      type="button"
-                      onClick={onOpenImagePreview}
-                      sx={{
-                        alignItems: 'center',
-                        backgroundColor: 'background.default',
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        borderRadius: 3,
-                        cursor: 'pointer',
-                        display: 'grid',
-                        gap: 1,
-                        justifyItems: 'center',
-                        maxWidth: 240,
-                        p: 1.5,
-                        textAlign: 'left',
-                      }}
-                    >
-                      <Box
-                        component="img"
-                        alt={imageAlt}
-                        src={thumbnailImageUrl}
-                        sx={{
-                          aspectRatio: '9 / 16',
-                          borderRadius: 2,
-                          display: 'block',
-                          maxWidth: '100%',
-                          objectFit: 'cover',
-                          width: '100%',
-                        }}
-                      />
-                      <Box
-                        sx={{
-                          alignItems: 'center',
-                          color: 'primary.main',
-                          display: 'inline-flex',
-                          fontSize: '0.875rem',
-                          fontWeight: 500,
-                          gap: 0.5,
-                        }}
-                      >
-                        <OpenInFullIcon fontSize="small" />
-                        <span>Megnyitás</span>
-                      </Box>
-                    </Box>
-                  </Box>
-                </>
-              ) : null}
-            </Stack>
-          </CardContent>
-        </Card>
-
-        <Card variant="outlined">
-          <CardContent>
+      <Box
+        sx={{
+          alignItems: { md: 'stretch', xs: 'start' },
+          display: 'grid',
+          gap: 3,
+          gridTemplateColumns: { md: 'minmax(0, 1fr) 280px', xs: '1fr' },
+        }}
+      >
+        <Card variant="outlined" sx={{ height: '100%' }}>
+          <CardContent sx={{ height: '100%' }}>
             <Stack spacing={2}>
-              <Typography variant="h6">Adatok</Typography>
-
               {hasDetails ? (
                 <Box
                   sx={{
@@ -157,9 +59,61 @@ const TopicItemPageView = ({
                   Ehhez az elemhez jelenleg nincs megjeleníthető adat.
                 </Typography>
               )}
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                }}
+              >
+                <Button startIcon={<EditIcon />} variant="contained" onClick={onEdit}>
+                  Szerkesztés
+                </Button>
+              </Box>
             </Stack>
           </CardContent>
         </Card>
+
+        {showThumbnail ? (
+          <Card
+            variant="outlined"
+            sx={{
+              height: '100%',
+              width: '100%',
+            }}
+          >
+            <CardContent sx={{ height: '100%' }}>
+              <Box
+                component="button"
+                type="button"
+                onClick={onOpenImagePreview}
+                sx={{
+                  appearance: 'none',
+                  background: 'transparent',
+                  border: 0,
+                  cursor: 'pointer',
+                  height: '100%',
+                  padding: 0,
+                  textAlign: 'left',
+                  width: '100%',
+                }}
+              >
+                <Box
+                  component="img"
+                  alt={imageAlt}
+                  src={thumbnailImageUrl}
+                  sx={{
+                    aspectRatio: '330 / 400',
+                    borderRadius: 2,
+                    display: 'block',
+                    maxWidth: '100%',
+                    objectFit: 'contain',
+                    width: '100%',
+                  }}
+                />
+              </Box>
+            </CardContent>
+          </Card>
+        ) : null}
       </Box>
 
       <ImagePreviewDialog
