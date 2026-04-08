@@ -21,6 +21,7 @@ type AdminTopicItemCardViewProps = {
   meta?: ReactNode;
   mobileImageAlt: string;
   mobileImageUrl?: string;
+  onOpen: () => void;
   onCloseDeleteDialog: () => void;
   onCloseMobileImagePreview: () => void;
   onConfirmDelete: () => void;
@@ -41,6 +42,7 @@ const AdminTopicItemCardView = ({
   meta,
   mobileImageAlt,
   mobileImageUrl,
+  onOpen,
   onCloseDeleteDialog,
   onCloseMobileImagePreview,
   onConfirmDelete,
@@ -88,6 +90,9 @@ const AdminTopicItemCardView = ({
         </CardContent>
 
         <CardActions sx={{ px: 2, pb: 2, pt: 0 }}>
+          <Button variant="contained" disabled={isDeleting} onClick={onOpen}>
+            Megnyitás
+          </Button>
           <Button variant="outlined" disabled={isDeleting} onClick={onEdit}>
             Szerkesztés
           </Button>

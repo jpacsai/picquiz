@@ -247,6 +247,24 @@ describe('AdminTopicItemCard UI', () => {
     );
   });
 
+  it('navigates to the item detail page from the card', async () => {
+    const user = userEvent.setup();
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { gcTime: Infinity, retry: false },
+      },
+    });
+
+    renderAdminTopicItemCard({ queryClient });
+
+    await user.click(screen.getByRole('button', { name: 'Megnyitás' }));
+
+    expect(navigateMock).toHaveBeenCalledWith({
+      params: { itemId: 'item-1', topicId: 'art-topic' },
+      to: '/$topicId/items/$itemId',
+    });
+  });
+
   it('does not render the mobile image preview button when the item has no mobile image url', () => {
     const queryClient = new QueryClient({
       defaultOptions: {

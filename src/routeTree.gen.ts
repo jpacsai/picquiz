@@ -22,6 +22,7 @@ import { Route as AppTopicIdQuizRouteImport } from './routes/_app/$topicId/quiz'
 import { Route as AppTopicIdItemsIndexRouteImport } from './routes/_app/$topicId/items/index'
 import { Route as AppTopicIdItemsSuccessRouteImport } from './routes/_app/$topicId/items/success'
 import { Route as AppTopicIdItemsNewRouteImport } from './routes/_app/$topicId/items/new'
+import { Route as AppTopicIdItemsItemIdIndexRouteImport } from './routes/_app/$topicId/items/$itemId/index'
 import { Route as AppTopicIdItemsItemIdEditRouteImport } from './routes/_app/$topicId/items/$itemId/edit'
 
 const LoginRoute = LoginRouteImport.update({
@@ -88,6 +89,12 @@ const AppTopicIdItemsNewRoute = AppTopicIdItemsNewRouteImport.update({
   path: '/$topicId/items/new',
   getParentRoute: () => AppRoute,
 } as any)
+const AppTopicIdItemsItemIdIndexRoute =
+  AppTopicIdItemsItemIdIndexRouteImport.update({
+    id: '/$topicId/items/$itemId/',
+    path: '/$topicId/items/$itemId/',
+    getParentRoute: () => AppRoute,
+  } as any)
 const AppTopicIdItemsItemIdEditRoute =
   AppTopicIdItemsItemIdEditRouteImport.update({
     id: '/$topicId/items/$itemId/edit',
@@ -109,6 +116,7 @@ export interface FileRoutesByFullPath {
   '/$topicId/items/success': typeof AppTopicIdItemsSuccessRoute
   '/$topicId/items/': typeof AppTopicIdItemsIndexRoute
   '/$topicId/items/$itemId/edit': typeof AppTopicIdItemsItemIdEditRoute
+  '/$topicId/items/$itemId/': typeof AppTopicIdItemsItemIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -124,6 +132,7 @@ export interface FileRoutesByTo {
   '/$topicId/items/success': typeof AppTopicIdItemsSuccessRoute
   '/$topicId/items': typeof AppTopicIdItemsIndexRoute
   '/$topicId/items/$itemId/edit': typeof AppTopicIdItemsItemIdEditRoute
+  '/$topicId/items/$itemId': typeof AppTopicIdItemsItemIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -141,6 +150,7 @@ export interface FileRoutesById {
   '/_app/$topicId/items/success': typeof AppTopicIdItemsSuccessRoute
   '/_app/$topicId/items/': typeof AppTopicIdItemsIndexRoute
   '/_app/$topicId/items/$itemId/edit': typeof AppTopicIdItemsItemIdEditRoute
+  '/_app/$topicId/items/$itemId/': typeof AppTopicIdItemsItemIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -158,6 +168,7 @@ export interface FileRouteTypes {
     | '/$topicId/items/success'
     | '/$topicId/items/'
     | '/$topicId/items/$itemId/edit'
+    | '/$topicId/items/$itemId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -173,6 +184,7 @@ export interface FileRouteTypes {
     | '/$topicId/items/success'
     | '/$topicId/items'
     | '/$topicId/items/$itemId/edit'
+    | '/$topicId/items/$itemId'
   id:
     | '__root__'
     | '/'
@@ -189,6 +201,7 @@ export interface FileRouteTypes {
     | '/_app/$topicId/items/success'
     | '/_app/$topicId/items/'
     | '/_app/$topicId/items/$itemId/edit'
+    | '/_app/$topicId/items/$itemId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -290,6 +303,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTopicIdItemsNewRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/$topicId/items/$itemId/': {
+      id: '/_app/$topicId/items/$itemId/'
+      path: '/$topicId/items/$itemId'
+      fullPath: '/$topicId/items/$itemId/'
+      preLoaderRoute: typeof AppTopicIdItemsItemIdIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/$topicId/items/$itemId/edit': {
       id: '/_app/$topicId/items/$itemId/edit'
       path: '/$topicId/items/$itemId/edit'
@@ -312,6 +332,7 @@ interface AppRouteChildren {
   AppTopicIdItemsSuccessRoute: typeof AppTopicIdItemsSuccessRoute
   AppTopicIdItemsIndexRoute: typeof AppTopicIdItemsIndexRoute
   AppTopicIdItemsItemIdEditRoute: typeof AppTopicIdItemsItemIdEditRoute
+  AppTopicIdItemsItemIdIndexRoute: typeof AppTopicIdItemsItemIdIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -326,6 +347,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppTopicIdItemsSuccessRoute: AppTopicIdItemsSuccessRoute,
   AppTopicIdItemsIndexRoute: AppTopicIdItemsIndexRoute,
   AppTopicIdItemsItemIdEditRoute: AppTopicIdItemsItemIdEditRoute,
+  AppTopicIdItemsItemIdIndexRoute: AppTopicIdItemsItemIdIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

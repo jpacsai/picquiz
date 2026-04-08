@@ -5,96 +5,22 @@ import { deleteTopicItem } from '@service/items';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { useSnackbar } from 'notistack';
-import { createElement, Fragment, type ReactNode, useState } from 'react';
+import { useState } from 'react';
 
-import BooleanValue from '@/components/ui/BooleanValue';
+import {
+  getTopicItemImageUrls,
+  getTopicItemTitle,
+  getTopicItemValuesByDisplay,
+  joinDisplayValueNodes,
+  joinDisplayValueTexts,
+} from '@/components/pages/Admin/TopicItem/utils';
 import type { TopicField, TopicItem } from '@/types/topics';
-import { getBooleanValueLabel } from '@/utils/booleanValue';
 
 type UseAdminTopicItemParams = {
   collectionName: string;
   fields: ReadonlyArray<TopicField>;
   item: TopicItem;
   topicId: string;
-};
-
-type DisplayValue = {
-  node: ReactNode;
-  text: string;
-};
-
-const getDisplayValue = (field: TopicField, value: unknown): DisplayValue | null => {
-  if (typeof value === 'string') {
-    const trimmedValue = value.trim();
-
-    return trimmedValue.length
-      ? {
-          node: trimmedValue,
-          text: trimmedValue,
-        }
-      : null;
-  }
-
-  if (typeof value === 'number') {
-    const text = String(value);
-
-    return {
-      node: text,
-      text,
-    };
-  }
-
-  if (typeof value === 'boolean') {
-    const booleanLabel = getBooleanValueLabel(value);
-    const text = `${field.label}: ${booleanLabel}`;
-
-    return {
-      node: createElement(
-        Fragment,
-        null,
-        `${field.label}: `,
-        createElement(BooleanValue, {
-          ariaLabel: text,
-          value,
-        }),
-      ),
-      text,
-    };
-  }
-
-  return null;
-};
-
-const getValuesByDisplay = (
-  fields: ReadonlyArray<TopicField>,
-  item: TopicItem,
-  display: NonNullable<TopicField['display']>,
-) => {
-  return fields
-    .filter((field) => field.display === display)
-    .map((field) => getDisplayValue(field, item[field.key]))
-    .filter((value): value is DisplayValue => value !== null);
-};
-
-const joinDisplayValueTexts = (values: DisplayValue[]) =>
-  values.map((value) => value.text).join(' - ');
-
-const joinDisplayValueNodes = (values: DisplayValue[]) =>
-  values.map((value, index) =>
-    createElement(
-      Fragment,
-      { key: `${value.text}-${index}` },
-      index > 0 ? ' - ' : null,
-      value.node,
-    ),
-  );
-
-const getFallbackTitle = (item: TopicItem) => {
-  const fallbackValue = [item.title, item.artist]
-    .map((value) => getDisplayValue({ key: '', label: '', type: 'string' }, value))
-    .find((value): value is DisplayValue => value !== null);
-
-  return fallbackValue?.text ?? item.id;
 };
 
 const getImagePathsToDelete = ({
@@ -119,21 +45,6 @@ const getImagePathsToDelete = ({
     .filter((path): path is string => typeof path === 'string' && path.trim().length > 0);
 };
 
-const getMobileImageUrl = ({
-  fields,
-  item,
-}: {
-  fields: ReadonlyArray<TopicField>;
-  item: TopicItem;
-}) => {
-  const mobileFieldKey = fields.find((field) => field.type === 'imageUpload')?.targetFields.mobile;
-  const mobileImageUrl = mobileFieldKey ? item[mobileFieldKey] : undefined;
-
-  return typeof mobileImageUrl === 'string' && mobileImageUrl.trim().length > 0
-    ? mobileImageUrl
-    : undefined;
-};
-
 export const useAdminTopicItem = ({
   collectionName,
   fields,
@@ -150,17 +61,17 @@ export const useAdminTopicItem = ({
   const theme = useTheme();
   const isMobileScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-  const titleValues = getValuesByDisplay(fields, item, 'title');
-  const subtitleValues = getValuesByDisplay(fields, item, 'subtitle');
-  const metaValues = getValuesByDisplay(fields, item, 'meta');
+  const titleValues = getTopicItemValuesByDisplay(fields, item, 'title');
+  const subtitleValues = getTopicItemValuesByDisplay(fields, item, 'subtitle');
+  const metaValues = getTopicItemValuesByDisplay(fields, item, 'meta');
 
-  const title = titleValues[0]?.text ?? getFallbackTitle(item);
+  const title = titleValues[0]?.text ?? getTopicItemTitle(fields, item);
   const subtitleText = subtitleValues.length ? joinDisplayValueTexts(subtitleValues) : '';
   const subtitle = subtitleValues.length ? joinDisplayValueNodes(subtitleValues) : undefined;
   const metaText = joinDisplayValueTexts(metaValues);
   const meta = metaValues.length ? joinDisplayValueNodes(metaValues) : undefined;
   const imagePathsToDelete = getImagePathsToDelete({ fields, item });
-  const mobileImageUrl = getMobileImageUrl({ fields, item });
+  const { mobileImageUrl } = getTopicItemImageUrls(fields, item);
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -214,6 +125,12 @@ export const useAdminTopicItem = ({
     meta,
     mobileImageAlt: `${title} mobil kep`,
     mobileImageUrl,
+    onOpen: () => {
+      void navigate({
+        to: '/$topicId/items/$itemId',
+        params: { itemId: item.id, topicId },
+      });
+    },
     onCloseDeleteDialog: () => setIsDeleteDialogOpen(false),
     onCloseMobileImagePreview: () => {
       setIsMobileImagePreviewOpen(false);

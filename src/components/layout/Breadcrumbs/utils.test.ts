@@ -24,7 +24,7 @@ const createMatches = (
     {
       loaderData: {
         item: {
-          name: 'art-item-1',
+          title: 'Mona Lisa',
         },
       },
       params: {
@@ -37,12 +37,50 @@ const createMatches = (
   ] as ReturnType<typeof useMatches>;
 
 describe('getItems', () => {
+  it('includes the item breadcrumb on the item detail page', () => {
+    const matches = [
+      {
+        loaderData: {
+          topic: {
+            label: 'Művészet',
+          },
+        },
+        params: {
+          topicId: 'art',
+        },
+        routeId: '/_app/$topicId/',
+        search: {},
+      },
+      {
+        loaderData: {
+          item: {
+            id: 'item-1',
+            title: 'Mona Lisa',
+          },
+        },
+        params: {
+          itemId: 'item-1',
+          topicId: 'art',
+        },
+        routeId: '/_app/$topicId/items/$itemId/',
+        search: {},
+      },
+    ] as ReturnType<typeof useMatches>;
+
+    expect(getItems(matches)).toEqual([
+      { label: 'Kezdőlap', to: '/home' },
+      { label: 'Művészet', params: { topicId: 'art' }, to: '/$topicId' },
+      { label: 'Elemek', params: { topicId: 'art' }, to: '/$topicId/items' },
+      { label: 'Mona Lisa' },
+    ]);
+  });
+
   it('includes the items breadcrumb before the item edit page', () => {
     expect(getItems(createMatches())).toEqual([
       { label: 'Kezdőlap', to: '/home' },
       { label: 'Művészet', params: { topicId: 'art' }, to: '/$topicId' },
       { label: 'Elemek', params: { topicId: 'art' }, to: '/$topicId/items' },
-      { label: 'art-item-1' },
+      { label: 'Mona Lisa' },
       { label: 'Szerkesztés' },
     ]);
   });
@@ -103,7 +141,7 @@ const createRouteMatches = ({
         ...(fullPath.includes('$itemId')
           ? {
               item: {
-                name: 'art-item-1',
+                title: 'Mona Lisa',
               },
             }
           : {}),
@@ -114,7 +152,7 @@ const createRouteMatches = ({
     : fullPath.includes('$itemId')
       ? {
           item: {
-            name: 'art-item-1',
+            title: 'Mona Lisa',
           },
         }
       : {};

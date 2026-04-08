@@ -29,14 +29,29 @@ const getTopicLabel = (matches: ReturnType<typeof useMatches>) => {
 
 const getItemLabel = (matches: ReturnType<typeof useMatches>) => {
   const matchWithItem = [...matches].reverse().find((match) => {
-    const loaderData = match.loaderData as { item?: { name?: string } } | undefined;
+    const loaderData = match.loaderData as
+      | {
+          item?: { id?: string; name?: string; title?: string };
+          itemLabel?: string;
+        }
+      | undefined;
 
-    return typeof loaderData?.item?.name === 'string' && loaderData.item.name.trim().length > 0;
+    return Boolean(
+      (typeof loaderData?.itemLabel === 'string' && loaderData.itemLabel.trim().length > 0) ||
+        (typeof loaderData?.item?.name === 'string' && loaderData.item.name.trim().length > 0) ||
+        (typeof loaderData?.item?.title === 'string' && loaderData.item.title.trim().length > 0) ||
+        (typeof loaderData?.item?.id === 'string' && loaderData.item.id.trim().length > 0),
+    );
   });
 
-  const loaderData = matchWithItem?.loaderData as { item?: { name?: string } } | undefined;
+  const loaderData = matchWithItem?.loaderData as
+    | {
+        item?: { id?: string; name?: string; title?: string };
+        itemLabel?: string;
+      }
+    | undefined;
 
-  return loaderData?.item?.name;
+  return loaderData?.itemLabel ?? loaderData?.item?.name ?? loaderData?.item?.title ?? loaderData?.item?.id;
 };
 
 const getSchemaItems = (
@@ -139,6 +154,8 @@ export const getItems = (matches: ReturnType<typeof useMatches>): BreadcrumbItem
       return getTopicItems(context, 'Elemek');
     case '/_app/$topicId/items/new':
       return getTopicItemsWithItems(context, 'Új elem');
+    case '/_app/$topicId/items/$itemId/':
+      return getTopicItemsWithItem(context, itemLabel);
     case '/_app/$topicId/items/$itemId/edit':
       return getTopicItemsWithItem(context, itemLabel, 'Szerkesztés');
     case '/_app/$topicId/items/success':
